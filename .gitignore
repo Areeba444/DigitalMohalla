@@ -1,0 +1,62 @@
+# Planning inputs (kept local, not part of the repo)
+starter files/
+
+# Python
+__pycache__/
+*.py[oc]
+.venv/
+*.egg-info/
+build/
+dist/
+wheels/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.hypothesis/
+.coverage
+coverage.xml
+htmlcov/
+junit*.xml
+
+# Node / Expo
+node_modules/
+.expo/
+web-build/
+expo-env.d.ts
+*.tsbuildinfo
+npm-debug.*
+yarn-debug.*
+yarn-error.*
+/frontend/ios/
+/frontend/android/
+playwright-report/
+test-results/
+
+# Native signing material
+*.jks
+*.p8
+*.p12
+*.key
+*.pem
+*.mobileprovision
+
+# Secrets and local env (never commit)
+.env
+.env.*
+!.env.example
+*.local
+
+# Docker / infra local overrides
+docker-compose.override.yml
+
+# Load-test and experiment scratch output (keep committed results under docs/)
+locust_*.csv
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+
+# Claude Code local settings
+.claude/settings.local.json
