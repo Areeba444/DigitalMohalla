@@ -1,7 +1,7 @@
 [project]
 name = "backend"
 version = "0.1.0"
-description = "Add your description here"
+description = "Digital Mohalla backend: FastAPI API, event-sourced lifecycle and assurance engine"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
@@ -35,3 +35,24 @@ dev = [
     "pytest-cov>=7.1.0",
     "ruff>=0.17.0",
 ]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+extend-exclude = ["alembic/versions"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP"]
+ignore = ["E501"]  # long docstring and SQL lines are fine; the formatter wraps code
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+files = ["app/domain"]
+
+[tool.ruff.lint.flake8-bugbear]
+extend-immutable-calls = ["fastapi.Depends", "fastapi.Query"]
