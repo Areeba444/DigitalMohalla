@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>W4 — Return Inspection | Digital Mohalla</title>
+  <link rel="stylesheet" href="../styles/design-system.css"/>
+</head>
+<body>
+<div class="screen-page">
+  <div class="screen-label">W4 · Return Inspection — Condition Comparison (FR-B-13)</div>
+
+  <div class="phone">
+    <div class="status-bar">
+      <span class="status-time">2:34 PM</span>
+      <div class="status-icons"><span>▲▲▲</span><span>WiFi</span><span>🔋</span></div>
+    </div>
+
+    <div class="screen-content">
+
+      <div class="top-bar">
+        <a href="../index.html" class="top-bar-back">←</a>
+        <div>
+          <div class="top-bar-title">Return Inspection</div>
+          <div class="top-bar-sub">Compare condition at handover vs now</div>
+        </div>
+        <span style="font-size:10px;background:var(--accent-bg);color:#8B6914;padding:3px 8px;border-radius:100px;font-weight:700;border:1px solid var(--accent-border);">RETURN INITIATED</span>
+      </div>
+
+      <!-- Return time banner -->
+      <div class="section">
+        <div class="banner success">
+          <span class="banner-icon">✅</span>
+          <div>
+            <div style="font-weight:700;font-size:13px;color:var(--text-primary);">Returned On Time</div>
+            <div style="font-size:12px;color:var(--text-secondary);">Oct 16 at 2:34 PM · Due date was Oct 16 · <span style="color:var(--secondary);font-weight:600;">On time</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section-gap"></div>
+
+      <!-- Condition comparison header -->
+      <div class="section">
+        <div class="section-label">Condition Comparison</div>
+
+        <!-- Column headers -->
+        <div style="display:grid;grid-template-columns:auto 1fr 1fr;gap:8px;margin-bottom:8px;align-items:center;">
+          <div style="width:140px;"></div>
+          <div class="compare-header then" style="margin:0;">AT HANDOVER</div>
+          <div class="compare-header now" style="margin:0;">RETURNED NOW</div>
+        </div>
+
+        <!-- Comparison rows -->
+        <div class="card" style="overflow:hidden;">
+          <!-- Row 1 — OK -->
+          <div style="display:grid;grid-template-columns:1fr auto auto;align-items:center;padding:12px 16px;border-bottom:1px solid var(--border);">
+            <div style="font-size:13px;font-weight:500;color:var(--text-primary);">All parts present</div>
+            <div style="width:80px;text-align:center;font-size:18px;">✅</div>
+            <div style="width:80px;text-align:center;font-size:18px;">✅</div>
+          </div>
+          <!-- Row 2 — DELTA (damage) -->
+          <div style="display:grid;grid-template-columns:1fr auto auto;align-items:center;padding:12px 16px;border-bottom:1px solid var(--border);background:var(--accent-bg);">
+            <div>
+              <div style="font-size:13px;font-weight:600;color:var(--text-primary);">No visible damage</div>
+              <div style="font-size:11px;color:var(--primary);margin-top:2px;">⚠ Discrepancy noted</div>
+            </div>
+            <div style="width:80px;text-align:center;font-size:18px;">✅</div>
+            <div style="width:80px;text-align:center;font-size:18px;">⚠️</div>
+          </div>
+          <!-- Row 3 — OK -->
+          <div style="display:grid;grid-template-columns:1fr auto auto;align-items:center;padding:12px 16px;border-bottom:1px solid var(--border);">
+            <div style="font-size:13px;font-weight:500;color:var(--text-primary);">Accessories included</div>
+            <div style="width:80px;text-align:center;font-size:18px;">✅</div>
+            <div style="width:80px;text-align:center;font-size:18px;">✅</div>
+          </div>
+          <!-- Row 4 — not checked at handover -->
+          <div style="display:grid;grid-template-columns:1fr auto auto;align-items:center;padding:12px 16px;">
+            <div style="font-size:13px;font-weight:500;color:var(--text-muted);">Battery charged</div>
+            <div style="width:80px;text-align:center;font-size:14px;color:var(--text-muted);">—</div>
+            <div style="width:80px;text-align:center;font-size:14px;color:var(--text-muted);">—</div>
+          </div>
+        </div>
+
+        <!-- Delta alert -->
+        <div class="banner warning mt-3">
+          <span class="banner-icon">⚠️</span>
+          <div>
+            <div style="font-weight:700;font-size:13px;color:var(--text-primary);margin-bottom:2px;">1 item differs from handover record</div>
+            <div style="font-size:12px;color:var(--text-secondary);">Visible damage was not present at handover. Add a note before confirming or raise a dispute.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section-gap"></div>
+
+      <!-- Photo Comparison -->
+      <div class="section">
+        <div class="section-label">Photo Comparison</div>
+
+        <div style="margin-bottom:10px;">
+          <div style="font-size:12px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px;">At Handover</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;">
+            <div class="photo-slot filled" style="border-style:solid;background:linear-gradient(135deg,#FAF0E0,#F5D9B0);aspect-ratio:1;">
+              <span>🖼</span><span style="font-size:9px;">Oct 14</span>
+            </div>
+            <div class="photo-slot filled" style="border-style:solid;background:linear-gradient(135deg,#F0EDE0,#E8D8A0);aspect-ratio:1;">
+              <span>🖼</span><span style="font-size:9px;">Oct 14</span>
+            </div>
+            <div class="photo-slot" style="opacity:0.3;cursor:default;aspect-ratio:1;">+</div>
+          </div>
+        </div>
+
+        <div>
+          <div style="font-size:12px;font-weight:700;color:var(--primary);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px;">Returned — Now</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;">
+            <div class="photo-slot filled" style="border-style:solid;border-color:var(--accent-border);background:linear-gradient(135deg,#FFF8E1,#FFE082);aspect-ratio:1;">
+              <span>🖼</span><span style="font-size:9px;">Oct 16</span>
+            </div>
+            <div class="photo-slot" onclick="this.innerHTML='<span>🖼</span><span style=\'font-size:9px;\'>Oct 16</span>';this.classList.add('filled');" style="aspect-ratio:1;">
+              <span>📷</span><span>Add</span>
+            </div>
+            <div class="photo-slot" onclick="this.innerHTML='<span>🖼</span><span style=\'font-size:9px;\'>Oct 16</span>';this.classList.add('filled');" style="aspect-ratio:1;">
+              <span>📷</span><span>Add</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section-gap"></div>
+
+      <!-- Damage note -->
+      <div class="section">
+        <div class="section-label">Damage Notes (required when discrepancy)</div>
+        <div class="card card-padding">
+          <textarea rows="3" placeholder="Describe the damage: e.g., 'Small scratch on the body near the drill chuck — not present at handover'..."></textarea>
+          <div class="char-count">0/400</div>
+        </div>
+      </div>
+
+      <div class="btn-stack">
+        <button class="btn btn-secondary" onclick="showComplete()">Confirm Return & Complete Booking</button>
+        <a href="w5-dispute-form.html" class="btn btn-danger">Report Damage & Raise Dispute</a>
+      </div>
+
+      <div id="complete-state" style="display:none;padding:20px;">
+        <div class="card card-padding" style="text-align:center;border-color:var(--secondary-border);background:var(--secondary-bg);">
+          <div style="font-size:48px;margin-bottom:12px;">✅</div>
+          <div style="font-size:18px;font-weight:800;color:var(--secondary);margin-bottom:6px;">Booking Completed</div>
+          <div style="font-size:14px;color:var(--text-secondary);line-height:1.5;">The return is recorded. The outcome is sent to the assurance engine and reviews are now unlocked.</div>
+          <div style="margin-top:16px;">
+            <a href="../index.html" class="btn btn-secondary btn-sm">Back to Dashboard</a>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <nav class="bottom-nav">
+      <a href="../index.html" class="nav-item">
+        <span class="nav-icon">🏠</span><span class="nav-label">Home</span>
+      </a>
+      <a href="w1-lender-assurance.html" class="nav-item">
+        <span class="nav-icon">📋</span><span class="nav-label">Requests</span>
+        <span class="nav-badge">1</span>
+      </a>
+      <a href="w3a-handover-lender.html" class="nav-item active">
+        <span class="nav-icon">🤝</span><span class="nav-label">Handover</span>
+      </a>
+      <a href="w5-dispute-form.html" class="nav-item">
+        <span class="nav-icon">⚖️</span><span class="nav-label">Disputes</span>
+      </a>
+      <a href="w6-moderator-queue.html" class="nav-item">
+        <span class="nav-icon">🛡️</span><span class="nav-label">Moderator</span>
+        <span class="nav-badge" style="background:#2D5A46;">3</span>
+      </a>
+    </nav>
+  </div>
+</div>
+<script>
+function showComplete() {
+  document.querySelector('.btn-stack').style.display='none';
+  document.querySelectorAll('.section').forEach(s=>s.style.display='none');
+  document.querySelectorAll('.section-gap').forEach(s=>s.style.display='none');
+  document.getElementById('complete-state').style.display='block';
+}
+</script>
+</body>
+</html>

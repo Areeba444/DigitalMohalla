@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>W3a — Handover Inspection (Lender) | Digital Mohalla</title>
+  <link rel="stylesheet" href="../styles/design-system.css" />
+</head>
+<body>
+<div class="screen-page">
+  <div class="screen-label">W3a · Lender View — Handover Inspection Checklist (Step 1 of 2)</div>
+
+  <div class="phone">
+    <div class="status-bar">
+      <span class="status-time">10:12</span>
+      <div class="status-icons"><span>▲▲▲</span><span>WiFi</span><span>🔋</span></div>
+    </div>
+
+    <div class="screen-content">
+
+      <div class="top-bar">
+        <a href="../index.html" class="top-bar-back">←</a>
+        <div>
+          <div class="top-bar-title">Handover Checklist</div>
+          <div class="top-bar-sub">Document condition before handing over</div>
+        </div>
+        <span class="state-badge sufficient" style="font-size:10px;padding:3px 9px;">ACTIVE</span>
+      </div>
+
+      <!-- Step progress -->
+      <div style="background:var(--surface);padding:12px 20px 8px;border-bottom:1px solid var(--border);">
+        <div class="step-indicator">
+          <div class="step-dot active">1</div>
+          <div class="step-line"></div>
+          <div class="step-dot pending">2</div>
+        </div>
+        <div class="step-label-row">
+          <div class="step-label active" style="flex:1;text-align:left;">Lender submits</div>
+          <div style="flex:1;"></div>
+          <div class="step-label" style="flex:1;text-align:right;">Borrower confirms</div>
+        </div>
+      </div>
+
+      <!-- Booking Info -->
+      <div class="section">
+        <div class="card card-padding">
+          <div class="flex-between">
+            <div>
+              <div style="font-size:15px;font-weight:700;color:var(--text-primary);">Black & Decker Drill</div>
+              <div style="font-size:12px;color:var(--text-muted);margin-top:2px;">Loaned to Ayesha K. · Due back Oct 16</div>
+            </div>
+            <div style="text-align:right;">
+              <div style="font-size:12px;font-weight:600;color:var(--secondary);">📅 Oct 14</div>
+              <div style="font-size:11px;color:var(--text-muted);">Handover day</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section-gap"></div>
+
+      <!-- Condition Checklist -->
+      <div class="section">
+        <div class="section-label">Document Item Condition</div>
+        <div class="card card-padding" id="checklist">
+          <div class="check-item" onclick="toggleCheck(this)">
+            <div class="check-box checked">✓</div>
+            <div class="check-text">All parts present and accounted for</div>
+            <span class="check-add">+</span>
+          </div>
+          <div class="check-item" onclick="toggleCheck(this)">
+            <div class="check-box checked">✓</div>
+            <div class="check-text">No visible damage</div>
+            <span class="check-add">+</span>
+          </div>
+          <div class="check-item" onclick="toggleCheck(this)">
+            <div class="check-box">  </div>
+            <div class="check-text muted">Accessories included (drill bits × 6)</div>
+            <span class="check-add">+</span>
+          </div>
+          <div class="check-item" onclick="toggleCheck(this)">
+            <div class="check-box">  </div>
+            <div class="check-text muted">Battery fully charged</div>
+            <span class="check-add">+</span>
+          </div>
+        </div>
+
+        <!-- Checked count indicator -->
+        <div style="text-align:right;font-size:12px;color:var(--text-muted);margin-top:8px;" id="check-count">
+          2 of 4 checked
+        </div>
+      </div>
+
+      <div class="section-gap"></div>
+
+      <!-- Photo Upload -->
+      <div class="section">
+        <div class="section-label">Add Handover Photos</div>
+        <div class="card card-padding">
+          <div class="photo-grid">
+            <!-- Slot 1 - filled -->
+            <div class="photo-slot filled">
+              <span>🖼</span>
+              <span style="font-size:9px;color:var(--secondary);font-weight:700;">Added</span>
+            </div>
+            <!-- Slot 2 - filled -->
+            <div class="photo-slot filled">
+              <span>🖼</span>
+              <span style="font-size:9px;color:var(--secondary);font-weight:700;">Added</span>
+            </div>
+            <!-- Slot 3 - empty -->
+            <div class="photo-slot" onclick="this.innerHTML='<span>🖼</span><span style=\'font-size:9px;color:var(--secondary);font-weight:700;\'>Added</span>';this.classList.add('filled')">
+              <span>📷</span>
+              <span>Add photo</span>
+            </div>
+            <!-- Slot 4 - empty -->
+            <div class="photo-slot" onclick="this.innerHTML='<span>🖼</span><span style=\'font-size:9px;color:var(--secondary);font-weight:700;\'>Added</span>';this.classList.add('filled')">
+              <span>📷</span>
+              <span>Add photo</span>
+            </div>
+            <!-- Slot 5 - empty -->
+            <div class="photo-slot" onclick="this.innerHTML='<span>🖼</span><span style=\'font-size:9px;color:var(--secondary);font-weight:700;\'>Added</span>';this.classList.add('filled')">
+              <span>📷</span>
+              <span>Add photo</span>
+            </div>
+            <!-- Slot 6 - empty -->
+            <div class="photo-slot" onclick="this.innerHTML='<span>🖼</span><span style=\'font-size:9px;color:var(--secondary);font-weight:700;\'>Added</span>';this.classList.add('filled')">
+              <span>📷</span>
+              <span>Add photo</span>
+            </div>
+          </div>
+          <div style="margin-top:10px;font-size:11px;color:var(--text-muted);line-height:1.4;">
+            📌 Photos create a tamper-evident handover record. If a dispute is raised later, these photos become evidence for the moderator.
+          </div>
+        </div>
+      </div>
+
+      <div class="section-gap"></div>
+
+      <!-- Evidence note -->
+      <div class="section">
+        <div class="banner success">
+          <span class="banner-icon">🔒</span>
+          <div>
+            <div style="font-weight:700;font-size:13px;color:var(--text-primary);margin-bottom:2px;">Record is tamper-evident</div>
+            <div style="color:var(--text-secondary);font-size:12px;">Once submitted, your checklist and photos are locked to this booking. Photo failure will allow checklist-only with a "reduced evidence" mark.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Submit -->
+      <div class="btn-stack">
+        <a href="w3b-handover-borrower.html" class="btn btn-secondary">
+          Submit Handover Record →
+        </a>
+        <div style="text-align:center;font-size:11px;color:var(--text-muted);">Borrower will be notified to confirm receipt</div>
+      </div>
+
+    </div>
+
+    <nav class="bottom-nav">
+      <a href="../index.html" class="nav-item">
+        <span class="nav-icon">🏠</span><span class="nav-label">Home</span>
+      </a>
+      <a href="w1-lender-assurance.html" class="nav-item">
+        <span class="nav-icon">📋</span><span class="nav-label">Requests</span>
+        <span class="nav-badge">1</span>
+      </a>
+      <a href="w3a-handover-lender.html" class="nav-item active">
+        <span class="nav-icon">🤝</span><span class="nav-label">Handover</span>
+      </a>
+      <a href="w5-dispute-form.html" class="nav-item">
+        <span class="nav-icon">⚖️</span><span class="nav-label">Disputes</span>
+      </a>
+      <a href="w6-moderator-queue.html" class="nav-item">
+        <span class="nav-icon">🛡️</span><span class="nav-label">Moderator</span>
+        <span class="nav-badge" style="background:#2D5A46;">3</span>
+      </a>
+    </nav>
+  </div>
+</div>
+
+<script>
+function toggleCheck(item) {
+  const box = item.querySelector('.check-box');
+  const text = item.querySelector('.check-text');
+  const isChecked = box.classList.contains('checked');
+  if (isChecked) {
+    box.classList.remove('checked');
+    box.textContent = '';
+    text.classList.add('muted');
+  } else {
+    box.classList.add('checked');
+    box.textContent = '✓';
+    text.classList.remove('muted');
+  }
+  const total = document.querySelectorAll('.check-box').length;
+  const checked = document.querySelectorAll('.check-box.checked').length;
+  document.getElementById('check-count').textContent = checked + ' of ' + total + ' checked';
+}
+</script>
+</body>
+</html>

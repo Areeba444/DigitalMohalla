@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>W2 — Lender Decision & Concurrency Conflict | Digital Mohalla</title>
+  <link rel="stylesheet" href="../styles/design-system.css" />
+</head>
+<body>
+<div class="screen-page">
+  <div class="screen-label">W2 · Lender Decision & Concurrency Conflict (ADR-0002)</div>
+
+  <div class="phone">
+    <div class="status-bar">
+      <span class="status-time">9:44</span>
+      <div class="status-icons"><span>▲▲▲</span><span>WiFi</span><span>🔋</span></div>
+    </div>
+
+    <div class="screen-content">
+
+      <div class="top-bar">
+        <a href="w1-lender-assurance.html" class="top-bar-back">←</a>
+        <div>
+          <div class="top-bar-title">Confirm Decision</div>
+          <div class="top-bar-sub">BK-2024-1041 · Ayesha K.</div>
+        </div>
+      </div>
+
+      <!-- State A: Normal decision flow (shown first) -->
+      <div id="state-normal">
+        <div class="section">
+          <div class="section-label">Your Decision</div>
+
+          <!-- Radio Options -->
+          <div class="radio-option selected" id="opt-accept" onclick="selectOption('accept')">
+            <div class="radio-outer"><div class="radio-inner"></div></div>
+            <div>
+              <div class="radio-text">Accept booking</div>
+              <div class="radio-sub">Ayesha K. · Oct 14–16 · Black & Decker Drill</div>
+            </div>
+          </div>
+
+          <div class="radio-option" id="opt-decline" onclick="selectOption('decline')">
+            <div class="radio-outer"><div class="radio-inner" style="display:none;"></div></div>
+            <div>
+              <div class="radio-text">Decline booking</div>
+              <div class="radio-sub">You can optionally give a reason</div>
+            </div>
+          </div>
+
+          <!-- Decline reason (hidden by default) -->
+          <div id="decline-reason" style="display:none;margin-top:-4px;margin-bottom:10px;">
+            <textarea rows="2" placeholder="Optional: reason for declining..."></textarea>
+          </div>
+
+          <!-- Concurrency warning -->
+          <div class="banner warning mt-3">
+            <span class="banner-icon">⚠️</span>
+            <div>
+              <div style="font-weight:700;font-size:13px;color:var(--text-primary);margin-bottom:2px;">Accepting will auto-decline 2 other requests</div>
+              <div style="color:var(--text-secondary);font-size:12px;">Two other pending requests overlap these dates. They will be automatically declined with reason "dates taken" if you accept.</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="section-gap"></div>
+
+        <!-- Summary before confirming -->
+        <div class="section">
+          <div class="section-label">Booking Summary</div>
+          <div class="card card-padding">
+            <div class="info-row">
+              <span class="info-label">Borrower</span>
+              <span class="info-value">Ayesha K.</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Item</span>
+              <span class="info-value">Black & Decker Drill</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Dates</span>
+              <span class="info-value">Oct 14 – 16 · 3 days</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Assurance</span>
+              <span class="state-badge insufficient" style="font-size:10px;padding:2px 8px;">Insufficient Evidence</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="btn-stack">
+          <button class="btn btn-secondary" onclick="showConflict()">Confirm Decision</button>
+          <a href="w1-lender-assurance.html" class="btn btn-outline">← Go Back</a>
+        </div>
+      </div>
+
+      <!-- State B: Race condition / conflict alert (shown after "confirm") -->
+      <div id="state-conflict" style="display:none;">
+
+        <div class="section">
+          <!-- Big conflict alert -->
+          <div style="text-align:center;padding:24px 0 16px;">
+            <div style="font-size:48px;margin-bottom:12px;">⚡</div>
+            <div style="font-size:18px;font-weight:800;color:var(--text-primary);margin-bottom:6px;">Date Conflict Detected</div>
+            <div style="font-size:14px;color:var(--text-secondary);line-height:1.5;">Another lender accepted these dates a moment before you. This request has been automatically declined.</div>
+          </div>
+
+          <!-- Conflict detail card -->
+          <div class="card" style="border-left:3px solid var(--state-dispute);overflow:hidden;">
+            <div style="background:var(--state-dispute-bg);padding:12px 16px;">
+              <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:var(--state-dispute);">Request Outcome</div>
+            </div>
+            <div class="card-padding">
+              <div class="info-row">
+                <span class="info-label">Status</span>
+                <span class="state-badge dispute" style="font-size:10px;padding:2px 8px;">DECLINED</span>
+              </div>
+              <div class="info-row">
+                <span class="info-label">Reason</span>
+                <span class="info-value" style="color:var(--state-dispute);">Dates Taken</span>
+              </div>
+              <div class="info-row">
+                <span class="info-label">Logged as</span>
+                <span class="info-value" style="font-size:12px;font-family:monospace;">dates_taken · ADR-0002</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- What happens now -->
+          <div class="card card-padding mt-3">
+            <div style="font-size:13px;font-weight:700;color:var(--text-primary);margin-bottom:10px;">What happens now?</div>
+            <div class="check-item" style="padding:8px 0;">
+              <span style="color:var(--secondary);font-size:16px;">✓</span>
+              <span class="check-text">Ayesha K. has been notified with the reason</span>
+            </div>
+            <div class="check-item" style="padding:8px 0;">
+              <span style="color:var(--secondary);font-size:16px;">✓</span>
+              <span class="check-text">Your other pending requests are unaffected</span>
+            </div>
+            <div class="check-item" style="padding:8px 0;">
+              <span style="color:var(--secondary);font-size:16px;">✓</span>
+              <span class="check-text">The declined outcome is logged in the audit trail</span>
+            </div>
+          </div>
+
+          <!-- Technical note for FYP demo -->
+          <div style="margin-top:12px;padding:10px 12px;background:var(--surface-2);border-radius:var(--radius-md);border:1px solid var(--border);">
+            <div style="font-size:10px;color:var(--text-muted);line-height:1.5;">
+              <span style="font-weight:700;color:var(--text-secondary);">Engineering note (FR-B-05, ADR-0002):</span> The overlap constraint is enforced at the database level. The first acceptance to commit wins; the second is refused with "dates taken" before any application logic runs.
+            </div>
+          </div>
+        </div>
+
+        <div class="btn-stack">
+          <a href="w3a-handover-lender.html" class="btn btn-primary">Proceed to Handover Demo (W3a) →</a>
+          <a href="../index.html" class="btn btn-outline">Return to Home Dashboard</a>
+        </div>
+      </div>
+
+    </div>
+
+    <nav class="bottom-nav">
+      <a href="../index.html" class="nav-item">
+        <span class="nav-icon">🏠</span><span class="nav-label">Home</span>
+      </a>
+      <a href="w1-lender-assurance.html" class="nav-item active">
+        <span class="nav-icon">📋</span><span class="nav-label">Requests</span>
+        <span class="nav-badge">1</span>
+      </a>
+      <a href="w3a-handover-lender.html" class="nav-item">
+        <span class="nav-icon">🤝</span><span class="nav-label">Handover</span>
+      </a>
+      <a href="w5-dispute-form.html" class="nav-item">
+        <span class="nav-icon">⚖️</span><span class="nav-label">Disputes</span>
+      </a>
+      <a href="w6-moderator-queue.html" class="nav-item">
+        <span class="nav-icon">🛡️</span><span class="nav-label">Moderator</span>
+        <span class="nav-badge" style="background:#2D5A46;">3</span>
+      </a>
+    </nav>
+  </div>
+</div>
+
+<script>
+function selectOption(opt) {
+  const acceptOpt = document.getElementById('opt-accept');
+  const declineOpt = document.getElementById('opt-decline');
+  const declineReason = document.getElementById('decline-reason');
+  if (opt === 'accept') {
+    acceptOpt.classList.add('selected');
+    declineOpt.classList.remove('selected');
+    declineOpt.querySelector('.radio-inner').style.display = 'none';
+    acceptOpt.querySelector('.radio-inner').style.display = 'block';
+    declineReason.style.display = 'none';
+  } else {
+    declineOpt.classList.add('selected');
+    acceptOpt.classList.remove('selected');
+    acceptOpt.querySelector('.radio-inner').style.display = 'none';
+    declineOpt.querySelector('.radio-inner').style.display = 'block';
+    declineReason.style.display = 'block';
+  }
+}
+function showConflict() {
+  document.getElementById('state-normal').style.display = 'none';
+  document.getElementById('state-conflict').style.display = 'block';
+}
+</script>
+</body>
+</html>
