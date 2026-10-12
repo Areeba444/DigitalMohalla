@@ -1,0 +1,3 @@
+id,name,join_code,rules,boundary_polygon,is_active,created_at
+ce8a640a-b5c7-5283-b390-e9b4f2aa041f,Sector G-7 (synthetic),SYN-G7,Synthetic community for testing. Not a real housing society.,,true,2025-03-28T00:00:00+00:00
+fa398b67-09cd-59b3-b262-950aa7c3b054,Sector F-10 (synthetic),SYN-F10,Synthetic community for testing. Not a real housing society.,,true,2025-03-28T00:00:00+00:00
