@@ -73,4 +73,5 @@ The UI uses three switchable themes in `frontend/src/theme/themes.ts` (team to p
 - Write nothing the team couldn't explain at a viva; add a plain-language note on complex code or maths.
 
 ## Open items
-Mid-eval date, hosting (ADR-0006), S1/S2/S3 names, event-specific data field (N-6), SUFFICIENT_EVIDENCE thresholds, ES-13 expected state, locality method: see context doc §15. Don't invent values for these; ask.
+Mid-eval date, hosting (number to be fixed: ADR-0006 is already the trust-edge weight rule), event-specific data field (N-6), locality method: see context doc §15. Don't invent values for these; ask.
+Decided 13 October (`docs/design/00_management/Team_Decisions_2026-10-13.md`): S1 Fatima Khursheed, S2 Areeba Javed, S3 Minahil Kashif; ADR-0006 accepted as experimental; outcome mapping; SUFFICIENT_EVIDENCE thresholds as in engine.json (initial); ES-05 = R8; ES-13 = R9; Android only for device testing.
