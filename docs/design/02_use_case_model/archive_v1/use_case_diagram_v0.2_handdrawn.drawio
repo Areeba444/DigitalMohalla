@@ -1,0 +1,115 @@
+<mxfile host="app.diagrams.net">
+  <diagram name="A9-1 Core use case diagram" id="A9-1_Core_use_case_diagram">
+    <mxGraphModel dx="975" dy="439" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1200" pageHeight="860" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="c2" parent="1" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;fontSize=11;fillColor=#F5F5F5;strokeColor=#666666;" value="&lt;b style=&quot;font-size:13px&quot;&gt;Digital Mohalla: Core use case diagram (iteration 1)&lt;/b&gt;&lt;br&gt;&lt;b&gt;Version&lt;/b&gt; 0.2 (integration, 2026-10-11) &amp;nbsp;|&amp;nbsp; &lt;b&gt;Date&lt;/b&gt; 2026-10-11 &amp;nbsp;|&amp;nbsp; &lt;b&gt;Author&lt;/b&gt; Student 3 (name TBC; drafted with Claude) &amp;nbsp;|&amp;nbsp; &lt;b&gt;Status&lt;/b&gt; Draft for A14 peer review &amp;nbsp;|&amp;nbsp; &lt;b&gt;Applies to&lt;/b&gt; Use Cases v1.3, FR/NFR v1.3&lt;br&gt;&lt;b&gt;FRs realised:&lt;/b&gt; FR-B-05 to B-17 (B5, B6, B7, B8, B12); FR-T-01 to T-07 (D3/4/5); FR-T-10 (D6); FR-T-11 (I4); FR-M-05 (I6)&lt;br&gt;&lt;b&gt;Package:&lt;/b&gt; Module 3 Borrowing lifecycle (blue); Module 5 Trust engine (green); Module 9 Moderation and audit (orange). Packages as in the A8 component diagram.&lt;br&gt;&lt;b&gt;Rationale:&lt;/b&gt; Shows only the CORE use cases built in iteration 1 (Use Cases §3). A3 and A4 (iteration 2) and B13 (scheduler, iteration 2) are left out on purpose. &amp;laquo;include&amp;raquo; marks a call that always happens (B5 step 5, B12 step 4); &amp;laquo;extend&amp;raquo; marks a conditional one (B7 ext 3a, B8 ext 3a, D3 ext 4a)." vertex="1">
+          <mxGeometry height="118" width="1160" x="20" y="10" as="geometry" />
+        </mxCell>
+        <mxCell id="sys" parent="1" style="rounded=0;whiteSpace=wrap;html=1;verticalAlign=top;align=left;spacingLeft=10;fontStyle=1;fillColor=none;strokeColor=#333333;" value="Digital Mohalla (iteration 1 core)" vertex="1">
+          <mxGeometry height="620" width="700" x="250" y="150" as="geometry" />
+        </mxCell>
+        <mxCell id="bor" parent="1" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;fontSize=11;" value="Borrower" vertex="1">
+          <mxGeometry height="66" width="36" x="100" y="170" as="geometry" />
+        </mxCell>
+        <mxCell id="party" parent="1" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;fontSize=11;" value="Booking party&lt;br&gt;(abstract)" vertex="1">
+          <mxGeometry height="66" width="36" x="100" y="360" as="geometry" />
+        </mxCell>
+        <mxCell id="len" parent="1" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;fontSize=11;" value="Lender" vertex="1">
+          <mxGeometry height="66" width="36" x="100" y="560" as="geometry" />
+        </mxCell>
+        <mxCell id="eng" parent="1" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;fontSize=11;" value="Trust Engine&lt;br&gt;(system actor)" vertex="1">
+          <mxGeometry height="66" width="36" x="1020" y="175" as="geometry" />
+        </mxCell>
+        <mxCell id="mod" parent="1" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;fontSize=11;" value="Moderator" vertex="1">
+          <mxGeometry height="66" width="36" x="1020" y="400" as="geometry" />
+        </mxCell>
+        <mxCell id="adm" parent="1" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;fontSize=11;" value="Admin" vertex="1">
+          <mxGeometry height="66" width="36" x="1020" y="590" as="geometry" />
+        </mxCell>
+        <mxCell id="b5" parent="1" style="ellipse;whiteSpace=wrap;html=1;fontSize=11;fillColor=#DAE8FC;strokeColor=#6C8EBF;" value="B5 Send borrowing request" vertex="1">
+          <mxGeometry height="70" width="200" x="290" y="190" as="geometry" />
+        </mxCell>
+        <mxCell id="d3" parent="1" style="ellipse;whiteSpace=wrap;html=1;fontSize=11;fillColor=#D5E8D4;strokeColor=#82B366;" value="D3/4/5 Assess transaction assurance" vertex="1">
+          <mxGeometry height="70" width="200" x="700" y="190" as="geometry" />
+        </mxCell>
+        <mxCell id="b6" parent="1" style="ellipse;whiteSpace=wrap;html=1;fontSize=11;fillColor=#DAE8FC;strokeColor=#6C8EBF;" value="B6 Respond to request" vertex="1">
+          <mxGeometry height="70" width="200" x="290" y="300" as="geometry" />
+        </mxCell>
+        <mxCell id="b7" parent="1" style="ellipse;whiteSpace=wrap;html=1;fontSize=11;fillColor=#DAE8FC;strokeColor=#6C8EBF;" value="B7 Confirm handover" vertex="1">
+          <mxGeometry height="70" width="200" x="290" y="410" as="geometry" />
+        </mxCell>
+        <mxCell id="b8" parent="1" style="ellipse;whiteSpace=wrap;html=1;fontSize=11;fillColor=#DAE8FC;strokeColor=#6C8EBF;" value="B8 Return item and complete" vertex="1">
+          <mxGeometry height="70" width="200" x="290" y="520" as="geometry" />
+        </mxCell>
+        <mxCell id="b12" parent="1" style="ellipse;whiteSpace=wrap;html=1;fontSize=11;fillColor=#DAE8FC;strokeColor=#6C8EBF;" value="B12 Raise dispute" vertex="1">
+          <mxGeometry height="70" width="200" x="290" y="650" as="geometry" />
+        </mxCell>
+        <mxCell id="d6" parent="1" style="ellipse;whiteSpace=wrap;html=1;fontSize=11;fillColor=#D5E8D4;strokeColor=#82B366;" value="D6 Escalate case with evidence trail" vertex="1">
+          <mxGeometry height="70" width="200" x="700" y="320" as="geometry" />
+        </mxCell>
+        <mxCell id="i4" parent="1" style="ellipse;whiteSpace=wrap;html=1;fontSize=11;fillColor=#FFE6CC;strokeColor=#D79B00;" value="I4 Resolve escalated case or dispute" vertex="1">
+          <mxGeometry height="70" width="200" x="700" y="450" as="geometry" />
+        </mxCell>
+        <mxCell id="i6" parent="1" style="ellipse;whiteSpace=wrap;html=1;fontSize=11;fillColor=#FFE6CC;strokeColor=#D79B00;" value="I6 View audit logs" vertex="1">
+          <mxGeometry height="70" width="200" x="700" y="600" as="geometry" />
+        </mxCell>
+        <mxCell id="c3" edge="1" parent="1" source="bor" style="endArrow=none;html=1;" target="b5" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="c4" edge="1" parent="1" source="bor" style="endArrow=none;html=1;" target="b8" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="c5" edge="1" parent="1" source="len" style="endArrow=none;html=1;" target="b6" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="c6" edge="1" parent="1" source="len" style="endArrow=none;html=1;" target="b7" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="c7" edge="1" parent="1" source="party" style="endArrow=none;html=1;" target="b12" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="c8" edge="1" parent="1" source="eng" style="endArrow=none;html=1;" target="d3" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="c9" edge="1" parent="1" source="eng" style="endArrow=none;html=1;" target="d6" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="c10" edge="1" parent="1" source="mod" style="endArrow=none;html=1;" target="i4" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="c11" edge="1" parent="1" source="adm" style="endArrow=none;html=1;" target="i4" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="c12" edge="1" parent="1" source="adm" style="endArrow=none;html=1;" target="i6" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="c13" edge="1" parent="1" source="bor" style="endArrow=block;endFill=0;html=1;" target="party" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="c14" edge="1" parent="1" source="len" style="endArrow=block;endFill=0;html=1;" target="party" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="c15" edge="1" parent="1" source="b5" style="html=1;dashed=1;endArrow=open;endFill=0;fontSize=10;labelBackgroundColor=#FFFFFF;" target="d3" value="&amp;laquo;include&amp;raquo;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="c16" edge="1" parent="1" source="b12" style="html=1;dashed=1;endArrow=open;endFill=0;fontSize=10;labelBackgroundColor=#FFFFFF;" target="d6" value="&amp;laquo;include&amp;raquo;">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="c17" edge="1" parent="1" source="b12" style="html=1;dashed=1;endArrow=open;endFill=0;fontSize=10;labelBackgroundColor=#FFFFFF;" target="b7" value="&amp;laquo;extend&amp;raquo;&lt;br&gt;[condition disputed]">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="c18" edge="1" parent="1" source="b12" style="html=1;dashed=1;endArrow=open;endFill=0;fontSize=10;labelBackgroundColor=#FFFFFF;" target="b8" value="&amp;laquo;extend&amp;raquo;&lt;br&gt;[damage / disagreement]">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="c19" edge="1" parent="1" source="d6" style="html=1;dashed=1;endArrow=open;endFill=0;fontSize=10;labelBackgroundColor=#FFFFFF;" target="d3" value="&amp;laquo;extend&amp;raquo;&lt;br&gt;[corroborated risk ≥ 60, level 4]">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="c20" parent="1" style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=top;spacingLeft=6;spacingTop=4;fontSize=11;fillColor=#FFFFFF;strokeColor=#CCCCCC;" value="Legend: blue = Module 3, green = Module 5, orange = Module 9. Hollow triangle = generalisation (Borrower and Lender are both Booking parties, UC-B12 primary actor). Secondary actors from the use cases: Lender in B5; Borrower in B6/B7; Lender and Trust Engine in B8; Moderator in B12 are shown by the notes in the dressed use cases, not as separate lines, to keep the diagram readable. D6 hands over to I4 at D6 step 3 (no UML relationship drawn)." vertex="1">
+          <mxGeometry height="70" width="1160" x="20" y="780" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

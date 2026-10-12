@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>W6 — Moderator Queue | Digital Mohalla</title>
+  <link rel="stylesheet" href="../styles/design-system.css"/>
+  <style>
+    /* Moderator dark surfaces */
+    .mod-header {
+      background: #1F1F38;
+      color: #E2E8F0;
+      padding: 14px 20px 12px;
+      border-bottom: 1px solid #2D2D50;
+    }
+    .mod-header-title { font-size:17px; font-weight:700; color:#E2E8F0; }
+    .mod-header-sub { font-size:12px; color:#8892A4; margin-top:2px; }
+
+    .mod-summary-chip {
+      display:inline-flex; align-items:center; gap:6px;
+      padding:6px 14px; border-radius:100px; font-size:12px; font-weight:700;
+      border:1px solid;
+    }
+
+    .mod-tabs {
+      background:#1F1F38;
+      display:flex;
+      border-bottom:1px solid #2D2D50;
+      padding:0 16px;
+      overflow-x:auto;
+    }
+    .mod-tab {
+      padding:10px 14px; font-size:12px; font-weight:600;
+      color:#8892A4; white-space:nowrap; cursor:pointer;
+      border-bottom:2px solid transparent; margin-bottom:-1px;
+    }
+    .mod-tab.active { color:#C2713A; border-bottom-color:#C2713A; }
+
+    .mod-content { background:#1A1A2E; flex:1; padding:16px; }
+
+    .mod-case {
+      background:#252540; border-radius:14px; padding:16px;
+      margin-bottom:10px; display:flex; gap:12px; align-items:flex-start;
+      cursor:pointer; transition:all 0.15s; text-decoration:none;
+      border:1px solid #2D2D50;
+    }
+    .mod-case:hover { background:#2D2D50; transform:translateX(2px); }
+    .mod-case.high { border-left:3px solid #FC8181; }
+    .mod-case.med  { border-left:3px solid #C2713A; }
+    .mod-case.low  { border-left:3px solid #4A5568; opacity:0.6; }
+
+    .mod-case-icon {
+      width:40px;height:40px;border-radius:12px;
+      display:flex;align-items:center;justify-content:center;
+      font-size:18px;flex-shrink:0;
+    }
+    .mod-case-body { flex:1; min-width:0; }
+    .mod-case-type {
+      display:inline-flex;align-items:center;gap:5px;
+      padding:2px 8px;border-radius:100px;font-size:10px;font-weight:700;
+      letter-spacing:0.5px;text-transform:uppercase;margin-bottom:5px;
+    }
+    .type-dispute { background:rgba(197,48,48,0.2);color:#FC8181; }
+    .type-hold    { background:rgba(194,113,58,0.2);color:#E8935A; }
+    .type-locality{ background:rgba(74,85,104,0.2);color:#8892A4; }
+    .type-resolved{ background:rgba(45,106,79,0.2);color:#68D391; }
+
+    .mod-case-title { font-size:14px;font-weight:700;color:#E2E8F0;margin-bottom:3px; }
+    .mod-case-parties { font-size:12px;color:#8892A4; }
+    .mod-case-meta {
+      display:flex;align-items:center;gap:10px;
+      font-size:11px;color:#4A5568;margin-top:6px;
+    }
+    .mod-case-arrow { color:#4A5568;font-size:16px;flex-shrink:0;margin-top:8px; }
+
+    .mod-empty {
+      text-align:center;padding:48px 20px;
+      color:#4A5568;
+    }
+
+    .summary-row {
+      display:flex;gap:8px;flex-wrap:wrap;padding:14px 20px 10px;
+      background:#1F1F38;border-bottom:1px solid #2D2D50;
+    }
+  </style>
+</head>
+<body>
+<div class="screen-page" style="background:#0D1117;">
+  <div class="screen-label" style="background:#21262D;color:#C9D1D9;border:1px solid rgba(255,255,255,0.12);">
+    W6 · Moderator Queue — Community Triage Dashboard (FR-T-10, NFR-S-03)
+  </div>
+
+  <div class="phone dark">
+
+    <div class="screen-content" style="background:#1A1A2E;">
+
+      <!-- Moderator Header -->
+      <div class="mod-header">
+        <div class="flex-between">
+          <div>
+            <div class="mod-header-title">⚖️ Moderator Queue</div>
+            <div class="mod-header-sub">F-7, Sector 4 · Your community only</div>
+          </div>
+          <div style="font-size:20px;cursor:pointer;color:#8892A4;">⚙</div>
+        </div>
+      </div>
+
+      <!-- Summary chips -->
+      <div class="summary-row">
+        <div class="mod-summary-chip" style="background:rgba(197,48,48,0.15);color:#FC8181;border-color:rgba(197,48,48,0.3);">
+          ● 3 Disputes
+        </div>
+        <div class="mod-summary-chip" style="background:rgba(194,113,58,0.15);color:#E8935A;border-color:rgba(194,113,58,0.3);">
+          ● 1 Hold
+        </div>
+        <div class="mod-summary-chip" style="background:rgba(45,106,79,0.15);color:#68D391;border-color:rgba(45,106,79,0.3);">
+          ✓ 2 Resolved this week
+        </div>
+      </div>
+
+      <!-- Filter tabs -->
+      <div class="mod-tabs">
+        <div class="mod-tab active" onclick="filterCases('all', this)">All Cases</div>
+        <div class="mod-tab" onclick="filterCases('dispute', this)">Disputes</div>
+        <div class="mod-tab" onclick="filterCases('hold', this)">Held</div>
+        <div class="mod-tab" onclick="filterCases('resolved', this)">Resolved</div>
+      </div>
+
+      <!-- Cases -->
+      <div class="mod-content" id="cases-container">
+
+        <!-- Case 1: HIGH priority dispute -->
+        <a class="mod-case high" href="w7-moderator-case.html" data-type="dispute">
+          <div class="mod-case-icon" style="background:rgba(197,48,48,0.15);">⚖️</div>
+          <div class="mod-case-body">
+            <div class="mod-case-type type-dispute">⚑ Dispute</div>
+            <div class="mod-case-title">Item Damage — Drill</div>
+            <div class="mod-case-parties">Ayesha K. ↔ Sara M.</div>
+            <div class="mod-case-meta">
+              <span>⏱ 2 days waiting</span>
+              <span>·</span>
+              <span>📎 3 photos · 2 msgs</span>
+            </div>
+          </div>
+          <div class="mod-case-arrow">›</div>
+        </a>
+
+        <!-- Case 2: HIGH priority dispute -->
+        <a class="mod-case high" href="w7-moderator-case.html" data-type="dispute">
+          <div class="mod-case-icon" style="background:rgba(197,48,48,0.15);">📋</div>
+          <div class="mod-case-body">
+            <div class="mod-case-type type-dispute">⚑ Dispute</div>
+            <div class="mod-case-title">Non-Return — Power Bank</div>
+            <div class="mod-case-parties">Usman A. ↔ Nadia K.</div>
+            <div class="mod-case-meta">
+              <span>⏱ 5 days waiting</span>
+              <span>·</span>
+              <span>📎 1 photo · 5 msgs</span>
+            </div>
+          </div>
+          <div class="mod-case-arrow">›</div>
+        </a>
+
+        <!-- Case 3: MEDIUM priority - manipulation hold -->
+        <a class="mod-case med" href="w7-moderator-case.html" data-type="hold">
+          <div class="mod-case-icon" style="background:rgba(194,113,58,0.15);">🔍</div>
+          <div class="mod-case-body">
+            <div class="mod-case-type type-hold">⚠ Manipulation Hold</div>
+            <div class="mod-case-title">Flagged — Rating Anomaly</div>
+            <div class="mod-case-parties">Ahmad R. requesting from Farah S.</div>
+            <div class="mod-case-meta">
+              <span>⏱ 6 hours ago</span>
+              <span>·</span>
+              <span>🔎 Reciprocal clustering signal</span>
+            </div>
+          </div>
+          <div class="mod-case-arrow">›</div>
+        </a>
+
+        <!-- Case 4: LOW priority dispute -->
+        <a class="mod-case high" href="w7-moderator-case.html" data-type="dispute">
+          <div class="mod-case-icon" style="background:rgba(197,48,48,0.15);">🪑</div>
+          <div class="mod-case-body">
+            <div class="mod-case-type type-dispute">⚑ Dispute</div>
+            <div class="mod-case-title">Condition Mismatch — Camping Chair</div>
+            <div class="mod-case-parties">Hina B. ↔ Tariq M.</div>
+            <div class="mod-case-meta">
+              <span>⏱ 1 day waiting</span>
+              <span>·</span>
+              <span>📎 4 photos · 3 msgs</span>
+            </div>
+          </div>
+          <div class="mod-case-arrow">›</div>
+        </a>
+
+        <!-- Divider: Resolved -->
+        <div style="font-size:11px;font-weight:700;letter-spacing:0.8px;text-transform:uppercase;color:#4A5568;margin:16px 0 10px;">Resolved This Week</div>
+
+        <!-- Case 5: Resolved -->
+        <a class="mod-case low" href="w7-moderator-case.html" data-type="resolved" style="border-left-color:#68D391;">
+          <div class="mod-case-icon" style="background:rgba(45,106,79,0.1);">✅</div>
+          <div class="mod-case-body">
+            <div class="mod-case-type type-resolved">✓ Resolved</div>
+            <div class="mod-case-title">Boundary Condition — Membership</div>
+            <div class="mod-case-parties">Rania K. — Locality verification</div>
+            <div class="mod-case-meta">
+              <span>Resolved Oct 9 · No action taken</span>
+            </div>
+          </div>
+          <div class="mod-case-arrow">›</div>
+        </a>
+
+      </div><!-- cases-container -->
+
+      <!-- Privacy note -->
+      <div style="padding:0 16px 16px;">
+        <div style="font-size:10px;color:#4A5568;text-align:center;line-height:1.5;">
+          You can only view cases from F-7, Sector 4. Cross-community cases are routed to Admin. NFR-S-03.
+        </div>
+      </div>
+
+    </div><!-- screen-content -->
+
+    <!-- Bottom Nav (moderator role) -->
+    <nav class="bottom-nav" style="background:rgba(22, 27, 34, 0.94);border-top:1px solid rgba(255,255,255,0.08);">
+      <a href="../index.html" class="nav-item">
+        <span class="nav-icon" style="color:#8892A4;">🏠</span>
+        <span class="nav-label" style="color:#8892A4;">Home</span>
+      </a>
+      <a href="w1-lender-assurance.html" class="nav-item">
+        <span class="nav-icon" style="color:#8892A4;">📋</span>
+        <span class="nav-label" style="color:#8892A4;">Requests</span>
+      </a>
+      <a href="w3a-handover-lender.html" class="nav-item">
+        <span class="nav-icon" style="color:#8892A4;">🤝</span>
+        <span class="nav-label" style="color:#8892A4;">Handover</span>
+      </a>
+      <a href="w5-dispute-form.html" class="nav-item">
+        <span class="nav-icon" style="color:#8892A4;">⚖️</span>
+        <span class="nav-label" style="color:#8892A4;">Disputes</span>
+      </a>
+      <a href="w6-moderator-queue.html" class="nav-item active" style="color:var(--primary);">
+        <span class="nav-icon" style="color:var(--primary);position:relative;">🛡️<span class="nav-badge" style="background:#2D5A46;">3</span></span>
+        <span class="nav-label" style="color:var(--primary);">Moderator</span>
+      </a>
+    </nav>
+  </div>
+</div>
+
+<script>
+function filterCases(type, tab) {
+  document.querySelectorAll('.mod-tab').forEach(t => t.classList.remove('active'));
+  tab.classList.add('active');
+  document.querySelectorAll('.mod-case').forEach(c => {
+    if (type === 'all') {
+      c.style.display = 'flex';
+    } else {
+      c.style.display = c.dataset.type === type ? 'flex' : 'none';
+    }
+  });
+}
+</script>
+</body>
+</html>

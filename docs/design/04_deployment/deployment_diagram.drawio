@@ -1,0 +1,137 @@
+<mxfile host="Electron" agent="Digital Mohalla design generator" version="24.7.17" type="device">
+  <diagram id="Deployment_diagram__A13_" name="Deployment diagram (A13)">
+    <mxGraphModel dx="1400" dy="900" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1840" pageHeight="1160" math="0" shadow="0" background="#FFFFFF">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="v1" value="&lt;b&gt;Digital Mohalla &amp;#8212; deployment diagram, iteration 1 (provisional)&lt;/b&gt; (design step A13; decision D17; target confirmed by Student 3 by D-14)" style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=top;fontSize=16;fontStyle=0;fontColor=#1d1d1d;spacing=2;overflow=visible;" vertex="1" parent="1">
+          <mxGeometry x="30" y="14" width="1500" height="24" as="geometry" />
+        </mxCell>
+        <mxCell id="v2" value="UML 2.5 deployment notation: 3-D box = node (&amp;#171;device&amp;#187; or &amp;#171;cloud service&amp;#187;); plain box = &amp;#171;executionEnvironment&amp;#187; / &amp;#171;container&amp;#187;; box with document icon = &amp;#171;artifact&amp;#187;; folded note = comment; line = communication path (association) with protocol and port, dashed inside the Docker network. Items marked TBC are confirmed at the D-14 / D-15 gates." style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=top;fontSize=11;fontStyle=0;fontColor=#4A5560;spacing=2;overflow=visible;" vertex="1" parent="1">
+          <mxGeometry x="30" y="42" width="1700" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="v3" value="&amp;#171;device&amp;#187;&lt;br&gt;&lt;b&gt;Resident's phone&lt;/b&gt; (Android / iOS)" style="shape=cube;whiteSpace=wrap;html=1;size=12;darkOpacity=0.04;darkOpacity2=0.08;align=left;verticalAlign=top;spacingLeft=10;spacingTop=14;fontSize=12;strokeColor=#46535F;fontColor=#1F2D3A;fillColor=#EAF2FB;" vertex="1" parent="1">
+          <mxGeometry x="30" y="110" width="350" height="240" as="geometry" />
+        </mxCell>
+        <mxCell id="v4" value="&amp;#171;executionEnvironment&amp;#187;&lt;br&gt;&lt;b&gt;React Native / Expo runtime&lt;/b&gt; (NFR-D-05, TBC at D-15)" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;fontSize=11.5;strokeColor=#5B6B7A;fontColor=#1F2D3A;fillColor=#F7FAFE;" vertex="1" parent="1">
+          <mxGeometry x="50" y="170" width="310" height="160" as="geometry" />
+        </mxCell>
+        <mxCell id="v5" value="&amp;#171;artifact&amp;#187; &lt;b&gt;resident-app&lt;/b&gt;&lt;br&gt;request with evidence summary, lender decision, handover and return checklists, dispute form (13_wireframes)" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=22;fontSize=10.5;fillColor=#FFFFFF;strokeColor=#6A7A8A;fontColor=#1F2D3A;" vertex="1" parent="1">
+          <mxGeometry x="66" y="222" width="278" height="92" as="geometry" />
+        </mxCell>
+        <mxCell id="v6" value="" style="shape=note;size=5;html=1;fillColor=#FFFFFF;strokeColor=#6A7A8A;" vertex="1" parent="1">
+          <mxGeometry x="326" y="228" width="11" height="14" as="geometry" />
+        </mxCell>
+        <mxCell id="v7" value="&amp;#171;device&amp;#187;&lt;br&gt;&lt;b&gt;Moderator / admin computer&lt;/b&gt;" style="shape=cube;whiteSpace=wrap;html=1;size=12;darkOpacity=0.04;darkOpacity2=0.08;align=left;verticalAlign=top;spacingLeft=10;spacingTop=14;fontSize=12;strokeColor=#46535F;fontColor=#1F2D3A;fillColor=#EAF2FB;" vertex="1" parent="1">
+          <mxGeometry x="30" y="400" width="350" height="240" as="geometry" />
+        </mxCell>
+        <mxCell id="v8" value="&amp;#171;executionEnvironment&amp;#187;&lt;br&gt;&lt;b&gt;Web browser&lt;/b&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;fontSize=11.5;strokeColor=#5B6B7A;fontColor=#1F2D3A;fillColor=#F7FAFE;" vertex="1" parent="1">
+          <mxGeometry x="50" y="460" width="310" height="160" as="geometry" />
+        </mxCell>
+        <mxCell id="v9" value="&amp;#171;artifact&amp;#187; &lt;b&gt;moderator-console&lt;/b&gt; (static web build)&lt;br&gt;case queue, case view and decision, audit log (UC-I4, UC-I6)" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=22;fontSize=10.5;fillColor=#FFFFFF;strokeColor=#6A7A8A;fontColor=#1F2D3A;" vertex="1" parent="1">
+          <mxGeometry x="66" y="512" width="278" height="92" as="geometry" />
+        </mxCell>
+        <mxCell id="v10" value="" style="shape=note;size=5;html=1;fillColor=#FFFFFF;strokeColor=#6A7A8A;" vertex="1" parent="1">
+          <mxGeometry x="326" y="518" width="11" height="14" as="geometry" />
+        </mxCell>
+        <mxCell id="v11" value="&amp;#171;device&amp;#187;&lt;br&gt;&lt;b&gt;Team laptop: demo fallback&lt;/b&gt;" style="shape=cube;whiteSpace=wrap;html=1;size=12;darkOpacity=0.04;darkOpacity2=0.08;align=left;verticalAlign=top;spacingLeft=10;spacingTop=14;fontSize=12;strokeColor=#46535F;fontColor=#1F2D3A;fillColor=#F1F1F1;" vertex="1" parent="1">
+          <mxGeometry x="30" y="690" width="350" height="210" as="geometry" />
+        </mxCell>
+        <mxCell id="v12" value="&amp;#171;executionEnvironment&amp;#187; &lt;b&gt;Docker Compose (local)&lt;/b&gt;&lt;br&gt;same &lt;i&gt;docker-compose.yml&lt;/i&gt; and images as production, seed-reset script, synthetic users labelled synthetic. Used if the network fails during the demo; a local run is still live (plan, demo script)." style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;fontSize=11.5;strokeColor=#5B6B7A;fontColor=#1F2D3A;fillColor=#FAFAFA;" vertex="1" parent="1">
+          <mxGeometry x="50" y="748" width="310" height="132" as="geometry" />
+        </mxCell>
+        <mxCell id="v13" value="&lt;b&gt;AWS&lt;/b&gt; &amp;#8212; one region (nearest to the pilot, TBC)" style="rounded=1;arcSize=2;dashed=1;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=10;spacingTop=6;fontSize=12;fillColor=#FFF9F0;strokeColor=#C77700;fontColor=#8A4B12;" vertex="1" parent="1">
+          <mxGeometry x="560" y="70" width="700" height="1060" as="geometry" />
+        </mxCell>
+        <mxCell id="v14" value="&amp;#171;device&amp;#187;&lt;br&gt;&lt;b&gt;EC2 instance&lt;/b&gt;, Ubuntu 24.04 LTS (size TBC, e.g. 2 vCPU / 2 GB)" style="shape=cube;whiteSpace=wrap;html=1;size=12;darkOpacity=0.04;darkOpacity2=0.08;align=left;verticalAlign=top;spacingLeft=10;spacingTop=14;fontSize=12;strokeColor=#46535F;fontColor=#1F2D3A;fillColor=#FFFFFF;" vertex="1" parent="1">
+          <mxGeometry x="585" y="110" width="650" height="830" as="geometry" />
+        </mxCell>
+        <mxCell id="v15" value="&amp;#171;executionEnvironment&amp;#187;&lt;br&gt;&lt;b&gt;Docker Engine + Docker Compose&lt;/b&gt; (&lt;i&gt;infra/docker-compose.yml&lt;/i&gt;; one internal network)" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;fontSize=11.5;strokeColor=#5B6B7A;fontColor=#1F2D3A;fillColor=#F4F8FB;" vertex="1" parent="1">
+          <mxGeometry x="605" y="170" width="610" height="620" as="geometry" />
+        </mxCell>
+        <mxCell id="v16" value="&amp;#171;container&amp;#187; &lt;b&gt;proxy&lt;/b&gt;: TLS reverse proxy (Caddy or Nginx)&lt;br&gt;terminates HTTPS :443 (NFR-S-01); serves &lt;i&gt;moderator-console&lt;/i&gt;; routes &lt;i&gt;/api/v1&lt;/i&gt; to &lt;i&gt;api&lt;/i&gt;; adds no logging of request bodies" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;fontSize=11.5;strokeColor=#5B6B7A;fontColor=#1F2D3A;fillColor=#FFFFFF;" vertex="1" parent="1">
+          <mxGeometry x="625" y="225" width="570" height="92" as="geometry" />
+        </mxCell>
+        <mxCell id="v17" value="&amp;#171;container&amp;#187; &lt;b&gt;api&lt;/b&gt;: Python 3.12, FastAPI + Uvicorn (modular monolith, A8)&lt;br&gt;&amp;#171;artifact&amp;#187; &lt;i&gt;ghcr.io/&amp;lt;org&amp;gt;/dm-api:&amp;lt;commit-sha&amp;gt;&lt;/i&gt;&lt;br&gt;&amp;#8226; Module 1 accounts and locality, Module 3 borrowing lifecycle, Module 5 assurance engine (S2 estimation and policy, S1 indirect trust), Module 9 moderation and audit, Module 7 notify() stub&lt;br&gt;&amp;#8226; &amp;#171;artifact&amp;#187; &lt;i&gt;Assurance_Engine_Config_Draft.json&lt;/i&gt; (config_version stored on every assessment, NFR-D-01)&lt;br&gt;&amp;#8226; &amp;#171;artifact&amp;#187; migrations from &lt;i&gt;schema.sql&lt;/i&gt; v2.3, run by CD before start-up&lt;br&gt;&amp;#8226; privacy filter on every response and log line (NFR-PR-01, NFR-S-07)&lt;br&gt;&amp;#8226; &lt;i&gt;GET /health&lt;/i&gt; for the CD smoke test (NFR-D-04)" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;fontSize=11.5;strokeColor=#5B6B7A;fontColor=#1F2D3A;fillColor=#FFFFFF;" vertex="1" parent="1">
+          <mxGeometry x="625" y="375" width="570" height="220" as="geometry" />
+        </mxCell>
+        <mxCell id="v18" value="&amp;#171;container&amp;#187; &lt;b&gt;db&lt;/b&gt;: PostgreSQL 16 with &lt;i&gt;btree_gist&lt;/i&gt; (ADR-0002)&lt;br&gt;&amp;#171;artifact&amp;#187; schema &lt;i&gt;dm&lt;/i&gt;: event store, projections, bookings (EXCLUDE), assessments, cases, audit log&lt;br&gt;volume &lt;i&gt;pgdata&lt;/i&gt;; port 5432 on the internal network only; nightly &lt;i&gt;pg_dump&lt;/i&gt; (target TBC)" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;fontSize=11.5;strokeColor=#5B6B7A;fontColor=#1F2D3A;fillColor=#FFFFFF;" vertex="1" parent="1">
+          <mxGeometry x="625" y="655" width="570" height="115" as="geometry" />
+        </mxCell>
+        <mxCell id="v19" value="&amp;#171;volume&amp;#187; &lt;b&gt;attachments&lt;/b&gt;: photos and documents, EXIF location stripped before storage (NFR-PR-01); a host volume in iteration 1, an S3 bucket TBC" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;fontSize=11.5;strokeColor=#5B6B7A;fontColor=#1F2D3A;fillColor=#FFFFFF;" vertex="1" parent="1">
+          <mxGeometry x="605" y="806" width="610" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="v20" value="&lt;b&gt;Security group&lt;/b&gt;: inbound 443 from anywhere; 22 only from the GitHub Actions deploy key and the team; 5432 never public. Secrets come from GitHub Environments into an &lt;i&gt;.env&lt;/i&gt; file, never the repo." style="shape=note;size=12;whiteSpace=wrap;html=1;align=left;verticalAlign=top;fontSize=10.5;spacingLeft=6;spacingTop=2;fillColor=#FFF3E0;strokeColor=#C77700;" vertex="1" parent="1">
+          <mxGeometry x="605" y="868" width="610" height="56" as="geometry" />
+        </mxCell>
+        <mxCell id="v21" value="No coordinates, addresses or CNIC fields exist in any container or volume (schema privacy scan, test suite 14). Notifications are an in-process stub in iteration 1 (no e-mail or push service)." style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=top;fontSize=10.5;fontStyle=0;fontColor=#8A4B12;spacing=2;overflow=visible;" vertex="1" parent="1">
+          <mxGeometry x="585" y="958" width="660" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="v22" value="&amp;#171;cloud service&amp;#187;&lt;br&gt;&lt;b&gt;GitHub&lt;/b&gt;" style="shape=cube;whiteSpace=wrap;html=1;size=12;darkOpacity=0.04;darkOpacity2=0.08;align=left;verticalAlign=top;spacingLeft=10;spacingTop=14;fontSize=12;strokeColor=#46535F;fontColor=#1F2D3A;fillColor=#F3EEF9;" vertex="1" parent="1">
+          <mxGeometry x="1420" y="100" width="380" height="440" as="geometry" />
+        </mxCell>
+        <mxCell id="v23" value="&amp;#171;executionEnvironment&amp;#187; &lt;b&gt;GitHub Actions runner&lt;/b&gt;&lt;br&gt;&amp;#171;artifact&amp;#187; &lt;i&gt;ci.yml&lt;/i&gt; (every PR and push): ruff, eslint, mypy, bandit, pip-audit, pytest with coverage, integration tests on a Postgres service container, scenario suite, frontend build, JUnit and coverage reports&lt;br&gt;&amp;#171;artifact&amp;#187; &lt;i&gt;cd.yml&lt;/i&gt; (push to main): build and push images, deploy over SSH, smoke test, roll back to the previous tag on failure" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;fontSize=11.5;strokeColor=#5B6B7A;fontColor=#1F2D3A;fillColor=#FFFFFF;" vertex="1" parent="1">
+          <mxGeometry x="1440" y="152" width="340" height="210" as="geometry" />
+        </mxCell>
+        <mxCell id="v24" value="&amp;#171;artifact&amp;#187; &lt;b&gt;repository&lt;/b&gt;&lt;br&gt;backend/, frontend/, infra/, docs/ (this design folder)&lt;br&gt;protected main and develop; tags v0.1.0-mid1, design-v1.0, schema-v1" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=22;fontSize=10.5;fillColor=#FFFFFF;strokeColor=#6A7A8A;fontColor=#1F2D3A;" vertex="1" parent="1">
+          <mxGeometry x="1440" y="384" width="250" height="140" as="geometry" />
+        </mxCell>
+        <mxCell id="v25" value="" style="shape=note;size=5;html=1;fillColor=#FFFFFF;strokeColor=#6A7A8A;" vertex="1" parent="1">
+          <mxGeometry x="1672" y="390" width="11" height="14" as="geometry" />
+        </mxCell>
+        <mxCell id="v26" value="&amp;#171;cloud service&amp;#187;&lt;br&gt;&lt;b&gt;GitHub Container Registry (GHCR)&lt;/b&gt;&lt;br&gt;&amp;#171;artifact&amp;#187; dm-api:&amp;lt;sha&amp;gt;, dm-proxy:&amp;lt;sha&amp;gt;&lt;br&gt;previous tag kept for rollback" style="shape=cube;whiteSpace=wrap;html=1;size=12;darkOpacity=0.04;darkOpacity2=0.08;align=left;verticalAlign=top;spacingLeft=10;spacingTop=14;fontSize=12;strokeColor=#46535F;fontColor=#1F2D3A;fillColor=#F3EEF9;" vertex="1" parent="1">
+          <mxGeometry x="1420" y="620" width="380" height="160" as="geometry" />
+        </mxCell>
+        <mxCell id="v27" value="&lt;b&gt;GitHub Environments&lt;/b&gt;: SSH deploy key, database password, any API keys. The handbook forbids committing keys; Dependabot and pre-commit hooks guard the repo." style="shape=note;size=12;whiteSpace=wrap;html=1;align=left;verticalAlign=top;fontSize=10.5;spacingLeft=6;spacingTop=2;fillColor=#F7F3FB;strokeColor=#7A5C99;" vertex="1" parent="1">
+          <mxGeometry x="1420" y="820" width="380" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="e28" value="HTTPS :443&lt;br&gt;REST /api/v1 (JSON)" style="html=1;rounded=0;fontSize=10.5;labelBackgroundColor=#FFFFFF;fontColor=#1d1d1d;endSize=8;endArrow=none;strokeColor=#2F4F6F;strokeWidth=1.4;;exitX=1;exitY=0.5;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0;entryY=0.25;entryDx=0;entryDy=0;entryPerimeter=0" edge="1" parent="1" source="v3" target="v16">
+          <mxGeometry relative="1" as="geometry" x="-0.45">
+            <Array as="points">
+              <mxPoint x="470" y="225" />
+              <mxPoint x="470" y="248" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e29" value="HTTPS :443&lt;br&gt;console + API" style="html=1;rounded=0;fontSize=10.5;labelBackgroundColor=#FFFFFF;fontColor=#1d1d1d;endSize=8;endArrow=none;strokeColor=#2F4F6F;strokeWidth=1.4;;exitX=1;exitY=0.3;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0;entryY=0.75;entryDx=0;entryDy=0;entryPerimeter=0" edge="1" parent="1" source="v7" target="v16">
+          <mxGeometry relative="1" as="geometry" x="0.05">
+            <Array as="points">
+              <mxPoint x="510" y="472" />
+              <mxPoint x="510" y="294" />
+            </Array>
+            <mxPoint x="-1" y="0" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e30" value="HTTP :8000 (internal network)" style="html=1;rounded=0;fontSize=10.5;labelBackgroundColor=#FFFFFF;fontColor=#1d1d1d;endSize=8;endArrow=none;strokeColor=#2E5E1E;strokeWidth=1.4;dashed=1;;exitX=0.5;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0" edge="1" parent="1" source="v16" target="v17">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e31" value="SQL / TCP :5432 (internal only)" style="html=1;rounded=0;fontSize=10.5;labelBackgroundColor=#FFFFFF;fontColor=#1d1d1d;endSize=8;endArrow=none;strokeColor=#2E5E1E;strokeWidth=1.4;dashed=1;;exitX=0.5;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0" edge="1" parent="1" source="v17" target="v18">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e32" value="SSH :22&lt;br&gt;pull, migrate, up -d" style="html=1;rounded=0;fontSize=10.5;labelBackgroundColor=#FFFFFF;fontColor=#1d1d1d;endSize=8;endArrow=none;strokeColor=#2F4F6F;strokeWidth=1.4;;exitX=0;exitY=0.05;exitDx=0;exitDy=0;exitPerimeter=0;entryX=1;entryY=0.0633;entryDx=0;entryDy=0;entryPerimeter=0" edge="1" parent="1" source="v23" target="v14">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e33" value="HTTPS smoke test&lt;br&gt;/health + one request" style="html=1;rounded=0;fontSize=10.5;labelBackgroundColor=#FFFFFF;fontColor=#1d1d1d;endSize=8;endArrow=none;strokeColor=#2F4F6F;strokeWidth=1.4;;exitX=0;exitY=0.6;exitDx=0;exitDy=0;exitPerimeter=0;entryX=1;entryY=0.5761;entryDx=0;entryDy=0;entryPerimeter=0" edge="1" parent="1" source="v23" target="v16">
+          <mxGeometry relative="1" as="geometry" x="-0.55" />
+        </mxCell>
+        <mxCell id="e34" value="docker push" style="html=1;rounded=0;fontSize=10.5;labelBackgroundColor=#FFFFFF;fontColor=#1d1d1d;endSize=8;endArrow=none;strokeColor=#2F4F6F;strokeWidth=1.4;;exitX=1;exitY=0.8;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.9868;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0" edge="1" parent="1" source="v23" target="v26">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1795" y="320" />
+              <mxPoint x="1795" y="620" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e35" value="docker pull&lt;br&gt;(HTTPS)" style="html=1;rounded=0;fontSize=10.5;labelBackgroundColor=#FFFFFF;fontColor=#1d1d1d;endSize=8;endArrow=none;strokeColor=#2F4F6F;strokeWidth=1.4;;exitX=1;exitY=0.7;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0;entryY=0.4438;entryDx=0;entryDy=0;entryPerimeter=0" edge="1" parent="1" source="v14" target="v26">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="v36" value="" style="rounded=0;html=1;fillColor=#FFFFFF;strokeColor=#B0BAC4;" vertex="1" parent="1">
+          <mxGeometry x="30" y="940" width="520" height="200" as="geometry" />
+        </mxCell>
+        <mxCell id="v37" value="&lt;b&gt;Why this deployment&lt;/b&gt;&lt;br&gt;&amp;#8226; One environment and one host are enough to show real CD for Mid-1 (plan, CI/CD); a staging environment can be added later.&lt;br&gt;&amp;#8226; The backend is one FastAPI process (modular monolith, A8), so one api container serves every module; module boundaries stay code interfaces.&lt;br&gt;&amp;#8226; PostgreSQL is required, not optional: the overlap constraint needs &lt;i&gt;btree_gist&lt;/i&gt; (ADR-0002).&lt;br&gt;&amp;#8226; Rollback = redeploy the previous image tag after a failed smoke test (NFR-D-03).&lt;br&gt;&amp;#8226; Traceability: NFR-D-02 (clean install from the compose file), NFR-D-03, NFR-D-04, NFR-D-05, NFR-S-01, NFR-PR-01, NFR-S-07.&lt;br&gt;Rationale and open items: &lt;i&gt;Deployment_Design.md&lt;/i&gt;." style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=top;fontSize=10.5;fontStyle=0;fontColor=#1d1d1d;spacing=2;overflow=visible;" vertex="1" parent="1">
+          <mxGeometry x="40" y="948" width="500" height="185" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

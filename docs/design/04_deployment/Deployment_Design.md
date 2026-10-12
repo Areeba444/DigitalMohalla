@@ -1,0 +1,78 @@
+# Digital Mohalla: Deployment Design (design step A13, provisional)
+
+| Field | Value |
+|---|---|
+| Document | Design step A13: provisional deployment diagram, environments, communication paths, CD and rollback |
+| Owner | Student 3 (deployment, plan work division). Drafted during integration by Student 1 from the plan's CI/CD section; **Student 3 to review and confirm the target by D-14** |
+| Version | 0.9, 11 October 2026 |
+| Status | Provisional: the target is marked "to be confirmed", as plan step A13 asks. Decision D17 in `00_management/Integration_Decisions_2026-10-11.md` |
+| Baseline | Iteration 1 plan (CI/CD, B0, demo script), FR/NFR v1.3 (NFR-D-02 to D-05, NFR-S-01, NFR-PR-01, NFR-S-07), `03_architecture/Architecture_Design.md` (A8), ADR-0002 |
+| Files | `deployment_diagram.drawio` (UML deployment diagram), `generate_deployment.py` (regenerates it; layout-checked) |
+| Author note | Drafted with Claude (GenAI); to be disclosed on Form 13 and in the AI usage log. |
+
+## 1. Design reasoning
+
+- **One host, one environment.** The mid brief asks for real CD, and the plan judges one deployed environment enough for a three-person team. One AWS EC2 instance runs everything with Docker Compose; a staging environment fed by `develop` can be added later without changing the images.
+- **The deployment mirrors the architecture.** The backend is a modular monolith (A8): one FastAPI process holds Modules 1, 3, 5, 7 (stub) and 9. The module boundaries are code interfaces (`IAssess`, `ILocality`, `ILifecycleCommands`, …), so they need no network hops, and one `api` container is enough. The scenario suite (Module 10) runs in CI, not on the host.
+- **PostgreSQL is a hard dependency.** The overlap constraint that prevents double booking (ADR-0002) needs the `btree_gist` extension, so the database is the official `postgres:16` image. It is reachable only on the internal Docker network.
+- **The same compose file runs everywhere.** CI's integration tests, the AWS host and the team laptop use the same images and the same `docker-compose.yml`. That gives a clean-install path (NFR-D-02) and the local demo fallback the plan asks for.
+- **Rollback is a redeploy.** Every image is tagged with its commit SHA in GHCR. When the smoke test fails, CD redeploys the previous tag (NFR-D-03). Database migrations are forward-only and additive in iteration 1. The event store is append-only, so a rollback never needs to undo history.
+
+## 2. Nodes and what runs on them
+
+| Node | Execution environment | Artifacts | Built in iteration 1 |
+|---|---|---|---|
+| Resident's phone (Android / iOS) | React Native / Expo runtime (NFR-D-05 assumption; stack decided at D-15) | `resident-app` | Minimal screens of `13_wireframes/` (Slice A UI, Slice B lender screen) |
+| Moderator / admin computer | Web browser | `moderator-console` (static build served by `proxy`) | Case queue, case view and decision, audit log (Slice C) |
+| AWS EC2 instance (Ubuntu 24.04 LTS, size TBC) | Docker Engine + Compose | containers `proxy`, `api`, `db`; volumes `pgdata`, `attachments` | Yes |
+| ↳ `proxy` | Caddy or Nginx (choice with the stack, D-15) | TLS certificate, console build, routing rules | Yes |
+| ↳ `api` | Python 3.12, FastAPI, Uvicorn | `dm-api:<sha>` image, `Assurance_Engine_Config_Draft.json` (config 1.1.0), migrations from `schema.sql` v2.3 | Yes |
+| ↳ `db` | PostgreSQL 16 + `btree_gist` | schema `dm` | Yes |
+| GitHub | Actions runner | `ci.yml`, `cd.yml`, repository | Yes (B0) |
+| GHCR | Container registry | `dm-api:<sha>`, `dm-proxy:<sha>` | Yes |
+| Team laptop | Docker Compose (local) | same images, seed-reset script | Demo fallback |
+
+## 3. Communication paths
+
+| From → to | Protocol / port | Exposed | Carries | Requirement |
+|---|---|---|---|---|
+| Resident app → proxy | HTTPS 443 | Public | REST `/api/v1`, JSON | NFR-S-01 |
+| Browser → proxy | HTTPS 443 | Public | console files and REST | NFR-S-01 |
+| proxy → api | HTTP 8000 | Internal network | REST | — |
+| api → db | TCP 5432 | Internal network only | SQL | NFR-S-05 (append-only roles) |
+| GitHub Actions → EC2 | SSH 22 | Deploy key only | `docker compose pull`, migrate, `up -d` | NFR-D-03 |
+| GitHub Actions → proxy | HTTPS 443 | Public | smoke test: `GET /health` and one scripted request through to assessment | NFR-D-04 |
+| GitHub Actions → GHCR | HTTPS | — | `docker push` | — |
+| EC2 → GHCR | HTTPS | — | `docker pull` | — |
+
+No path carries coordinates or an address. A borrowing request has no location at all (decision D13). The only device location in the system is read in memory during the membership check (A11), and only its coarse outcome is stored.
+
+## 4. CD flow and rollback (plan, `cd.yml`)
+
+1. A push to `main` (a release PR from `develop`, reviewed by a member who did not write it) triggers `cd.yml`.
+2. Build the images, tag them with the commit SHA, and push them to GHCR.
+3. SSH to the host: `docker compose pull`, run the migrations, `docker compose up -d`.
+4. Smoke test: `GET /health`, then one scripted request from REQUEST_CREATED to ASSESSED with a seeded synthetic user.
+5. If the smoke test fails, redeploy the previous SHA tag and fail the workflow. Showing this once is part of the demo (plan, 9:00–11:00).
+
+## 5. Security and privacy on the host
+
+| Concern | Measure | Requirement |
+|---|---|---|
+| Transport | TLS at the proxy; HTTP only inside the Docker network | NFR-S-01 |
+| Secrets | GitHub Environments → `.env` on the host at deploy time; never committed | Handbook; plan CI/CD |
+| Network | Security group: 443 public, 22 restricted, 5432 never public | NFR-S-02 (defence in depth) |
+| Location and identity data | None stored; privacy filter on responses and logs; attachments stored only with metadata stripped | NFR-PR-01, NFR-PR-02, NFR-S-07 |
+| Audit integrity | Append-only event store and audit log, hash chains, application role without UPDATE or DELETE | FR-M-05, NFR-S-05 |
+| Synthetic data | Seed users are flagged `is_synthetic` and shown as synthetic | Plan evidence checklist |
+
+## 6. Open items (to confirm by D-14, Student 3)
+
+| # | Item | Proposal |
+|---|---|---|
+| DP-1 | Instance size and region | Smallest instance that holds the three containers (about 2 vCPU, 2 GB); the AWS region nearest the pilot community |
+| DP-2 | Domain and TLS certificate | A subdomain with automatic certificates (Caddy) or certbot (Nginx) |
+| DP-3 | Attachment storage | Host volume in iteration 1; S3 bucket when photos are built fully |
+| DP-4 | Backups | Nightly `pg_dump` to an S3 bucket; restore rehearsed once before the mid demo |
+| DP-5 | Client delivery | Expo build for the resident app (or a web build if the D-15 gate chooses a web client); console served by the proxy |
+| DP-6 | Cost | Covered by the AWS free tier or credits; to be checked with the supervisor |

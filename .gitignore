@@ -60,3 +60,9 @@ Thumbs.db
 
 # Claude Code local settings
 .claude/settings.local.json
+
+# Data: originals and intermediate files stay local (large, may be licensed). Cards and derived data are committed.
+data/raw/*
+data/interim/*
+!data/raw/.gitkeep
+!data/interim/.gitkeep

@@ -1,0 +1,90 @@
+{
+ "about": "SYNTHETIC data for testing Digital Mohalla. No real person, address or identifier. Not real fraud data.",
+ "files": {
+  "app_user.csv": {
+   "rows": 90,
+   "sha256": "366397aae6b17d8b967bb9dc19a24af100d804bc76c4a9cfda69178bf3d0fa08"
+  },
+  "booking.csv": {
+   "rows": 254,
+   "sha256": "da6ba08e9d5333e3226fb48ac8835730b8cd684f6a20eed0fbfe9fc20d19548b"
+  },
+  "borrowing_transaction.csv": {
+   "rows": 286,
+   "sha256": "f945962cd860a37a9d3be17095db1884ed4a6ce633d55eda008c9cf24b7804ff"
+  },
+  "category.csv": {
+   "rows": 7,
+   "sha256": "921d88b09316781c35329c6966c6f870e6324c2d3e777a5c652d7fdd96b54a1a"
+  },
+  "community.csv": {
+   "rows": 3,
+   "sha256": "957e05cb6fdb7f7ac6737d8e9ed18bfa0f44d2eb710aa4b54467790a19a151ff"
+  },
+  "condition_report.csv": {
+   "rows": 962,
+   "sha256": "a2bef13648a59b0d5e69ca136eee52d8ccf893f8d7131c8edaa5cff4bb644f80"
+  },
+  "escalation_case.csv": {
+   "rows": 38,
+   "sha256": "065f11a911dff874ec8cf86dd4d4e6a9dcef4643de5540dc9a60662f32233a94"
+  },
+  "item.csv": {
+   "rows": 108,
+   "sha256": "f6d268f465d2178112d70dbe824c4f77c308c0c0311d1bacddb4234d2f72b9f8"
+  },
+  "labels/item_value_pkr.csv": {
+   "rows": 108,
+   "sha256": "4e8a9b4aadca6919995f710f9a98574a6b828a1c42dd4bcf52ae7126c83bb515"
+  },
+  "labels/review_truth.csv": {
+   "rows": 361,
+   "sha256": "c6190fc9dd371379b26592cf1de1cb6f03f119c12d7e6d7034dfbdeefd5935e5"
+  },
+  "labels/scenario_manifest.csv": {
+   "rows": 20,
+   "sha256": "11c61413095e19d3eb57ba70925c32d869a5833071ec97eaa163c4f6a0bac390"
+  },
+  "labels/transaction_truth.csv": {
+   "rows": 286,
+   "sha256": "b6d307f0742f0e8eef9c7e110096977a4e3909776f502dc8f153e88b1172884e"
+  },
+  "labels/user_truth.csv": {
+   "rows": 90,
+   "sha256": "b90a34e2bb2beeeb78fa6f74ff398c43cb7fe5d0472b69e86621d44001741b8f"
+  },
+  "lifecycle_event.csv": {
+   "rows": 2076,
+   "sha256": "7267c4defd9bcef318f89a815a38a9fd80b41d3152b625be30047dda07df2418"
+  },
+  "locality_verification.csv": {
+   "rows": 92,
+   "sha256": "9252454da66da02d39a8610d208f6921a02fb2ce0fd10fb7bc420bcfe3dde208"
+  },
+  "membership.csv": {
+   "rows": 92,
+   "sha256": "8c4bf7f8a548e499cb176b11629a2afaf510c6a078d29c89c663e246d7847ee1"
+  },
+  "moderator_decision.csv": {
+   "rows": 35,
+   "sha256": "5b6fdafede0b3e845bd4b9bf08a3476309a64ea49f65f7753eb0bba35527fba0"
+  },
+  "outcome.csv": {
+   "rows": 1192,
+   "sha256": "f3b35bf584fffa4a34d419f40062d209c25999175f56e2a3e575452f00b7aed1"
+  },
+  "review.csv": {
+   "rows": 361,
+   "sha256": "71fdc4d6353dc55cea492f562e8eedac064aff4ddd96dc5c3dc3ac99399ab0d3"
+  },
+  "trust_edge.csv": {
+   "rows": 708,
+   "sha256": "f10dcc023c51b58f76f70f8c3aa24f0c7b78b0afcc46c8ce6da89c933f4e4b77"
+  }
+ },
+ "generator_version": "1.0.0",
+ "reference_date": "2026-10-01T08:00:00+00:00",
+ "seed": 20261001,
+ "synthetic": true,
+ "tier": "standard"
+}

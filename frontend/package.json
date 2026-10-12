@@ -37,9 +37,12 @@
   },
   "devDependencies": {
     "@playwright/test": "^1.64.0",
+    "@react-native/jest-preset": "^0.86.3",
     "@testing-library/react-native": "^14.1.0",
     "@types/jest": "^30.0.0",
     "@types/react": "~19.2.2",
+    "eslint": "^9.0.0",
+    "eslint-config-expo": "~57.0.2",
     "jest": "^30.5.2",
     "jest-expo": "^57.0.5",
     "openapi-typescript": "^7.13.0",
@@ -52,7 +55,13 @@
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",
-    "lint": "expo lint"
+    "lint": "expo lint",
+    "api:generate": "openapi-typescript src/api/openapi.json -o src/api/schema.d.ts",
+    "test": "jest",
+    "typecheck": "tsc --noEmit"
   },
-  "private": true
+  "private": true,
+  "jest": {
+    "preset": "jest-expo"
+  }
 }
