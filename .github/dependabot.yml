@@ -1,0 +1,33 @@
+# Dependabot opens small pull requests when a dependency has an update or a security fix.
+# CI then checks each one; merge only if it is green and the change makes sense.
+version: 2
+updates:
+  - package-ecosystem: uv
+    directory: /backend
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+
+  - package-ecosystem: npm
+    directory: /frontend
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+    # Expo-managed packages move together with the Expo SDK, which is upgraded only between
+    # iterations (tech stack doc), so Dependabot does not bump them one by one.
+    ignore:
+      - dependency-name: "expo"
+      - dependency-name: "expo-*"
+      - dependency-name: "@expo/*"
+      - dependency-name: "react"
+      - dependency-name: "react-dom"
+      - dependency-name: "react-native"
+      - dependency-name: "react-native-*"
+      - dependency-name: "@react-native/*"
+      - dependency-name: "jest-expo"
+      - dependency-name: "eslint-config-expo"
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
