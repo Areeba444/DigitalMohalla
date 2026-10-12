@@ -1,0 +1,228 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "config_metadata": {
+    "config_name": "digital_mohalla_assurance_engine_config",
+    "config_version": "1.1.0-iteration1-draft",
+    "status": "initial_hypothesis_unvalidated",
+    "created_at": "2026-10-11T15:20:00Z",
+    "module": "Module 5: Trust, Safety and Assurance Engine",
+    "author": "Student 2 (Trust & Assurance Lead)",
+    "description": "Baseline operational and algorithmic parameters for Digital Mohalla's assurance pipeline. Every threshold and weight represents an initial experimental hypothesis to be evaluated via time-ordered holdout testing (Overview §5, NFR-D-01, FR-B-09).",
+    "updated_at": "2026-10-11T19:30:00Z",
+    "changelog": [
+      "1.0.0-iteration1-draft (2026-10-11, Student 2): initial parameter set.",
+      "1.1.0-iteration1-draft (2026-10-11, integration): s4_review_similarity active in iteration 1 (ADR-0007); rule R6_SPARSE uses rho_sup (ADR-0008); locality_a11 parameters added so one versioned file holds every parameter (NFR-D-01). No numeric value changed."
+    ]
+  },
+  "trust_estimation_alg1": {
+    "status": "initial_hypothesis_unvalidated",
+    "prior": {
+      "alpha_0": 1.0,
+      "beta_0": 1.0,
+      "distribution": "Beta(1,1)",
+      "source": "Overview §5.2",
+      "sensitivity_range": [
+        0.5,
+        2.0
+      ],
+      "rationale": "Uniform prior representing complete absence of evidence without bias."
+    },
+    "recency_decay": {
+      "half_life_days": 180.0,
+      "formula": "w_i = 2^(-d_i / half_life_days) * similarity_i",
+      "source": "Overview §5.2",
+      "sensitivity_range": [
+        90.0,
+        365.0
+      ],
+      "rationale": "Balances recent performance with seasonal borrowing behavior."
+    },
+    "credible_interval": {
+      "confidence_level": 0.9,
+      "lower_quantile": 0.05,
+      "upper_quantile": 0.95,
+      "type": "equal_tailed_beta_interval",
+      "source": "Overview §5.2, FR-T-02",
+      "sensitivity_range": [
+        0.8,
+        0.95
+      ],
+      "rationale": "Quantifies uncertainty to distinguish sparse from rich evidence."
+    },
+    "similarity_weighting": {
+      "similarity_floor": 0.5,
+      "source": "Overview §5.12",
+      "sensitivity_range": [
+        0.3,
+        0.7
+      ],
+      "rationale": "Weights past evidence by category, value band, and duration relevance."
+    }
+  },
+  "indirect_trust_alg2": {
+    "status": "initial_hypothesis_unvalidated",
+    "graph_traversal": {
+      "max_hops_k": 3,
+      "source": "Overview §5.5, FR-T-04",
+      "sensitivity_range": [
+        1,
+        4
+      ],
+      "rationale": "Limits search horizon to prevent computational explosion and noise propagation."
+    },
+    "attenuation_decay": {
+      "hop_decay_gamma": 0.7,
+      "formula": "q(P) = prod(edge_weights) * gamma^(hops - 1)",
+      "source": "Overview §5.5",
+      "sensitivity_range": [
+        0.5,
+        0.9
+      ],
+      "rationale": "Progressively discounts trust confidence as path length increases."
+    },
+    "aggregation": {
+      "reliability_cap_rho_max": 0.6,
+      "path_count_divisor": 3.0,
+      "diversity_divisor": 2.0,
+      "aggregation_method": "noisy_or",
+      "source": "Overview §5.5",
+      "sensitivity_range": [
+        0.4,
+        0.8
+      ],
+      "rationale": "Strictly caps indirect evidence below direct evidence to prevent false trust."
+    },
+    "baseline": {
+      "default_population_baseline": 0.5,
+      "source": "Overview §5.5",
+      "rationale": "Fallback prior mean when target user has zero verified direct events."
+    }
+  },
+  "manipulation_detection_alg3": {
+    "status": "initial_hypothesis_unvalidated",
+    "observation_windows": {
+      "evaluation_window_days_W": 90,
+      "retaliation_window_days": 14,
+      "new_account_age_threshold_days": 30,
+      "velocity_recent_window_days": 7,
+      "velocity_baseline_window_days": 83,
+      "source": "Overview §5.6, FR-T-05, FR-T-09",
+      "sensitivity_range": [
+        30,
+        90
+      ]
+    },
+    "signal_weights": {
+      "iteration_1_active": [
+        "s1_reciprocal_clustering",
+        "s4_review_similarity",
+        "retaliation_check"
+      ],
+      "iteration_2_scheduled": [
+        "s2_rating_velocity",
+        "s3_new_account_activity",
+        "s5_account_linkage"
+      ],
+      "weights": {
+        "s1_reciprocal_clustering": 0.3,
+        "s2_rating_velocity": 0.2,
+        "s3_new_account_activity": 0.2,
+        "s4_review_similarity": 0.2,
+        "s5_account_linkage": 0.1
+      },
+      "source": "Overview §5.6, §5.13; ADR-0007 (S4 active in iteration 1)"
+    },
+    "signal_scaling_bounds": {
+      "s1_min_ratio": 0.3,
+      "s1_range": 0.6,
+      "s1_min_out_degree": 3,
+      "s2_base_ratio": 2.0,
+      "s2_range": 3.0,
+      "s2_min_recent": 3,
+      "s3_base_count": 3,
+      "s3_range": 7.0,
+      "s4_min_cosine": 0.7,
+      "s4_range": 0.25,
+      "s5_base_links": 2,
+      "s5_range": 8.0
+    },
+    "risk_bands": {
+      "level_1_proceed_max": 19.99,
+      "level_2_monitor_max": 39.99,
+      "level_3_verify_max": 59.99,
+      "level_4_flag_review_max": 100.0,
+      "source": "Overview §5.6"
+    },
+    "corroboration_guard": {
+      "min_signal_threshold": 0.5,
+      "required_corroborating_signals": 2,
+      "source": "Algorithm doc §5; ADR-0007",
+      "rationale": "Prevents single-signal false alarms (e.g. friend groups) from reaching Level 4."
+    }
+  },
+  "decision_policy_alg4": {
+    "status": "initial_hypothesis_unvalidated",
+    "thresholds": {
+      "tau_mu_mean_threshold": 0.75,
+      "tau_L_lower_bound_threshold": 0.6,
+      "n_min_effective_observations": 3.0,
+      "rho_sup_indirect_support_threshold": 0.3,
+      "source": "Overview §5.8, §5.11; rho_sup used by R3 and R6_SPARSE (ADR-0008)",
+      "sensitivity_range": {
+        "tau_mu": [
+          0.65,
+          0.85
+        ],
+        "tau_L": [
+          0.5,
+          0.7
+        ],
+        "n_min": [
+          2.0,
+          5.0
+        ],
+        "rho_sup": [
+          0.2,
+          0.5
+        ]
+      }
+    },
+    "context_windows": {
+      "resolved_disputes_lookback_months": 12,
+      "engine_timeout_ms": 2000,
+      "source": "Overview §5.11, FR-T-07, ES-03"
+    },
+    "value_bands_pkr": {
+      "low_value_max": 5000,
+      "medium_value_max": 15000,
+      "high_value_min": 15001,
+      "source": "Community configuration default hypothesis"
+    },
+    "rule_order": [
+      "R1",
+      "R2",
+      "R3",
+      "R4",
+      "R5",
+      "R6_DISPUTE",
+      "R6_SPARSE",
+      "R7",
+      "R8",
+      "R9"
+    ],
+    "hold_rules": {
+      "R2": "manipulation_risk",
+      "R4": "high_value_low_confidence"
+    }
+  },
+  "locality_a11": {
+    "status": "initial_hypothesis_unvalidated",
+    "owner": "Student 1 (Module 1, locality)",
+    "max_accuracy_m": 100,
+    "min_margin_m": 50,
+    "invite_ttl_days": 7,
+    "max_open_invites": 3,
+    "validity_days": 365,
+    "source": "12_locality/Locality_Design_A11.md §3.3"
+  }
+}
