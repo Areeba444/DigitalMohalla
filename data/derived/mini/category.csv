@@ -1,0 +1,8 @@
+id,name,is_restricted,min_verification
+1,tools,false,COMMUNITY_VERIFIED
+2,appliances,false,COMMUNITY_VERIFIED
+3,electronics,false,COMMUNITY_VERIFIED
+4,furniture,false,COMMUNITY_VERIFIED
+5,sports,false,COMMUNITY_VERIFIED
+6,outdoor,false,COMMUNITY_VERIFIED
+7,media,false,COMMUNITY_VERIFIED
