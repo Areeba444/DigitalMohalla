@@ -2,7 +2,7 @@
 
 Neighbourhood resource-sharing platform (FAST-NUCES FYP). The technical core (the complex computing problem) is a **trust and risk decision engine**: it estimates whether a physical handover is safe from sparse, indirect, manipulable evidence, reports its own uncertainty, and recommends safeguards or human escalation. Listings, workflow, search and UI exist to feed or act on that decision.
 
-**Current stage:** Iteration 1 (FYP-1 Mid), Part B implementation. Folder scaffolding is done; no application code yet.
+**Current stage:** Iteration 1 (FYP-1 Mid), Part B. Slice A backend done (lifecycle loop, event store, API, login); frontend UI, Slices B and C pending.
 
 ## Read first
 - `docs/DigitalMohalla_Project_Context.md` — full handoff: modules, lifecycle, engine maths, scope, plan, tests, decisions log. Where it and a source file disagree, the source file wins; flag the conflict.
@@ -44,6 +44,16 @@ npx tsc --noEmit
 npx jest                    # once jest config is added
 ```
 `frontend/AGENTS.md` says Expo APIs change between SDKs: check the versioned docs at https://docs.expo.dev/llms.txt before writing Expo code. Dev tools were installed with `--legacy-peer-deps` because the template ships TypeScript 6 and `openapi-typescript` wants 5.
+
+## Run the app locally (web)
+Needs PostgreSQL 16 (dev DB `digitalmohalla` on port 5433) and `backend/.env` plus `frontend/.env.local` (see the `.env.example` files).
+```bash
+cd backend && uv run python ../scripts/seed_demo.py --reset   # synthetic users and items
+cd backend && uv run uvicorn app.main:app --port 8000          # API
+cd frontend && npm run web -- --port 8081                      # Expo web app (first bundle takes minutes)
+cd frontend && npm run api:generate                            # after any backend schema change (export openapi.json first)
+```
+The UI uses three switchable themes in `frontend/src/theme/themes.ts` (team to pick one). Slice A screens only; W5 to W7 (dispute, moderator) come with Slice C.
 
 ## Rules (summary; full text in the context doc §2)
 - Small diffs; no rewrites; don't touch files outside the task; don't delete things unasked. Simplest thing that meets the spec: no extra frameworks.
