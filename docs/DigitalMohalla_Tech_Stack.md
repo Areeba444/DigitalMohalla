@@ -270,10 +270,13 @@ Licences are the commonly published ones; confirm each at install time and recor
 | bandit | Security scan | Apache-2.0 |
 | pip-audit | Dependency audit | Apache-2.0 |
 | ESLint, Prettier, TypeScript | Frontend quality | MIT / MIT / Apache-2.0 |
+| eslint-config-expo (dev; 57.0.2 installed 2026-10-13, with eslint 9.39.5) | Expo's ESLint rules | MIT |
+| @react-native/jest-preset (dev; ^0.86.3, matches React Native 0.86) | Peer of jest-expo 57 | MIT |
 | uv | Python packaging | MIT / Apache-2.0 |
 | Docker Engine, Compose | Containers | Apache-2.0 |
 | Caddy | Reverse proxy, HTTPS | Apache-2.0 |
 | GitHub Actions, GHCR, EAS Build | CI/CD services | Hosted services (terms of service) |
+| actions/checkout, actions/setup-node, actions/upload-artifact (v4); astral-sh/setup-uv (v6) | CI steps in `.github/workflows/ci.yml` | MIT |
 
 ---
 
