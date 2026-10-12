@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>W7 — Moderator Case Adjudication | Digital Mohalla</title>
+  <link rel="stylesheet" href="../styles/design-system.css"/>
+  <style>
+    /* ── Moderator dark chrome ── */
+    body { background: #12121F; }
+
+    .mod-bar {
+      background: #1F1F38;
+      padding: 12px 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      border-bottom: 1px solid #2D2D50;
+      position: sticky; top: 0; z-index: 10;
+    }
+    .mod-back {
+      width: 36px; height: 36px;
+      border-radius: 10px; border: 1px solid #2D2D50;
+      display: flex; align-items: center; justify-content: center;
+      color: #8892A4; font-size: 16px; cursor: pointer;
+      text-decoration: none; flex-shrink: 0;
+    }
+    .mod-bar-title { font-size: 16px; font-weight: 700; color: #E2E8F0; flex: 1; }
+    .mod-bar-sub   { font-size: 11px; color: #8892A4; }
+
+    .priority-badge {
+      padding: 3px 10px; border-radius: 100px;
+      font-size: 10px; font-weight: 800; letter-spacing: 0.5px;
+    }
+    .priority-high { background: rgba(197,48,48,0.2); color: #FC8181; border: 1px solid rgba(197,48,48,0.3); }
+    .priority-med  { background: rgba(194,113,58,0.2); color: #E8935A; border: 1px solid rgba(194,113,58,0.3); }
+
+    .mod-content { background: #1A1A2E; flex: 1; overflow-y: auto; }
+
+    /* Case header card */
+    .case-header-card {
+      background: #252540;
+      border: 1px solid #2D2D50;
+      border-radius: 16px;
+      padding: 16px;
+      margin: 16px;
+    }
+    .case-trigger-pill {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 4px 10px; border-radius: 100px;
+      font-size: 10px; font-weight: 800; letter-spacing: 0.5px;
+      text-transform: uppercase; margin-bottom: 10px;
+      background: rgba(197,48,48,0.15); color: #FC8181;
+      border: 1px solid rgba(197,48,48,0.25);
+    }
+    .case-item-name { font-size: 17px; font-weight: 800; color: #E2E8F0; margin-bottom: 4px; }
+    .case-parties   { font-size: 13px; color: #8892A4; margin-bottom: 10px; }
+
+    /* Dividers */
+    .dark-divider { height: 1px; background: #2D2D50; margin: 0 16px; }
+    .dark-gap     { height: 10px; background: #12121F; }
+
+    /* Section label on dark */
+    .dark-label {
+      font-size: 11px; font-weight: 700; letter-spacing: 0.8px;
+      text-transform: uppercase; color: #4A5568; margin-bottom: 10px;
+    }
+
+    /* Timeline on dark */
+    .dark-timeline { padding: 16px; }
+    .dt-item {
+      display: flex; gap: 12px; padding-bottom: 20px; position: relative;
+    }
+    .dt-item:not(:last-child)::before {
+      content: ''; position: absolute;
+      left: 14px; top: 30px; bottom: 0; width: 2px;
+      background: #2D2D50;
+    }
+    .dt-dot {
+      width: 28px; height: 28px; border-radius: 50%;
+      background: #252540; border: 2px solid #2D2D50;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 13px; flex-shrink: 0; z-index: 1;
+    }
+    .dt-content { flex: 1; }
+    .dt-header {
+      font-size: 13px; font-weight: 600; color: #C5CFE0;
+      display: flex; justify-content: space-between; align-items: flex-start;
+    }
+    .dt-time  { font-size: 11px; color: #4A5568; font-weight: 400; flex-shrink: 0; margin-left: 8px; }
+    .dt-body  { font-size: 12px; color: #8892A4; margin-top: 4px; line-height: 1.4; }
+    .dt-photos { display: flex; gap: 6px; margin-top: 8px; }
+    .dt-photo {
+      width: 48px; height: 48px; border-radius: 8px;
+      background: #2D2D50; display: flex; align-items: center;
+      justify-content: center; font-size: 20px; cursor: pointer;
+    }
+    .dt-expand {
+      font-size: 11px; color: #C2713A; cursor: pointer;
+      margin-top: 6px; font-weight: 600;
+      background: none; border: none; padding: 0;
+      font-family: var(--font-body);
+    }
+
+    /* Assurance context card */
+    .assurance-context {
+      background: #252540; border: 1px solid #2D2D50;
+      border-radius: 14px; padding: 14px; margin: 0 16px 16px;
+    }
+    .ac-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; }
+    .ac-row + .ac-row { border-top: 1px solid #2D2D50; }
+    .ac-label { font-size: 12px; color: #8892A4; font-weight: 500; }
+    .ac-value { font-size: 12px; color: #C5CFE0; font-weight: 600; text-align: right; max-width: 55%; }
+
+    /* Decision form */
+    .decision-form {
+      background: #1F1F38; border-top: 2px solid #2D2D50;
+      padding: 20px 16px;
+    }
+    .dark-radio {
+      display: flex; align-items: flex-start; gap: 12px;
+      padding: 12px 14px; border-radius: 12px;
+      border: 1.5px solid #2D2D50;
+      cursor: pointer; margin-bottom: 8px;
+      transition: all 0.15s;
+    }
+    .dark-radio:hover { border-color: #C2713A; background: rgba(194,113,58,0.05); }
+    .dark-radio.selected { border-color: #C2713A; background: rgba(194,113,58,0.1); }
+    .dark-radio-outer {
+      width: 20px; height: 20px; border-radius: 50%;
+      border: 2px solid #4A5568;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0; margin-top: 1px;
+    }
+    .dark-radio.selected .dark-radio-outer { border-color: #C2713A; }
+    .dark-radio-inner {
+      width: 10px; height: 10px; border-radius: 50%;
+      background: #C2713A; display: none;
+    }
+    .dark-radio.selected .dark-radio-inner { display: block; }
+    .dark-radio-text { font-size: 13px; font-weight: 600; color: #C5CFE0; }
+    .dark-radio-sub  { font-size: 11px; color: #8892A4; margin-top: 2px; }
+
+    textarea.dark {
+      background: #252540; border: 1.5px solid #2D2D50;
+      color: #C5CFE0; border-radius: 12px;
+      padding: 12px 14px; width: 100%;
+      font-family: var(--font-body); font-size: 14px;
+      resize: none; outline: none; line-height: 1.5;
+    }
+    textarea.dark::placeholder { color: #4A5568; }
+    textarea.dark:focus { border-color: #C2713A; }
+
+    .audit-note {
+      font-size: 10px; color: #4A5568; text-align: center;
+      line-height: 1.5; margin-top: 8px;
+      padding: 8px 12px; background: #12121F;
+      border-radius: 8px;
+    }
+
+    /* Bottom buttons on dark */
+    .dark-btn-stack { padding: 0 0 12px; display: flex; flex-direction: column; gap: 10px; }
+    .btn-dark-primary {
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      padding: 14px 20px; border-radius: 12px;
+      background: #C2713A; color: white;
+      font-size: 15px; font-weight: 700; cursor: pointer;
+      border: none; width: 100%; font-family: var(--font-body);
+      box-shadow: 0 2px 10px rgba(194,113,58,0.35);
+      transition: all 0.15s;
+    }
+    .btn-dark-primary:hover { background: #9E5520; }
+    .btn-dark-primary:disabled { background: #2D2D50; color: #4A5568; cursor: not-allowed; box-shadow: none; }
+    .btn-dark-outline {
+      display: flex; align-items: center; justify-content: center;
+      padding: 13px 20px; border-radius: 12px;
+      background: transparent; color: #8892A4;
+      font-size: 14px; font-weight: 600; cursor: pointer;
+      border: 1.5px solid #2D2D50; width: 100%;
+      font-family: var(--font-body); text-decoration: none;
+      transition: all 0.15s;
+    }
+    .btn-dark-outline:hover { border-color: #4A5568; color: #C5CFE0; }
+
+    /* Decision submitted state */
+    #decision-submitted { display: none; padding: 24px 16px; text-align: center; }
+
+    /* Bottom nav dark */
+    .dark-nav {
+      height: 84px; background: #1F1F38;
+      border-top: 1px solid #2D2D50;
+      display: flex; align-items: flex-start; padding-top: 10px;
+    }
+  </style>
+</head>
+<body>
+<div class="screen-page" style="background:#0D1117;">
+  <div class="screen-label" style="background:#21262D;color:#C9D1D9;border:1px solid rgba(255,255,255,0.12);">
+    W7 · Moderator Case Adjudication — Evidence Trail + Decision (FR-T-11, FR-M-05, ADR-0003)
+  </div>
+
+  <div class="phone dark">
+
+    <!-- Screen content (scrollable) -->
+
+    <!-- Screen content (scrollable) -->
+    <div class="mod-content" style="overflow-y:auto;-webkit-overflow-scrolling:touch;">
+
+      <!-- Top bar -->
+      <div class="mod-bar">
+        <a href="w6-moderator-queue.html" class="mod-back">←</a>
+        <div style="flex:1;">
+          <div class="mod-bar-title">Case #DM-2024-047</div>
+          <div class="mod-bar-sub">Item Damage · Awaiting your decision</div>
+        </div>
+        <span class="priority-badge priority-high">HIGH</span>
+      </div>
+
+      <!-- ── Case Header ── -->
+      <div class="case-header-card">
+        <div class="case-trigger-pill">⚑ DISPUTE — Item Damage</div>
+        <div class="case-item-name">Black & Decker Drill</div>
+        <div class="case-parties">Lender: Sara M. &nbsp;↔&nbsp; Borrower: Ayesha K.</div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+          <div style="background:#1A1A2E;border-radius:10px;padding:10px;">
+            <div style="font-size:10px;color:#4A5568;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:3px;">Booking</div>
+            <div style="font-size:12px;font-weight:600;color:#C5CFE0;">Oct 14–16 · 3 days</div>
+          </div>
+          <div style="background:#1A1A2E;border-radius:10px;padding:10px;">
+            <div style="font-size:10px;color:#4A5568;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:3px;">Opened by</div>
+            <div style="font-size:12px;font-weight:600;color:#C5CFE0;">Sara M. · 2 days ago</div>
+          </div>
+          <div style="background:#1A1A2E;border-radius:10px;padding:10px;">
+            <div style="font-size:10px;color:#4A5568;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:3px;">Status</div>
+            <div style="font-size:12px;font-weight:600;color:#FC8181;">DISPUTED</div>
+          </div>
+          <div style="background:#1A1A2E;border-radius:10px;padding:10px;">
+            <div style="font-size:10px;color:#4A5568;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:3px;">Priority</div>
+            <div style="font-size:12px;font-weight:600;color:#FC8181;">HIGH · Waiting 2d</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="dark-gap"></div>
+
+      <!-- ── Evidence Timeline ── -->
+      <div style="padding:16px 16px 0;">
+        <div class="dark-label">Evidence Timeline</div>
+      </div>
+
+      <div class="dark-timeline">
+
+        <div class="dt-item">
+          <div class="dt-dot" style="background:rgba(45,106,79,0.2);border-color:#2D6A4F;">🤝</div>
+          <div class="dt-content">
+            <div class="dt-header">
+              Handover submitted — Sara M.
+              <span class="dt-time">Oct 14, 10:12</span>
+            </div>
+            <div class="dt-body">Checklist: 3/4 items checked. Condition reported as Good.</div>
+            <div class="dt-photos">
+              <div class="dt-photo" title="Handover photo 1">🖼</div>
+              <div class="dt-photo" title="Handover photo 2">🖼</div>
+              <button class="dt-expand">▼ 2 photos</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="dt-item">
+          <div class="dt-dot" style="background:rgba(45,106,79,0.2);border-color:#2D6A4F;">✅</div>
+          <div class="dt-content">
+            <div class="dt-header">
+              Borrower confirmed receipt — Ayesha K.
+              <span class="dt-time">Oct 14, 10:34</span>
+            </div>
+            <div class="dt-body">Ayesha confirmed the item condition matched the lender's record. Booking became ACTIVE.</div>
+          </div>
+        </div>
+
+        <div class="dt-item">
+          <div class="dt-dot" style="background:rgba(194,113,58,0.2);border-color:#C2713A;">🔄</div>
+          <div class="dt-content">
+            <div class="dt-header">
+              Return initiated — Ayesha K.
+              <span class="dt-time">Oct 16, 14:34</span>
+            </div>
+            <div class="dt-body">On-time return. 1 return photo submitted.</div>
+            <div class="dt-photos">
+              <div class="dt-photo" style="border:1.5px solid rgba(194,113,58,0.4);" title="Return photo">🖼</div>
+              <button class="dt-expand">▼ 1 photo</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="dt-item">
+          <div class="dt-dot" style="background:rgba(197,48,48,0.2);border-color:#C53030;">⚑</div>
+          <div class="dt-content">
+            <div class="dt-header">
+              Dispute raised — Sara M.
+              <span class="dt-time">Oct 16, 14:52</span>
+            </div>
+            <div class="dt-body">
+              Category: Item Damage<br/>
+              "Small but visible scratch on drill body near chuck — not present at handover. See handover photo #1 vs. return photo."
+            </div>
+            <div class="dt-photos">
+              <div class="dt-photo" style="border:1.5px solid rgba(197,48,48,0.4);">🖼</div>
+              <button class="dt-expand">▼ Dispute evidence</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="dt-item" style="padding-bottom:0;">
+          <div class="dt-dot" style="background:rgba(74,85,104,0.2);border-color:#4A5568;">💬</div>
+          <div class="dt-content">
+            <div class="dt-header">
+              Counter-response — Ayesha K.
+              <span class="dt-time">Oct 17, 09:14</span>
+            </div>
+            <div class="dt-body">
+              "The scratch was there when I received the drill — the handover photo angle doesn't show it. I'm happy to agree on a small compensation."
+            </div>
+          </div>
+        </div>
+
+      </div><!-- dark-timeline -->
+
+      <div class="dark-gap"></div>
+      <div class="dark-divider"></div>
+      <div class="dark-gap"></div>
+
+      <!-- ── Assurance Context ── -->
+      <div style="padding:0 16px 10px;">
+        <div class="dark-label">Assurance Context <span style="color:#4A5568;font-size:10px;font-weight:400;letter-spacing:0;">(advisory — you decide)</span></div>
+      </div>
+
+      <div class="assurance-context">
+        <details>
+          <summary style="font-size:13px;font-weight:600;color:#C2713A;cursor:pointer;list-style:none;display:flex;align-items:center;justify-content:space-between;">
+            <span>Ayesha K. — Borrower profile</span>
+            <span style="font-size:12px;">▼</span>
+          </summary>
+          <div style="margin-top:12px;">
+            <div class="ac-row">
+              <span class="ac-label">Verified transactions</span>
+              <span class="ac-value">4 completed</span>
+            </div>
+            <div class="ac-row">
+              <span class="ac-label">Disputes on record</span>
+              <span class="ac-value" style="color:#FC8181;">1 (this one)</span>
+            </div>
+            <div class="ac-row">
+              <span class="ac-label">Direct reliability</span>
+              <span class="ac-value">Credible interval [0.55, 0.92]</span>
+            </div>
+            <div class="ac-row">
+              <span class="ac-label">Manipulation risk</span>
+              <span style="font-size:12px;font-weight:700;padding:2px 8px;border-radius:100px;background:rgba(45,106,79,0.15);color:#68D391;">LOW · 8/100</span>
+            </div>
+            <div style="margin-top:10px;padding:8px;background:#1A1A2E;border-radius:8px;font-size:11px;color:#4A5568;line-height:1.5;">
+              ⚠ This context is advisory only. A contested outcome is not counted as evidence until you resolve it. Only you can restrict access — never the algorithm.
+            </div>
+          </div>
+        </details>
+
+        <div style="height:1px;background:#2D2D50;margin:10px 0;"></div>
+
+        <details>
+          <summary style="font-size:13px;font-weight:600;color:#C2713A;cursor:pointer;list-style:none;display:flex;align-items:center;justify-content:space-between;">
+            <span>Sara M. — Lender profile</span>
+            <span style="font-size:12px;">▼</span>
+          </summary>
+          <div style="margin-top:12px;">
+            <div class="ac-row">
+              <span class="ac-label">Verified transactions</span>
+              <span class="ac-value">12 completed</span>
+            </div>
+            <div class="ac-row">
+              <span class="ac-label">Disputes raised</span>
+              <span class="ac-value">2 (this one + 1 resolved)</span>
+            </div>
+            <div class="ac-row">
+              <span class="ac-label">Direct reliability</span>
+              <span class="ac-value">Credible interval [0.72, 0.95]</span>
+            </div>
+            <div class="ac-row">
+              <span class="ac-label">Manipulation risk</span>
+              <span style="font-size:12px;font-weight:700;padding:2px 8px;border-radius:100px;background:rgba(45,106,79,0.15);color:#68D391;">LOW · 12/100</span>
+            </div>
+          </div>
+        </details>
+      </div>
+
+      <div class="dark-gap"></div>
+      <div class="dark-divider"></div>
+      <div class="dark-gap"></div>
+
+      <!-- ── Decision Form ── -->
+      <div style="padding:0 16px 10px;">
+        <div class="dark-label">Your Decision <span style="color:#FC8181;font-size:10px;font-weight:700;">Required</span></div>
+      </div>
+
+      <div style="padding:0 16px;">
+
+        <div class="dark-radio" id="dr-borrower" onclick="selectDecision('borrower', this)">
+          <div class="dark-radio-outer"><div class="dark-radio-inner"></div></div>
+          <div>
+            <div class="dark-radio-text">Borrower responsible — damage confirmed</div>
+            <div class="dark-radio-sub">Booking closes as COMPLETED. Outcome recorded against borrower.</div>
+          </div>
+        </div>
+
+        <div class="dark-radio" id="dr-lender" onclick="selectDecision('lender', this)">
+          <div class="dark-radio-outer"><div class="dark-radio-inner"></div></div>
+          <div>
+            <div class="dark-radio-text">Lender responsible — no damage found</div>
+            <div class="dark-radio-sub">Booking closes. Dispute outcome not counted against borrower.</div>
+          </div>
+        </div>
+
+        <div class="dark-radio" id="dr-info" onclick="selectDecision('info', this)">
+          <div class="dark-radio-outer"><div class="dark-radio-inner"></div></div>
+          <div>
+            <div class="dark-radio-text">Request more information</div>
+            <div class="dark-radio-sub">Set a deadline. Case stays open. Both parties notified.</div>
+          </div>
+        </div>
+
+        <div class="dark-radio" id="dr-escalate" onclick="selectDecision('escalate', this)">
+          <div class="dark-radio-outer"><div class="dark-radio-inner"></div></div>
+          <div>
+            <div class="dark-radio-text">Escalate to Admin</div>
+            <div class="dark-radio-sub">Send to platform admin. Use when a moderator has a conflict of interest.</div>
+          </div>
+        </div>
+
+        <!-- Deadline picker — shown for "request more info" -->
+        <div id="deadline-block" style="display:none;margin-bottom:12px;padding:12px;background:#252540;border-radius:12px;border:1px solid #2D2D50;">
+          <div style="font-size:12px;color:#8892A4;margin-bottom:8px;font-weight:600;">Response deadline (required)</div>
+          <input type="date" style="width:100%;background:#1A1A2E;border:1.5px solid #2D2D50;border-radius:8px;padding:10px 12px;color:#C5CFE0;font-family:var(--font-body);font-size:14px;outline:none;"/>
+        </div>
+
+        <!-- Mandatory reason -->
+        <div style="margin-top:4px;">
+          <div style="font-size:12px;color:#8892A4;margin-bottom:8px;font-weight:600;">Reason for decision <span style="color:#FC8181;">*</span></div>
+          <textarea class="dark" id="decision-reason" rows="4"
+            placeholder="State your reasoning clearly. This is permanently recorded in the audit log and shown to both parties.&#10;&#10;Example: 'The scratch is visible in the return photo but absent in both handover photos. The evidence supports the lender's account.'"
+            oninput="checkReady()"></textarea>
+          <div style="text-align:right;font-size:11px;color:#4A5568;margin-top:4px;" id="reason-count">0 / 500</div>
+        </div>
+
+        <!-- Audit warning -->
+        <div class="audit-note" style="margin-top:12px;">
+          🔒 Your decision creates an immutable audit entry (actor, timestamp, previous state, new state, reason, authorisation). It cannot be silently altered — only reversed by a second moderator with both records retained. FR-M-05.
+        </div>
+
+      </div>
+
+      <!-- Submit -->
+      <div style="padding:16px;">
+        <div class="dark-btn-stack">
+          <button class="btn-dark-primary" id="submit-btn" onclick="submitDecision()" disabled>
+            Submit Decision
+          </button>
+          <a href="w6-moderator-queue.html" class="btn-dark-outline">← Return to Queue</a>
+        </div>
+      </div>
+
+      <!-- ── Submitted State ── -->
+      <div id="decision-submitted" style="padding:24px 16px;text-align:center;">
+        <div style="font-size:52px;margin-bottom:16px;">⚖️</div>
+        <div style="font-size:20px;font-weight:800;color:#E2E8F0;margin-bottom:8px;">Decision Recorded</div>
+        <div style="font-size:14px;color:#8892A4;line-height:1.6;margin-bottom:20px;">
+          Case <strong style="color:#C2713A;">#DM-2024-047</strong> has been resolved.<br/>
+          Both parties have been notified. The outcome will be sent to the assurance engine and counted as evidence once the booking closes through <code style="background:#252540;padding:2px 6px;border-radius:4px;font-size:12px;">dispute_resolved</code>.
+        </div>
+
+        <!-- Audit confirmation card -->
+        <div style="background:#252540;border:1px solid #2D2D50;border-radius:14px;padding:14px;text-align:left;margin-bottom:20px;">
+          <div style="font-size:11px;color:#4A5568;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:10px;">Audit Record Created</div>
+          <div class="ac-row" style="border:none;padding:5px 0;">
+            <span class="ac-label">Actor</span>
+            <span class="ac-value">Mod: You (F-7 Sector 4)</span>
+          </div>
+          <div style="height:1px;background:#2D2D50;"></div>
+          <div class="ac-row" style="border:none;padding:5px 0;">
+            <span class="ac-label">Timestamp</span>
+            <span class="ac-value" id="audit-time"></span>
+          </div>
+          <div style="height:1px;background:#2D2D50;"></div>
+          <div class="ac-row" style="border:none;padding:5px 0;">
+            <span class="ac-label">Event type</span>
+            <span style="font-size:11px;color:#68D391;font-weight:700;font-family:monospace;">dispute_resolved</span>
+          </div>
+          <div style="height:1px;background:#2D2D50;"></div>
+          <div class="ac-row" style="border:none;padding:5px 0;">
+            <span class="ac-label">New state</span>
+            <span style="font-size:11px;color:#68D391;font-weight:700;font-family:monospace;">COMPLETED</span>
+          </div>
+          <div style="height:1px;background:#2D2D50;"></div>
+          <div class="ac-row" style="border:none;padding:5px 0;">
+            <span class="ac-label">Config version</span>
+            <span class="ac-value" style="font-family:monospace;">v1.0-iter1</span>
+          </div>
+        </div>
+
+        <a href="w6-moderator-queue.html" class="btn-dark-outline" style="display:flex;">
+          ← Back to Queue
+        </a>
+      </div>
+
+    </div><!-- mod-content -->
+
+    <!-- Bottom Nav -->
+    <nav class="bottom-nav" style="background:rgba(22, 27, 34, 0.94);border-top:1px solid rgba(255,255,255,0.08);">
+      <a href="../index.html" class="nav-item">
+        <span class="nav-icon" style="color:#8892A4;">🏠</span>
+        <span class="nav-label" style="color:#8892A4;">Home</span>
+      </a>
+      <a href="w1-lender-assurance.html" class="nav-item">
+        <span class="nav-icon" style="color:#8892A4;">📋</span>
+        <span class="nav-label" style="color:#8892A4;">Requests</span>
+      </a>
+      <a href="w3a-handover-lender.html" class="nav-item">
+        <span class="nav-icon" style="color:#8892A4;">🤝</span>
+        <span class="nav-label" style="color:#8892A4;">Handover</span>
+      </a>
+      <a href="w5-dispute-form.html" class="nav-item">
+        <span class="nav-icon" style="color:#8892A4;">⚖️</span>
+        <span class="nav-label" style="color:#8892A4;">Disputes</span>
+      </a>
+      <a href="w6-moderator-queue.html" class="nav-item active" style="color:var(--primary);">
+        <span class="nav-icon" style="color:var(--primary);position:relative;">🛡️<span class="nav-badge" style="background:#2D5A46;">3</span></span>
+        <span class="nav-label" style="color:var(--primary);">Moderator</span>
+      </a>
+    </nav>
+
+  </div><!-- phone -->
+</div><!-- screen-page -->
+
+<script>
+let selectedDecision = null;
+
+function selectDecision(opt, el) {
+  // Reset all
+  document.querySelectorAll('.dark-radio').forEach(r => r.classList.remove('selected'));
+  document.querySelectorAll('.dark-radio-inner').forEach(i => i.style.display = 'none');
+  document.getElementById('deadline-block').style.display = 'none';
+
+  el.classList.add('selected');
+  el.querySelector('.dark-radio-inner').style.display = 'block';
+  selectedDecision = opt;
+
+  if (opt === 'info') {
+    document.getElementById('deadline-block').style.display = 'block';
+  }
+  checkReady();
+}
+
+function checkReady() {
+  const reason = document.getElementById('decision-reason').value.trim();
+  const count = document.getElementById('reason-count');
+  const btn = document.getElementById('submit-btn');
+  count.textContent = document.getElementById('decision-reason').value.length + ' / 500';
+  if (selectedDecision && reason.length >= 20) {
+    btn.disabled = false;
+  } else {
+    btn.disabled = true;
+  }
+}
+
+function submitDecision() {
+  // Set audit timestamp
+  document.getElementById('audit-time').textContent = new Date().toLocaleString('en-PK', {
+    day:'2-digit', month:'short', year:'numeric',
+    hour:'2-digit', minute:'2-digit', hour12:true
+  });
+
+  // Hide form sections, show submitted state
+  document.querySelectorAll('.mod-content > *:not(#decision-submitted)').forEach(el => {
+    el.style.display = 'none';
+  });
+  document.getElementById('decision-submitted').style.display = 'block';
+
+  // Scroll to top
+  document.querySelector('.mod-content').scrollTo({ top: 0, behavior: 'smooth' });
+}
+</script>
+</body>
+</html>

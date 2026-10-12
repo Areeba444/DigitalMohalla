@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Digital Mohalla — Community Lending & Assurance Engine</title>
+  <link rel="stylesheet" href="styles/design-system.css" />
+  <link rel="stylesheet" href="styles/theme-nordic.css" />
+  <style>
+    /* Custom 2026 Dashboard Micro-Styles */
+    .dashboard-header {
+      padding: 20px 20px 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: var(--bg);
+    }
+    .location-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--primary);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      background: var(--primary-bg);
+      padding: 4px 10px;
+      border-radius: var(--radius-pill);
+      margin-bottom: 4px;
+      cursor: pointer;
+    }
+    .greeting-title {
+      font-family: var(--font-serif);
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--text-primary);
+      line-height: 1.15;
+    }
+    .header-actions {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+    .icon-btn {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      position: relative;
+      box-shadow: var(--shadow-sm);
+      transition: all var(--transition-fast);
+    }
+    .icon-btn:active { transform: scale(0.92); }
+    .icon-badge-dot {
+      position: absolute;
+      top: 9px;
+      right: 9px;
+      width: 8px;
+      height: 8px;
+      background: var(--primary);
+      border-radius: 50%;
+      border: 2px solid white;
+    }
+
+    /* Photographic Hero Card */
+    .hero-container {
+      margin: 8px 20px 18px;
+      position: relative;
+      border-radius: 26px;
+      overflow: hidden;
+      min-height: 220px;
+      box-shadow: 0 16px 36px rgba(194, 103, 59, 0.16);
+      background-image: url('assets/hero-bg.jpg');
+      background-size: cover;
+      background-position: center;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 20px;
+      color: white;
+    }
+    .hero-gradient {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, rgba(28, 25, 23, 0.25) 0%, rgba(28, 25, 23, 0.85) 100%);
+      z-index: 1;
+    }
+    .hero-content {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      justify-content: space-between;
+    }
+    .hero-pill {
+      align-self: flex-start;
+      background: rgba(255, 255, 255, 0.22);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.35);
+      padding: 5px 12px;
+      border-radius: var(--radius-pill);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.4px;
+      text-transform: uppercase;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .hero-headline {
+      font-family: var(--font-serif);
+      font-size: 26px;
+      font-weight: 700;
+      line-height: 1.18;
+      margin-top: 24px;
+      margin-bottom: 8px;
+      letter-spacing: -0.01em;
+      text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+    }
+    .hero-subtext {
+      font-size: 13px;
+      color: rgba(255, 255, 255, 0.88);
+      line-height: 1.45;
+      margin-bottom: 16px;
+      max-width: 90%;
+    }
+    .hero-stats-row {
+      display: flex;
+      gap: 12px;
+      background: rgba(255, 255, 255, 0.16);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      border-radius: 16px;
+      padding: 10px 14px;
+    }
+    .hero-stat-item {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+    .hero-stat-num {
+      font-size: 15px;
+      font-weight: 800;
+      color: #FFFFFF;
+    }
+    .hero-stat-lbl {
+      font-size: 10px;
+      color: rgba(255, 255, 255, 0.75);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+
+    /* Search & Quick Bar */
+    .search-bar {
+      margin: 0 20px 20px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 12px 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      box-shadow: var(--shadow-sm);
+      cursor: pointer;
+    }
+    .search-bar span.icon { font-size: 16px; color: var(--text-muted); }
+    .search-bar span.placeholder { font-size: 13px; color: var(--text-muted); font-weight: 500; }
+
+    /* Quick Action Round Cards */
+    .quick-actions-grid {
+      margin: 0 20px 24px;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+    }
+    .quick-action-btn {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      text-decoration: none;
+      cursor: pointer;
+    }
+    .quick-icon-wrapper {
+      width: 58px;
+      height: 58px;
+      border-radius: 20px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      transition: all var(--transition-fast);
+    }
+    .quick-action-btn:active .quick-icon-wrapper {
+      transform: scale(0.92);
+      background: var(--primary-bg);
+      border-color: var(--primary-border);
+    }
+    .quick-label {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text-secondary);
+      text-align: center;
+      line-height: 1.2;
+    }
+
+    /* Core Prototype Flows Section */
+    .section-title-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      padding: 0 20px 12px;
+    }
+    .section-headline {
+      font-family: var(--font-serif);
+      font-size: 19px;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+    .section-tagline {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--primary);
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    /* Interactive Flow Cards */
+    .flow-cards-list {
+      padding: 0 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      margin-bottom: 28px;
+    }
+    .flow-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 16px;
+      box-shadow: var(--shadow-sm);
+      text-decoration: none;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      position: relative;
+      transition: all var(--transition-fast);
+      cursor: pointer;
+    }
+    .flow-card:active {
+      transform: scale(0.98);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    }
+    .flow-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .screen-tag {
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+      padding: 3px 8px;
+      border-radius: var(--radius-pill);
+      background: var(--primary-bg);
+      color: var(--primary-dark);
+      border: 1px solid var(--primary-border);
+      text-transform: uppercase;
+    }
+    .flow-card-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text-primary);
+      line-height: 1.3;
+    }
+    .flow-card-desc {
+      font-size: 12px;
+      color: var(--text-secondary);
+      line-height: 1.45;
+    }
+    .flow-card-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-top: 10px;
+      border-top: 1px solid rgba(0,0,0,0.04);
+      margin-top: 2px;
+    }
+    .flow-actors {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+    .action-arrow {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    /* Community Listings Feed */
+    .listings-scroll {
+      display: flex;
+      gap: 14px;
+      overflow-x: auto;
+      padding: 0 20px 24px;
+      scrollbar-width: none;
+    }
+    .listings-scroll::-webkit-scrollbar { display: none; }
+    .listing-item-card {
+      min-width: 170px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      flex-direction: column;
+      cursor: pointer;
+      transition: all var(--transition-fast);
+    }
+    .listing-item-card:active { transform: scale(0.96); }
+    .listing-img-box {
+      height: 105px;
+      background: var(--bg-warm);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 38px;
+      position: relative;
+    }
+    .listing-badge {
+      position: absolute;
+      top: 8px;
+      left: 8px;
+      font-size: 9px;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: var(--radius-pill);
+      background: rgba(255,255,255,0.92);
+      color: var(--secondary);
+    }
+    .listing-body {
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .listing-name {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text-primary);
+      line-height: 1.25;
+    }
+    .listing-owner {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+    .listing-assurance {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--secondary);
+      margin-top: 4px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Full Viewport Mobile App Container (No outer bezels or fake phone) -->
+  <div class="app-container">
+
+    <!-- Style Comparison Switcher Bar -->
+    <div class="version-switcher-bar">
+      <span>🎨 Compare Styles</span>
+      <div class="switcher-pills">
+        <a href="index.html" class="switcher-pill active">🌅 V1: Golden Terracotta</a>
+        <a href="index-v2-nordic.html" class="switcher-pill">🏘️ V2: Nordic Sky</a>
+      </div>
+    </div>
+
+    <!-- Top App Bar / Greeting -->
+    <header class="dashboard-header">
+      <div>
+        <div class="location-tag" onclick="showComingSoon('Neighbourhood Sector Selector', 'Browse tools and members across adjacent sectors like F-8/1, F-8/2, and F-8/3.')">
+          <span>📍</span> Sector F-8/4, Islamabad ▾
+        </div>
+        <h1 class="greeting-title">Assalam-o-Alaikum, Aisha 👋</h1>
+      </div>
+      <div class="header-actions">
+        <div class="icon-btn" onclick="showComingSoon('Mohalla Notifications', 'You have no unread council alerts. System engine notifications will appear here.')" title="Notifications">
+          <span style="font-size: 18px;">🔔</span>
+          <div class="icon-badge-dot"></div>
+        </div>
+        <div class="icon-btn" onclick="showComingSoon('Member Profile & Community Karma', 'View your verified reputation credentials, deposit balance, and lending track record.')" title="Profile">
+          <span style="font-size: 18px;">👤</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- Scrollable Content -->
+    <main class="screen-content">
+
+      <!-- Hero Card with Photorealistic Mohalla Aerial Image -->
+      <section class="hero-container">
+        <div class="hero-gradient"></div>
+        <div class="hero-content">
+          <div>
+            <div class="hero-pill">
+              <span style="display:inline-block; width:6px; height:6px; background:#48BB78; border-radius:50%;"></span>
+              Lending Assurance Active
+            </div>
+            <h2 class="hero-headline">Borrow with trust.<br>Lend without anxiety.</h2>
+            <p class="hero-subtext">Community-governed physical tool sharing backed by Bayesian assurance and mutual locks.</p>
+          </div>
+          <div class="hero-stats-row">
+            <div class="hero-stat-item">
+              <span class="hero-stat-num">98.4%</span>
+              <span class="hero-stat-lbl">Integrity</span>
+            </div>
+            <div style="width:1px; background:rgba(255,255,255,0.25);"></div>
+            <div class="hero-stat-item">
+              <span class="hero-stat-num">0</span>
+              <span class="hero-stat-lbl">Active Disputes</span>
+            </div>
+            <div style="width:1px; background:rgba(255,255,255,0.25);"></div>
+            <div class="hero-stat-item">
+              <span class="hero-stat-num">32</span>
+              <span class="hero-stat-lbl">Active Borrows</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Search Bar -->
+      <div class="search-bar" onclick="showComingSoon('Universal Gear Search', 'Search for tools, electronics, camping equipment, and community-shared items within 1.5 km.')">
+        <span class="icon">🔍</span>
+        <span class="placeholder">Search drills, ladders, pressure washers...</span>
+      </div>
+
+      <!-- Quick Action Buttons -->
+      <div class="quick-actions-grid">
+        <div class="quick-action-btn" onclick="showComingSoon('Borrow Catalog', 'Browse items currently available for loan in your mohalla cluster.')">
+          <div class="quick-icon-wrapper">📦</div>
+          <span class="quick-label">Borrow Gear</span>
+        </div>
+        <a href="screens/w1-lender-assurance.html" class="quick-action-btn">
+          <div class="quick-icon-wrapper" style="border-color: var(--primary-border); background: var(--primary-bg);">🛠️</div>
+          <span class="quick-label" style="color: var(--primary); font-weight: 800;">Review (W1)</span>
+        </a>
+        <a href="screens/w3a-handover-lender.html" class="quick-action-btn">
+          <div class="quick-icon-wrapper">🤝</div>
+          <span class="quick-label">Handover</span>
+        </a>
+        <a href="screens/w6-moderator-queue.html" class="quick-action-btn">
+          <div class="quick-icon-wrapper">⚖️</div>
+          <span class="quick-label">Council Queue</span>
+        </a>
+      </div>
+
+      <!-- Core Interactive Evaluation Flows (The 8 Engineering Screens) -->
+      <div class="section-title-row">
+        <h2 class="section-headline">Interactive Prototype Flows</h2>
+        <span class="section-tagline" onclick="showComingSoon('Prototype Test Script', 'Follow the sequence: W1 Request → W2 Conflict → W3 Handover → W4 Return → W5 Dispute → W6/W7 Moderator Queue.')">Demo Guide ⓘ</span>
+      </div>
+
+      <div class="flow-cards-list">
+
+        <!-- Flow 1: W1 -->
+        <a href="screens/w1-lender-assurance.html" class="flow-card">
+          <div class="flow-card-header">
+            <span class="screen-tag">Screen W1 · Core Flow</span>
+            <span class="state-badge insufficient" style="font-size: 10px; padding: 3px 9px;">● INSUFFICIENT EVIDENCE</span>
+          </div>
+          <div class="flow-card-title">Lender Borrow Request & Assurance Engine</div>
+          <div class="flow-card-desc">Ayesha K. requested your Black & Decker Hammer Drill. Evaluate the 3-component Bayesian credibility breakdown before approving.</div>
+          <div class="flow-card-footer">
+            <span class="flow-actors">👤 Lender Perspective</span>
+            <span class="action-arrow">Open Screen →</span>
+          </div>
+        </a>
+
+        <!-- Flow 2: W2 -->
+        <a href="screens/w2-concurrency-conflict.html" class="flow-card">
+          <div class="flow-card-header">
+            <span class="screen-tag">Screen W2 · Distributed Lock</span>
+            <span class="state-badge review" style="font-size: 10px; padding: 3px 9px;">● CONCURRENT LOCK</span>
+          </div>
+          <div class="flow-card-title">Mutual Booking Lock & Conflict Resolution</div>
+          <div class="flow-card-desc">Two borrowers requested the same ladder simultaneously. Experience the deterministic tie-break and graceful redirection UI.</div>
+          <div class="flow-card-footer">
+            <span class="flow-actors">⚡ Concurrency Engine</span>
+            <span class="action-arrow">Open Screen →</span>
+          </div>
+        </a>
+
+        <!-- Flow 3: W3a & W3b -->
+        <div class="flow-card" style="cursor: default;">
+          <div class="flow-card-header">
+            <span class="screen-tag">Screens W3a & W3b · Verification</span>
+            <span class="state-badge sufficient" style="font-size: 10px; padding: 3px 9px;">● DUAL QR PROTOCOL</span>
+          </div>
+          <div class="flow-card-title">Physical Handover & Mutual Check-In</div>
+          <div class="flow-card-desc">Lender generates single-use cryptographic token; borrower scans to confirm baseline physical condition and activate insurance hold.</div>
+          <div style="display: flex; gap: 8px; margin-top: 6px;">
+            <a href="screens/w3a-handover-lender.html" class="btn btn-primary" style="flex:1; padding:10px; font-size:12px; text-decoration:none; text-align:center;">W3a Lender QR →</a>
+            <a href="screens/w3b-handover-borrower.html" class="btn btn-outline" style="flex:1; padding:10px; font-size:12px; text-decoration:none; text-align:center;">W3b Borrower Scan →</a>
+          </div>
+        </div>
+
+        <!-- Flow 4: W4 -->
+        <a href="screens/w4-return-inspection.html" class="flow-card">
+          <div class="flow-card-header">
+            <span class="screen-tag">Screen W4 · Inspection</span>
+            <span class="state-badge review" style="font-size: 10px; padding: 3px 9px;">● DIFFERENTIAL AUDIT</span>
+          </div>
+          <div class="flow-card-title">Return Inspection & Condition Comparison</div>
+          <div class="flow-card-desc">Side-by-side photographic differential: compare Handover Baseline against Returned condition. Trigger escrow release or dispute.</div>
+          <div class="flow-card-footer">
+            <span class="flow-actors">🔍 Item Return Audit</span>
+            <span class="action-arrow">Open Screen →</span>
+          </div>
+        </a>
+
+        <!-- Flow 5: W5 -->
+        <a href="screens/w5-dispute-form.html" class="flow-card">
+          <div class="flow-card-header">
+            <span class="screen-tag">Screen W5 · Dispute Engine</span>
+            <span class="state-badge dispute" style="font-size: 10px; padding: 3px 9px;">● ESCROW FREEZE</span>
+          </div>
+          <div class="flow-card-title">Formal Dispute Filing & Evidence Intake</div>
+          <div class="flow-card-desc">Structured dispute reporting with mandatory photographic proof, claim category, escrow hold notice, and council referral.</div>
+          <div class="flow-card-footer">
+            <span class="flow-actors">⚖️ Dispute Initiation</span>
+            <span class="action-arrow">Open Screen →</span>
+          </div>
+        </a>
+
+        <!-- Flow 6: W6 & W7 -->
+        <div class="flow-card" style="background: #161B22; color: #E6EDF3; border-color: rgba(255,255,255,0.12);">
+          <div class="flow-card-header">
+            <span class="screen-tag" style="background: rgba(194, 103, 59, 0.25); color: #F3CBB5; border-color: rgba(194, 103, 59, 0.4);">Screens W6 & W7 · Dark Mode Console</span>
+            <span class="state-badge dispute" style="font-size: 10px; padding: 3px 9px;">● 3 ACTIVE CASES</span>
+          </div>
+          <div class="flow-card-title" style="color: #F0F6FC;">Mohalla Moderator Queue & Case Adjudication</div>
+          <div class="flow-card-desc" style="color: #8B949E;">Impartial community council arbitration. Review complete evidence trails, confidence bounds, and execute binding escrow payouts.</div>
+          <div style="display: flex; gap: 8px; margin-top: 6px;">
+            <a href="screens/w6-moderator-queue.html" class="btn btn-primary" style="flex:1; padding:10px; font-size:12px; text-decoration:none; text-align:center;">W6 Queue View →</a>
+            <a href="screens/w7-moderator-case.html" class="btn" style="flex:1; padding:10px; font-size:12px; text-decoration:none; text-align:center; background:#21262D; color:#C9D1D9; border:1px solid rgba(255,255,255,0.15);">W7 Adjudication →</a>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Neighbourhood Gear Feed -->
+      <div class="section-title-row">
+        <h2 class="section-headline">Neighbourhood Gear</h2>
+        <span class="section-tagline" onclick="showComingSoon('Full Mohalla Inventory', 'Over 140 community items will be discoverable here upon database launch.')">View All (140)</span>
+      </div>
+
+      <div class="listings-scroll">
+        <!-- Item 1 -->
+        <div class="listing-item-card" onclick="showComingSoon('Bosch Rotary Drill', 'Detailed inventory view and borrower calendar booking is coming in Iteration 2.')">
+          <div class="listing-img-box">
+            <span>🔨</span>
+            <span class="listing-badge">✓ High Assurance</span>
+          </div>
+          <div class="listing-body">
+            <span class="listing-name">Bosch Rotary Hammer</span>
+            <span class="listing-owner">Tariq M. · Street 14</span>
+            <span class="listing-assurance">● 98% On-Time Return</span>
+          </div>
+        </div>
+
+        <!-- Item 2 -->
+        <div class="listing-item-card" onclick="showComingSoon('16ft Telescopic Ladder', 'Detailed inventory view and borrower calendar booking is coming in Iteration 2.')">
+          <div class="listing-img-box">
+            <span>🪜</span>
+            <span class="listing-badge">✓ Verified</span>
+          </div>
+          <div class="listing-body">
+            <span class="listing-name">16ft Aluminium Ladder</span>
+            <span class="listing-owner">Farhan A. · Street 8</span>
+            <span class="listing-assurance">● 100% Return Integrity</span>
+          </div>
+        </div>
+
+        <!-- Item 3 -->
+        <div class="listing-item-card" onclick="showComingSoon('Singer Sewing Machine', 'Detailed inventory view and borrower calendar booking is coming in Iteration 2.')">
+          <div class="listing-img-box">
+            <span>🧵</span>
+            <span class="listing-badge">✓ High Assurance</span>
+          </div>
+          <div class="listing-body">
+            <span class="listing-name">Singer Heavy Duty</span>
+            <span class="listing-owner">Zainab B. · Street 21</span>
+            <span class="listing-assurance">● 96% Care Rating</span>
+          </div>
+        </div>
+      </div>
+
+    </main>
+
+    <!-- Sleek Floating Bottom Navigation Bar -->
+    <nav class="bottom-nav">
+      <a href="index.html" class="nav-item active">
+        <span class="nav-icon">🏠</span>
+        <span class="nav-label">Home</span>
+      </a>
+      <a href="screens/w1-lender-assurance.html" class="nav-item">
+        <span class="nav-icon">📋</span>
+        <span class="nav-label">Requests</span>
+        <span class="nav-badge">1</span>
+      </a>
+      <a href="screens/w3a-handover-lender.html" class="nav-item">
+        <span class="nav-icon">🤝</span>
+        <span class="nav-label">Handover</span>
+      </a>
+      <a href="screens/w5-dispute-form.html" class="nav-item">
+        <span class="nav-icon">⚖️</span>
+        <span class="nav-label">Disputes</span>
+      </a>
+      <a href="screens/w6-moderator-queue.html" class="nav-item">
+        <span class="nav-icon">🛡️</span>
+        <span class="nav-label">Moderator</span>
+        <span class="nav-badge" style="background: #2D5A46;">3</span>
+      </a>
+    </nav>
+
+    <!-- Interactive "Coming Soon" Bottom Sheet Modal -->
+    <div id="comingSoonModal" class="modal-overlay" onclick="handleOverlayClick(event)">
+      <div class="modal-sheet">
+        <div class="modal-drag-pill"></div>
+        <div class="modal-badge">🚀 Iteration 2 Milestone</div>
+        <div id="modalTitle" class="modal-title">Feature in Development</div>
+        <div id="modalDesc" class="modal-desc">This module is planned for Iteration 2 community rollout. Your prototype currently demonstrates the core Assurance Engine, Concurrency, and Dispute Arbitration flows.</div>
+        <button class="modal-btn" onclick="closeComingSoon()">Got it, continue testing</button>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Reusable Modal Script -->
+  <script>
+    function showComingSoon(featureName, featureDescription) {
+      const modal = document.getElementById('comingSoonModal');
+      const title = document.getElementById('modalTitle');
+      const desc = document.getElementById('modalDesc');
+      if (featureName) title.textContent = featureName;
+      if (featureDescription) desc.textContent = featureDescription;
+      modal.classList.add('active');
+    }
+
+    function closeComingSoon() {
+      const modal = document.getElementById('comingSoonModal');
+      modal.classList.remove('active');
+    }
+
+    function handleOverlayClick(e) {
+      if (e.target.id === 'comingSoonModal') {
+        closeComingSoon();
+      }
+    }
+  </script>
+
+</body>
+</html>

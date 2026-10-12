@@ -1,0 +1,356 @@
+<mxfile host="app.diagrams.net" pages="2">
+  <diagram id="level-0-context" name="DFD Level 0 - System Context">
+    <mxGraphModel grid="1" page="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" pageScale="1" pageWidth="1400" pageHeight="900" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="title_0" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=18;fontStyle=1;fontColor=#0f172a;" value="Digital Mohalla — DFD Level 0 (System Context Diagram)&#10;Deliverable T7 | Module 5 Trust &amp; Assurance Engine" vertex="1">
+          <mxGeometry height="40" width="700" x="350" y="20" as="geometry" />
+        </mxCell>
+        <mxCell id="p0" parent="1" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=#eff6ff;strokeColor=#2563eb;strokeWidth=3;fontColor=#1e3a8a;fontSize=14;" value="&lt;b&gt;0.0&lt;/b&gt;&lt;br/&gt;&lt;b&gt;Digital Mohalla&lt;/b&gt;&lt;br/&gt;Borrowing &amp;amp; Assurance&lt;br/&gt;Management System" vertex="1">
+          <mxGeometry height="240" width="240" x="580" y="320" as="geometry" />
+        </mxCell>
+        <mxCell id="e_borrower" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#1e293b;strokeColor=#0f172a;strokeWidth=2;fontColor=#ffffff;fontSize=13;" value="&lt;b&gt;[External Entity]&lt;/b&gt;&lt;br/&gt;Borrower" vertex="1">
+          <mxGeometry height="70" width="160" x="80" y="240" as="geometry" />
+        </mxCell>
+        <mxCell id="e_lender" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#1e293b;strokeColor=#0f172a;strokeWidth=2;fontColor=#ffffff;fontSize=13;" value="&lt;b&gt;[External Entity]&lt;/b&gt;&lt;br/&gt;Lender" vertex="1">
+          <mxGeometry height="70" width="160" x="1160" y="240" as="geometry" />
+        </mxCell>
+        <mxCell id="e_mod" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#1e293b;strokeColor=#0f172a;strokeWidth=2;fontColor=#ffffff;fontSize=13;" value="&lt;b&gt;[External Entity]&lt;/b&gt;&lt;br/&gt;Community Moderator" vertex="1">
+          <mxGeometry height="70" width="160" x="1160" y="560" as="geometry" />
+        </mxCell>
+        <mxCell id="e_admin" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#1e293b;strokeColor=#0f172a;strokeWidth=2;fontColor=#ffffff;fontSize=13;" value="&lt;b&gt;[External Entity]&lt;/b&gt;&lt;br/&gt;System Administrator" vertex="1">
+          <mxGeometry height="70" width="160" x="80" y="560" as="geometry" />
+        </mxCell>
+        <mxCell id="d1_store" parent="1" style="html=1;dashed=0;whitespace=wrap;shape=partialRectangle;right=0;left=0;fillColor=#f8fafc;strokeColor=#475569;strokeWidth=2;fontColor=#0f172a;fontSize=12;" value="&lt;b&gt;D1&lt;/b&gt; | Event Store (PostgreSQL Streams)" vertex="1">
+          <mxGeometry height="45" width="260" x="400" y="680" as="geometry" />
+        </mxCell>
+        <mxCell id="d2_store" parent="1" style="html=1;dashed=0;whitespace=wrap;shape=partialRectangle;right=0;left=0;fillColor=#f8fafc;strokeColor=#475569;strokeWidth=2;fontColor=#0f172a;fontSize=12;" value="&lt;b&gt;D2&lt;/b&gt; | Trust Graph Store (Edges &amp;amp; Paths)" vertex="1">
+          <mxGeometry height="45" width="260" x="740" y="680" as="geometry" />
+        </mxCell>
+        <mxCell id="d3_store" parent="1" style="html=1;dashed=0;whitespace=wrap;shape=partialRectangle;right=0;left=0;fillColor=#f8fafc;strokeColor=#475569;strokeWidth=2;fontColor=#0f172a;fontSize=12;" value="&lt;b&gt;D3&lt;/b&gt; | Configuration Store (JSON Draft)" vertex="1">
+          <mxGeometry height="45" width="260" x="400" y="160" as="geometry" />
+        </mxCell>
+        <mxCell id="d4_store" parent="1" style="html=1;dashed=0;whitespace=wrap;shape=partialRectangle;right=0;left=0;fillColor=#f8fafc;strokeColor=#475569;strokeWidth=2;fontColor=#0f172a;fontSize=12;" value="&lt;b&gt;D4&lt;/b&gt; | Moderation Queue &amp;amp; Audit Log" vertex="1">
+          <mxGeometry height="45" width="260" x="740" y="160" as="geometry" />
+        </mxCell>
+        <mxCell id="flow_b1" edge="1" parent="1" source="e_borrower" style="endArrow=classic;html=1;strokeColor=#2563eb;strokeWidth=2;fontSize=11;fontColor=#1e40af;labelBackgroundColor=#ffffff;" target="p0" value="DF-01: Borrowing Request (itemId, dates, message; no location)">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="380" y="275" />
+              <mxPoint x="480" y="360" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="flow_b2" edge="1" parent="1" source="p0" style="endArrow=classic;html=1;strokeColor=#475569;strokeWidth=1.5;fontSize=11;fontColor=#334155;labelBackgroundColor=#ffffff;" target="e_borrower" value="DF-02: Request Status &amp;amp; Safeguards">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="460" y="420" />
+              <mxPoint x="360" y="305" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="flow_l1" edge="1" parent="1" source="p0" style="endArrow=classic;html=1;strokeColor=#2563eb;strokeWidth=2;fontSize=11;fontColor=#1e40af;labelBackgroundColor=#ffffff;" target="e_lender" value="DF-03: Decorated Request (Assurance State, Safeguards)">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="920" y="360" />
+              <mxPoint x="1040" y="275" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="flow_l2" edge="1" parent="1" source="e_lender" style="endArrow=classic;html=1;strokeColor=#475569;strokeWidth=1.5;fontSize=11;fontColor=#334155;labelBackgroundColor=#ffffff;" target="p0" value="DF-04: Booking Decision (Accept / Decline)">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1060" y="305" />
+              <mxPoint x="940" y="420" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="flow_m1" edge="1" parent="1" source="p0" style="endArrow=classic;html=1;strokeColor=#dc2626;strokeWidth=2;fontSize=11;fontColor=#991b1b;labelBackgroundColor=#ffffff;" target="e_mod" value="DF-05: Escalation Case Alert (Holds, Manipulation, Timeout)">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="940" y="500" />
+              <mxPoint x="1040" y="580" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="flow_m2" edge="1" parent="1" source="e_mod" style="endArrow=classic;html=1;strokeColor=#16a34a;strokeWidth=1.5;fontSize=11;fontColor=#15803d;labelBackgroundColor=#ffffff;" target="p0" value="DF-06: Moderator Resolution (hold_cleared, safeguards)">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1060" y="615" />
+              <mxPoint x="920" y="540" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="flow_a1" edge="1" parent="1" source="e_admin" style="endArrow=classic;html=1;strokeColor=#475569;strokeWidth=1.5;fontSize=11;fontColor=#334155;labelBackgroundColor=#ffffff;" target="p0" value="DF-07: Config Parameters (1.1.0-iteration1-draft)">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="360" y="580" />
+              <mxPoint x="460" y="500" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="flow_a2" edge="1" parent="1" source="p0" style="endArrow=classic;html=1;strokeColor=#475569;strokeWidth=1.5;fontSize=11;fontColor=#334155;labelBackgroundColor=#ffffff;" target="e_admin" value="DF-08: Health &amp; Audit Logs">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="480" y="540" />
+              <mxPoint x="380" y="615" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="flow_s1" edge="1" parent="1" source="p0" style="endArrow=classic;startArrow=classic;html=1;strokeColor=#334155;strokeWidth=1.5;fontSize=11;labelBackgroundColor=#ffffff;" target="d1_store" value="DF-09: Append / Read Lifecycle Events">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="flow_s2" edge="1" parent="1" source="p0" style="endArrow=classic;startArrow=classic;html=1;strokeColor=#334155;strokeWidth=1.5;fontSize=11;labelBackgroundColor=#ffffff;" target="d2_store" value="DF-10: Trust Edges &amp; Paths">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="flow_s3" edge="1" parent="1" source="d3_store" style="endArrow=classic;html=1;strokeColor=#334155;strokeWidth=1.5;fontSize=11;labelBackgroundColor=#ffffff;" target="p0" value="DF-11: Active Config">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="flow_s4" edge="1" parent="1" source="p0" style="endArrow=classic;startArrow=classic;html=1;strokeColor=#334155;strokeWidth=1.5;fontSize=11;labelBackgroundColor=#ffffff;" target="d4_store" value="DF-12: Enqueue / Resolve">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram id="level-1-pipeline" name="DFD Level 1 - Module 5 Assurance Pipeline">
+    <mxGraphModel dx="1600" dy="1000" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="1150" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="title_1" value="Digital Mohalla — DFD Level 1 (Module 5 Trust &amp; Assurance Pipeline Subsystem)&#10;Featuring Strict Locality Privacy Boundary &amp; Syntactically Valid Store-to-Process Flows" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=18;fontStyle=1;fontColor=#0f172a;" vertex="1" parent="1">
+          <mxGeometry x="380" y="15" width="850" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="priv_line" value="" style="endArrow=none;html=1;strokeColor=#dc2626;strokeWidth=3;dashed=1;dashPattern=8 8;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="380" y="80" as="sourcePoint" />
+            <mxPoint x="380" y="1080" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="priv_banner" value="&lt;b&gt;CRITICAL PRIVACY BOUNDARY (A11, FR-A-07, NFR-PR-01)&lt;/b&gt;&lt;br/&gt;A device location exists only in memory in the Locality Service, once, when a member joins (UC-A3).&#10;Only the stored coarse outcome and the sanitised request context cross this line; no coordinates reach Module 5 or any store" style="shape=note;whiteSpace=wrap;html=1;backgroundOutline=1;darkOpacity=0.05;fillColor=#fef2f2;strokeColor=#dc2626;strokeWidth=2;fontColor=#991b1b;fontSize=11;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="140" y="70" width="480" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="ent_borrower" value="&lt;b&gt;Borrower&lt;/b&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#1e293b;strokeColor=#0f172a;strokeWidth=2;fontColor=#ffffff;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="40" y="240" width="130" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="ent_admin" value="&lt;b&gt;System&lt;br/&gt;Administrator&lt;/b&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#1e293b;strokeColor=#0f172a;strokeWidth=2;fontColor=#ffffff;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="40" y="140" width="130" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="ent_lender" value="&lt;b&gt;Lender&lt;/b&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#1e293b;strokeColor=#0f172a;strokeWidth=2;fontColor=#ffffff;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="1410" y="790" width="140" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="ent_mod" value="&lt;b&gt;Community&lt;br/&gt;Moderator&lt;/b&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#1e293b;strokeColor=#0f172a;strokeWidth=2;fontColor=#ffffff;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="1410" y="380" width="140" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="p1" value="&lt;b&gt;1.0&lt;/b&gt;&lt;br/&gt;Receive Request &amp;amp;&lt;br/&gt;Check Stored Locality&lt;br/&gt;&lt;i&gt;(Lifecycle + Locality Service)&lt;/i&gt;" style="ellipse;whiteSpace=wrap;html=1;fillColor=#fee2e2;strokeColor=#dc2626;strokeWidth=3;fontColor=#991b1b;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="180" y="350" width="160" height="110" as="geometry" />
+        </mxCell>
+        <mxCell id="p2" value="&lt;b&gt;2.0&lt;/b&gt;&lt;br/&gt;Ingest &amp;amp; Filter&lt;br/&gt;Historical Outcomes&lt;br/&gt;&lt;i&gt;(Event Filter)&lt;/i&gt;" style="ellipse;whiteSpace=wrap;html=1;fillColor=#eff6ff;strokeColor=#2563eb;strokeWidth=2;fontColor=#1e3a8a;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="450" y="350" width="160" height="110" as="geometry" />
+        </mxCell>
+        <mxCell id="p3" value="&lt;b&gt;3.0&lt;/b&gt;&lt;br/&gt;Compute Direct&lt;br/&gt;Trust Posterior&lt;br/&gt;&lt;b&gt;(Algorithm 1)&lt;/b&gt;" style="ellipse;whiteSpace=wrap;html=1;fillColor=#eff6ff;strokeColor=#2563eb;strokeWidth=2;fontColor=#1e3a8a;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="450" y="550" width="160" height="110" as="geometry" />
+        </mxCell>
+        <mxCell id="p4" value="&lt;b&gt;4.0&lt;/b&gt;&lt;br/&gt;Aggregate Bounded&lt;br/&gt;k-Hop Indirect Trust&lt;br/&gt;&lt;b&gt;(Algorithm 2)&lt;/b&gt;" style="ellipse;whiteSpace=wrap;html=1;fillColor=#eff6ff;strokeColor=#2563eb;strokeWidth=2;fontColor=#1e3a8a;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="740" y="550" width="160" height="110" as="geometry" />
+        </mxCell>
+        <mxCell id="p5" value="&lt;b&gt;5.0&lt;/b&gt;&lt;br/&gt;Evaluate&lt;br/&gt;Manipulation Risk&lt;br/&gt;&lt;b&gt;(Algorithm 3)&lt;/b&gt;" style="ellipse;whiteSpace=wrap;html=1;fillColor=#eff6ff;strokeColor=#2563eb;strokeWidth=2;fontColor=#1e3a8a;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="1030" y="550" width="160" height="110" as="geometry" />
+        </mxCell>
+        <mxCell id="p6" value="&lt;b&gt;6.0&lt;/b&gt;&lt;br/&gt;Apply Context-Aware&lt;br/&gt;Decision Policy&lt;br/&gt;&lt;b&gt;(Algorithm 4)&lt;/b&gt;" style="ellipse;whiteSpace=wrap;html=1;fillColor=#eff6ff;strokeColor=#2563eb;strokeWidth=3;fontColor=#1e3a8a;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="730" y="750" width="180" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="p7" value="&lt;b&gt;7.0&lt;/b&gt;&lt;br/&gt;Synthesize Explanation&lt;br/&gt;&amp;amp; Safeguards&lt;br/&gt;&lt;i&gt;(Output Assembler)&lt;/i&gt;" style="ellipse;whiteSpace=wrap;html=1;fillColor=#eff6ff;strokeColor=#2563eb;strokeWidth=2;fontColor=#1e3a8a;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="1030" y="750" width="170" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="p8" value="&lt;b&gt;8.0&lt;/b&gt;&lt;br/&gt;Dispatch Escalation &amp;amp;&lt;br/&gt;Moderator Alerts&lt;br/&gt;&lt;i&gt;(Moderator Interface)&lt;/i&gt;" style="ellipse;whiteSpace=wrap;html=1;fillColor=#fff7ed;strokeColor=#ea580c;strokeWidth=2;fontColor=#7c2d12;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="1190" y="350" width="170" height="110" as="geometry" />
+        </mxCell>
+        <mxCell id="ds_d1" value="&lt;b&gt;D1&lt;/b&gt; | Event Store (PostgreSQL Streams)" style="html=1;dashed=0;whitespace=wrap;shape=partialRectangle;right=0;left=0;fillColor=#f8fafc;strokeColor=#475569;strokeWidth=2;fontColor=#0f172a;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="400" y="220" width="260" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="ds_d2" value="&lt;b&gt;D2&lt;/b&gt; | Trust Graph Store (Edges &amp;amp; Paths)" style="html=1;dashed=0;whitespace=wrap;shape=partialRectangle;right=0;left=0;fillColor=#f8fafc;strokeColor=#475569;strokeWidth=2;fontColor=#0f172a;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="690" y="440" width="260" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="ds_d3" value="&lt;b&gt;D3&lt;/b&gt; | Configuration Store (JSON Draft)" style="html=1;dashed=0;whitespace=wrap;shape=partialRectangle;right=0;left=0;fillColor=#f8fafc;strokeColor=#475569;strokeWidth=2;fontColor=#0f172a;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="790" y="220" width="250" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="ds_d4" value="&lt;b&gt;D4&lt;/b&gt; | Moderation Queue &amp;amp; Holds" style="html=1;dashed=0;whitespace=wrap;shape=partialRectangle;right=0;left=0;fillColor=#f8fafc;strokeColor=#dc2626;strokeWidth=2;fontColor=#991b1b;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="1100" y="500" width="240" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="fl_128" value="DF-128: Config Updates &amp;amp; Tuning" style="endArrow=classic;html=1;strokeColor=#475569;strokeWidth=1.5;fontSize=10;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="ent_admin" target="ds_d3">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="750" y="170" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="fl_101" value="DF-101: Borrow Request (no location)" style="endArrow=classic;html=1;strokeColor=#dc2626;strokeWidth=2;fontSize=11;fontColor=#991b1b;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="ent_borrower" target="p1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="fl_102" value="DF-102: request_created (no location)" style="endArrow=classic;html=1;strokeColor=#475569;strokeWidth=1.5;fontSize=11;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="p1" target="ds_d1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="280" y="240" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="fl_103" value="&lt;b&gt;DF-103: Verified Request &amp;amp; Coarse Context&lt;/b&gt;&lt;br/&gt;&lt;font color=&quot;#dc2626&quot;&gt;&lt;b&gt;*** ZERO SPATIAL DATA CROSSES BOUNDARY ***&lt;/b&gt;&lt;/font&gt;" style="endArrow=classic;html=1;strokeColor=#2563eb;strokeWidth=3;fontSize=11;fontColor=#1e3a8a;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="p1" target="p2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="fl_104" value="DF-104: Locality Hold Record" style="endArrow=classic;html=1;strokeColor=#d97706;strokeWidth=1.5;fontSize=11;fontColor=#b45309;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="p1" target="ds_d4">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="260" y="520" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="fl_105" value="DF-105: Query Outcomes, Reviews, Disputes (14-day window)" style="endArrow=classic;html=1;strokeColor=#475569;strokeWidth=1.5;fontSize=10;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="p2" target="ds_d1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="490" y="290" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="fl_106" value="DF-106: Stream Events (No Active Disputes)" style="endArrow=classic;html=1;strokeColor=#475569;strokeWidth=1.5;fontSize=10;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="ds_d1" target="p2">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="550" y="290" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="fl_107" value="DF-107: Direct Evidence &amp;amp; Category Context" style="endArrow=classic;html=1;strokeColor=#2563eb;strokeWidth=2;fontSize=11;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="p2" target="p3">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="fl_108" value="DF-108: Subject IDs" style="endArrow=classic;html=1;strokeColor=#2563eb;strokeWidth=1.5;fontSize=11;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="p2" target="p4">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="640" y="480" />
+              <mxPoint x="780" y="480" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="fl_109" value="DF-109: Review Timestamps &amp;amp; Dispute Stream" style="endArrow=classic;html=1;strokeColor=#2563eb;strokeWidth=1.5;fontSize=11;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="p2" target="p5">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="640" y="520" />
+              <mxPoint x="1070" y="520" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="fl_109b" value="DF-109B: Valuation &amp;amp; Value Band" style="endArrow=classic;html=1;strokeColor=#2563eb;strokeWidth=1.5;fontSize=10;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="p2" target="p6">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="670" y="420" />
+              <mxPoint x="670" y="780" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="fl_110" value="DF-110: Decay Params" style="endArrow=classic;html=1;strokeColor=#64748b;strokeWidth=1;fontSize=10;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="ds_d3" target="p3">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="820" y="320" />
+              <mxPoint x="620" y="570" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="fl_114" value="DF-114: Indirect Config" style="endArrow=classic;html=1;strokeColor=#64748b;strokeWidth=1;fontSize=10;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="ds_d3" target="p4">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="880" y="320" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="fl_116" value="DF-116: Fraud Config" style="endArrow=classic;html=1;strokeColor=#64748b;strokeWidth=1;fontSize=10;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="ds_d3" target="p5">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="960" y="320" />
+              <mxPoint x="1100" y="480" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="fl_113" value="DF-113: k-Hop Paths (k &lt;= 3)" style="endArrow=classic;html=1;strokeColor=#475569;strokeWidth=1.5;fontSize=10;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="ds_d2" target="p4">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="fl_111" value="DF-111: T_direct, variance, count" style="endArrow=classic;html=1;strokeColor=#2563eb;strokeWidth=2;fontSize=11;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="p3" target="p6">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="530" y="780" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="fl_115" value="DF-115: T_indirect, rho, paths" style="endArrow=classic;html=1;strokeColor=#2563eb;strokeWidth=2;fontSize=11;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="p4" target="p6">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="fl_117" value="DF-117: M_score, signals, escalate" style="endArrow=classic;html=1;strokeColor=#2563eb;strokeWidth=2;fontSize=11;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="p5" target="p6">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1110" y="780" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="fl_120" value="DF-120: Decision Result (R1-R9, R6_SPARSE)" style="endArrow=classic;html=1;strokeColor=#2563eb;strokeWidth=2.5;fontSize=11;fontColor=#1e40af;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="p6" target="p7">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="fl_121" value="DF-121: Append 'assessment_generated' (config_version)" style="endArrow=classic;html=1;strokeColor=#16a34a;strokeWidth=2;fontSize=11;fontColor=#15803d;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="p7" target="ds_d1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1260" y="810" />
+              <mxPoint x="1260" y="160" />
+              <mxPoint x="550" y="160" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="fl_122" value="DF-122: Decorated Request (Assurance State, Safeguards)" style="endArrow=classic;html=1;strokeColor=#2563eb;strokeWidth=2;fontSize=11;fontColor=#1e40af;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="p7" target="ent_lender">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="fl_123" value="DF-123: Request Submission Status (REQUEST_SENT)" style="endArrow=classic;html=1;strokeColor=#475569;strokeWidth=1.5;fontSize=11;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="p7" target="ent_borrower">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1115" y="940" />
+              <mxPoint x="105" y="940" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="fl_124" value="DF-124: Escalation Hold Record (ES-04, ES-06)" style="endArrow=classic;html=1;strokeColor=#dc2626;strokeWidth=2;fontSize=11;fontColor=#991b1b;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="p6" target="ds_d4">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="930" y="700" />
+              <mxPoint x="1150" y="700" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="fl_125" value="DF-125: Timeout Hold (&gt; 2000ms, FR-T-07)" style="endArrow=classic;html=1;strokeColor=#dc2626;strokeWidth=2;dashed=1;fontSize=11;fontColor=#991b1b;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="p1" target="ds_d4">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="200" y="550" />
+              <mxPoint x="1180" y="550" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="fl_126a" value="DF-126A: Read Hold Case" style="endArrow=classic;startArrow=classic;html=1;strokeColor=#ea580c;strokeWidth=1.5;fontSize=10;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="ds_d4" target="p8">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="fl_126b" value="DF-126B: Escalation Case Alert (evidenceTrail)" style="endArrow=classic;html=1;strokeColor=#dc2626;strokeWidth=2;fontSize=11;fontColor=#991b1b;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="p8" target="ent_mod">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="fl_127" value="DF-127: Moderator Resolution (hold_cleared, reason)" style="endArrow=classic;html=1;strokeColor=#16a34a;strokeWidth=1.5;fontSize=10;fontColor=#15803d;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="ent_mod" target="p8">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1420" y="440" />
+              <mxPoint x="1350" y="440" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="fl_127b" value="DF-127B: Append Resolution" style="endArrow=classic;html=1;strokeColor=#16a34a;strokeWidth=1.5;dashed=1;fontSize=10;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="p8" target="ds_d1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1275" y="190" />
+              <mxPoint x="600" y="190" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

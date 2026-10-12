@@ -1,0 +1,166 @@
+<mxfile host="Electron" agent="Digital Mohalla design generator" version="24.7.17" type="device">
+  <diagram id="Layer_diagram__A8_" name="Layer diagram (A8)">
+    <mxGraphModel dx="1400" dy="900" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1640" pageHeight="1030" math="0" shadow="0" background="#FFFFFF">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="v1" value="&lt;b&gt;Digital Mohalla &amp;#8212; Layer diagram, iteration 1&lt;/b&gt; (UML package diagram; design step A8, v1.1)" style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=top;fontSize=16;fontStyle=0;fontColor=#1d1d1d;spacing=2;overflow=visible;" vertex="1" parent="1">
+          <mxGeometry x="40" y="12" width="1100" height="24" as="geometry" />
+        </mxCell>
+        <mxCell id="v2" value="Strict layering: each layer depends only on the layer directly below it. The domain layer has no I/O; repositories are interfaces in the application layer, implemented in infrastructure (dependency inversion)." style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=top;fontSize=11;fontStyle=0;fontColor=#4A5560;spacing=2;overflow=visible;" vertex="1" parent="1">
+          <mxGeometry x="40" y="36" width="1500" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="L0" value="&amp;#171;layer&amp;#187; &lt;b&gt;Presentation&lt;/b&gt;" style="shape=folder;tabWidth=190;tabHeight=22;tabPosition=left;html=1;whiteSpace=wrap;verticalAlign=top;align=left;spacingLeft=10;spacingTop=2;fontSize=12;fillColor=#EEE5F6;strokeColor=#5B2C83;container=1;collapsible=0;" vertex="1" parent="1">
+          <mxGeometry x="40" y="70" width="1240" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="v3" value="&lt;b&gt;Resident app&lt;/b&gt;&lt;br&gt;&lt;span style='font-size:10px'&gt;request, evidence summary, accept / decline, handover &amp;amp; return checklists, dispute&lt;/span&gt;" style="rounded=0;whiteSpace=wrap;html=1;fontSize=11;fillColor=#FFFFFF;strokeColor=#5B2C83;" vertex="1" parent="L0">
+          <mxGeometry x="15" y="32" width="599" height="64" as="geometry" />
+        </mxCell>
+        <mxCell id="v4" value="&lt;b&gt;Moderator &amp;amp; admin console&lt;/b&gt;&lt;br&gt;&lt;span style='font-size:10px'&gt;case queue, evidence trail, decision with reason, audit log view&lt;/span&gt;" style="rounded=0;whiteSpace=wrap;html=1;fontSize=11;fillColor=#FFFFFF;strokeColor=#5B2C83;" vertex="1" parent="L0">
+          <mxGeometry x="626" y="32" width="599" height="64" as="geometry" />
+        </mxCell>
+        <mxCell id="v5" value="Client stack open until the D-15 gate (NFR-D-05 assumes React Native / Expo)." style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=top;fontSize=10;fontStyle=0;fontColor=#5B2C83;spacing=2;overflow=visible;" vertex="1" parent="L0">
+          <mxGeometry x="15" y="98" width="900" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="L1" value="&amp;#171;layer&amp;#187; &lt;b&gt;API / interface&lt;/b&gt;" style="shape=folder;tabWidth=190;tabHeight=22;tabPosition=left;html=1;whiteSpace=wrap;verticalAlign=top;align=left;spacingLeft=10;spacingTop=2;fontSize=12;fillColor=#F2F2F2;strokeColor=#4D4D4D;container=1;collapsible=0;" vertex="1" parent="1">
+          <mxGeometry x="40" y="216" width="1240" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="v6" value="&lt;b&gt;REST endpoints /api/v1&lt;/b&gt;&lt;br&gt;&lt;span style='font-size:10px'&gt;Architecture_Design.md section 4; JSON over HTTPS&lt;/span&gt;" style="rounded=0;whiteSpace=wrap;html=1;fontSize=11;fillColor=#FFFFFF;strokeColor=#4D4D4D;" vertex="1" parent="L1">
+          <mxGeometry x="15" y="32" width="293.50" height="64" as="geometry" />
+        </mxCell>
+        <mxCell id="v7" value="&lt;b&gt;Auth &amp;amp; authorisation&lt;/b&gt;&lt;br&gt;&lt;span style='font-size:10px'&gt;session, role, community scope (NFR-S-02, S-03)&lt;/span&gt;" style="rounded=0;whiteSpace=wrap;html=1;fontSize=11;fillColor=#FFFFFF;strokeColor=#1F4E79;" vertex="1" parent="L1">
+          <mxGeometry x="320.50" y="32" width="293.50" height="64" as="geometry" />
+        </mxCell>
+        <mxCell id="v8" value="&lt;b&gt;Validation &amp;amp; error mapping&lt;/b&gt;&lt;br&gt;&lt;span style='font-size:10px'&gt;422 invalid input, 403 not allowed, 409 invalid transition / stale / dates taken&lt;/span&gt;" style="rounded=0;whiteSpace=wrap;html=1;fontSize=11;fillColor=#FFFFFF;strokeColor=#1F4E79;" vertex="1" parent="L1">
+          <mxGeometry x="626" y="32" width="293.50" height="64" as="geometry" />
+        </mxCell>
+        <mxCell id="v9" value="&lt;b&gt;Privacy filter&lt;/b&gt;&lt;br&gt;&lt;span style='font-size:10px'&gt;no address, coordinates or CNIC in any response (NFR-PR-01)&lt;/span&gt;" style="rounded=0;whiteSpace=wrap;html=1;fontSize=11;fillColor=#FFFFFF;strokeColor=#1F4E79;" vertex="1" parent="L1">
+          <mxGeometry x="931.50" y="32" width="293.50" height="64" as="geometry" />
+        </mxCell>
+        <mxCell id="L2" value="&amp;#171;layer&amp;#187; &lt;b&gt;Application (use-case services)&lt;/b&gt;" style="shape=folder;tabWidth=190;tabHeight=22;tabPosition=left;html=1;whiteSpace=wrap;verticalAlign=top;align=left;spacingLeft=10;spacingTop=2;fontSize=12;fillColor=#E3EEF9;strokeColor=#1F4E79;container=1;collapsible=0;" vertex="1" parent="1">
+          <mxGeometry x="40" y="362" width="1240" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="v10" value="&lt;b&gt;BorrowingService (M3)&lt;/b&gt;&lt;br&gt;&lt;span style='font-size:10px'&gt;B5&amp;#8211;B8, B12 command handlers&lt;/span&gt;" style="rounded=0;whiteSpace=wrap;html=1;fontSize=11;fillColor=#FFFFFF;strokeColor=#1F4E79;" vertex="1" parent="L2">
+          <mxGeometry x="15" y="32" width="232.40" height="64" as="geometry" />
+        </mxCell>
+        <mxCell id="v11" value="&lt;b&gt;CaseService, DecisionService (M9)&lt;/b&gt;&lt;br&gt;&lt;span style='font-size:10px'&gt;D6, I4&lt;/span&gt;" style="rounded=0;whiteSpace=wrap;html=1;fontSize=11;fillColor=#FFFFFF;strokeColor=#5B2C83;" vertex="1" parent="L2">
+          <mxGeometry x="259.40" y="32" width="232.40" height="64" as="geometry" />
+        </mxCell>
+        <mxCell id="v12" value="&lt;b&gt;AuditLogService (M9)&lt;/b&gt;&lt;br&gt;&lt;span style='font-size:10px'&gt;I6&lt;/span&gt;" style="rounded=0;whiteSpace=wrap;html=1;fontSize=11;fillColor=#FFFFFF;strokeColor=#5B2C83;" vertex="1" parent="L2">
+          <mxGeometry x="503.80" y="32" width="232.40" height="64" as="geometry" />
+        </mxCell>
+        <mxCell id="v13" value="&lt;b&gt;Auth &amp;amp; Membership (M1)&lt;/b&gt;&lt;br&gt;&lt;span style='font-size:10px'&gt;login, roles, coarse locality outcome&lt;/span&gt;" style="rounded=0;whiteSpace=wrap;html=1;fontSize=11;fillColor=#FFFFFF;strokeColor=#1F4E79;" vertex="1" parent="L2">
+          <mxGeometry x="748.20" y="32" width="232.40" height="64" as="geometry" />
+        </mxCell>
+        <mxCell id="v14" value="&lt;b&gt;ScenarioSuite runner (M10)&lt;/b&gt;&lt;br&gt;&lt;span style='font-size:10px'&gt;CI only&lt;/span&gt;" style="rounded=0;whiteSpace=wrap;html=1;fontSize=11;fillColor=#FFFFFF;strokeColor=#5B2C83;" vertex="1" parent="L2">
+          <mxGeometry x="992.60" y="32" width="232.40" height="64" as="geometry" />
+        </mxCell>
+        <mxCell id="L3" value="&amp;#171;layer&amp;#187; &lt;b&gt;Domain (pure logic, no I/O)&lt;/b&gt;" style="shape=folder;tabWidth=190;tabHeight=22;tabPosition=left;html=1;whiteSpace=wrap;verticalAlign=top;align=left;spacingLeft=10;spacingTop=2;fontSize=12;fillColor=#E2F0D9;strokeColor=#2E5E1E;container=1;collapsible=0;" vertex="1" parent="1">
+          <mxGeometry x="40" y="508" width="1240" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="v15" value="&lt;b&gt;Lifecycle model&lt;/b&gt;&lt;br&gt;&lt;span style='font-size:10px'&gt;14 states, transition table T01&amp;#8211;T26, guards; BorrowingTransaction + replay&lt;/span&gt;" style="rounded=0;whiteSpace=wrap;html=1;fontSize=11;fillColor=#FFFFFF;strokeColor=#1F4E79;" vertex="1" parent="L3">
+          <mxGeometry x="15" y="32" width="293.50" height="64" as="geometry" />
+        </mxCell>
+        <mxCell id="v16" value="&lt;b&gt;Assurance engine (M5)&lt;/b&gt;&lt;br&gt;&lt;span style='font-size:10px'&gt;Beta posterior, decision policy, explanation, manipulation checks&lt;/span&gt;" style="rounded=0;whiteSpace=wrap;html=1;fontSize=11;fillColor=#FFFFFF;strokeColor=#8A4B12;" vertex="1" parent="L3">
+          <mxGeometry x="320.50" y="32" width="293.50" height="64" as="geometry" />
+        </mxCell>
+        <mxCell id="v17" value="&lt;b&gt;Indirect trust (M5)&lt;/b&gt;&lt;br&gt;&lt;span style='font-size:10px'&gt;trust graph, bounded k-hop paths, noisy-OR, reliability cap&lt;/span&gt;" style="rounded=0;whiteSpace=wrap;html=1;fontSize=11;fillColor=#FFFFFF;strokeColor=#1F4E79;" vertex="1" parent="L3">
+          <mxGeometry x="626" y="32" width="293.50" height="64" as="geometry" />
+        </mxCell>
+        <mxCell id="v18" value="&lt;b&gt;EscalationCase model&lt;/b&gt;&lt;br&gt;&lt;span style='font-size:10px'&gt;case states C01&amp;#8211;C11&lt;/span&gt;" style="rounded=0;whiteSpace=wrap;html=1;fontSize=11;fillColor=#FFFFFF;strokeColor=#5B2C83;" vertex="1" parent="L3">
+          <mxGeometry x="931.50" y="32" width="293.50" height="64" as="geometry" />
+        </mxCell>
+        <mxCell id="L4" value="&amp;#171;layer&amp;#187; &lt;b&gt;Infrastructure&lt;/b&gt;" style="shape=folder;tabWidth=190;tabHeight=22;tabPosition=left;html=1;whiteSpace=wrap;verticalAlign=top;align=left;spacingLeft=10;spacingTop=2;fontSize=12;fillColor=#FDEBDD;strokeColor=#8A4B12;container=1;collapsible=0;" vertex="1" parent="1">
+          <mxGeometry x="40" y="654" width="1240" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="v19" value="&lt;b&gt;EventStore &amp;amp; projections&lt;/b&gt;&lt;br&gt;&lt;span style='font-size:10px'&gt;lifecycle_event, borrowing_transaction, replay_state()&lt;/span&gt;" style="rounded=0;whiteSpace=wrap;html=1;fontSize=11;fillColor=#FFFFFF;strokeColor=#1F4E79;" vertex="1" parent="L4">
+          <mxGeometry x="15" y="32" width="232.40" height="64" as="geometry" />
+        </mxCell>
+        <mxCell id="v20" value="&lt;b&gt;Booking constraint&lt;/b&gt;&lt;br&gt;&lt;span style='font-size:10px'&gt;EXCLUDE on held bookings (ADR-0002)&lt;/span&gt;" style="rounded=0;whiteSpace=wrap;html=1;fontSize=11;fillColor=#FFFFFF;strokeColor=#1F4E79;" vertex="1" parent="L4">
+          <mxGeometry x="259.40" y="32" width="232.40" height="64" as="geometry" />
+        </mxCell>
+        <mxCell id="v21" value="&lt;b&gt;Repositories&lt;/b&gt;&lt;br&gt;&lt;span style='font-size:10px'&gt;assessment, outcome, trust_edge, case, decision, audit_log&lt;/span&gt;" style="rounded=0;whiteSpace=wrap;html=1;fontSize=11;fillColor=#FFFFFF;strokeColor=#4D4D4D;" vertex="1" parent="L4">
+          <mxGeometry x="503.80" y="32" width="232.40" height="64" as="geometry" />
+        </mxCell>
+        <mxCell id="v22" value="&lt;b&gt;ConfigLoader&lt;/b&gt;&lt;br&gt;&lt;span style='font-size:10px'&gt;versioned engine config, config_version (NFR-D-01)&lt;/span&gt;" style="rounded=0;whiteSpace=wrap;html=1;fontSize=11;fillColor=#FFFFFF;strokeColor=#8A4B12;" vertex="1" parent="L4">
+          <mxGeometry x="748.20" y="32" width="232.40" height="64" as="geometry" />
+        </mxCell>
+        <mxCell id="v23" value="&lt;b&gt;Notification adapter&lt;/b&gt;&lt;br&gt;&lt;span style='font-size:10px'&gt;&amp;#171;stub&amp;#187; in iteration 1&lt;/span&gt;" style="rounded=0;whiteSpace=wrap;html=1;fontSize=11;fillColor=#FFFFFF;strokeColor=#4D4D4D;" vertex="1" parent="L4">
+          <mxGeometry x="992.60" y="32" width="232.40" height="64" as="geometry" />
+        </mxCell>
+        <mxCell id="L5" value="&amp;#171;layer&amp;#187; &lt;b&gt;Platform&lt;/b&gt;" style="shape=folder;tabWidth=190;tabHeight=22;tabPosition=left;html=1;whiteSpace=wrap;verticalAlign=top;align=left;spacingLeft=10;spacingTop=2;fontSize=12;fillColor=#F4F6F8;strokeColor=#46535F;container=1;collapsible=0;" vertex="1" parent="1">
+          <mxGeometry x="40" y="800" width="1240" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="v24" value="&lt;b&gt;PostgreSQL 16 + btree_gist&lt;/b&gt;&lt;br&gt;&lt;span style='font-size:10px'&gt;schema.sql v2.3&lt;/span&gt;" style="rounded=0;whiteSpace=wrap;html=1;fontSize=11;fillColor=#FFFFFF;strokeColor=#1F4E79;" vertex="1" parent="L5">
+          <mxGeometry x="15" y="32" width="293.50" height="64" as="geometry" />
+        </mxCell>
+        <mxCell id="v25" value="&lt;b&gt;Docker Compose&lt;/b&gt;&lt;br&gt;&lt;span style='font-size:10px'&gt;local run and demo fallback&lt;/span&gt;" style="rounded=0;whiteSpace=wrap;html=1;fontSize=11;fillColor=#FFFFFF;strokeColor=#1F4E79;" vertex="1" parent="L5">
+          <mxGeometry x="320.50" y="32" width="293.50" height="64" as="geometry" />
+        </mxCell>
+        <mxCell id="v26" value="&lt;b&gt;AWS host&lt;/b&gt;&lt;br&gt;&lt;span style='font-size:10px'&gt;target to be confirmed by D-14 (NFR-D-03)&lt;/span&gt;" style="rounded=0;whiteSpace=wrap;html=1;fontSize=11;fillColor=#FFFFFF;strokeColor=#5B2C83;" vertex="1" parent="L5">
+          <mxGeometry x="626" y="32" width="293.50" height="64" as="geometry" />
+        </mxCell>
+        <mxCell id="v27" value="&lt;b&gt;GitHub Actions&lt;/b&gt;&lt;br&gt;&lt;span style='font-size:10px'&gt;ci.yml (lint, types, tests, scenarios), cd.yml (deploy, smoke, rollback)&lt;/span&gt;" style="rounded=0;whiteSpace=wrap;html=1;fontSize=11;fillColor=#FFFFFF;strokeColor=#1F4E79;" vertex="1" parent="L5">
+          <mxGeometry x="931.50" y="32" width="293.50" height="64" as="geometry" />
+        </mxCell>
+        <mxCell id="e28" value="&amp;#171;use&amp;#187;" style="html=1;rounded=0;fontSize=10.5;labelBackgroundColor=#FFFFFF;fontColor=#1d1d1d;endSize=8;endArrow=open;endFill=0;dashed=1;strokeColor=#46535F;strokeWidth=1.5;fontSize=10" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1300" y="140" as="sourcePoint" />
+            <mxPoint x="1300" y="260" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e29" value="&amp;#171;use&amp;#187;" style="html=1;rounded=0;fontSize=10.5;labelBackgroundColor=#FFFFFF;fontColor=#1d1d1d;endSize=8;endArrow=open;endFill=0;dashed=1;strokeColor=#46535F;strokeWidth=1.5;fontSize=10" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1300" y="286" as="sourcePoint" />
+            <mxPoint x="1300" y="406" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e30" value="&amp;#171;use&amp;#187;" style="html=1;rounded=0;fontSize=10.5;labelBackgroundColor=#FFFFFF;fontColor=#1d1d1d;endSize=8;endArrow=open;endFill=0;dashed=1;strokeColor=#46535F;strokeWidth=1.5;fontSize=10" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1300" y="432" as="sourcePoint" />
+            <mxPoint x="1300" y="552" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e31" value="&amp;#171;use&amp;#187;" style="html=1;rounded=0;fontSize=10.5;labelBackgroundColor=#FFFFFF;fontColor=#1d1d1d;endSize=8;endArrow=open;endFill=0;dashed=1;strokeColor=#46535F;strokeWidth=1.5;fontSize=10" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1300" y="578" as="sourcePoint" />
+            <mxPoint x="1300" y="698" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e32" value="&amp;#171;use&amp;#187;" style="html=1;rounded=0;fontSize=10.5;labelBackgroundColor=#FFFFFF;fontColor=#1d1d1d;endSize=8;endArrow=open;endFill=0;dashed=1;strokeColor=#46535F;strokeWidth=1.5;fontSize=10" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1300" y="724" as="sourcePoint" />
+            <mxPoint x="1300" y="844" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="cc" value="&amp;#171;crosscutting&amp;#187; &lt;b&gt;Policies&lt;/b&gt;" style="shape=folder;tabWidth=170;tabHeight=22;tabPosition=left;html=1;whiteSpace=wrap;verticalAlign=top;align=left;spacingLeft=8;spacingTop=2;fontSize=12;fillColor=#FFF8E1;strokeColor=#B26A00;container=1;collapsible=0;" vertex="1" parent="1">
+          <mxGeometry x="1340" y="70" width="260" height="866" as="geometry" />
+        </mxCell>
+        <mxCell id="v33" value="&lt;b&gt;Authorisation on every transition&lt;/b&gt;&lt;br&gt;&lt;span style='font-size:10px'&gt;NFR-S-02; recorded in the event&lt;/span&gt;" style="rounded=0;whiteSpace=wrap;html=1;fontSize=11;fillColor=#FFFFFF;strokeColor=#B26A00;" vertex="1" parent="cc">
+          <mxGeometry x="15" y="42" width="230" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="v34" value="&lt;b&gt;Audit logging&lt;/b&gt;&lt;br&gt;&lt;span style='font-size:10px'&gt;append-only, hash-chained (FR-M-05)&lt;/span&gt;" style="rounded=0;whiteSpace=wrap;html=1;fontSize=11;fillColor=#FFFFFF;strokeColor=#B26A00;" vertex="1" parent="cc">
+          <mxGeometry x="15" y="157" width="230" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="v35" value="&lt;b&gt;Event schema&lt;/b&gt;&lt;br&gt;&lt;span style='font-size:10px'&gt;frozen fields + schema_version (FR-B-09)&lt;/span&gt;" style="rounded=0;whiteSpace=wrap;html=1;fontSize=11;fillColor=#FFFFFF;strokeColor=#B26A00;" vertex="1" parent="cc">
+          <mxGeometry x="15" y="272" width="230" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="v36" value="&lt;b&gt;Configuration&lt;/b&gt;&lt;br&gt;&lt;span style='font-size:10px'&gt;config_version on every assessment&lt;/span&gt;" style="rounded=0;whiteSpace=wrap;html=1;fontSize=11;fillColor=#FFFFFF;strokeColor=#B26A00;" vertex="1" parent="cc">
+          <mxGeometry x="15" y="387" width="230" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="v37" value="&lt;b&gt;Location privacy&lt;/b&gt;&lt;br&gt;&lt;span style='font-size:10px'&gt;coarse outcome only (NFR-PR-01/02)&lt;/span&gt;" style="rounded=0;whiteSpace=wrap;html=1;fontSize=11;fillColor=#FFFFFF;strokeColor=#B26A00;" vertex="1" parent="cc">
+          <mxGeometry x="15" y="502" width="230" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="v38" value="&lt;b&gt;Synthetic data labels&lt;/b&gt;&lt;br&gt;&lt;span style='font-size:10px'&gt;seed data marked synthetic&lt;/span&gt;" style="rounded=0;whiteSpace=wrap;html=1;fontSize=11;fillColor=#FFFFFF;strokeColor=#B26A00;" vertex="1" parent="cc">
+          <mxGeometry x="15" y="617" width="230" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="v39" value="&lt;b&gt;Logging&lt;/b&gt;&lt;br&gt;&lt;span style='font-size:10px'&gt;no request bodies with location; no secrets&lt;/span&gt;" style="rounded=0;whiteSpace=wrap;html=1;fontSize=11;fillColor=#FFFFFF;strokeColor=#B26A00;" vertex="1" parent="cc">
+          <mxGeometry x="15" y="732" width="230" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="v40" value="UML package diagram: folder = package with stereotype &amp;#171;layer&amp;#187;; dashed open arrow = &amp;#171;use&amp;#187; dependency (each layer uses only the one below). Border colour of an element = owner (purple S3, blue S1, orange S2, grey shared)." style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=top;fontSize=10.5;fontStyle=0;fontColor=#4A5560;spacing=2;overflow=visible;" vertex="1" parent="1">
+          <mxGeometry x="40" y="960" width="1240" height="20" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

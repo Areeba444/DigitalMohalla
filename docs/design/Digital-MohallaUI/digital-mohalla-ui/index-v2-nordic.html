@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Digital Mohalla — Version 2: Nordic Sky Architecture</title>
+  <link rel="stylesheet" href="styles/design-system.css" />
+  <link rel="stylesheet" href="styles/theme-nordic.css" />
+</head>
+<body class="theme-nordic">
+
+  <!-- Mobile-First App Container -->
+  <div class="app-container">
+
+    <!-- Style Comparison Switcher Bar -->
+    <div class="version-switcher-bar">
+      <span>🎨 Compare Styles</span>
+      <div class="switcher-pills">
+        <a href="index.html" class="switcher-pill">🌅 V1: Golden Terracotta</a>
+        <a href="index-v2-nordic.html" class="switcher-pill active">🏘️ V2: Nordic Sky</a>
+      </div>
+    </div>
+
+    <!-- App Header -->
+    <header class="nordic-header">
+      <div>
+        <div class="nordic-loc-badge" onclick="showComingSoon('Neighbourhood Sector Picker', 'Browse adjacent mohalla sectors like F-8/1, F-8/2, and F-8/3.')">
+          <span>📍</span> Sector F-8/4, Islamabad ▾
+        </div>
+        <h1 class="nordic-title">Assalam-o-Alaikum, Aisha 👋</h1>
+      </div>
+      <div class="header-actions">
+        <div class="icon-btn" onclick="showComingSoon('Mohalla Notifications', 'You have no unread council alerts.')" style="border-color: rgba(36, 54, 68, 0.12);" title="Notifications">
+          <span style="font-size: 18px;">🔔</span>
+          <div class="icon-badge-dot" style="background: var(--sky-primary);"></div>
+        </div>
+        <div class="icon-btn" onclick="showComingSoon('Member Profile & Karma', 'View your community trust metrics and escrow deposit.')" style="border-color: rgba(36, 54, 68, 0.12);" title="Profile">
+          <span style="font-size: 18px;">👤</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="screen-content" style="background: var(--bg-nordic);">
+
+      <!-- Architectural Hero Card with user's picture-house-with-sky-background -->
+      <section class="nordic-hero">
+        <div class="nordic-hero-visual">
+          <div class="nordic-hero-badge">
+            <span class="nordic-hero-badge-dot"></span>
+            Civic Assurance Active
+          </div>
+        </div>
+        <div class="nordic-hero-body">
+          <h2 class="nordic-hero-heading">Community item sharing.<br>Grounded in verified trust.</h2>
+          <p class="nordic-hero-sub">Borrow tools and equipment from neighbors with Bayesian reliability proofs and mutual escrow locks.</p>
+          <div class="nordic-stats-strip">
+            <div class="nordic-stat-col">
+              <span class="nordic-stat-val">98.4%</span>
+              <span class="nordic-stat-lbl">Integrity</span>
+            </div>
+            <div style="width: 1px; background: rgba(36, 54, 68, 0.12);"></div>
+            <div class="nordic-stat-col">
+              <span class="nordic-stat-val">0</span>
+              <span class="nordic-stat-lbl">Disputes</span>
+            </div>
+            <div style="width: 1px; background: rgba(36, 54, 68, 0.12);"></div>
+            <div class="nordic-stat-col">
+              <span class="nordic-stat-val">32</span>
+              <span class="nordic-stat-lbl">Active Borrows</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Search Bar -->
+      <div class="nordic-search" onclick="showComingSoon('Universal Gear Search', 'Search tools, ladders, pressure washers within 1.5 km.')">
+        <span style="color: var(--slate-muted); font-size: 16px;">🔍</span>
+        <span style="color: var(--slate-muted); font-size: 13px; font-weight: 500;">Search drills, lawnmowers, camping gear...</span>
+      </div>
+
+      <!-- Quick Action Grid -->
+      <div class="nordic-quick-grid">
+        <div class="nordic-quick-card" onclick="showComingSoon('Borrow Catalog', 'Browse gear available for borrowing in Sector F-8.')">
+          <div class="nordic-quick-icon">📦</div>
+          <span class="nordic-quick-lbl">Borrow</span>
+        </div>
+        <a href="screens/w1-lender-assurance.html" class="nordic-quick-card">
+          <div class="nordic-quick-icon" style="background: var(--sky-light); border-color: var(--sky-border); color: var(--sky-primary);">🛠️</div>
+          <span class="nordic-quick-lbl" style="color: var(--sky-primary); font-weight: 800;">Review (W1)</span>
+        </a>
+        <a href="screens/w3a-handover-lender.html" class="nordic-quick-card">
+          <div class="nordic-quick-icon">🤝</div>
+          <span class="nordic-quick-lbl">Handover</span>
+        </a>
+        <a href="screens/w6-moderator-queue.html" class="nordic-quick-card">
+          <div class="nordic-quick-icon">⚖️</div>
+          <span class="nordic-quick-lbl">Council</span>
+        </a>
+      </div>
+
+      <!-- Core Interactive Evaluation Flows -->
+      <div class="section-title-row" style="padding: 0 20px 10px;">
+        <h2 style="font-size: 18px; font-weight: 800; color: var(--slate-dark);">Interactive Prototype Flows</h2>
+        <span style="font-size: 12px; font-weight: 700; color: var(--sky-primary); cursor: pointer;" onclick="showComingSoon('Evaluation Guide', 'Flow steps: W1 Request → W2 Conflict → W3 Handover → W4 Return → W5 Dispute → W6/W7 Moderator.')">Demo Flow ⓘ</span>
+      </div>
+
+      <div style="padding: 0 20px 24px;">
+
+        <!-- Flow 1: W1 -->
+        <a href="screens/w1-lender-assurance.html" class="nordic-flow-card">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <span class="nordic-pill pill-slate">Screen W1 · Core Request</span>
+            <span class="nordic-pill pill-brick">● INSUFFICIENT EVIDENCE</span>
+          </div>
+          <div style="font-size: 15px; font-weight: 700; color: var(--slate-dark); line-height: 1.3;">Lender Borrow Request & Assurance Engine</div>
+          <div style="font-size: 12px; color: var(--slate-muted); line-height: 1.45;">Ayesha K. requested your Black & Decker Drill. Review explainable Bayesian evidence breakdown and recommended safeguards.</div>
+          <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 8px; border-top: 1px solid rgba(36, 54, 68, 0.06);">
+            <span style="font-size: 11px; font-weight: 600; color: var(--slate-muted);">👤 Lender Decision Flow</span>
+            <span style="font-size: 12px; font-weight: 700; color: var(--sky-primary);">Open Screen →</span>
+          </div>
+        </a>
+
+        <!-- Flow 2: W2 -->
+        <a href="screens/w2-concurrency-conflict.html" class="nordic-flow-card">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <span class="nordic-pill pill-slate">Screen W2 · Distributed Lock</span>
+            <span class="nordic-pill pill-brick">● CONCURRENCY CONFLICT</span>
+          </div>
+          <div style="font-size: 15px; font-weight: 700; color: var(--slate-dark); line-height: 1.3;">Mutual Booking Lock & Conflict Resolution</div>
+          <div style="font-size: 12px; color: var(--slate-muted); line-height: 1.45;">Simultaneous booking conflict on aluminium ladder. Test the deterministic tie-break and graceful user notification.</div>
+          <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 8px; border-top: 1px solid rgba(36, 54, 68, 0.06);">
+            <span style="font-size: 11px; font-weight: 600; color: var(--slate-muted);">⚡ ADR-0002 Race Condition</span>
+            <span style="font-size: 12px; font-weight: 700; color: var(--sky-primary);">Open Screen →</span>
+          </div>
+        </a>
+
+        <!-- Flow 3: W3a & W3b -->
+        <div class="nordic-flow-card" style="cursor: default;">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <span class="nordic-pill pill-slate">Screens W3a & W3b · Verification</span>
+            <span class="nordic-pill pill-moss">● DUAL QR PROTOCOL</span>
+          </div>
+          <div style="font-size: 15px; font-weight: 700; color: var(--slate-dark); line-height: 1.3;">Physical Handover & Mutual Check-In</div>
+          <div style="font-size: 12px; color: var(--slate-muted); line-height: 1.45;">Lender generates single-use token; borrower scans to baseline item condition and lock deposit.</div>
+          <div style="display: flex; gap: 8px; margin-top: 4px;">
+            <a href="screens/w3a-handover-lender.html" class="nordic-btn-primary" style="flex: 1; padding: 10px; font-size: 12px;">W3a Lender QR →</a>
+            <a href="screens/w3b-handover-borrower.html" class="nordic-btn-outline" style="flex: 1; padding: 10px; font-size: 12px;">W3b Borrower Scan →</a>
+          </div>
+        </div>
+
+        <!-- Flow 4: W4 -->
+        <a href="screens/w4-return-inspection.html" class="nordic-flow-card">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <span class="nordic-pill pill-slate">Screen W4 · Inspection</span>
+            <span class="nordic-pill pill-sky">● DIFFERENTIAL AUDIT</span>
+          </div>
+          <div style="font-size: 15px; font-weight: 700; color: var(--slate-dark); line-height: 1.3;">Return Inspection & Condition Comparison</div>
+          <div style="font-size: 12px; color: var(--slate-muted); line-height: 1.45;">Side-by-side photographic differential: compare Handover baseline against Returned condition.</div>
+          <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 8px; border-top: 1px solid rgba(36, 54, 68, 0.06);">
+            <span style="font-size: 11px; font-weight: 600; color: var(--slate-muted);">🔍 Differential Engine</span>
+            <span style="font-size: 12px; font-weight: 700; color: var(--sky-primary);">Open Screen →</span>
+          </div>
+        </a>
+
+        <!-- Flow 5: W5 -->
+        <a href="screens/w5-dispute-form.html" class="nordic-flow-card">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <span class="nordic-pill pill-slate">Screen W5 · Dispute Filing</span>
+            <span class="nordic-pill pill-brick">● ESCROW FREEZE</span>
+          </div>
+          <div style="font-size: 15px; font-weight: 700; color: var(--slate-dark); line-height: 1.3;">Formal Dispute Filing & Evidence Intake</div>
+          <div style="font-size: 12px; color: var(--slate-muted); line-height: 1.45;">Structured dispute reporting with mandatory photo proof, claim categorization, and escrow hold notice.</div>
+          <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 8px; border-top: 1px solid rgba(36, 54, 68, 0.06);">
+            <span style="font-size: 11px; font-weight: 600; color: var(--slate-muted);">⚖️ Council Escalation</span>
+            <span style="font-size: 12px; font-weight: 700; color: var(--brick-coral);">Open Screen →</span>
+          </div>
+        </a>
+
+        <!-- Flow 6: W6 & W7 -->
+        <div class="nordic-flow-card" style="background: #1B2936; color: #FFFFFF; border-color: rgba(36, 54, 68, 0.3);">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <span class="nordic-pill" style="background: rgba(84, 180, 204, 0.2); color: #80D4E8; border: 1px solid rgba(84, 180, 204, 0.4);">Screens W6 & W7 · Council Console</span>
+            <span class="nordic-pill pill-brick">● 3 ACTIVE CASES</span>
+          </div>
+          <div style="font-size: 15px; font-weight: 700; color: #FFFFFF; line-height: 1.3;">Mohalla Moderator Queue & Case Adjudication</div>
+          <div style="font-size: 12px; color: #A0B3C4; line-height: 1.45;">Impartial community council triage. Review evidence timelines and execute binding escrow payouts.</div>
+          <div style="display: flex; gap: 8px; margin-top: 6px;">
+            <a href="screens/w6-moderator-queue.html" class="nordic-btn-accent" style="flex: 1; padding: 10px; font-size: 12px;">W6 Queue View →</a>
+            <a href="screens/w7-moderator-case.html" class="nordic-btn-outline" style="flex: 1; padding: 10px; font-size: 12px; color: #FFFFFF; border-color: rgba(255,255,255,0.2);">W7 Adjudication →</a>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Neighbourhood Gear Feed -->
+      <div class="section-title-row" style="padding: 0 20px 10px;">
+        <h2 style="font-size: 18px; font-weight: 800; color: var(--slate-dark);">Neighbourhood Gear</h2>
+        <span style="font-size: 12px; font-weight: 700; color: var(--sky-primary); cursor: pointer;" onclick="showComingSoon('Full Mohalla Inventory', 'Over 140 community items will be discoverable here.')">View All (140)</span>
+      </div>
+
+      <div class="listings-scroll">
+        <div class="listing-item-card" onclick="showComingSoon('Bosch Rotary Drill', 'Detailed inventory view coming in Iteration 2.')" style="border-color: rgba(36, 54, 68, 0.10);">
+          <div class="listing-img-box" style="background: #E8F5F8;">
+            <span>🔨</span>
+            <span class="listing-badge" style="color: var(--sky-primary);">✓ Verified</span>
+          </div>
+          <div class="listing-body">
+            <span class="listing-name" style="color: var(--slate-dark);">Bosch Rotary Hammer</span>
+            <span class="listing-owner">Tariq M. · Street 14</span>
+            <span class="listing-assurance" style="color: var(--moss-green);">● 98% On-Time Return</span>
+          </div>
+        </div>
+
+        <div class="listing-item-card" onclick="showComingSoon('16ft Telescopic Ladder', 'Detailed inventory view coming in Iteration 2.')" style="border-color: rgba(36, 54, 68, 0.10);">
+          <div class="listing-img-box" style="background: #EBF4E7;">
+            <span>🪜</span>
+            <span class="listing-badge" style="color: var(--moss-green);">✓ High Trust</span>
+          </div>
+          <div class="listing-body">
+            <span class="listing-name" style="color: var(--slate-dark);">16ft Aluminium Ladder</span>
+            <span class="listing-owner">Farhan A. · Street 8</span>
+            <span class="listing-assurance" style="color: var(--moss-green);">● 100% Return Integrity</span>
+          </div>
+        </div>
+
+        <div class="listing-item-card" onclick="showComingSoon('Singer Sewing Machine', 'Detailed inventory view coming in Iteration 2.')" style="border-color: rgba(36, 54, 68, 0.10);">
+          <div class="listing-img-box" style="background: #FDF1EE;">
+            <span>🧵</span>
+            <span class="listing-badge" style="color: var(--brick-coral);">✓ Active Care</span>
+          </div>
+          <div class="listing-body">
+            <span class="listing-name" style="color: var(--slate-dark);">Singer Heavy Duty</span>
+            <span class="listing-owner">Zainab B. · Street 21</span>
+            <span class="listing-assurance" style="color: var(--sky-primary);">● 96% Care Rating</span>
+          </div>
+        </div>
+      </div>
+
+    </main>
+
+    <!-- Bottom Navigation Bar -->
+    <nav class="bottom-nav" style="border-top-color: rgba(36, 54, 68, 0.10);">
+      <a href="index-v2-nordic.html" class="nav-item active" style="color: var(--slate-dark);">
+        <span class="nav-icon">🏠</span>
+        <span class="nav-label">Home</span>
+      </a>
+      <a href="screens/w1-lender-assurance.html" class="nav-item">
+        <span class="nav-icon">📋</span>
+        <span class="nav-label">Requests</span>
+        <span class="nav-badge" style="background: var(--sky-primary);">1</span>
+      </a>
+      <a href="screens/w3a-handover-lender.html" class="nav-item">
+        <span class="nav-icon">🤝</span>
+        <span class="nav-label">Handover</span>
+      </a>
+      <a href="screens/w5-dispute-form.html" class="nav-item">
+        <span class="nav-icon">⚖️</span>
+        <span class="nav-label">Disputes</span>
+      </a>
+      <a href="screens/w6-moderator-queue.html" class="nav-item">
+        <span class="nav-icon">🛡️</span>
+        <span class="nav-label">Moderator</span>
+        <span class="nav-badge" style="background: var(--moss-green);">3</span>
+      </a>
+    </nav>
+
+    <!-- Interactive Coming Soon Bottom Sheet -->
+    <div id="comingSoonModal" class="modal-overlay" onclick="handleOverlayClick(event)">
+      <div class="modal-sheet" style="background: #FFFFFF;">
+        <div class="modal-drag-pill" style="background: rgba(36, 54, 68, 0.15);"></div>
+        <div class="modal-badge" style="background: var(--sky-light); color: var(--sky-primary);">🚀 Iteration 2 Milestone</div>
+        <div id="modalTitle" class="modal-title" style="color: var(--slate-dark); font-family: var(--font-body); font-weight: 800;">Feature in Development</div>
+        <div id="modalDesc" class="modal-desc" style="color: var(--slate-muted);">This module is scheduled for Iteration 2 rollout. Your prototype currently focuses on the Assurance Engine, Concurrency Lock, and Dispute Arbitration flows.</div>
+        <button class="modal-btn" style="background: var(--slate-dark);" onclick="closeComingSoon()">Got it, continue testing</button>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    function showComingSoon(featureName, featureDescription) {
+      const modal = document.getElementById('comingSoonModal');
+      const title = document.getElementById('modalTitle');
+      const desc = document.getElementById('modalDesc');
+      if (featureName) title.textContent = featureName;
+      if (featureDescription) desc.textContent = featureDescription;
+      modal.classList.add('active');
+    }
+    function closeComingSoon() {
+      document.getElementById('comingSoonModal').classList.remove('active');
+    }
+    function handleOverlayClick(e) {
+      if (e.target.id === 'comingSoonModal') closeComingSoon();
+    }
+  </script>
+
+</body>
+</html>

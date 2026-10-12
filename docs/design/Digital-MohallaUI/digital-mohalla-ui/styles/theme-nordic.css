@@ -1,0 +1,438 @@
+/* =================================================================
+   Digital Mohalla — Style Version 2 (Nordic Architectural / Sky Palette)
+   Accents extracted directly from house-sky.jpg
+   Palette: Cream Paper #F7F4EA | Slate Navy #243644 | Sky Blue #62BAD0
+            Terracotta Brick #CB6045 | Foliage Sage #6E8E50
+   ================================================================= */
+
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Cabinet+Grotesk:wght@500;700;800;900&display=swap');
+
+:root {
+  /* Editorial & Modern Type */
+  --font-display: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  --font-body: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+
+  /* Brand Accents from Illustration */
+  --slate-dark:       #243644;
+  --slate-medium:     #384D5C;
+  --slate-muted:      #6B7D8C;
+  --slate-border:     rgba(36, 54, 68, 0.12);
+
+  --sky-primary:      #3B9FB8;
+  --sky-vibrant:      #54B4CC;
+  --sky-light:        #E6F5F9;
+  --sky-border:       #BCE2EB;
+
+  --brick-coral:      #CB6045;
+  --brick-light:      #FDF1EE;
+  --brick-border:     #F4C6BC;
+
+  --moss-green:       #5C8244;
+  --moss-light:       #EDF5E8;
+  --moss-border:      #C8DEB9;
+
+  /* Surfaces */
+  --bg-nordic:        #F6F3E9;
+  --bg-cream:         #FAF8F2;
+  --surface-card:     #FFFFFF;
+  --surface-tinted:   #F3EFE3;
+
+  /* Functional mappings */
+  --primary:          var(--slate-dark);
+  --primary-btn:      #243644;
+  --accent-cta:       var(--brick-coral);
+  --text-main:        #1A2833;
+  --text-sub:         #506373;
+  --text-light:       #8294A2;
+
+  --radius-card:      20px;
+  --radius-pill:      9999px;
+
+  --shadow-subtle:    0 2px 8px rgba(36, 54, 68, 0.05);
+  --shadow-card:      0 8px 24px rgba(36, 54, 68, 0.07);
+}
+
+body.theme-nordic {
+  background: #ECE7D9;
+  font-family: var(--font-body);
+  color: var(--text-main);
+}
+
+/* App shell */
+.theme-nordic .app-container {
+  background: var(--bg-nordic);
+  border-left: 1px solid rgba(36, 54, 68, 0.08);
+  border-right: 1px solid rgba(36, 54, 68, 0.08);
+  box-shadow: 0 0 50px rgba(36, 54, 68, 0.08);
+}
+
+@media (max-width: 480px) {
+  .theme-nordic .app-container {
+    background: var(--bg-nordic);
+    box-shadow: none;
+    border: none;
+  }
+}
+
+/* Style comparison switcher bar */
+.version-switcher-bar {
+  background: #FFFFFF;
+  border-bottom: 1px solid rgba(36, 54, 68, 0.10);
+  padding: 8px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--slate-dark);
+  position: sticky;
+  top: 0;
+  z-index: 1001;
+}
+.switcher-pills {
+  display: flex;
+  gap: 6px;
+  background: var(--bg-nordic);
+  padding: 3px;
+  border-radius: var(--radius-pill);
+}
+.switcher-pill {
+  padding: 4px 10px;
+  border-radius: var(--radius-pill);
+  text-decoration: none;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--slate-muted);
+  transition: all 0.15s ease;
+}
+.switcher-pill.active {
+  background: var(--slate-dark);
+  color: #FFFFFF;
+  box-shadow: 0 2px 6px rgba(36, 54, 68, 0.2);
+}
+
+/* Header in Nordic style */
+.nordic-header {
+  padding: 16px 20px 14px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--bg-nordic);
+}
+.nordic-loc-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--sky-primary);
+  background: var(--sky-light);
+  border: 1px solid var(--sky-border);
+  padding: 3px 10px;
+  border-radius: var(--radius-pill);
+  margin-bottom: 4px;
+}
+.nordic-title {
+  font-size: 23px;
+  font-weight: 800;
+  color: var(--slate-dark);
+  letter-spacing: -0.02em;
+}
+
+/* Architectural Hero Card */
+.nordic-hero {
+  margin: 6px 20px 18px;
+  background: #FFFFFF;
+  border-radius: 24px;
+  border: 1px solid rgba(36, 54, 68, 0.10);
+  box-shadow: var(--shadow-card);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+.nordic-hero-visual {
+  position: relative;
+  height: 180px;
+  background-color: #B2EBF8;
+  background-image: url('../assets/house-sky.jpg');
+  background-size: cover;
+  background-position: center bottom;
+}
+.nordic-hero-badge {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  background: rgba(255, 255, 255, 0.94);
+  backdrop-filter: blur(10px);
+  padding: 4px 12px;
+  border-radius: var(--radius-pill);
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--slate-dark);
+  border: 1px solid rgba(36, 54, 68, 0.12);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+.nordic-hero-badge-dot {
+  width: 7px;
+  height: 7px;
+  background: var(--moss-green);
+  border-radius: 50%;
+}
+.nordic-hero-body {
+  padding: 16px 18px 18px;
+  background: #FFFFFF;
+}
+.nordic-hero-heading {
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--slate-dark);
+  line-height: 1.25;
+  margin-bottom: 6px;
+  letter-spacing: -0.01em;
+}
+.nordic-hero-sub {
+  font-size: 13px;
+  color: var(--slate-muted);
+  line-height: 1.45;
+  margin-bottom: 14px;
+}
+.nordic-stats-strip {
+  display: flex;
+  background: var(--bg-nordic);
+  border-radius: 14px;
+  padding: 10px 12px;
+  border: 1px solid rgba(36, 54, 68, 0.08);
+}
+.nordic-stat-col {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+}
+.nordic-stat-val {
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--slate-dark);
+}
+.nordic-stat-lbl {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--slate-muted);
+  letter-spacing: 0.3px;
+}
+
+/* Quick Action Buttons in Nordic Theme */
+.nordic-quick-grid {
+  margin: 0 20px 22px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+}
+.nordic-quick-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  text-decoration: none;
+  cursor: pointer;
+}
+.nordic-quick-icon {
+  width: 58px;
+  height: 58px;
+  border-radius: 18px;
+  background: #FFFFFF;
+  border: 1.5px solid rgba(36, 54, 68, 0.10);
+  box-shadow: var(--shadow-subtle);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  transition: all 0.15s ease;
+}
+.nordic-quick-card:active .nordic-quick-icon {
+  transform: scale(0.92);
+  background: var(--sky-light);
+  border-color: var(--sky-border);
+}
+.nordic-quick-lbl {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--slate-dark);
+  text-align: center;
+}
+
+/* Search Bar */
+.nordic-search {
+  margin: 0 20px 18px;
+  background: #FFFFFF;
+  border: 1.5px solid rgba(36, 54, 68, 0.10);
+  border-radius: 14px;
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  box-shadow: var(--shadow-subtle);
+  cursor: pointer;
+}
+
+/* Flow Cards Nordic */
+.nordic-flow-card {
+  background: #FFFFFF;
+  border: 1.5px solid rgba(36, 54, 68, 0.10);
+  border-radius: 18px;
+  padding: 16px;
+  box-shadow: var(--shadow-subtle);
+  text-decoration: none;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  transition: all 0.15s ease;
+  cursor: pointer;
+  margin-bottom: 12px;
+}
+.nordic-flow-card:active {
+  transform: scale(0.98);
+}
+.nordic-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 9px;
+  border-radius: var(--radius-pill);
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+.pill-sky {
+  background: var(--sky-light);
+  color: var(--sky-primary);
+  border: 1px solid var(--sky-border);
+}
+.pill-moss {
+  background: var(--moss-light);
+  color: var(--moss-green);
+  border: 1px solid var(--moss-border);
+}
+.pill-brick {
+  background: var(--brick-light);
+  color: var(--brick-coral);
+  border: 1px solid var(--brick-border);
+}
+.pill-slate {
+  background: rgba(36, 54, 68, 0.08);
+  color: var(--slate-dark);
+  border: 1px solid rgba(36, 54, 68, 0.15);
+}
+
+.nordic-btn-primary {
+  background: var(--slate-dark);
+  color: #FFFFFF;
+  padding: 11px 18px;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 13px;
+  text-align: center;
+  text-decoration: none;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(36, 54, 68, 0.2);
+  transition: opacity 0.15s;
+}
+.nordic-btn-primary:hover { opacity: 0.92; }
+
+.nordic-btn-accent {
+  background: var(--brick-coral);
+  color: #FFFFFF;
+  padding: 11px 18px;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 13px;
+  text-align: center;
+  text-decoration: none;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(203, 96, 69, 0.25);
+}
+
+.nordic-btn-outline {
+  background: transparent;
+  color: var(--slate-dark);
+  border: 1.5px solid rgba(36, 54, 68, 0.2);
+  padding: 10px 18px;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 13px;
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+/* Listings Horizontal Scroll */
+.theme-nordic .listings-scroll {
+  display: flex;
+  gap: 14px;
+  overflow-x: auto;
+  padding: 0 20px 24px;
+  scrollbar-width: none;
+}
+.theme-nordic .listings-scroll::-webkit-scrollbar { display: none; }
+.theme-nordic .listing-item-card {
+  min-width: 170px;
+  background: #FFFFFF;
+  border: 1.5px solid rgba(36, 54, 68, 0.10);
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow: var(--shadow-subtle);
+  display: flex;
+  flex-direction: column;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.theme-nordic .listing-item-card:active { transform: scale(0.96); }
+.theme-nordic .listing-img-box {
+  height: 105px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 38px;
+  position: relative;
+}
+.theme-nordic .listing-badge {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  font-size: 9px;
+  font-weight: 800;
+  padding: 2px 8px;
+  border-radius: var(--radius-pill);
+  background: rgba(255, 255, 255, 0.95);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+}
+.theme-nordic .listing-body {
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.theme-nordic .listing-name {
+  font-size: 13px;
+  font-weight: 800;
+  line-height: 1.25;
+}
+.theme-nordic .listing-owner {
+  font-size: 11px;
+  color: var(--slate-muted);
+}
+.theme-nordic .listing-assurance {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 10px;
+  font-weight: 700;
+  margin-top: 4px;
+}

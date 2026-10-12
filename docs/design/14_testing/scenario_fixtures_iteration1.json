@@ -1,0 +1,749 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "metadata": {
+    "suite_name": "Digital Mohalla Mid-1 Assurance Scenario Fixtures",
+    "target_scenarios": [
+      "ES-01",
+      "ES-02",
+      "ES-03",
+      "ES-04",
+      "ES-05",
+      "ES-06",
+      "ES-13"
+    ],
+    "target_coverage": "7 of 13 scenarios for Mid-1 CI gate (NFR-Q-01)",
+    "config_version": "1.1.0-iteration1-draft",
+    "created_at": "2026-10-11T15:30:00Z",
+    "fixture_version": "1.1",
+    "updated_at": "2026-10-11T19:45:00Z",
+    "owners": "Student 2 (inputs and expected results), Student 3 (scenario suite in CI)",
+    "oracle": "14_testing/verify_fixtures.py recomputes every derived value; results in fixture_verification_results.md",
+    "changelog": [
+      "1.0 (2026-10-11, Student 2): ES-01 to ES-06 and ES-13.",
+      "1.1 (2026-10-11, integration): 90% intervals recomputed with the Beta quantile function (all six were off); ES-04 score corrected to 96.8 with S4 active (ADR-0007); ES-13 rebuilt from outcomes so that it is possible under ADR-0006 (thin history with other lenders, two community paths) and gains a counterfactual without paths (ADR-0008); verification levels use the schema values (D14); policy unit fixtures added for test suites 9 and 12."
+    ]
+  },
+  "fixtures": [
+    {
+      "scenario_id": "ES-01",
+      "name": "New user with no transaction history (Cold Start)",
+      "transaction_context": {
+        "item_id": "item_drill_01",
+        "item_value_pkr": 3500,
+        "value_band": "LOW",
+        "is_high_value": false,
+        "medium_value": false,
+        "open_dispute": false,
+        "resolved_disputes_12m": 0,
+        "verification_level": "COMMUNITY_VERIFIED",
+        "verification_ok": true,
+        "request_similarity": 1.0
+      },
+      "direct_evidence": {
+        "events": [],
+        "alpha": 1.0,
+        "beta": 1.0,
+        "mean": 0.5,
+        "lower_90": 0.05,
+        "upper_90": 0.95,
+        "n_eff": 0.0,
+        "direct_event_count": 0
+      },
+      "indirect_evidence": {
+        "paths": [],
+        "evidence_strength_I": 0.0,
+        "reliability_rho": 0.0,
+        "estimate": 0.5,
+        "prior_backed": true
+      },
+      "manipulation_risk": {
+        "score": 0.0,
+        "level": 1,
+        "corroborated": false,
+        "signals": []
+      },
+      "expected_result": {
+        "rule_fired": "R3",
+        "decision": "REQUEST_VERIFICATION",
+        "state": "INSUFFICIENT_EVIDENCE",
+        "escalate": false,
+        "lifecycle_state": "ASSESSED",
+        "explanation_message": "Insufficient verified history; lender review required."
+      }
+    },
+    {
+      "scenario_id": "ES-02",
+      "name": "Reliable borrower with consistent successful history",
+      "transaction_context": {
+        "item_id": "item_ladder_02",
+        "item_value_pkr": 4500,
+        "value_band": "LOW",
+        "is_high_value": false,
+        "medium_value": false,
+        "open_dispute": false,
+        "resolved_disputes_12m": 0,
+        "verification_level": "COMMUNITY_VERIFIED",
+        "verification_ok": true,
+        "request_similarity": 1.0
+      },
+      "direct_evidence": {
+        "event_count": 10,
+        "all_confirmed_success": true,
+        "alpha": 10.5,
+        "beta": 1.0,
+        "mean": 0.913,
+        "lower_90": 0.7518,
+        "upper_90": 0.9951,
+        "n_eff": 9.5,
+        "direct_event_count": 10
+      },
+      "indirect_evidence": {
+        "reliability_rho": 0.4,
+        "estimate": 0.9,
+        "prior_backed": false
+      },
+      "manipulation_risk": {
+        "score": 5.0,
+        "level": 1,
+        "corroborated": false
+      },
+      "expected_result": {
+        "rule_fired": "R7",
+        "decision": "PROCEED",
+        "state": "SUFFICIENT_EVIDENCE",
+        "escalate": false,
+        "lifecycle_state": "ASSESSED",
+        "safeguards": [
+          "standard_return_reminder"
+        ]
+      }
+    },
+    {
+      "scenario_id": "ES-03",
+      "name": "Reliable borrower with one recent resolved dispute",
+      "transaction_context": {
+        "item_id": "item_sewing_03",
+        "item_value_pkr": 7000,
+        "value_band": "MEDIUM",
+        "is_high_value": false,
+        "medium_value": true,
+        "open_dispute": false,
+        "resolved_disputes_12m": 1,
+        "verification_level": "COMMUNITY_VERIFIED",
+        "verification_ok": true,
+        "request_similarity": 0.95
+      },
+      "direct_evidence": {
+        "alpha": 9.2,
+        "beta": 1.8,
+        "mean": 0.8364,
+        "lower_90": 0.6305,
+        "upper_90": 0.9714,
+        "n_eff": 9.0,
+        "direct_event_count": 9
+      },
+      "indirect_evidence": {
+        "reliability_rho": 0.35,
+        "estimate": 0.8,
+        "prior_backed": false
+      },
+      "manipulation_risk": {
+        "score": 10.0,
+        "level": 1,
+        "corroborated": false
+      },
+      "expected_result": {
+        "rule_fired": "R6_DISPUTE",
+        "decision": "PROCEED_WITH_SAFEGUARDS",
+        "state": "REVIEW_RECOMMENDED",
+        "escalate": false,
+        "lifecycle_state": "ASSESSED",
+        "safeguards": [
+          "condition_photos_checklist",
+          "deposit_record",
+          "explicit_return_reminder"
+        ]
+      }
+    },
+    {
+      "scenario_id": "ES-04",
+      "name": "Colluding group with tight reciprocal rating clustering",
+      "transaction_context": {
+        "item_id": "item_generator_04",
+        "item_value_pkr": 25000,
+        "value_band": "HIGH",
+        "is_high_value": true,
+        "medium_value": false,
+        "open_dispute": false,
+        "resolved_disputes_12m": 0,
+        "verification_level": "COMMUNITY_VERIFIED",
+        "verification_ok": true,
+        "request_similarity": 0.9
+      },
+      "direct_evidence": {
+        "alpha": 8.0,
+        "beta": 1.0,
+        "mean": 0.8889,
+        "lower_90": 0.6877,
+        "upper_90": 0.9936,
+        "n_eff": 7.0,
+        "direct_event_count": 7
+      },
+      "manipulation_risk": {
+        "signals": [
+          {
+            "name": "s1_reciprocal_clustering",
+            "value": 1.0,
+            "available": true,
+            "weight": 0.3
+          },
+          {
+            "name": "s4_review_similarity",
+            "value": 0.92,
+            "available": true,
+            "weight": 0.2
+          }
+        ],
+        "score": 96.8,
+        "level": 4,
+        "corroborated": true,
+        "note": "S1 and S4 are both active in iteration 1 (ADR-0007); renormalised over the two available weights: 100 x (0.30 x 1.0 + 0.20 x 0.92) / 0.50 = 96.8; two signals >= 0.5, so level 4 is corroborated"
+      },
+      "expected_result": {
+        "rule_fired": "R2",
+        "decision": "ESCALATE",
+        "state": "REVIEW_RECOMMENDED",
+        "escalate": true,
+        "lifecycle_state": "HELD_FOR_REVIEW",
+        "hold_reason": "manipulation_risk"
+      }
+    },
+    {
+      "scenario_id": "ES-05",
+      "name": "Suspected retaliatory negative review following dispute",
+      "transaction_context": {
+        "item_id": "item_lawnmower_05",
+        "item_value_pkr": 8000,
+        "value_band": "MEDIUM",
+        "is_high_value": false,
+        "medium_value": true,
+        "open_dispute": false,
+        "resolved_disputes_12m": 0,
+        "verification_level": "COMMUNITY_VERIFIED",
+        "verification_ok": true,
+        "request_similarity": 1.0
+      },
+      "retaliation_check": {
+        "review_age_days_post_complaint": 3,
+        "conflicts_with_confirmed_return": true,
+        "retaliation_suspected": true,
+        "action": "downweight_0_1_or_exclude"
+      },
+      "direct_evidence": {
+        "alpha": 7.5,
+        "beta": 1.1,
+        "mean": 0.8721,
+        "lower_90": 0.6556,
+        "upper_90": 0.9907,
+        "n_eff": 6.6,
+        "direct_event_count": 6
+      },
+      "manipulation_risk": {
+        "score": 15.0,
+        "level": 1,
+        "corroborated": false
+      },
+      "expected_result": {
+        "rule_fired": "R8",
+        "decision": "PROCEED_WITH_SAFEGUARDS",
+        "state": "SUFFICIENT_EVIDENCE",
+        "escalate": false,
+        "lifecycle_state": "ASSESSED",
+        "safeguards": [
+          "medium_value_deposit_record",
+          "handover_photos"
+        ]
+      }
+    },
+    {
+      "scenario_id": "ES-06",
+      "name": "High-value request with weak or dissimilar evidence (N-7)",
+      "transaction_context": {
+        "item_id": "item_drone_4k_06",
+        "item_value_pkr": 45000,
+        "value_band": "HIGH",
+        "is_high_value": true,
+        "medium_value": false,
+        "open_dispute": false,
+        "resolved_disputes_12m": 0,
+        "verification_level": "COMMUNITY_VERIFIED",
+        "verification_ok": true,
+        "request_similarity": 0.25
+      },
+      "direct_evidence": {
+        "alpha": 2.5,
+        "beta": 1.0,
+        "mean": 0.7143,
+        "lower_90": 0.3017,
+        "upper_90": 0.9797,
+        "n_eff": 1.5,
+        "direct_event_count": 2
+      },
+      "manipulation_risk": {
+        "score": 5.0,
+        "level": 1,
+        "corroborated": false
+      },
+      "expected_result": {
+        "rule_fired": "R4",
+        "decision": "RESTRICT_HIGH_VALUE",
+        "state": "REVIEW_RECOMMENDED",
+        "escalate": true,
+        "lifecycle_state": "HELD_FOR_REVIEW",
+        "hold_reason": "high_value_low_confidence"
+      }
+    },
+    {
+      "scenario_id": "ES-13",
+      "name": "Thin history with other lenders, none with this lender, reachable via community paths",
+      "transaction_context": {
+        "item_id": "item_projector_13",
+        "item_value_pkr": 12000,
+        "value_band": "MEDIUM",
+        "is_high_value": false,
+        "medium_value": true,
+        "open_dispute": false,
+        "resolved_disputes_12m": 0,
+        "verification_level": "COMMUNITY_VERIFIED",
+        "verification_ok": true,
+        "request_similarity": 1.0
+      },
+      "direct_evidence": {
+        "note": "Borrower v borrowed once from a and once from b (both confirmed, on time); never from lender u",
+        "outcomes": [
+          {
+            "observer": "a",
+            "age_days": 20,
+            "success": true
+          },
+          {
+            "observer": "b",
+            "age_days": 45,
+            "success": true
+          }
+        ],
+        "direct_with_this_lender_count": 0,
+        "alpha": 2.7668,
+        "beta": 1.0,
+        "mean": 0.7345,
+        "lower_90": 0.3387,
+        "upper_90": 0.9816,
+        "n_eff": 1.7668,
+        "direct_event_count": 2
+      },
+      "indirect_evidence": {
+        "lender": "u",
+        "borrower": "v",
+        "role": "borrower",
+        "metric": "ON_TIME_RETURN",
+        "edge_outcomes": [
+          {
+            "source": "u",
+            "target": "a",
+            "note": "a borrowed from lender u four times",
+            "outcomes": [
+              {
+                "age_days": 30,
+                "success": true
+              },
+              {
+                "age_days": 60,
+                "success": true
+              },
+              {
+                "age_days": 90,
+                "success": true
+              },
+              {
+                "age_days": 120,
+                "success": true
+              }
+            ],
+            "weight": 0.8009
+          },
+          {
+            "source": "u",
+            "target": "b",
+            "note": "b borrowed from lender u three times",
+            "outcomes": [
+              {
+                "age_days": 15,
+                "success": true
+              },
+              {
+                "age_days": 40,
+                "success": true
+              },
+              {
+                "age_days": 100,
+                "success": true
+              }
+            ],
+            "weight": 0.7769
+          },
+          {
+            "source": "a",
+            "target": "v",
+            "note": "v borrowed from a once",
+            "outcomes": [
+              {
+                "age_days": 20,
+                "success": true
+              }
+            ],
+            "weight": 0.6582
+          },
+          {
+            "source": "b",
+            "target": "v",
+            "note": "v borrowed from b once",
+            "outcomes": [
+              {
+                "age_days": 45,
+                "success": true
+              }
+            ],
+            "weight": 0.648
+          }
+        ],
+        "paths": [
+          {
+            "nodes": [
+              "u",
+              "a",
+              "v"
+            ],
+            "hops": 2,
+            "path_weight": 0.369
+          },
+          {
+            "nodes": [
+              "u",
+              "b",
+              "v"
+            ],
+            "hops": 2,
+            "path_weight": 0.3524
+          }
+        ],
+        "evidence_strength_I": 0.5914,
+        "distinct_first_hops": 2,
+        "diversity": 1.0,
+        "reliability_rho": 0.3942,
+        "estimate": 0.5925,
+        "prior_backed": false
+      },
+      "manipulation_risk": {
+        "score": 0.0,
+        "level": 1,
+        "corroborated": false
+      },
+      "expected_result": {
+        "rule_fired": "R9",
+        "decision": "PROCEED_WITH_SAFEGUARDS",
+        "state": "REVIEW_RECOMMENDED",
+        "escalate": false,
+        "lifecycle_state": "ASSESSED",
+        "safeguards": [
+          "medium_value_deposit_record",
+          "handover_photos"
+        ],
+        "explanation_notes": "Sparse direct history (n_eff 1.77 < 3) is supported by two community paths via a and b (rho 0.39 >= 0.30), so the request reaches the lender as REVIEW_RECOMMENDED; the explanation lists both paths and their weights. Indirect evidence never gives SUFFICIENT_EVIDENCE (ADR-0008)."
+      },
+      "counterfactual_without_paths": {
+        "note": "Same borrower and request with no community path to lender u (rho = 0)",
+        "rule_fired": "R6_SPARSE",
+        "state": "INSUFFICIENT_EVIDENCE"
+      }
+    }
+  ],
+  "policy_unit_fixtures": [
+    {
+      "scenario_id": "PU-01",
+      "name": "Single strong signal (score >= 60) is capped at level 3 and not held (ADR-0007)",
+      "transaction_context": {
+        "item_id": "item_pu-01",
+        "item_value_pkr": 4000,
+        "value_band": "LOW",
+        "is_high_value": false,
+        "medium_value": false,
+        "open_dispute": false,
+        "resolved_disputes_12m": 0,
+        "verification_level": "COMMUNITY_VERIFIED",
+        "verification_ok": true,
+        "request_similarity": 1.0
+      },
+      "direct_evidence": {
+        "alpha": 8.0,
+        "beta": 1.0,
+        "mean": 0.8889,
+        "lower_90": 0.6877,
+        "upper_90": 0.9936,
+        "n_eff": 7.0,
+        "direct_event_count": 7
+      },
+      "indirect_evidence": {
+        "reliability_rho": 0.0,
+        "prior_backed": false
+      },
+      "manipulation_risk": {
+        "signals": [
+          {
+            "name": "s1_reciprocal_clustering",
+            "value": 1.0,
+            "available": true,
+            "weight": 0.3
+          },
+          {
+            "name": "s4_review_similarity",
+            "value": 0.2,
+            "available": true,
+            "weight": 0.2
+          }
+        ],
+        "score": 68.0,
+        "level": 3,
+        "corroborated": false
+      },
+      "expected_result": {
+        "rule_fired": "R5",
+        "decision": "REQUEST_VERIFICATION",
+        "state": "REVIEW_RECOMMENDED",
+        "escalate": false,
+        "lifecycle_state": "ASSESSED"
+      }
+    },
+    {
+      "scenario_id": "PU-02",
+      "name": "Dense legitimate (family) group stays below the moderator-review threshold (test suite 12)",
+      "note": "Mutual borrowing in a family produces S1 but distinct review texts; one signal cannot corroborate itself",
+      "transaction_context": {
+        "item_id": "item_pu-02",
+        "item_value_pkr": 3000,
+        "value_band": "LOW",
+        "is_high_value": false,
+        "medium_value": false,
+        "open_dispute": false,
+        "resolved_disputes_12m": 0,
+        "verification_level": "COMMUNITY_VERIFIED",
+        "verification_ok": true,
+        "request_similarity": 1.0
+      },
+      "direct_evidence": {
+        "alpha": 10.0,
+        "beta": 1.0,
+        "mean": 0.9091,
+        "lower_90": 0.7411,
+        "upper_90": 0.9949,
+        "n_eff": 9.0,
+        "direct_event_count": 9
+      },
+      "indirect_evidence": {
+        "reliability_rho": 0.0,
+        "prior_backed": false
+      },
+      "manipulation_risk": {
+        "signals": [
+          {
+            "name": "s1_reciprocal_clustering",
+            "value": 0.83,
+            "available": true,
+            "weight": 0.3
+          },
+          {
+            "name": "s4_review_similarity",
+            "value": 0.1,
+            "available": true,
+            "weight": 0.2
+          }
+        ],
+        "score": 53.8,
+        "level": 3,
+        "corroborated": false
+      },
+      "expected_result": {
+        "rule_fired": "R5",
+        "decision": "REQUEST_VERIFICATION",
+        "state": "REVIEW_RECOMMENDED",
+        "escalate": false,
+        "lifecycle_state": "ASSESSED"
+      }
+    },
+    {
+      "scenario_id": "PU-03",
+      "name": "Open dispute takes precedence; request reaches the lender as ACTIVE_DISPUTE, not held (D12)",
+      "note": "Demo step 2.5: the borrower's next request shows ACTIVE_DISPUTE; the dispute already has its own case",
+      "transaction_context": {
+        "item_id": "item_pu-03",
+        "item_value_pkr": 3500,
+        "value_band": "LOW",
+        "is_high_value": false,
+        "medium_value": false,
+        "open_dispute": true,
+        "resolved_disputes_12m": 0,
+        "verification_level": "COMMUNITY_VERIFIED",
+        "verification_ok": true,
+        "request_similarity": 1.0
+      },
+      "direct_evidence": {
+        "alpha": 10.5,
+        "beta": 1.0,
+        "mean": 0.913,
+        "lower_90": 0.7518,
+        "upper_90": 0.9951,
+        "n_eff": 9.5,
+        "direct_event_count": 10
+      },
+      "indirect_evidence": {
+        "reliability_rho": 0.0,
+        "prior_backed": false
+      },
+      "manipulation_risk": {
+        "score": 5.0,
+        "level": 1,
+        "corroborated": false
+      },
+      "expected_result": {
+        "rule_fired": "R1",
+        "decision": "ESCALATE",
+        "state": "ACTIVE_DISPUTE",
+        "escalate": false,
+        "lifecycle_state": "ASSESSED"
+      }
+    },
+    {
+      "scenario_id": "PU-04",
+      "name": "No verified history on a high-value item: INSUFFICIENT_EVIDENCE, not held (FR-T-02 precedence)",
+      "note": "R3 precedes R4: a newcomer is never held for lack of history; the lender sees the high-value safeguards",
+      "transaction_context": {
+        "item_id": "item_pu-04",
+        "item_value_pkr": 30000,
+        "value_band": "HIGH",
+        "is_high_value": true,
+        "medium_value": false,
+        "open_dispute": false,
+        "resolved_disputes_12m": 0,
+        "verification_level": "COMMUNITY_VERIFIED",
+        "verification_ok": true,
+        "request_similarity": 1.0
+      },
+      "direct_evidence": {
+        "alpha": 1.0,
+        "beta": 1.0,
+        "mean": 0.5,
+        "lower_90": 0.05,
+        "upper_90": 0.95,
+        "n_eff": 0.0,
+        "direct_event_count": 0
+      },
+      "indirect_evidence": {
+        "reliability_rho": 0.0,
+        "prior_backed": true
+      },
+      "manipulation_risk": {
+        "score": 0.0,
+        "level": 1,
+        "corroborated": false
+      },
+      "expected_result": {
+        "rule_fired": "R3",
+        "decision": "REQUEST_VERIFICATION",
+        "state": "INSUFFICIENT_EVIDENCE",
+        "escalate": false,
+        "lifecycle_state": "ASSESSED"
+      }
+    },
+    {
+      "scenario_id": "PU-05",
+      "name": "Sparse, old history with no community support: INSUFFICIENT_EVIDENCE (ES-12 pattern, ADR-0008)",
+      "transaction_context": {
+        "item_id": "item_pu-05",
+        "item_value_pkr": 4000,
+        "value_band": "LOW",
+        "is_high_value": false,
+        "medium_value": false,
+        "open_dispute": false,
+        "resolved_disputes_12m": 0,
+        "verification_level": "COMMUNITY_VERIFIED",
+        "verification_ok": true,
+        "request_similarity": 1.0
+      },
+      "direct_evidence": {
+        "alpha": 1.6,
+        "beta": 1.0,
+        "mean": 0.6154,
+        "lower_90": 0.1538,
+        "upper_90": 0.9685,
+        "n_eff": 0.6,
+        "direct_event_count": 1
+      },
+      "indirect_evidence": {
+        "reliability_rho": 0.0,
+        "prior_backed": false
+      },
+      "manipulation_risk": {
+        "score": 0.0,
+        "level": 1,
+        "corroborated": false
+      },
+      "expected_result": {
+        "rule_fired": "R6_SPARSE",
+        "decision": "REQUEST_VERIFICATION",
+        "state": "INSUFFICIENT_EVIDENCE",
+        "escalate": false,
+        "lifecycle_state": "ASSESSED"
+      }
+    },
+    {
+      "scenario_id": "PU-06",
+      "name": "Strong history on a medium-value item with level-2 risk: SUFFICIENT with safeguards (R8)",
+      "transaction_context": {
+        "item_id": "item_pu-06",
+        "item_value_pkr": 9000,
+        "value_band": "MEDIUM",
+        "is_high_value": false,
+        "medium_value": true,
+        "open_dispute": false,
+        "resolved_disputes_12m": 0,
+        "verification_level": "COMMUNITY_VERIFIED",
+        "verification_ok": true,
+        "request_similarity": 1.0
+      },
+      "direct_evidence": {
+        "alpha": 12.0,
+        "beta": 1.0,
+        "mean": 0.9231,
+        "lower_90": 0.7791,
+        "upper_90": 0.9957,
+        "n_eff": 11.0,
+        "direct_event_count": 11
+      },
+      "indirect_evidence": {
+        "reliability_rho": 0.0,
+        "prior_backed": false
+      },
+      "manipulation_risk": {
+        "score": 25.0,
+        "level": 2,
+        "corroborated": false
+      },
+      "expected_result": {
+        "rule_fired": "R8",
+        "decision": "PROCEED_WITH_SAFEGUARDS",
+        "state": "SUFFICIENT_EVIDENCE",
+        "escalate": false,
+        "lifecycle_state": "ASSESSED"
+      }
+    }
+  ]
+}

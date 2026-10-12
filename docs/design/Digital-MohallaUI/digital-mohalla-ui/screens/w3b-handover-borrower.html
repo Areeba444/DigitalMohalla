@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>W3b — Handover Confirmation (Borrower) | Digital Mohalla</title>
+  <link rel="stylesheet" href="../styles/design-system.css" />
+</head>
+<body>
+<div class="screen-page">
+  <div class="screen-label">W3b · Borrower View — Handover Confirmation (Step 2 of 2)</div>
+
+  <div class="phone">
+    <div class="status-bar">
+      <span class="status-time">10:18</span>
+      <div class="status-icons"><span>▲▲▲</span><span>WiFi</span><span>🔋</span></div>
+    </div>
+
+    <div class="screen-content">
+
+      <div class="top-bar">
+        <a href="../index.html" class="top-bar-back">←</a>
+        <div>
+          <div class="top-bar-title">Confirm Receipt</div>
+          <div class="top-bar-sub">Review lender's record, then confirm</div>
+        </div>
+        <span style="font-size:11px;background:var(--accent-bg);color:#8B6914;padding:4px 8px;border-radius:100px;font-weight:700;border:1px solid var(--accent-border);">AWAITING YOU</span>
+      </div>
+
+      <!-- Step progress (step 2 active) -->
+      <div style="background:var(--surface);padding:12px 20px 8px;border-bottom:1px solid var(--border);">
+        <div class="step-indicator">
+          <div class="step-dot done">✓</div>
+          <div class="step-line done"></div>
+          <div class="step-dot active">2</div>
+        </div>
+        <div class="step-label-row">
+          <div class="step-label done-label" style="flex:1;text-align:left;">Lender submitted ✅</div>
+          <div style="flex:1;"></div>
+          <div class="step-label active" style="flex:1;text-align:right;">Your confirmation</div>
+        </div>
+      </div>
+
+      <!-- Notification banner -->
+      <div class="section">
+        <div class="banner info">
+          <span class="banner-icon">📋</span>
+          <div>
+            <div style="font-weight:700;font-size:13px;color:var(--text-primary);margin-bottom:2px;">Sara M. has submitted the handover record</div>
+            <div style="color:var(--text-secondary);font-size:12px;">Please review the item condition below and confirm you've received it in this state.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section-gap"></div>
+
+      <!-- Lender's checklist (read-only) -->
+      <div class="section">
+        <div class="section-label">Lender Reported Condition</div>
+        <div class="card card-padding">
+          <!-- Read-only checklist items -->
+          <div class="check-item" style="opacity:0.75;cursor:default;">
+            <div class="check-box checked" style="cursor:default;">✓</div>
+            <div class="check-text">All parts present and accounted for</div>
+            <span style="font-size:11px;color:var(--secondary);font-weight:600;">Lender ✓</span>
+          </div>
+          <div class="check-item" style="opacity:0.75;cursor:default;">
+            <div class="check-box checked" style="cursor:default;">✓</div>
+            <div class="check-text">No visible damage</div>
+            <span style="font-size:11px;color:var(--secondary);font-weight:600;">Lender ✓</span>
+          </div>
+          <div class="check-item" style="opacity:0.75;cursor:default;">
+            <div class="check-box checked" style="cursor:default;">✓</div>
+            <div class="check-text">Accessories included (drill bits × 6)</div>
+            <span style="font-size:11px;color:var(--secondary);font-weight:600;">Lender ✓</span>
+          </div>
+          <div class="check-item" style="opacity:0.75;cursor:default;">
+            <div class="check-box" style="border-color:var(--border);cursor:default;"> </div>
+            <div class="check-text muted">Battery fully charged</div>
+            <span style="font-size:11px;color:var(--text-muted);">Not checked</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="section-gap"></div>
+
+      <!-- Lender's photos -->
+      <div class="section">
+        <div class="section-label">Lender's Photos (2 submitted)</div>
+        <div class="photo-grid">
+          <div class="photo-slot filled" style="border-style:solid;background:linear-gradient(135deg,#FAF0E0,#F5D9B0);">
+            <span>🖼</span>
+            <span style="font-size:9px;color:var(--primary-dark);">Photo 1</span>
+          </div>
+          <div class="photo-slot filled" style="border-style:solid;background:linear-gradient(135deg,#F0EDE0,#E8D8A0);">
+            <span>🖼</span>
+            <span style="font-size:9px;color:var(--primary-dark);">Photo 2</span>
+          </div>
+          <div class="photo-slot" style="opacity:0.4;cursor:default;">
+            <span>🚫</span>
+          </div>
+        </div>
+        <div style="font-size:11px;color:var(--text-muted);margin-top:8px;">These photos are locked to this booking as evidence.</div>
+      </div>
+
+      <div class="section-gap"></div>
+
+      <!-- Borrower's confirmation choice -->
+      <div class="section">
+        <div class="section-label">Your Confirmation</div>
+        <div class="card card-padding">
+          <div style="font-size:14px;font-weight:600;color:var(--text-primary);margin-bottom:14px;">
+            Do you confirm receiving the item in this condition?
+          </div>
+
+          <div class="radio-option" id="conf-yes" onclick="selectConfirmation('yes')" style="border-color:var(--secondary-border);background:var(--secondary-bg);">
+            <div class="radio-outer" style="border-color:var(--secondary);"><div class="radio-inner" style="background:var(--secondary);display:none;"></div></div>
+            <div>
+              <div class="radio-text" style="color:var(--secondary);">✓ Yes, I confirm this condition</div>
+              <div class="radio-sub">The booking becomes ACTIVE and the loan period starts</div>
+            </div>
+          </div>
+
+          <div class="radio-option" id="conf-dispute" onclick="selectConfirmation('dispute')">
+            <div class="radio-outer"><div class="radio-inner" style="display:none;"></div></div>
+            <div>
+              <div class="radio-text">⚠ I dispute the condition report</div>
+              <div class="radio-sub">A note will be recorded and you can provide your account</div>
+            </div>
+          </div>
+
+          <!-- Dispute note (hidden by default) -->
+          <div id="dispute-note" style="display:none;margin-top:8px;">
+            <textarea rows="3" placeholder="Describe the discrepancy — e.g., 'Accessories are missing (only 2 drill bits, not 6)'..."></textarea>
+            <div class="char-count">0/300</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bottom actions -->
+      <div class="btn-stack">
+        <button class="btn btn-secondary" id="confirm-btn" onclick="doConfirm()" disabled style="opacity:0.5;cursor:not-allowed;">
+          Confirm Receipt
+        </button>
+        <a href="w3a-handover-lender.html" class="btn btn-outline">← View Lender's Submission</a>
+      </div>
+
+      <!-- Success state (hidden) -->
+      <div id="success-state" style="display:none;padding:20px;">
+        <div class="card card-padding" style="text-align:center;border-color:var(--secondary-border);background:var(--secondary-bg);">
+          <div style="font-size:48px;margin-bottom:12px;">🤝</div>
+          <div style="font-size:18px;font-weight:800;color:var(--secondary);margin-bottom:6px;">Handover Complete!</div>
+          <div style="font-size:14px;color:var(--text-secondary);line-height:1.5;">The booking is now ACTIVE. Please return the item by Oct 16.</div>
+          <div style="margin-top:16px;">
+            <a href="w4-return-inspection.html" class="btn btn-secondary btn-sm">Go to Return Screen</a>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <nav class="bottom-nav">
+      <a href="../index.html" class="nav-item">
+        <span class="nav-icon">🏠</span><span class="nav-label">Home</span>
+      </a>
+      <a href="w1-lender-assurance.html" class="nav-item">
+        <span class="nav-icon">📋</span><span class="nav-label">Requests</span>
+        <span class="nav-badge">1</span>
+      </a>
+      <a href="w3a-handover-lender.html" class="nav-item active">
+        <span class="nav-icon">🤝</span><span class="nav-label">Handover</span>
+      </a>
+      <a href="w5-dispute-form.html" class="nav-item">
+        <span class="nav-icon">⚖️</span><span class="nav-label">Disputes</span>
+      </a>
+      <a href="w6-moderator-queue.html" class="nav-item">
+        <span class="nav-icon">🛡️</span><span class="nav-label">Moderator</span>
+        <span class="nav-badge" style="background:#2D5A46;">3</span>
+      </a>
+    </nav>
+  </div>
+</div>
+
+<script>
+function selectConfirmation(opt) {
+  const yesOpt = document.getElementById('conf-yes');
+  const dispOpt = document.getElementById('conf-dispute');
+  const btn = document.getElementById('confirm-btn');
+  const note = document.getElementById('dispute-note');
+
+  yesOpt.classList.remove('selected');
+  dispOpt.classList.remove('selected');
+  yesOpt.querySelector('.radio-inner').style.display = 'none';
+  dispOpt.querySelector('.radio-inner').style.display = 'none';
+
+  if (opt === 'yes') {
+    yesOpt.classList.add('selected');
+    yesOpt.querySelector('.radio-inner').style.display = 'block';
+    note.style.display = 'none';
+    btn.textContent = '✓ Confirm Receipt';
+    btn.className = 'btn btn-secondary';
+  } else {
+    dispOpt.classList.add('selected');
+    dispOpt.querySelector('.radio-inner').style.display = 'block';
+    note.style.display = 'block';
+    btn.textContent = '⚠ Record Dispute';
+    btn.className = 'btn btn-danger';
+  }
+  btn.disabled = false;
+  btn.style.opacity = '1';
+  btn.style.cursor = 'pointer';
+}
+
+function doConfirm() {
+  document.querySelector('.btn-stack').style.display = 'none';
+  document.querySelectorAll('.section').forEach(s => s.style.display = 'none');
+  document.querySelectorAll('.section-gap').forEach(s => s.style.display = 'none');
+  document.getElementById('success-state').style.display = 'block';
+}
+</script>
+</body>
+</html>

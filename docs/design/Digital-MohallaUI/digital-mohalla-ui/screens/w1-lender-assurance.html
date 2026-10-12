@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>W1 — Lender Request & Assurance Summary | Digital Mohalla</title>
+  <link rel="stylesheet" href="../styles/design-system.css" />
+</head>
+<body>
+<div class="screen-page">
+  <div class="screen-label">W1 · Lender View — Borrowing Request & Assurance Summary</div>
+
+  <div class="phone">
+    <!-- Status Bar -->
+    <div class="status-bar">
+      <span class="status-time">9:41</span>
+      <div class="status-icons">
+        <span>▲▲▲</span>
+        <span>WiFi</span>
+        <span>🔋</span>
+      </div>
+    </div>
+
+    <!-- Scrollable Content -->
+    <div class="screen-content">
+
+      <!-- Top Bar -->
+      <div class="top-bar">
+        <a href="../index.html" class="top-bar-back">←</a>
+        <div>
+          <div class="top-bar-title">Borrowing Request</div>
+          <div class="top-bar-sub">Review before deciding</div>
+        </div>
+        <span class="state-badge insufficient" style="font-size:10px; padding:3px 9px;">
+          ● INSUFFICIENT EVIDENCE
+        </span>
+      </div>
+
+      <!-- Requestor Card -->
+      <div class="section">
+        <div class="card card-padding">
+          <div class="flex-between mb-3">
+            <div class="flex gap-3" style="align-items:center;">
+              <div class="avatar" style="width:48px;height:48px;font-size:18px;">A</div>
+              <div>
+                <div style="font-size:16px;font-weight:700;color:var(--text-primary);">Ayesha K.</div>
+                <div class="flex gap-2" style="align-items:center;margin-top:3px;">
+                  <span style="font-size:12px;color:var(--text-muted);">📍 F-7, Sector 4</span>
+                  <span style="font-size:10px;background:var(--secondary-bg);color:var(--secondary);padding:2px 7px;border-radius:100px;font-weight:600;">Verified Member</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div style="background:var(--bg);border-radius:10px;padding:12px;">
+            <div class="section-label" style="margin-bottom:6px;">Request Message</div>
+            <div style="font-size:14px;color:var(--text-primary);line-height:1.5;font-style:italic;">"Need it for a shelf project — just 3 days. Will handle carefully."</div>
+          </div>
+          <div class="info-row mt-3">
+            <span class="info-label">Item Requested</span>
+            <span class="info-value">Black & Decker Drill</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">Dates</span>
+            <span class="info-value" style="color:var(--primary);">Oct 14 – Oct 16 · 3 days</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">Submitted</span>
+            <span class="info-value">2 hours ago</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="section-gap"></div>
+
+      <!-- Assurance Panel — THE CRITICAL SECTION -->
+      <div class="section">
+        <div class="section-label">Evidence Summary</div>
+
+        <!-- State explanation banner -->
+        <div class="banner info mb-3">
+          <span class="banner-icon">ℹ️</span>
+          <div>
+            <div style="font-weight:700;font-size:13px;color:var(--text-primary);margin-bottom:2px;">Not Enough History Yet</div>
+            <div style="color:var(--text-secondary);">Ayesha has no verified transaction history. This is normal for new members — it does not mean she is risky. You decide.</div>
+          </div>
+        </div>
+
+        <!-- Direct Reliability -->
+        <div class="card card-padding mb-3">
+          <div class="flex-between mb-2">
+            <div style="font-size:13px;font-weight:600;color:var(--text-primary);">Direct Reliability</div>
+            <span style="font-size:11px;color:var(--text-muted);">0 verified transactions</span>
+          </div>
+
+          <!-- CI Bar -->
+          <div>
+            <div class="ci-bar-wrap">
+              <!-- Full range - wide interval shows uncertainty -->
+              <div class="ci-bar-range" style="left:8%;width:80%;background:linear-gradient(90deg,#E8DDD0,#C2713A20);"></div>
+              <!-- The actual range indicator -->
+              <div style="position:absolute;left:8%;width:80%;height:100%;border-radius:100px;border:1.5px solid var(--border-strong);background:transparent;"></div>
+              <!-- Midpoint -->
+              <div class="ci-bar-point" style="left:50%;background:var(--text-muted);"></div>
+            </div>
+            <div class="ci-labels">
+              <span>Unreliable</span>
+              <span style="color:var(--primary);font-weight:600;">Wide interval · high uncertainty</span>
+              <span>Reliable</span>
+            </div>
+            <div style="font-size:11px;color:var(--text-muted);margin-top:6px;">90% credible interval: [0.10 – 0.90] · Prior Beta(1,1)</div>
+          </div>
+        </div>
+
+        <!-- Indirect Evidence -->
+        <div class="card card-padding mb-3">
+          <div class="flex-between">
+            <div style="font-size:13px;font-weight:600;color:var(--text-primary);">Indirect Evidence</div>
+            <span style="font-size:11px;background:var(--bg);padding:3px 8px;border-radius:100px;color:var(--text-muted);border:1px solid var(--border);">via 2 community paths</span>
+          </div>
+          <div class="ci-bar-wrap mt-2">
+            <div class="ci-bar-range" style="left:0;width:28%;background:var(--secondary-bg);"></div>
+            <div class="ci-bar-point" style="left:28%;background:var(--secondary);"></div>
+          </div>
+          <div class="ci-labels">
+            <span>None</span>
+            <span style="color:var(--secondary);font-weight:600;">Low indirect signal</span>
+            <span>Strong</span>
+          </div>
+          <div style="font-size:11px;color:var(--text-muted);margin-top:6px;">2-hop paths through Sara M. and Ahmad R. · Reliability capped at 0.6</div>
+          <button onclick="this.parentElement.querySelector('.indirect-detail').style.display='block';this.style.display='none';" 
+                  style="margin-top:10px;background:none;border:none;color:var(--primary);font-size:12px;font-weight:600;cursor:pointer;padding:0;font-family:var(--font-body);">
+            Show indirect paths ▼
+          </button>
+          <div class="indirect-detail" style="display:none;margin-top:10px;padding-top:10px;border-top:1px solid var(--border);">
+            <div style="font-size:12px;color:var(--text-secondary);">
+              Path 1: You → Sara M. (trust 0.85) → Ayesha K. (trust 0.62) · 2 hops · decay 0.70<br/>
+              Path 2: You → Ahmad R. (trust 0.78) → Ayesha K. (trust 0.55) · 2 hops · decay 0.70
+            </div>
+          </div>
+        </div>
+
+        <!-- Manipulation Risk -->
+        <div class="card card-padding mb-3">
+          <div class="flex-between">
+            <div style="font-size:13px;font-weight:600;color:var(--text-primary);">Manipulation Risk</div>
+            <span class="risk-pill low">● LOW · 8/100</span>
+          </div>
+          <div style="font-size:12px;color:var(--text-secondary);margin-top:8px;line-height:1.5;">
+            No anomalies detected. No reciprocal rating clusters. No retaliation signals.
+          </div>
+          <div style="font-size:11px;color:var(--text-muted);margin-top:6px;font-style:italic;">Risk is shown separately from reliability and is never averaged with it.</div>
+        </div>
+
+        <!-- Expand "Why this assessment" -->
+        <details style="margin-bottom:0;">
+          <summary style="font-size:13px;font-weight:600;color:var(--primary);cursor:pointer;list-style:none;display:flex;align-items:center;gap:6px;padding:4px 0;">
+            <span>▶</span> Why this assessment?
+          </summary>
+          <div style="padding-top:10px;font-size:13px;color:var(--text-secondary);line-height:1.6;background:var(--bg);border-radius:10px;padding:12px;margin-top:8px;">
+            Ayesha has no completed transactions. The assurance engine starts with an uninformative prior (equal chance of reliable or unreliable) and found 2 indirect paths through community members. Because direct evidence is absent, the state is INSUFFICIENT_EVIDENCE. This is the expected and correct state for a new member — not a negative verdict.
+          </div>
+        </details>
+      </div>
+
+      <div class="section-gap"></div>
+
+      <!-- Safeguards -->
+      <div class="section">
+        <div class="section-label">Recommended Safeguards</div>
+        <div class="card card-padding">
+          <div class="check-item">
+            <div class="check-box checked">✓</div>
+            <div class="check-text">Record deposit before handover</div>
+          </div>
+          <div class="check-item">
+            <div class="check-box checked">✓</div>
+            <div class="check-text">Take item photos at handover</div>
+          </div>
+          <div class="check-item">
+            <div class="check-box checked">✓</div>
+            <div class="check-text">Set a fixed return date</div>
+          </div>
+          <div style="margin-top:10px;font-size:11px;color:var(--text-muted);">
+            These safeguards are suggested by the decision policy based on low evidence. They are recommendations, not requirements.
+          </div>
+        </div>
+      </div>
+
+      <div class="section-gap"></div>
+
+      <!-- Action Buttons -->
+      <div class="btn-stack">
+        <a href="w2-concurrency-conflict.html" class="btn btn-secondary">✓ Accept Request</a>
+        <button class="btn btn-outline">✗ Decline Request</button>
+        <div style="text-align:center;font-size:11px;color:var(--text-muted);">Counter-offer available in Iteration 2</div>
+      </div>
+
+    </div><!-- end screen-content -->
+
+    <!-- Bottom Nav -->
+    <nav class="bottom-nav">
+      <a href="../index.html" class="nav-item">
+        <span class="nav-icon">🏠</span>
+        <span class="nav-label">Home</span>
+      </a>
+      <a href="w1-lender-assurance.html" class="nav-item active">
+        <span class="nav-icon">📋</span>
+        <span class="nav-label">Requests</span>
+        <span class="nav-badge">1</span>
+      </a>
+      <a href="w3a-handover-lender.html" class="nav-item">
+        <span class="nav-icon">🤝</span>
+        <span class="nav-label">Handover</span>
+      </a>
+      <a href="w5-dispute-form.html" class="nav-item">
+        <span class="nav-icon">⚖️</span>
+        <span class="nav-label">Disputes</span>
+      </a>
+      <a href="w6-moderator-queue.html" class="nav-item">
+        <span class="nav-icon">🛡️</span>
+        <span class="nav-label">Moderator</span>
+        <span class="nav-badge" style="background:#2D5A46;">3</span>
+      </a>
+    </nav>
+  </div><!-- end phone -->
+</div>
+</body>
+</html>

@@ -1,0 +1,1133 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="2360" height="1420" viewBox="0 0 2360 1420" font-family="Segoe UI, Arial, Helvetica, sans-serif">
+<rect width="2360" height="1420" fill="#ffffff"/>
+<text x="30" y="32" font-size="20" font-weight="bold" text-anchor="start" fill="#10233d">Digital Mohalla — ER Diagram (PostgreSQL schema "dm", committed core)</text>
+<text x="30" y="54" font-size="12" text-anchor="start" fill="#444">23 tables · 223 columns · 49 foreign keys (31 drawn). Generated from the live database catalogue after loading schema.sql.</text>
+<rect x="1590" y="450" width="290" height="117" rx="5" fill="#ffffff" stroke="#3b4a5e" stroke-width="1.3"/>
+<path d="M1590,455 a5,5 0 0 1 5,-5 h280 a5,5 0 0 1 5,5 v31 h-290 z" fill="#7a5a12"/>
+<text x="1598" y="465" font-size="12.5" font-weight="bold" text-anchor="start" fill="#ffffff">allowed_transition</text>
+<text x="1598" y="480" font-size="9.5" font-style="italic" text-anchor="start" fill="#dfe7ef">«reference: state machine»  ·  append-only</text>
+<text x="1596" y="498" font-size="9" font-weight="bold" text-anchor="start" fill="#9a3b1c">PK</text>
+<text x="1634" y="498" font-size="10.5" font-weight="bold" text-anchor="start" fill="#1d1d1d">from_state</text>
+<text x="1874" y="498" font-size="10" text-anchor="end" fill="#5a5a5a">txn_state</text>
+<rect x="1591" y="502" width="288" height="15" fill="#f3f6f9"/>
+<text x="1596" y="513" font-size="9" font-weight="bold" text-anchor="start" fill="#9a3b1c">PK</text>
+<text x="1634" y="513" font-size="10.5" font-weight="bold" text-anchor="start" fill="#1d1d1d">event_type</text>
+<text x="1874" y="513" font-size="10" text-anchor="end" fill="#5a5a5a">txn_event_type</text>
+<text x="1596" y="528" font-size="9" font-weight="bold" text-anchor="start" fill="#9a3b1c">PK</text>
+<text x="1634" y="528" font-size="10.5" font-weight="bold" text-anchor="start" fill="#1d1d1d">to_state</text>
+<text x="1874" y="528" font-size="10" text-anchor="end" fill="#5a5a5a">txn_state</text>
+<rect x="1591" y="532" width="288" height="15" fill="#f3f6f9"/>
+<text x="1596" y="543" font-size="9" font-weight="bold" text-anchor="start" fill="#2d5f8a"></text>
+<text x="1634" y="543" font-size="10.5" text-anchor="start" fill="#1d1d1d">allowed_roles</text>
+<text x="1874" y="543" font-size="10" text-anchor="end" fill="#5a5a5a">actor_role[]</text>
+<text x="1596" y="558" font-size="9" font-weight="bold" text-anchor="start" fill="#2d5f8a"></text>
+<text x="1634" y="558" font-size="10.5" text-anchor="start" fill="#1d1d1d">ref</text>
+<text x="1874" y="558" font-size="10" text-anchor="end" fill="#5a5a5a">text</text>
+<rect x="420" y="330" width="290" height="192" rx="5" fill="#ffffff" stroke="#3b4a5e" stroke-width="1.3"/>
+<path d="M420,335 a5,5 0 0 1 5,-5 h280 a5,5 0 0 1 5,5 v31 h-290 z" fill="#1f3a5f"/>
+<text x="428" y="345" font-size="12.5" font-weight="bold" text-anchor="start" fill="#ffffff">app_user</text>
+<text x="428" y="360" font-size="9.5" font-style="italic" text-anchor="start" fill="#dfe7ef">«User»</text>
+<text x="426" y="378" font-size="9" font-weight="bold" text-anchor="start" fill="#9a3b1c">PK</text>
+<text x="464" y="378" font-size="10.5" font-weight="bold" text-anchor="start" fill="#1d1d1d">id</text>
+<text x="704" y="378" font-size="10" text-anchor="end" fill="#5a5a5a">uuid</text>
+<rect x="421" y="382" width="288" height="15" fill="#f3f6f9"/>
+<text x="426" y="393" font-size="9" font-weight="bold" text-anchor="start" fill="#2d5f8a"></text>
+<text x="464" y="393" font-size="10.5" text-anchor="start" fill="#1d1d1d">display_name</text>
+<text x="704" y="393" font-size="10" text-anchor="end" fill="#5a5a5a">text</text>
+<text x="426" y="408" font-size="9" font-weight="bold" text-anchor="start" fill="#2d5f8a"></text>
+<text x="464" y="408" font-size="10.5" text-anchor="start" fill="#888888">email</text>
+<text x="704" y="408" font-size="10" text-anchor="end" fill="#a0a0a0">text</text>
+<rect x="421" y="412" width="288" height="15" fill="#f3f6f9"/>
+<text x="426" y="423" font-size="9" font-weight="bold" text-anchor="start" fill="#2d5f8a"></text>
+<text x="464" y="423" font-size="10.5" text-anchor="start" fill="#888888">phone</text>
+<text x="704" y="423" font-size="10" text-anchor="end" fill="#a0a0a0">text</text>
+<text x="426" y="438" font-size="9" font-weight="bold" text-anchor="start" fill="#2d5f8a"></text>
+<text x="464" y="438" font-size="10.5" text-anchor="start" fill="#888888">password_hash</text>
+<text x="704" y="438" font-size="10" text-anchor="end" fill="#a0a0a0">text</text>
+<rect x="421" y="442" width="288" height="15" fill="#f3f6f9"/>
+<text x="426" y="453" font-size="9" font-weight="bold" text-anchor="start" fill="#2d5f8a"></text>
+<text x="464" y="453" font-size="10.5" text-anchor="start" fill="#1d1d1d">account_type</text>
+<text x="704" y="453" font-size="10" text-anchor="end" fill="#5a5a5a">account_type</text>
+<text x="426" y="468" font-size="9" font-weight="bold" text-anchor="start" fill="#2d5f8a"></text>
+<text x="464" y="468" font-size="10.5" text-anchor="start" fill="#1d1d1d">verification_level</text>
+<text x="704" y="468" font-size="10" text-anchor="end" fill="#5a5a5a">verification_level</text>
+<rect x="421" y="472" width="288" height="15" fill="#f3f6f9"/>
+<text x="426" y="483" font-size="9" font-weight="bold" text-anchor="start" fill="#2d5f8a"></text>
+<text x="464" y="483" font-size="10.5" text-anchor="start" fill="#1d1d1d">platform_role</text>
+<text x="704" y="483" font-size="10" text-anchor="end" fill="#5a5a5a">platform_role</text>
+<text x="426" y="498" font-size="9" font-weight="bold" text-anchor="start" fill="#2d5f8a"></text>
+<text x="464" y="498" font-size="10.5" text-anchor="start" fill="#1d1d1d">status</text>
+<text x="704" y="498" font-size="10" text-anchor="end" fill="#5a5a5a">account_status</text>
+<rect x="421" y="502" width="288" height="15" fill="#f3f6f9"/>
+<text x="426" y="513" font-size="9" font-weight="bold" text-anchor="start" fill="#2d5f8a"></text>
+<text x="464" y="513" font-size="10.5" text-anchor="start" fill="#1d1d1d">created_at</text>
+<text x="704" y="513" font-size="10" text-anchor="end" fill="#5a5a5a">timestamptz</text>
+<rect x="1590" y="600" width="290" height="312" rx="5" fill="#ffffff" stroke="#3b4a5e" stroke-width="1.3"/>
+<path d="M1590,605 a5,5 0 0 1 5,-5 h280 a5,5 0 0 1 5,5 v31 h-290 z" fill="#1f3a5f"/>
+<text x="1598" y="615" font-size="12.5" font-weight="bold" text-anchor="start" fill="#ffffff">assurance_result</text>
+<text x="1598" y="630" font-size="9.5" font-style="italic" text-anchor="start" fill="#dfe7ef">«AssuranceResult»  ·  append-only, fields: Student 2</text>
+<text x="1596" y="648" font-size="9" font-weight="bold" text-anchor="start" fill="#9a3b1c">PK</text>
+<text x="1634" y="648" font-size="10.5" font-weight="bold" text-anchor="start" fill="#1d1d1d">id</text>
+<text x="1874" y="648" font-size="10" text-anchor="end" fill="#5a5a5a">uuid</text>
+<rect x="1591" y="652" width="288" height="15" fill="#f3f6f9"/>
+<text x="1596" y="663" font-size="9" font-weight="bold" text-anchor="start" fill="#2d5f8a">FK</text>
+<text x="1634" y="663" font-size="10.5" text-anchor="start" fill="#1d1d1d">transaction_id</text>
+<text x="1874" y="663" font-size="10" text-anchor="end" fill="#5a5a5a">uuid</text>
+<text x="1596" y="678" font-size="9" font-weight="bold" text-anchor="start" fill="#2d5f8a"></text>
+<text x="1634" y="678" font-size="10.5" text-anchor="start" fill="#1d1d1d">generated_at</text>
+<text x="1874" y="678" font-size="10" text-anchor="end" fill="#5a5a5a">timestamptz</text>
+<rect x="1591" y="682" width="288" height="15" fill="#f3f6f9"/>
+<text x="1596" y="693" font-size="9" font-weight="bold" text-anchor="start" fill="#2d5f8a"></text>
+<text x="1634" y="693" font-size="10.5" text-anchor="start" fill="#1d1d1d">engine_version</text>
+<text x="1874" y="693" font-size="10" text-anchor="end" fill="#5a5a5a">text</text>
+<text x="1596" y="708" font-size="9" font-weight="bold" text-anchor="start" fill="#2d5f8a"></text>
+<text x="1634" y="708" font-size="10.5" text-anchor="start" fill="#1d1d1d">assurance_state</text>
+<text x="1874" y="708" font-size="10" text-anchor="end" fill="#5a5a5a">assurance_state</text>
+<rect x="1591" y="712" width="288" height="15" fill="#f3f6f9"/>
+<text x="1596" y="723" font-size="9" font-weight="bold" text-anchor="start" fill="#2d5f8a"></text>
+<text x="1634" y="723" font-size="10.5" text-anchor="start" fill="#1d1d1d">requires_moderator</text>
+<text x="1874" y="723" font-size="10" text-anchor="end" fill="#5a5a5a">bool</text>
+<text x="1596" y="738" font-size="9" font-weight="bold" text-anchor="start" fill="#2d5f8a"></text>
+<text x="1634" y="738" font-size="10.5" text-anchor="start" fill="#888888">escalation_reason</text>
+<text x="1874" y="738" font-size="10" text-anchor="end" fill="#a0a0a0">text</text>
+<rect x="1591" y="742" width="288" height="15" fill="#f3f6f9"/>
+<text x="1596" y="753" font-size="9" font-weight="bold" text-anchor="start" fill="#2d5f8a"></text>
+<text x="1634" y="753" font-size="10.5" text-anchor="start" fill="#888888">success_probability</text>
+<text x="1874" y="753" font-size="10" text-anchor="end" fill="#a0a0a0">numeric(5,4)</text>
+<text x="1596" y="768" font-size="9" font-weight="bold" text-anchor="start" fill="#2d5f8a"></text>
+<text x="1634" y="768" font-size="10.5" text-anchor="start" fill="#888888">credible_low</text>
+<text x="1874" y="768" font-size="10" text-anchor="end" fill="#a0a0a0">numeric(5,4)</text>
+<rect x="1591" y="772" width="288" height="15" fill="#f3f6f9"/>
+<text x="1596" y="783" font-size="9" font-weight="bold" text-anchor="start" fill="#2d5f8a"></text>
+<text x="1634" y="783" font-size="10.5" text-anchor="start" fill="#888888">credible_high</text>
+<text x="1874" y="783" font-size="10" text-anchor="end" fill="#a0a0a0">numeric(5,4)</text>
+<text x="1596" y="798" font-size="9" font-weight="bold" text-anchor="start" fill="#2d5f8a"></text>
+<text x="1634" y="798" font-size="10.5" text-anchor="start" fill="#1d1d1d">confidence</text>
+<text x="1874" y="798" font-size="10" text-anchor="end" fill="#5a5a5a">confidence_level</text>
+<rect x="1591" y="802" width="288" height="15" fill="#f3f6f9"/>
+<text x="1596" y="813" font-size="9" font-weight="bold" text-anchor="start" fill="#2d5f8a"></text>
+<text x="1634" y="813" font-size="10.5" text-anchor="start" fill="#1d1d1d">direct_evidence</text>
+<text x="1874" y="813" font-size="10" text-anchor="end" fill="#5a5a5a">jsonb</text>
+<text x="1596" y="828" font-size="9" font-weight="bold" text-anchor="start" fill="#2d5f8a"></text>
+<text x="1634" y="828" font-size="10.5" text-anchor="start" fill="#1d1d1d">indirect_evidence</text>
+<text x="1874" y="828" font-size="10" text-anchor="end" fill="#5a5a5a">jsonb</text>
+<rect x="1591" y="832" width="288" height="15" fill="#f3f6f9"/>
+<text x="1596" y="843" font-size="9" font-weight="bold" text-anchor="start" fill="#2d5f8a"></text>
+<text x="1634" y="843" font-size="10.5" text-anchor="start" fill="#1d1d1d">manipulation_risk_score</text>
+<text x="1874" y="843" font-size="10" text-anchor="end" fill="#5a5a5a">smallint</text>
+<text x="1596" y="858" font-size="9" font-weight="bold" text-anchor="start" fill="#2d5f8a"></text>
+<text x="1634" y="858" font-size="10.5" text-anchor="start" fill="#1d1d1d">manipulation_signals</text>
+<text x="1874" y="858" font-size="10" text-anchor="end" fill="#5a5a5a">jsonb</text>
+<rect x="1591" y="862" width="288" height="15" fill="#f3f6f9"/>
+<text x="1596" y="873" font-size="9" font-weight="bold" text-anchor="start" fill="#2d5f8a"></text>
+<text x="1634" y="873" font-size="10.5" text-anchor="start" fill="#1d1d1d">safeguards</text>
+<text x="1874" y="873" font-size="10" text-anchor="end" fill="#5a5a5a">jsonb</text>
+<text x="1596" y="888" font-size="9" font-weight="bold" text-anchor="start" fill="#2d5f8a"></text>
+<text x="1634" y="888" font-size="10.5" text-anchor="start" fill="#1d1d1d">explanation</text>
+<text x="1874" y="888" font-size="10" text-anchor="end" fill="#5a5a5a">text</text>
+<rect x="1591" y="892" width="288" height="15" fill="#f3f6f9"/>
+<text x="1596" y="903" font-size="9" font-weight="bold" text-anchor="start" fill="#2d5f8a"></text>
+<text x="1634" y="903" font-size="10.5" text-anchor="start" fill="#1d1d1d">parameters</text>
+<text x="1874" y="903" font-size="10" text-anchor="end" fill="#5a5a5a">jsonb</text>
+<rect x="1980" y="900" width="290" height="207" rx="5" fill="#ffffff" stroke="#3b4a5e" stroke-width="1.3"/>
+<path d="M1980,905 a5,5 0 0 1 5,-5 h280 a5,5 0 0 1 5,5 v31 h-290 z" fill="#4f6f7a"/>
+<text x="1988" y="915" font-size="12.5" font-weight="bold" text-anchor="start" fill="#ffffff">attachment</text>
+<text x="1988" y="930" font-size="9.5" font-style="italic" text-anchor="start" fill="#dfe7ef">«supporting»</text>
+<text x="1986" y="948" font-size="9" font-weight="bold" text-anchor="start" fill="#9a3b1c">PK</text>
+<text x="2024" y="948" font-size="10.5" font-weight="bold" text-anchor="start" fill="#1d1d1d">id</text>
+<text x="2264" y="948" font-size="10" text-anchor="end" fill="#5a5a5a">uuid</text>
+<rect x="1981" y="952" width="288" height="15" fill="#f3f6f9"/>
+<text x="1986" y="963" font-size="9" font-weight="bold" text-anchor="start" fill="#2d5f8a">FK</text>
+<text x="2024" y="963" font-size="10.5" text-anchor="start" fill="#1d1d1d">transaction_id</text>
+<text x="2264" y="963" font-size="10" text-anchor="end" fill="#5a5a5a">uuid</text>
+<text x="1986" y="978" font-size="9" font-weight="bold" text-anchor="start" fill="#2d5f8a">FK</text>
+<text x="2024" y="978" font-size="10.5" text-anchor="start" fill="#888888">condition_report_id</text>
+<text x="2264" y="978" font-size="10" text-anchor="end" fill="#a0a0a0">uuid</text>
+<rect x="1981" y="982" width="288" height="15" fill="#f3f6f9"/>
+<text x="1986" y="993" font-size="9" font-weight="bold" text-anchor="start" fill="#2d5f8a">FK</text>
+<text x="2024" y="993" font-size="10.5" text-anchor="start" fill="#888888">dispute_statement_id</text>
+<text x="2264" y="993" font-size="10" text-anchor="end" fill="#a0a0a0">uuid</text>
+<text x="1986" y="1008" font-size="9" font-weight="bold" text-anchor="start" fill="#2d5f8a">FK</text>
+<text x="2024" y="1008" font-size="10.5" text-anchor="start" fill="#1d1d1d">uploaded_by</text>
+<text x="2264" y="1008" font-size="10" text-anchor="end" fill="#5a5a5a">uuid</text>
+<rect x="1981" y="1012" width="288" height="15" fill="#f3f6f9"/>
+<text x="1986" y="1023" font-size="9" font-weight="bold" text-anchor="start" fill="#2d5f8a"></text>
+<text x="2024" y="1023" font-size="10.5" text-anchor="start" fill="#1d1d1d">kind</text>
+<text x="2264" y="1023" font-size="10" text-anchor="end" fill="#5a5a5a">attachment_kind</text>
+<text x="1986" y="1038" font-size="9" font-weight="bold" text-anchor="start" fill="#2d5f8a">UQ</text>
+<text x="2024" y="1038" font-size="10.5" text-anchor="start" fill="#1d1d1d">storage_key</text>
+<text x="2264" y="1038" font-size="10" text-anchor="end" fill="#5a5a5a">text</text>
+<rect x="1981" y="1042" width="288" height="15" fill="#f3f6f9"/>
+<text x="1986" y="1053" font-size="9" font-weight="bold" text-anchor="start" fill="#2d5f8a"></text>
+<text x="2024" y="1053" font-size="10.5" text-anchor="start" fill="#1d1d1d">content_sha256</text>
+<text x="2264" y="1053" font-size="10" text-anchor="end" fill="#5a5a5a">bytea</text>
+<text x="1986" y="1068" font-size="9" font-weight="bold" text-anchor="start" fill="#2d5f8a"></text>
+<text x="2024" y="1068" font-size="10.5" text-anchor="start" fill="#1d1d1d">mime_type</text>
+<text x="2264" y="1068" font-size="10" text-anchor="end" fill="#5a5a5a">text</text>
+<rect x="1981" y="1072" width="288" height="15" fill="#f3f6f9"/>
+<text x="1986" y="1083" font-size="9" font-weight="bold" text-anchor="start" fill="#2d5f8a"></text>
+<text x="2024" y="1083" font-size="10.5" text-anchor="start" fill="#1d1d1d">metadata_stripped</text>
+<text x="2264" y="1083" font-size="10" text-anchor="end" fill="#5a5a5a">bool</text>
+<text x="1986" y="1098" font-size="9" font-weight="bold" text-anchor="start" fill="#2d5f8a"></text>
+<text x="2024" y="1098" font-size="10.5" text-anchor="start" fill="#1d1d1d">created_at</text>
+<text x="2264" y="1098" font-size="10" text-anchor="end" fill="#5a5a5a">timestamptz</text>
+<rect x="30" y="830" width="290" height="267" rx="5" fill="#ffffff" stroke="#3b4a5e" stroke-width="1.3"/>
+<path d="M30,835 a5,5 0 0 1 5,-5 h280 a5,5 0 0 1 5,5 v31 h-290 z" fill="#1f3a5f"/>
+<text x="38" y="845" font-size="12.5" font-weight="bold" text-anchor="start" fill="#ffffff">audit_log</text>
+<text x="38" y="860" font-size="9.5" font-style="italic" text-anchor="start" fill="#dfe7ef">«AuditLog»  ·  append-only</text>
+<text x="36" y="878" font-size="9" font-weight="bold" text-anchor="start" fill="#9a3b1c">PK</text>
+<text x="74" y="878" font-size="10.5" font-weight="bold" text-anchor="start" fill="#1d1d1d">id</text>
+<text x="314" y="878" font-size="10" text-anchor="end" fill="#5a5a5a">bigint</text>
+<rect x="31" y="882" width="288" height="15" fill="#f3f6f9"/>
+<text x="36" y="893" font-size="9" font-weight="bold" text-anchor="start" fill="#2d5f8a"></text>
+<text x="74" y="893" font-size="10.5" text-anchor="start" fill="#1d1d1d">occurred_at</text>
+<text x="314" y="893" font-size="10" text-anchor="end" fill="#5a5a5a">timestamptz</text>
+<text x="36" y="908" font-size="9" font-weight="bold" text-anchor="start" fill="#2d5f8a">FK</text>
+<text x="74" y="908" font-size="10.5" text-anchor="start" fill="#888888">actor_user_id</text>
+<text x="314" y="908" font-size="10" text-anchor="end" fill="#a0a0a0">uuid</text>
+<rect x="31" y="912" width="288" height="15" fill="#f3f6f9"/>
+<text x="36" y="923" font-size="9" font-weight="bold" text-anchor="start" fill="#2d5f8a"></text>
+<text x="74" y="923" font-size="10.5" text-anchor="start" fill="#1d1d1d">actor_role</text>
+<text x="314" y="923" font-size="10" text-anchor="end" fill="#5a5a5a">audit_actor_role</text>
+<text x="36" y="938" font-size="9" font-weight="bold" text-anchor="start" fill="#2d5f8a"></text>
+<text x="74" y="938" font-size="10.5" text-anchor="start" fill="#1d1d1d">action</text>
+<text x="314" y="938" font-size="10" text-anchor="end" fill="#5a5a5a">text</text>
+<rect x="31" y="942" width="288" height="15" fill="#f3f6f9"/>
+<text x="36" y="953" font-size="9" font-weight="bold" text-anchor="start" fill="#2d5f8a"></text>
+<text x="74" y="953" font-size="10.5" text-anchor="start" fill="#1d1d1d">target_type</text>
+<text x="314" y="953" font-size="10" text-anchor="end" fill="#5a5a5a">text</text>
+<text x="36" y="968" font-size="9" font-weight="bold" text-anchor="start" fill="#2d5f8a"></text>
+<text x="74" y="968" font-size="10.5" text-anchor="start" fill="#1d1d1d">target_id</text>
+<text x="314" y="968" font-size="10" text-anchor="end" fill="#5a5a5a">text</text>
+<rect x="31" y="972" width="288" height="15" fill="#f3f6f9"/>
+<text x="36" y="983" font-size="9" font-weight="bold" text-anchor="start" fill="#2d5f8a"></text>
+<text x="74" y="983" font-size="10.5" text-anchor="start" fill="#888888">previous_value</text>
+<text x="314" y="983" font-size="10" text-anchor="end" fill="#a0a0a0">jsonb</text>
+<text x="36" y="998" font-size="9" font-weight="bold" text-anchor="start" fill="#2d5f8a"></text>
+<text x="74" y="998" font-size="10.5" text-anchor="start" fill="#888888">new_value</text>
+<text x="314" y="998" font-size="10" text-anchor="end" fill="#a0a0a0">jsonb</text>
+<rect x="31" y="1002" width="288" height="15" fill="#f3f6f9"/>
+<text x="36" y="1013" font-size="9" font-weight="bold" text-anchor="start" fill="#2d5f8a"></text>
+<text x="74" y="1013" font-size="10.5" text-anchor="start" fill="#1d1d1d">evidence</text>
+<text x="314" y="1013" font-size="10" text-anchor="end" fill="#5a5a5a">jsonb</text>
+<text x="36" y="1028" font-size="9" font-weight="bold" text-anchor="start" fill="#2d5f8a"></text>
+<text x="74" y="1028" font-size="10.5" text-anchor="start" fill="#1d1d1d">authorisation</text>
+<text x="314" y="1028" font-size="10" text-anchor="end" fill="#5a5a5a">text</text>
+<rect x="31" y="1032" width="288" height="15" fill="#f3f6f9"/>
+<text x="36" y="1043" font-size="9" font-weight="bold" text-anchor="start" fill="#2d5f8a"></text>
+<text x="74" y="1043" font-size="10.5" text-anchor="start" fill="#1d1d1d">outcome</text>
+<text x="314" y="1043" font-size="10" text-anchor="end" fill="#5a5a5a">text</text>
+<text x="36" y="1058" font-size="9" font-weight="bold" text-anchor="start" fill="#2d5f8a"></text>
+<text x="74" y="1058" font-size="10.5" text-anchor="start" fill="#888888">reason</text>
+<text x="314" y="1058" font-size="10" text-anchor="end" fill="#a0a0a0">text</text>
+<rect x="31" y="1062" width="288" height="15" fill="#f3f6f9"/>
+<text x="36" y="1073" font-size="9" font-weight="bold" text-anchor="start" fill="#2d5f8a"></text>
+<text x="74" y="1073" font-size="10.5" text-anchor="start" fill="#888888">prev_hash</text>
+<text x="314" y="1073" font-size="10" text-anchor="end" fill="#a0a0a0">bytea</text>
+<text x="36" y="1088" font-size="9" font-weight="bold" text-anchor="start" fill="#2d5f8a"></text>
+<text x="74" y="1088" font-size="10.5" text-anchor="start" fill="#1d1d1d">row_hash</text>
+<text x="314" y="1088" font-size="10" text-anchor="end" fill="#5a5a5a">bytea</text>
+<rect x="810" y="630" width="290" height="117" rx="5" fill="#ffffff" stroke="#3b4a5e" stroke-width="1.3"/>
+<path d="M810,635 a5,5 0 0 1 5,-5 h280 a5,5 0 0 1 5,5 v31 h-290 z" fill="#4f6f7a"/>
+<text x="818" y="645" font-size="12.5" font-weight="bold" text-anchor="start" fill="#ffffff">availability_block</text>
+<text x="818" y="660" font-size="9.5" font-style="italic" text-anchor="start" fill="#dfe7ef">«supporting»</text>
+<text x="816" y="678" font-size="9" font-weight="bold" text-anchor="start" fill="#9a3b1c">PK</text>
+<text x="854" y="678" font-size="10.5" font-weight="bold" text-anchor="start" fill="#1d1d1d">id</text>
+<text x="1094" y="678" font-size="10" text-anchor="end" fill="#5a5a5a">uuid</text>
+<rect x="811" y="682" width="288" height="15" fill="#f3f6f9"/>
+<text x="816" y="693" font-size="9" font-weight="bold" text-anchor="start" fill="#2d5f8a">FK</text>
+<text x="854" y="693" font-size="10.5" text-anchor="start" fill="#1d1d1d">item_id</text>
+<text x="1094" y="693" font-size="10" text-anchor="end" fill="#5a5a5a">uuid</text>
+<text x="816" y="708" font-size="9" font-weight="bold" text-anchor="start" fill="#2d5f8a"></text>
+<text x="854" y="708" font-size="10.5" text-anchor="start" fill="#1d1d1d">period</text>
+<text x="1094" y="708" font-size="10" text-anchor="end" fill="#5a5a5a">tstzrange</text>
+<rect x="811" y="712" width="288" height="15" fill="#f3f6f9"/>
+<text x="816" y="723" font-size="9" font-weight="bold" text-anchor="start" fill="#2d5f8a"></text>
+<text x="854" y="723" font-size="10.5" text-anchor="start" fill="#888888">note</text>
+<text x="1094" y="723" font-size="10" text-anchor="end" fill="#a0a0a0">text</text>
+<text x="816" y="738" font-size="9" font-weight="bold" text-anchor="start" fill="#2d5f8a"></text>
+<text x="854" y="738" font-size="10.5" text-anchor="start" fill="#1d1d1d">created_at</text>
+<text x="1094" y="738" font-size="10" text-anchor="end" fill="#5a5a5a">timestamptz</text>
+<rect x="1200" y="290" width="290" height="207" rx="5" fill="#ffffff" stroke="#3b4a5e" stroke-width="1.3"/>
+<path d="M1200,295 a5,5 0 0 1 5,-5 h280 a5,5 0 0 1 5,5 v31 h-290 z" fill="#1f3a5f"/>
+<text x="1208" y="305" font-size="12.5" font-weight="bold" text-anchor="start" fill="#ffffff">borrow_transaction</text>
+<text x="1208" y="320" font-size="9.5" font-style="italic" text-anchor="start" fill="#dfe7ef">«Transaction»</text>
+<text x="1206" y="338" font-size="9" font-weight="bold" text-anchor="start" fill="#9a3b1c">PK</text>
+<text x="1244" y="338" font-size="10.5" font-weight="bold" text-anchor="start" fill="#1d1d1d">id</text>
+<text x="1484" y="338" font-size="10" text-anchor="end" fill="#5a5a5a">uuid</text>
+<rect x="1201" y="342" width="288" height="15" fill="#f3f6f9"/>
+<text x="1206" y="353" font-size="9" font-weight="bold" text-anchor="start" fill="#2d5f8a">FK</text>
+<text x="1244" y="353" font-size="10.5" text-anchor="start" fill="#1d1d1d">item_id</text>
+<text x="1484" y="353" font-size="10" text-anchor="end" fill="#5a5a5a">uuid</text>
+<text x="1206" y="368" font-size="9" font-weight="bold" text-anchor="start" fill="#2d5f8a">FK</text>
+<text x="1244" y="368" font-size="10.5" text-anchor="start" fill="#1d1d1d">borrower_id</text>
+<text x="1484" y="368" font-size="10" text-anchor="end" fill="#5a5a5a">uuid</text>
+<rect x="1201" y="372" width="288" height="15" fill="#f3f6f9"/>
+<text x="1206" y="383" font-size="9" font-weight="bold" text-anchor="start" fill="#2d5f8a">FK</text>
+<text x="1244" y="383" font-size="10.5" text-anchor="start" fill="#1d1d1d">lender_id</text>
+<text x="1484" y="383" font-size="10" text-anchor="end" fill="#5a5a5a">uuid</text>
+<text x="1206" y="398" font-size="9" font-weight="bold" text-anchor="start" fill="#2d5f8a"></text>
+<text x="1244" y="398" font-size="10.5" text-anchor="start" fill="#1d1d1d">period</text>
+<text x="1484" y="398" font-size="10" text-anchor="end" fill="#5a5a5a">tstzrange</text>
+<rect x="1201" y="402" width="288" height="15" fill="#f3f6f9"/>
+<text x="1206" y="413" font-size="9" font-weight="bold" text-anchor="start" fill="#2d5f8a"></text>
+<text x="1244" y="413" font-size="10.5" text-anchor="start" fill="#888888">handover_time</text>
+<text x="1484" y="413" font-size="10" text-anchor="end" fill="#a0a0a0">timestamptz</text>
+<text x="1206" y="428" font-size="9" font-weight="bold" text-anchor="start" fill="#2d5f8a"></text>
+<text x="1244" y="428" font-size="10.5" text-anchor="start" fill="#888888">current_state</text>
+<text x="1484" y="428" font-size="10" text-anchor="end" fill="#a0a0a0">txn_state</text>
+<rect x="1201" y="432" width="288" height="15" fill="#f3f6f9"/>
+<text x="1206" y="443" font-size="9" font-weight="bold" text-anchor="start" fill="#2d5f8a"></text>
+<text x="1244" y="443" font-size="10.5" text-anchor="start" fill="#1d1d1d">version</text>
+<text x="1484" y="443" font-size="10" text-anchor="end" fill="#5a5a5a">int</text>
+<text x="1206" y="458" font-size="9" font-weight="bold" text-anchor="start" fill="#2d5f8a"></text>
+<text x="1244" y="458" font-size="10.5" text-anchor="start" fill="#888888">last_event_at</text>
+<text x="1484" y="458" font-size="10" text-anchor="end" fill="#a0a0a0">timestamptz</text>
+<rect x="1201" y="462" width="288" height="15" fill="#f3f6f9"/>
+<text x="1206" y="473" font-size="9" font-weight="bold" text-anchor="start" fill="#2d5f8a"></text>
+<text x="1244" y="473" font-size="10.5" text-anchor="start" fill="#888888">closed_at</text>
+<text x="1484" y="473" font-size="10" text-anchor="end" fill="#a0a0a0">timestamptz</text>
+<text x="1206" y="488" font-size="9" font-weight="bold" text-anchor="start" fill="#2d5f8a"></text>
+<text x="1244" y="488" font-size="10.5" text-anchor="start" fill="#1d1d1d">created_at</text>
+<text x="1484" y="488" font-size="10" text-anchor="end" fill="#5a5a5a">timestamptz</text>
+<rect x="810" y="470" width="290" height="102" rx="5" fill="#ffffff" stroke="#3b4a5e" stroke-width="1.3"/>
+<path d="M810,475 a5,5 0 0 1 5,-5 h280 a5,5 0 0 1 5,5 v31 h-290 z" fill="#4f6f7a"/>
+<text x="818" y="485" font-size="12.5" font-weight="bold" text-anchor="start" fill="#ffffff">category</text>
+<text x="818" y="500" font-size="9.5" font-style="italic" text-anchor="start" fill="#dfe7ef">«supporting»</text>
+<text x="816" y="518" font-size="9" font-weight="bold" text-anchor="start" fill="#9a3b1c">PK</text>
+<text x="854" y="518" font-size="10.5" font-weight="bold" text-anchor="start" fill="#1d1d1d">id</text>
+<text x="1094" y="518" font-size="10" text-anchor="end" fill="#5a5a5a">smallint</text>
+<rect x="811" y="522" width="288" height="15" fill="#f3f6f9"/>
+<text x="816" y="533" font-size="9" font-weight="bold" text-anchor="start" fill="#2d5f8a">UQ</text>
+<text x="854" y="533" font-size="10.5" text-anchor="start" fill="#1d1d1d">name</text>
+<text x="1094" y="533" font-size="10" text-anchor="end" fill="#5a5a5a">text</text>
+<text x="816" y="548" font-size="9" font-weight="bold" text-anchor="start" fill="#2d5f8a"></text>
+<text x="854" y="548" font-size="10.5" text-anchor="start" fill="#1d1d1d">is_restricted</text>
+<text x="1094" y="548" font-size="10" text-anchor="end" fill="#5a5a5a">bool</text>
+<rect x="811" y="552" width="288" height="15" fill="#f3f6f9"/>
+<text x="816" y="563" font-size="9" font-weight="bold" text-anchor="start" fill="#2d5f8a"></text>
+<text x="854" y="563" font-size="10.5" text-anchor="start" fill="#1d1d1d">min_verification</text>
+<text x="1094" y="563" font-size="10" text-anchor="end" fill="#5a5a5a">verification_level</text>
+<rect x="30" y="110" width="290" height="192" rx="5" fill="#ffffff" stroke="#3b4a5e" stroke-width="1.3"/>
+<path d="M30,115 a5,5 0 0 1 5,-5 h280 a5,5 0 0 1 5,5 v31 h-290 z" fill="#1f3a5f"/>
+<text x="38" y="125" font-size="12.5" font-weight="bold" text-anchor="start" fill="#ffffff">community</text>
+<text x="38" y="140" font-size="9.5" font-style="italic" text-anchor="start" fill="#dfe7ef">«Community»</text>
+<text x="36" y="158" font-size="9" font-weight="bold" text-anchor="start" fill="#9a3b1c">PK</text>
+<text x="74" y="158" font-size="10.5" font-weight="bold" text-anchor="start" fill="#1d1d1d">id</text>
+<text x="314" y="158" font-size="10" text-anchor="end" fill="#5a5a5a">uuid</text>
+<rect x="31" y="162" width="288" height="15" fill="#f3f6f9"/>
+<text x="36" y="173" font-size="9" font-weight="bold" text-anchor="start" fill="#2d5f8a"></text>
+<text x="74" y="173" font-size="10.5" text-anchor="start" fill="#1d1d1d">name</text>
+<text x="314" y="173" font-size="10" text-anchor="end" fill="#5a5a5a">text</text>
+<text x="36" y="188" font-size="9" font-weight="bold" text-anchor="start" fill="#2d5f8a">UQ</text>
+<text x="74" y="188" font-size="10.5" text-anchor="start" fill="#1d1d1d">join_code</text>
+<text x="314" y="188" font-size="10" text-anchor="end" fill="#5a5a5a">text</text>
+<rect x="31" y="192" width="288" height="15" fill="#f3f6f9"/>
+<text x="36" y="203" font-size="9" font-weight="bold" text-anchor="start" fill="#2d5f8a"></text>
+<text x="74" y="203" font-size="10.5" text-anchor="start" fill="#1d1d1d">join_policy</text>
+<text x="314" y="203" font-size="10" text-anchor="end" fill="#5a5a5a">join_policy</text>
+<text x="36" y="218" font-size="9" font-weight="bold" text-anchor="start" fill="#2d5f8a"></text>
+<text x="74" y="218" font-size="10.5" text-anchor="start" fill="#1d1d1d">allowed_methods</text>
+<text x="314" y="218" font-size="10" text-anchor="end" fill="#5a5a5a">verification_method[]</text>
+<rect x="31" y="222" width="288" height="15" fill="#f3f6f9"/>
+<text x="36" y="233" font-size="9" font-weight="bold" text-anchor="start" fill="#2d5f8a"></text>
+<text x="74" y="233" font-size="10.5" text-anchor="start" fill="#888888">boundary_geojson</text>
+<text x="314" y="233" font-size="10" text-anchor="end" fill="#a0a0a0">jsonb</text>
+<text x="36" y="248" font-size="9" font-weight="bold" text-anchor="start" fill="#2d5f8a"></text>
+<text x="74" y="248" font-size="10.5" text-anchor="start" fill="#1d1d1d">verification_valid_for</text>
+<text x="314" y="248" font-size="10" text-anchor="end" fill="#5a5a5a">interval</text>
+<rect x="31" y="252" width="288" height="15" fill="#f3f6f9"/>
+<text x="36" y="263" font-size="9" font-weight="bold" text-anchor="start" fill="#2d5f8a"></text>
+<text x="74" y="263" font-size="10.5" text-anchor="start" fill="#888888">rules</text>
+<text x="314" y="263" font-size="10" text-anchor="end" fill="#a0a0a0">text</text>
+<text x="36" y="278" font-size="9" font-weight="bold" text-anchor="start" fill="#2d5f8a"></text>
+<text x="74" y="278" font-size="10.5" text-anchor="start" fill="#1d1d1d">is_active</text>
+<text x="314" y="278" font-size="10" text-anchor="end" fill="#5a5a5a">bool</text>
+<rect x="31" y="282" width="288" height="15" fill="#f3f6f9"/>
+<text x="36" y="293" font-size="9" font-weight="bold" text-anchor="start" fill="#2d5f8a"></text>
+<text x="74" y="293" font-size="10.5" text-anchor="start" fill="#1d1d1d">created_at</text>
+<text x="314" y="293" font-size="10" text-anchor="end" fill="#5a5a5a">timestamptz</text>
+<rect x="1200" y="830" width="290" height="177" rx="5" fill="#ffffff" stroke="#3b4a5e" stroke-width="1.3"/>
+<path d="M1200,835 a5,5 0 0 1 5,-5 h280 a5,5 0 0 1 5,5 v31 h-290 z" fill="#4f6f7a"/>
+<text x="1208" y="845" font-size="12.5" font-weight="bold" text-anchor="start" fill="#ffffff">condition_report</text>
+<text x="1208" y="860" font-size="9.5" font-style="italic" text-anchor="start" fill="#dfe7ef">«supporting»  ·  append-only</text>
+<text x="1206" y="878" font-size="9" font-weight="bold" text-anchor="start" fill="#9a3b1c">PK</text>
+<text x="1244" y="878" font-size="10.5" font-weight="bold" text-anchor="start" fill="#1d1d1d">id</text>
+<text x="1484" y="878" font-size="10" text-anchor="end" fill="#5a5a5a">uuid</text>
+<rect x="1201" y="882" width="288" height="15" fill="#f3f6f9"/>
+<text x="1206" y="893" font-size="9" font-weight="bold" text-anchor="start" fill="#2d5f8a">FK</text>
+<text x="1244" y="893" font-size="10.5" text-anchor="start" fill="#1d1d1d">transaction_id</text>
+<text x="1484" y="893" font-size="10" text-anchor="end" fill="#5a5a5a">uuid</text>
+<text x="1206" y="908" font-size="9" font-weight="bold" text-anchor="start" fill="#2d5f8a"></text>
+<text x="1244" y="908" font-size="10.5" text-anchor="start" fill="#1d1d1d">phase</text>
+<text x="1484" y="908" font-size="10" text-anchor="end" fill="#5a5a5a">condition_phase</text>
+<rect x="1201" y="912" width="288" height="15" fill="#f3f6f9"/>
+<text x="1206" y="923" font-size="9" font-weight="bold" text-anchor="start" fill="#2d5f8a">FK</text>
+<text x="1244" y="923" font-size="10.5" text-anchor="start" fill="#1d1d1d">reported_by</text>
+<text x="1484" y="923" font-size="10" text-anchor="end" fill="#5a5a5a">uuid</text>
+<text x="1206" y="938" font-size="9" font-weight="bold" text-anchor="start" fill="#2d5f8a"></text>
+<text x="1244" y="938" font-size="10.5" text-anchor="start" fill="#1d1d1d">reporter_role</text>
+<text x="1484" y="938" font-size="10" text-anchor="end" fill="#5a5a5a">party_role</text>
+<rect x="1201" y="942" width="288" height="15" fill="#f3f6f9"/>
+<text x="1206" y="953" font-size="9" font-weight="bold" text-anchor="start" fill="#2d5f8a"></text>
+<text x="1244" y="953" font-size="10.5" text-anchor="start" fill="#1d1d1d">checklist</text>
+<text x="1484" y="953" font-size="10" text-anchor="end" fill="#5a5a5a">jsonb</text>
+<text x="1206" y="968" font-size="9" font-weight="bold" text-anchor="start" fill="#2d5f8a"></text>
+<text x="1244" y="968" font-size="10.5" text-anchor="start" fill="#888888">notes</text>
+<text x="1484" y="968" font-size="10" text-anchor="end" fill="#a0a0a0">text</text>
+<rect x="1201" y="972" width="288" height="15" fill="#f3f6f9"/>
+<text x="1206" y="983" font-size="9" font-weight="bold" text-anchor="start" fill="#2d5f8a"></text>
+<text x="1244" y="983" font-size="10.5" text-anchor="start" fill="#1d1d1d">reduced_evidence</text>
+<text x="1484" y="983" font-size="10" text-anchor="end" fill="#5a5a5a">bool</text>
+<text x="1206" y="998" font-size="9" font-weight="bold" text-anchor="start" fill="#2d5f8a"></text>
+<text x="1244" y="998" font-size="10.5" text-anchor="start" fill="#1d1d1d">created_at</text>
+<text x="1484" y="998" font-size="10" text-anchor="end" fill="#5a5a5a">timestamptz</text>
+<rect x="1980" y="410" width="290" height="237" rx="5" fill="#ffffff" stroke="#3b4a5e" stroke-width="1.3"/>
+<path d="M1980,415 a5,5 0 0 1 5,-5 h280 a5,5 0 0 1 5,5 v31 h-290 z" fill="#1f3a5f"/>
+<text x="1988" y="425" font-size="12.5" font-weight="bold" text-anchor="start" fill="#ffffff">dispute</text>
+<text x="1988" y="440" font-size="9.5" font-style="italic" text-anchor="start" fill="#dfe7ef">«Dispute»</text>
+<text x="1986" y="458" font-size="9" font-weight="bold" text-anchor="start" fill="#9a3b1c">PK</text>
+<text x="2024" y="458" font-size="10.5" font-weight="bold" text-anchor="start" fill="#1d1d1d">id</text>
+<text x="2264" y="458" font-size="10" text-anchor="end" fill="#5a5a5a">uuid</text>
+<rect x="1981" y="462" width="288" height="15" fill="#f3f6f9"/>
+<text x="1986" y="473" font-size="9" font-weight="bold" text-anchor="start" fill="#2d5f8a">FK</text>
+<text x="2024" y="473" font-size="10.5" text-anchor="start" fill="#1d1d1d">transaction_id</text>
+<text x="2264" y="473" font-size="10" text-anchor="end" fill="#5a5a5a">uuid</text>
+<text x="1986" y="488" font-size="9" font-weight="bold" text-anchor="start" fill="#2d5f8a">FK,UQ</text>
+<text x="2024" y="488" font-size="10.5" text-anchor="start" fill="#1d1d1d">opened_event_id</text>
+<text x="2264" y="488" font-size="10" text-anchor="end" fill="#5a5a5a">bigint</text>
+<rect x="1981" y="492" width="288" height="15" fill="#f3f6f9"/>
+<text x="1986" y="503" font-size="9" font-weight="bold" text-anchor="start" fill="#2d5f8a">FK</text>
+<text x="2024" y="503" font-size="10.5" text-anchor="start" fill="#888888">raised_by</text>
+<text x="2264" y="503" font-size="10" text-anchor="end" fill="#a0a0a0">uuid</text>
+<text x="1986" y="518" font-size="9" font-weight="bold" text-anchor="start" fill="#2d5f8a"></text>
+<text x="2024" y="518" font-size="10.5" text-anchor="start" fill="#1d1d1d">raised_by_role</text>
+<text x="2264" y="518" font-size="10" text-anchor="end" fill="#5a5a5a">actor_role</text>
+<rect x="1981" y="522" width="288" height="15" fill="#f3f6f9"/>
+<text x="1986" y="533" font-size="9" font-weight="bold" text-anchor="start" fill="#2d5f8a"></text>
+<text x="2024" y="533" font-size="10.5" text-anchor="start" fill="#1d1d1d">reason</text>
+<text x="2264" y="533" font-size="10" text-anchor="end" fill="#5a5a5a">dispute_reason</text>
+<text x="1986" y="548" font-size="9" font-weight="bold" text-anchor="start" fill="#2d5f8a"></text>
+<text x="2024" y="548" font-size="10.5" text-anchor="start" fill="#888888">description</text>
+<text x="2264" y="548" font-size="10" text-anchor="end" fill="#a0a0a0">text</text>
+<rect x="1981" y="552" width="288" height="15" fill="#f3f6f9"/>
+<text x="1986" y="563" font-size="9" font-weight="bold" text-anchor="start" fill="#2d5f8a"></text>
+<text x="2024" y="563" font-size="10.5" text-anchor="start" fill="#1d1d1d">status</text>
+<text x="2264" y="563" font-size="10" text-anchor="end" fill="#5a5a5a">dispute_status</text>
+<text x="1986" y="578" font-size="9" font-weight="bold" text-anchor="start" fill="#2d5f8a">FK</text>
+<text x="2024" y="578" font-size="10.5" text-anchor="start" fill="#888888">assigned_to</text>
+<text x="2264" y="578" font-size="10" text-anchor="end" fill="#a0a0a0">uuid</text>
+<rect x="1981" y="582" width="288" height="15" fill="#f3f6f9"/>
+<text x="1986" y="593" font-size="9" font-weight="bold" text-anchor="start" fill="#2d5f8a"></text>
+<text x="2024" y="593" font-size="10.5" text-anchor="start" fill="#1d1d1d">response_deadline</text>
+<text x="2264" y="593" font-size="10" text-anchor="end" fill="#5a5a5a">timestamptz</text>
+<text x="1986" y="608" font-size="9" font-weight="bold" text-anchor="start" fill="#2d5f8a"></text>
+<text x="2024" y="608" font-size="10.5" text-anchor="start" fill="#1d1d1d">opened_at</text>
+<text x="2264" y="608" font-size="10" text-anchor="end" fill="#5a5a5a">timestamptz</text>
+<rect x="1981" y="612" width="288" height="15" fill="#f3f6f9"/>
+<text x="1986" y="623" font-size="9" font-weight="bold" text-anchor="start" fill="#2d5f8a"></text>
+<text x="2024" y="623" font-size="10.5" text-anchor="start" fill="#888888">closed_at</text>
+<text x="2264" y="623" font-size="10" text-anchor="end" fill="#a0a0a0">timestamptz</text>
+<text x="1986" y="638" font-size="9" font-weight="bold" text-anchor="start" fill="#2d5f8a">FK</text>
+<text x="2024" y="638" font-size="10.5" text-anchor="start" fill="#888888">closing_event_id</text>
+<text x="2264" y="638" font-size="10" text-anchor="end" fill="#a0a0a0">bigint</text>
+<rect x="1980" y="710" width="290" height="132" rx="5" fill="#ffffff" stroke="#3b4a5e" stroke-width="1.3"/>
+<path d="M1980,715 a5,5 0 0 1 5,-5 h280 a5,5 0 0 1 5,5 v31 h-290 z" fill="#4f6f7a"/>
+<text x="1988" y="725" font-size="12.5" font-weight="bold" text-anchor="start" fill="#ffffff">dispute_statement</text>
+<text x="1988" y="740" font-size="9.5" font-style="italic" text-anchor="start" fill="#dfe7ef">«supporting»  ·  append-only</text>
+<text x="1986" y="758" font-size="9" font-weight="bold" text-anchor="start" fill="#9a3b1c">PK</text>
+<text x="2024" y="758" font-size="10.5" font-weight="bold" text-anchor="start" fill="#1d1d1d">id</text>
+<text x="2264" y="758" font-size="10" text-anchor="end" fill="#5a5a5a">uuid</text>
+<rect x="1981" y="762" width="288" height="15" fill="#f3f6f9"/>
+<text x="1986" y="773" font-size="9" font-weight="bold" text-anchor="start" fill="#2d5f8a">FK</text>
+<text x="2024" y="773" font-size="10.5" text-anchor="start" fill="#1d1d1d">dispute_id</text>
+<text x="2264" y="773" font-size="10" text-anchor="end" fill="#5a5a5a">uuid</text>
+<text x="1986" y="788" font-size="9" font-weight="bold" text-anchor="start" fill="#2d5f8a">FK</text>
+<text x="2024" y="788" font-size="10.5" text-anchor="start" fill="#1d1d1d">author_id</text>
+<text x="2264" y="788" font-size="10" text-anchor="end" fill="#5a5a5a">uuid</text>
+<rect x="1981" y="792" width="288" height="15" fill="#f3f6f9"/>
+<text x="1986" y="803" font-size="9" font-weight="bold" text-anchor="start" fill="#2d5f8a"></text>
+<text x="2024" y="803" font-size="10.5" text-anchor="start" fill="#1d1d1d">author_role</text>
+<text x="2264" y="803" font-size="10" text-anchor="end" fill="#5a5a5a">party_role</text>
+<text x="1986" y="818" font-size="9" font-weight="bold" text-anchor="start" fill="#2d5f8a"></text>
+<text x="2024" y="818" font-size="10.5" text-anchor="start" fill="#1d1d1d">statement</text>
+<text x="2264" y="818" font-size="10" text-anchor="end" fill="#5a5a5a">text</text>
+<rect x="1981" y="822" width="288" height="15" fill="#f3f6f9"/>
+<text x="1986" y="833" font-size="9" font-weight="bold" text-anchor="start" fill="#2d5f8a"></text>
+<text x="2024" y="833" font-size="10.5" text-anchor="start" fill="#1d1d1d">created_at</text>
+<text x="2264" y="833" font-size="10" text-anchor="end" fill="#5a5a5a">timestamptz</text>
+<rect x="1980" y="110" width="290" height="237" rx="5" fill="#ffffff" stroke="#3b4a5e" stroke-width="1.3"/>
+<path d="M1980,115 a5,5 0 0 1 5,-5 h280 a5,5 0 0 1 5,5 v31 h-290 z" fill="#1f3a5f"/>
+<text x="1988" y="125" font-size="12.5" font-weight="bold" text-anchor="start" fill="#ffffff">evidence_record</text>
+<text x="1988" y="140" font-size="9.5" font-style="italic" text-anchor="start" fill="#dfe7ef">«EvidenceRecord»  ·  fields: Student 2</text>
+<text x="1986" y="158" font-size="9" font-weight="bold" text-anchor="start" fill="#9a3b1c">PK</text>
+<text x="2024" y="158" font-size="10.5" font-weight="bold" text-anchor="start" fill="#1d1d1d">id</text>
+<text x="2264" y="158" font-size="10" text-anchor="end" fill="#5a5a5a">uuid</text>
+<rect x="1981" y="162" width="288" height="15" fill="#f3f6f9"/>
+<text x="1986" y="173" font-size="9" font-weight="bold" text-anchor="start" fill="#2d5f8a">FK</text>
+<text x="2024" y="173" font-size="10.5" text-anchor="start" fill="#1d1d1d">subject_user_id</text>
+<text x="2264" y="173" font-size="10" text-anchor="end" fill="#5a5a5a">uuid</text>
+<text x="1986" y="188" font-size="9" font-weight="bold" text-anchor="start" fill="#2d5f8a"></text>
+<text x="2024" y="188" font-size="10.5" text-anchor="start" fill="#1d1d1d">subject_role</text>
+<text x="2264" y="188" font-size="10" text-anchor="end" fill="#5a5a5a">party_role</text>
+<rect x="1981" y="192" width="288" height="15" fill="#f3f6f9"/>
+<text x="1986" y="203" font-size="9" font-weight="bold" text-anchor="start" fill="#2d5f8a">FK</text>
+<text x="2024" y="203" font-size="10.5" text-anchor="start" fill="#1d1d1d">source_event_id</text>
+<text x="2264" y="203" font-size="10" text-anchor="end" fill="#5a5a5a">bigint</text>
+<text x="1986" y="218" font-size="9" font-weight="bold" text-anchor="start" fill="#2d5f8a"></text>
+<text x="2024" y="218" font-size="10.5" text-anchor="start" fill="#1d1d1d">outcome</text>
+<text x="2264" y="218" font-size="10" text-anchor="end" fill="#5a5a5a">outcome_kind</text>
+<rect x="1981" y="222" width="288" height="15" fill="#f3f6f9"/>
+<text x="1986" y="233" font-size="9" font-weight="bold" text-anchor="start" fill="#2d5f8a"></text>
+<text x="2024" y="233" font-size="10.5" text-anchor="start" fill="#888888">on_time</text>
+<text x="2264" y="233" font-size="10" text-anchor="end" fill="#a0a0a0">bool</text>
+<text x="1986" y="248" font-size="9" font-weight="bold" text-anchor="start" fill="#2d5f8a"></text>
+<text x="2024" y="248" font-size="10.5" text-anchor="start" fill="#1d1d1d">condition_agreed</text>
+<text x="2264" y="248" font-size="10" text-anchor="end" fill="#5a5a5a">bool</text>
+<rect x="1981" y="252" width="288" height="15" fill="#f3f6f9"/>
+<text x="1986" y="263" font-size="9" font-weight="bold" text-anchor="start" fill="#2d5f8a">FK</text>
+<text x="2024" y="263" font-size="10.5" text-anchor="start" fill="#1d1d1d">category_id</text>
+<text x="2264" y="263" font-size="10" text-anchor="end" fill="#5a5a5a">smallint</text>
+<text x="1986" y="278" font-size="9" font-weight="bold" text-anchor="start" fill="#2d5f8a"></text>
+<text x="2024" y="278" font-size="10.5" text-anchor="start" fill="#1d1d1d">value_band</text>
+<text x="2264" y="278" font-size="10" text-anchor="end" fill="#5a5a5a">value_band</text>
+<rect x="1981" y="282" width="288" height="15" fill="#f3f6f9"/>
+<text x="1986" y="293" font-size="9" font-weight="bold" text-anchor="start" fill="#2d5f8a"></text>
+<text x="2024" y="293" font-size="10.5" text-anchor="start" fill="#1d1d1d">loan_duration</text>
+<text x="2264" y="293" font-size="10" text-anchor="end" fill="#5a5a5a">interval</text>
+<text x="1986" y="308" font-size="9" font-weight="bold" text-anchor="start" fill="#2d5f8a"></text>
+<text x="2024" y="308" font-size="10.5" text-anchor="start" fill="#1d1d1d">occurred_at</text>
+<text x="2264" y="308" font-size="10" text-anchor="end" fill="#5a5a5a">timestamptz</text>
+<rect x="1981" y="312" width="288" height="15" fill="#f3f6f9"/>
+<text x="1986" y="323" font-size="9" font-weight="bold" text-anchor="start" fill="#2d5f8a"></text>
+<text x="2024" y="323" font-size="10.5" text-anchor="start" fill="#1d1d1d">status</text>
+<text x="2264" y="323" font-size="10" text-anchor="end" fill="#5a5a5a">evidence_status</text>
+<text x="1986" y="338" font-size="9" font-weight="bold" text-anchor="start" fill="#2d5f8a">FK</text>
+<text x="2024" y="338" font-size="10.5" text-anchor="start" fill="#888888">flagged_by_decision_id</text>
+<text x="2264" y="338" font-size="10" text-anchor="end" fill="#a0a0a0">uuid</text>
+<rect x="30" y="360" width="290" height="132" rx="5" fill="#ffffff" stroke="#3b4a5e" stroke-width="1.3"/>
+<path d="M30,365 a5,5 0 0 1 5,-5 h280 a5,5 0 0 1 5,5 v31 h-290 z" fill="#4f6f7a"/>
+<text x="38" y="375" font-size="12.5" font-weight="bold" text-anchor="start" fill="#ffffff">invitation</text>
+<text x="38" y="390" font-size="9.5" font-style="italic" text-anchor="start" fill="#dfe7ef">«supporting»</text>
+<text x="36" y="408" font-size="9" font-weight="bold" text-anchor="start" fill="#9a3b1c">PK</text>
+<text x="74" y="408" font-size="10.5" font-weight="bold" text-anchor="start" fill="#1d1d1d">id</text>
+<text x="314" y="408" font-size="10" text-anchor="end" fill="#5a5a5a">uuid</text>
+<rect x="31" y="412" width="288" height="15" fill="#f3f6f9"/>
+<text x="36" y="423" font-size="9" font-weight="bold" text-anchor="start" fill="#2d5f8a">FK</text>
+<text x="74" y="423" font-size="10.5" text-anchor="start" fill="#1d1d1d">community_id</text>
+<text x="314" y="423" font-size="10" text-anchor="end" fill="#5a5a5a">uuid</text>
+<text x="36" y="438" font-size="9" font-weight="bold" text-anchor="start" fill="#2d5f8a">FK</text>
+<text x="74" y="438" font-size="10.5" text-anchor="start" fill="#1d1d1d">inviter_id</text>
+<text x="314" y="438" font-size="10" text-anchor="end" fill="#5a5a5a">uuid</text>
+<rect x="31" y="442" width="288" height="15" fill="#f3f6f9"/>
+<text x="36" y="453" font-size="9" font-weight="bold" text-anchor="start" fill="#2d5f8a">UQ</text>
+<text x="74" y="453" font-size="10.5" text-anchor="start" fill="#1d1d1d">code_hash</text>
+<text x="314" y="453" font-size="10" text-anchor="end" fill="#5a5a5a">bytea</text>
+<text x="36" y="468" font-size="9" font-weight="bold" text-anchor="start" fill="#2d5f8a"></text>
+<text x="74" y="468" font-size="10.5" text-anchor="start" fill="#1d1d1d">created_at</text>
+<text x="314" y="468" font-size="10" text-anchor="end" fill="#5a5a5a">timestamptz</text>
+<rect x="31" y="472" width="288" height="15" fill="#f3f6f9"/>
+<text x="36" y="483" font-size="9" font-weight="bold" text-anchor="start" fill="#2d5f8a"></text>
+<text x="74" y="483" font-size="10.5" text-anchor="start" fill="#1d1d1d">expires_at</text>
+<text x="314" y="483" font-size="10" text-anchor="end" fill="#5a5a5a">timestamptz</text>
+<rect x="810" y="110" width="290" height="297" rx="5" fill="#ffffff" stroke="#3b4a5e" stroke-width="1.3"/>
+<path d="M810,115 a5,5 0 0 1 5,-5 h280 a5,5 0 0 1 5,5 v31 h-290 z" fill="#1f3a5f"/>
+<text x="818" y="125" font-size="12.5" font-weight="bold" text-anchor="start" fill="#ffffff">item</text>
+<text x="818" y="140" font-size="9.5" font-style="italic" text-anchor="start" fill="#dfe7ef">«Item»</text>
+<text x="816" y="158" font-size="9" font-weight="bold" text-anchor="start" fill="#9a3b1c">PK</text>
+<text x="854" y="158" font-size="10.5" font-weight="bold" text-anchor="start" fill="#1d1d1d">id</text>
+<text x="1094" y="158" font-size="10" text-anchor="end" fill="#5a5a5a">uuid</text>
+<rect x="811" y="162" width="288" height="15" fill="#f3f6f9"/>
+<text x="816" y="173" font-size="9" font-weight="bold" text-anchor="start" fill="#2d5f8a">FK</text>
+<text x="854" y="173" font-size="10.5" text-anchor="start" fill="#1d1d1d">owner_id</text>
+<text x="1094" y="173" font-size="10" text-anchor="end" fill="#5a5a5a">uuid</text>
+<text x="816" y="188" font-size="9" font-weight="bold" text-anchor="start" fill="#2d5f8a">FK</text>
+<text x="854" y="188" font-size="10.5" text-anchor="start" fill="#1d1d1d">community_id</text>
+<text x="1094" y="188" font-size="10" text-anchor="end" fill="#5a5a5a">uuid</text>
+<rect x="811" y="192" width="288" height="15" fill="#f3f6f9"/>
+<text x="816" y="203" font-size="9" font-weight="bold" text-anchor="start" fill="#2d5f8a">FK</text>
+<text x="854" y="203" font-size="10.5" text-anchor="start" fill="#1d1d1d">category_id</text>
+<text x="1094" y="203" font-size="10" text-anchor="end" fill="#5a5a5a">smallint</text>
+<text x="816" y="218" font-size="9" font-weight="bold" text-anchor="start" fill="#2d5f8a"></text>
+<text x="854" y="218" font-size="10.5" text-anchor="start" fill="#1d1d1d">title</text>
+<text x="1094" y="218" font-size="10" text-anchor="end" fill="#5a5a5a">text</text>
+<rect x="811" y="222" width="288" height="15" fill="#f3f6f9"/>
+<text x="816" y="233" font-size="9" font-weight="bold" text-anchor="start" fill="#2d5f8a"></text>
+<text x="854" y="233" font-size="10.5" text-anchor="start" fill="#888888">description</text>
+<text x="1094" y="233" font-size="10" text-anchor="end" fill="#a0a0a0">text</text>
+<text x="816" y="248" font-size="9" font-weight="bold" text-anchor="start" fill="#2d5f8a"></text>
+<text x="854" y="248" font-size="10.5" text-anchor="start" fill="#1d1d1d">condition</text>
+<text x="1094" y="248" font-size="10" text-anchor="end" fill="#5a5a5a">item_condition</text>
+<rect x="811" y="252" width="288" height="15" fill="#f3f6f9"/>
+<text x="816" y="263" font-size="9" font-weight="bold" text-anchor="start" fill="#2d5f8a"></text>
+<text x="854" y="263" font-size="10.5" text-anchor="start" fill="#1d1d1d">value_band</text>
+<text x="1094" y="263" font-size="10" text-anchor="end" fill="#5a5a5a">value_band</text>
+<text x="816" y="278" font-size="9" font-weight="bold" text-anchor="start" fill="#2d5f8a"></text>
+<text x="854" y="278" font-size="10.5" text-anchor="start" fill="#888888">estimated_value</text>
+<text x="1094" y="278" font-size="10" text-anchor="end" fill="#a0a0a0">numeric(12,2)</text>
+<rect x="811" y="282" width="288" height="15" fill="#f3f6f9"/>
+<text x="816" y="293" font-size="9" font-weight="bold" text-anchor="start" fill="#2d5f8a"></text>
+<text x="854" y="293" font-size="10.5" text-anchor="start" fill="#1d1d1d">deposit_amount</text>
+<text x="1094" y="293" font-size="10" text-anchor="end" fill="#5a5a5a">numeric(12,2)</text>
+<text x="816" y="308" font-size="9" font-weight="bold" text-anchor="start" fill="#2d5f8a"></text>
+<text x="854" y="308" font-size="10.5" text-anchor="start" fill="#1d1d1d">required_verification</text>
+<text x="1094" y="308" font-size="10" text-anchor="end" fill="#5a5a5a">verification_level</text>
+<rect x="811" y="312" width="288" height="15" fill="#f3f6f9"/>
+<text x="816" y="323" font-size="9" font-weight="bold" text-anchor="start" fill="#2d5f8a"></text>
+<text x="854" y="323" font-size="10.5" text-anchor="start" fill="#888888">usage_instructions</text>
+<text x="1094" y="323" font-size="10" text-anchor="end" fill="#a0a0a0">text</text>
+<text x="816" y="338" font-size="9" font-weight="bold" text-anchor="start" fill="#2d5f8a"></text>
+<text x="854" y="338" font-size="10.5" text-anchor="start" fill="#888888">restrictions</text>
+<text x="1094" y="338" font-size="10" text-anchor="end" fill="#a0a0a0">text</text>
+<rect x="811" y="342" width="288" height="15" fill="#f3f6f9"/>
+<text x="816" y="353" font-size="9" font-weight="bold" text-anchor="start" fill="#2d5f8a"></text>
+<text x="854" y="353" font-size="10.5" text-anchor="start" fill="#1d1d1d">status</text>
+<text x="1094" y="353" font-size="10" text-anchor="end" fill="#5a5a5a">item_status</text>
+<text x="816" y="368" font-size="9" font-weight="bold" text-anchor="start" fill="#2d5f8a"></text>
+<text x="854" y="368" font-size="10.5" text-anchor="start" fill="#888888">listing_expires_at</text>
+<text x="1094" y="368" font-size="10" text-anchor="end" fill="#a0a0a0">timestamptz</text>
+<rect x="811" y="372" width="288" height="15" fill="#f3f6f9"/>
+<text x="816" y="383" font-size="9" font-weight="bold" text-anchor="start" fill="#2d5f8a"></text>
+<text x="854" y="383" font-size="10.5" text-anchor="start" fill="#1d1d1d">created_at</text>
+<text x="1094" y="383" font-size="10" text-anchor="end" fill="#5a5a5a">timestamptz</text>
+<text x="816" y="398" font-size="9" font-weight="bold" text-anchor="start" fill="#2d5f8a"></text>
+<text x="854" y="398" font-size="10.5" text-anchor="start" fill="#1d1d1d">updated_at</text>
+<text x="1094" y="398" font-size="10" text-anchor="end" fill="#5a5a5a">timestamptz</text>
+<rect x="30" y="550" width="290" height="207" rx="5" fill="#ffffff" stroke="#3b4a5e" stroke-width="1.3"/>
+<path d="M30,555 a5,5 0 0 1 5,-5 h280 a5,5 0 0 1 5,5 v31 h-290 z" fill="#4f6f7a"/>
+<text x="38" y="565" font-size="12.5" font-weight="bold" text-anchor="start" fill="#ffffff">locality_verification</text>
+<text x="38" y="580" font-size="9.5" font-style="italic" text-anchor="start" fill="#dfe7ef">«supporting»  ·  append-only</text>
+<text x="36" y="598" font-size="9" font-weight="bold" text-anchor="start" fill="#9a3b1c">PK</text>
+<text x="74" y="598" font-size="10.5" font-weight="bold" text-anchor="start" fill="#1d1d1d">id</text>
+<text x="314" y="598" font-size="10" text-anchor="end" fill="#5a5a5a">uuid</text>
+<rect x="31" y="602" width="288" height="15" fill="#f3f6f9"/>
+<text x="36" y="613" font-size="9" font-weight="bold" text-anchor="start" fill="#2d5f8a">FK</text>
+<text x="74" y="613" font-size="10.5" text-anchor="start" fill="#1d1d1d">membership_id</text>
+<text x="314" y="613" font-size="10" text-anchor="end" fill="#5a5a5a">uuid</text>
+<text x="36" y="628" font-size="9" font-weight="bold" text-anchor="start" fill="#2d5f8a"></text>
+<text x="74" y="628" font-size="10.5" text-anchor="start" fill="#1d1d1d">method</text>
+<text x="314" y="628" font-size="10" text-anchor="end" fill="#5a5a5a">verification_method</text>
+<rect x="31" y="632" width="288" height="15" fill="#f3f6f9"/>
+<text x="36" y="643" font-size="9" font-weight="bold" text-anchor="start" fill="#2d5f8a"></text>
+<text x="74" y="643" font-size="10.5" text-anchor="start" fill="#1d1d1d">outcome</text>
+<text x="314" y="643" font-size="10" text-anchor="end" fill="#5a5a5a">locality_outcome</text>
+<text x="36" y="658" font-size="9" font-weight="bold" text-anchor="start" fill="#2d5f8a"></text>
+<text x="74" y="658" font-size="10.5" text-anchor="start" fill="#1d1d1d">boundary_case</text>
+<text x="314" y="658" font-size="10" text-anchor="end" fill="#5a5a5a">bool</text>
+<rect x="31" y="662" width="288" height="15" fill="#f3f6f9"/>
+<text x="36" y="673" font-size="9" font-weight="bold" text-anchor="start" fill="#2d5f8a"></text>
+<text x="74" y="673" font-size="10.5" text-anchor="start" fill="#1d1d1d">permission_refused</text>
+<text x="314" y="673" font-size="10" text-anchor="end" fill="#5a5a5a">bool</text>
+<text x="36" y="688" font-size="9" font-weight="bold" text-anchor="start" fill="#2d5f8a"></text>
+<text x="74" y="688" font-size="10.5" text-anchor="start" fill="#1d1d1d">location_conflict</text>
+<text x="314" y="688" font-size="10" text-anchor="end" fill="#5a5a5a">bool</text>
+<rect x="31" y="692" width="288" height="15" fill="#f3f6f9"/>
+<text x="36" y="703" font-size="9" font-weight="bold" text-anchor="start" fill="#2d5f8a"></text>
+<text x="74" y="703" font-size="10.5" text-anchor="start" fill="#1d1d1d">duplicate_suspected</text>
+<text x="314" y="703" font-size="10" text-anchor="end" fill="#5a5a5a">bool</text>
+<text x="36" y="718" font-size="9" font-weight="bold" text-anchor="start" fill="#2d5f8a">FK</text>
+<text x="74" y="718" font-size="10.5" text-anchor="start" fill="#888888">invitation_id</text>
+<text x="314" y="718" font-size="10" text-anchor="end" fill="#a0a0a0">uuid</text>
+<rect x="31" y="722" width="288" height="15" fill="#f3f6f9"/>
+<text x="36" y="733" font-size="9" font-weight="bold" text-anchor="start" fill="#2d5f8a"></text>
+<text x="74" y="733" font-size="10.5" text-anchor="start" fill="#1d1d1d">checked_at</text>
+<text x="314" y="733" font-size="10" text-anchor="end" fill="#5a5a5a">timestamptz</text>
+<text x="36" y="748" font-size="9" font-weight="bold" text-anchor="start" fill="#2d5f8a"></text>
+<text x="74" y="748" font-size="10.5" text-anchor="start" fill="#1d1d1d">valid_until</text>
+<text x="314" y="748" font-size="10" text-anchor="end" fill="#5a5a5a">timestamptz</text>
+<rect x="420" y="110" width="290" height="147" rx="5" fill="#ffffff" stroke="#3b4a5e" stroke-width="1.3"/>
+<path d="M420,115 a5,5 0 0 1 5,-5 h280 a5,5 0 0 1 5,5 v31 h-290 z" fill="#4f6f7a"/>
+<text x="428" y="125" font-size="12.5" font-weight="bold" text-anchor="start" fill="#ffffff">membership</text>
+<text x="428" y="140" font-size="9.5" font-style="italic" text-anchor="start" fill="#dfe7ef">«supporting»</text>
+<text x="426" y="158" font-size="9" font-weight="bold" text-anchor="start" fill="#9a3b1c">PK</text>
+<text x="464" y="158" font-size="10.5" font-weight="bold" text-anchor="start" fill="#1d1d1d">id</text>
+<text x="704" y="158" font-size="10" text-anchor="end" fill="#5a5a5a">uuid</text>
+<rect x="421" y="162" width="288" height="15" fill="#f3f6f9"/>
+<text x="426" y="173" font-size="9" font-weight="bold" text-anchor="start" fill="#2d5f8a">FK</text>
+<text x="464" y="173" font-size="10.5" text-anchor="start" fill="#1d1d1d">user_id</text>
+<text x="704" y="173" font-size="10" text-anchor="end" fill="#5a5a5a">uuid</text>
+<text x="426" y="188" font-size="9" font-weight="bold" text-anchor="start" fill="#2d5f8a">FK</text>
+<text x="464" y="188" font-size="10.5" text-anchor="start" fill="#1d1d1d">community_id</text>
+<text x="704" y="188" font-size="10" text-anchor="end" fill="#5a5a5a">uuid</text>
+<rect x="421" y="192" width="288" height="15" fill="#f3f6f9"/>
+<text x="426" y="203" font-size="9" font-weight="bold" text-anchor="start" fill="#2d5f8a"></text>
+<text x="464" y="203" font-size="10.5" text-anchor="start" fill="#1d1d1d">role</text>
+<text x="704" y="203" font-size="10" text-anchor="end" fill="#5a5a5a">membership_role</text>
+<text x="426" y="218" font-size="9" font-weight="bold" text-anchor="start" fill="#2d5f8a"></text>
+<text x="464" y="218" font-size="10.5" text-anchor="start" fill="#1d1d1d">status</text>
+<text x="704" y="218" font-size="10" text-anchor="end" fill="#5a5a5a">membership_status</text>
+<rect x="421" y="222" width="288" height="15" fill="#f3f6f9"/>
+<text x="426" y="233" font-size="9" font-weight="bold" text-anchor="start" fill="#2d5f8a"></text>
+<text x="464" y="233" font-size="10.5" text-anchor="start" fill="#1d1d1d">requested_at</text>
+<text x="704" y="233" font-size="10" text-anchor="end" fill="#5a5a5a">timestamptz</text>
+<text x="426" y="248" font-size="9" font-weight="bold" text-anchor="start" fill="#2d5f8a"></text>
+<text x="464" y="248" font-size="10.5" text-anchor="start" fill="#888888">decided_at</text>
+<text x="704" y="248" font-size="10" text-anchor="end" fill="#a0a0a0">timestamptz</text>
+<rect x="1980" y="1170" width="290" height="237" rx="5" fill="#ffffff" stroke="#3b4a5e" stroke-width="1.3"/>
+<path d="M1980,1175 a5,5 0 0 1 5,-5 h280 a5,5 0 0 1 5,5 v31 h-290 z" fill="#1f3a5f"/>
+<text x="1988" y="1185" font-size="12.5" font-weight="bold" text-anchor="start" fill="#ffffff">moderator_decision</text>
+<text x="1988" y="1200" font-size="9.5" font-style="italic" text-anchor="start" fill="#dfe7ef">«ModeratorDecision»  ·  append-only</text>
+<text x="1986" y="1218" font-size="9" font-weight="bold" text-anchor="start" fill="#9a3b1c">PK</text>
+<text x="2024" y="1218" font-size="10.5" font-weight="bold" text-anchor="start" fill="#1d1d1d">id</text>
+<text x="2264" y="1218" font-size="10" text-anchor="end" fill="#5a5a5a">uuid</text>
+<rect x="1981" y="1222" width="288" height="15" fill="#f3f6f9"/>
+<text x="1986" y="1233" font-size="9" font-weight="bold" text-anchor="start" fill="#2d5f8a"></text>
+<text x="2024" y="1233" font-size="10.5" text-anchor="start" fill="#1d1d1d">context</text>
+<text x="2264" y="1233" font-size="10" text-anchor="end" fill="#5a5a5a">decision_context</text>
+<text x="1986" y="1248" font-size="9" font-weight="bold" text-anchor="start" fill="#2d5f8a"></text>
+<text x="2024" y="1248" font-size="10.5" text-anchor="start" fill="#1d1d1d">kind</text>
+<text x="2264" y="1248" font-size="10" text-anchor="end" fill="#5a5a5a">decision_kind</text>
+<rect x="1981" y="1252" width="288" height="15" fill="#f3f6f9"/>
+<text x="1986" y="1263" font-size="9" font-weight="bold" text-anchor="start" fill="#2d5f8a">FK</text>
+<text x="2024" y="1263" font-size="10.5" text-anchor="start" fill="#1d1d1d">decided_by</text>
+<text x="2264" y="1263" font-size="10" text-anchor="end" fill="#5a5a5a">uuid</text>
+<text x="1986" y="1278" font-size="9" font-weight="bold" text-anchor="start" fill="#2d5f8a"></text>
+<text x="2024" y="1278" font-size="10.5" text-anchor="start" fill="#1d1d1d">decider_role</text>
+<text x="2264" y="1278" font-size="10" text-anchor="end" fill="#5a5a5a">actor_role</text>
+<rect x="1981" y="1282" width="288" height="15" fill="#f3f6f9"/>
+<text x="1986" y="1293" font-size="9" font-weight="bold" text-anchor="start" fill="#2d5f8a">FK</text>
+<text x="2024" y="1293" font-size="10.5" text-anchor="start" fill="#888888">membership_id</text>
+<text x="2264" y="1293" font-size="10" text-anchor="end" fill="#a0a0a0">uuid</text>
+<text x="1986" y="1308" font-size="9" font-weight="bold" text-anchor="start" fill="#2d5f8a">FK</text>
+<text x="2024" y="1308" font-size="10.5" text-anchor="start" fill="#888888">transaction_id</text>
+<text x="2264" y="1308" font-size="10" text-anchor="end" fill="#a0a0a0">uuid</text>
+<rect x="1981" y="1312" width="288" height="15" fill="#f3f6f9"/>
+<text x="1986" y="1323" font-size="9" font-weight="bold" text-anchor="start" fill="#2d5f8a">FK</text>
+<text x="2024" y="1323" font-size="10.5" text-anchor="start" fill="#888888">dispute_id</text>
+<text x="2264" y="1323" font-size="10" text-anchor="end" fill="#a0a0a0">uuid</text>
+<text x="1986" y="1338" font-size="9" font-weight="bold" text-anchor="start" fill="#2d5f8a">FK</text>
+<text x="2024" y="1338" font-size="10.5" text-anchor="start" fill="#888888">event_id</text>
+<text x="2264" y="1338" font-size="10" text-anchor="end" fill="#a0a0a0">bigint</text>
+<rect x="1981" y="1342" width="288" height="15" fill="#f3f6f9"/>
+<text x="1986" y="1353" font-size="9" font-weight="bold" text-anchor="start" fill="#2d5f8a"></text>
+<text x="2024" y="1353" font-size="10.5" text-anchor="start" fill="#1d1d1d">reason</text>
+<text x="2264" y="1353" font-size="10" text-anchor="end" fill="#5a5a5a">text</text>
+<text x="1986" y="1368" font-size="9" font-weight="bold" text-anchor="start" fill="#2d5f8a"></text>
+<text x="2024" y="1368" font-size="10.5" text-anchor="start" fill="#1d1d1d">outcome</text>
+<text x="2264" y="1368" font-size="10" text-anchor="end" fill="#5a5a5a">jsonb</text>
+<rect x="1981" y="1372" width="288" height="15" fill="#f3f6f9"/>
+<text x="1986" y="1383" font-size="9" font-weight="bold" text-anchor="start" fill="#2d5f8a">FK</text>
+<text x="2024" y="1383" font-size="10.5" text-anchor="start" fill="#888888">reverses_decision_id</text>
+<text x="2264" y="1383" font-size="10" text-anchor="end" fill="#a0a0a0">uuid</text>
+<text x="1986" y="1398" font-size="9" font-weight="bold" text-anchor="start" fill="#2d5f8a"></text>
+<text x="2024" y="1398" font-size="10.5" text-anchor="start" fill="#1d1d1d">decided_at</text>
+<text x="2264" y="1398" font-size="10" text-anchor="end" fill="#5a5a5a">timestamptz</text>
+<rect x="1200" y="110" width="290" height="117" rx="5" fill="#ffffff" stroke="#3b4a5e" stroke-width="1.3"/>
+<path d="M1200,115 a5,5 0 0 1 5,-5 h280 a5,5 0 0 1 5,5 v31 h-290 z" fill="#1f3a5f"/>
+<text x="1208" y="125" font-size="12.5" font-weight="bold" text-anchor="start" fill="#ffffff">request</text>
+<text x="1208" y="140" font-size="9.5" font-style="italic" text-anchor="start" fill="#dfe7ef">«Request»  ·  append-only</text>
+<text x="1206" y="158" font-size="9" font-weight="bold" text-anchor="start" fill="#9a3b1c">PK,FK</text>
+<text x="1244" y="158" font-size="10.5" font-weight="bold" text-anchor="start" fill="#1d1d1d">transaction_id</text>
+<text x="1484" y="158" font-size="10" text-anchor="end" fill="#5a5a5a">uuid</text>
+<rect x="1201" y="162" width="288" height="15" fill="#f3f6f9"/>
+<text x="1206" y="173" font-size="9" font-weight="bold" text-anchor="start" fill="#2d5f8a"></text>
+<text x="1244" y="173" font-size="10.5" text-anchor="start" fill="#1d1d1d">requested_period</text>
+<text x="1484" y="173" font-size="10" text-anchor="end" fill="#5a5a5a">tstzrange</text>
+<text x="1206" y="188" font-size="9" font-weight="bold" text-anchor="start" fill="#2d5f8a"></text>
+<text x="1244" y="188" font-size="10.5" text-anchor="start" fill="#888888">message</text>
+<text x="1484" y="188" font-size="10" text-anchor="end" fill="#a0a0a0">text</text>
+<rect x="1201" y="192" width="288" height="15" fill="#f3f6f9"/>
+<text x="1206" y="203" font-size="9" font-weight="bold" text-anchor="start" fill="#2d5f8a"></text>
+<text x="1244" y="203" font-size="10.5" text-anchor="start" fill="#1d1d1d">accepted_safeguards</text>
+<text x="1484" y="203" font-size="10" text-anchor="end" fill="#5a5a5a">jsonb</text>
+<text x="1206" y="218" font-size="9" font-weight="bold" text-anchor="start" fill="#2d5f8a"></text>
+<text x="1244" y="218" font-size="10.5" text-anchor="start" fill="#1d1d1d">created_at</text>
+<text x="1484" y="218" font-size="10" text-anchor="end" fill="#5a5a5a">timestamptz</text>
+<rect x="1200" y="560" width="290" height="207" rx="5" fill="#ffffff" stroke="#3b4a5e" stroke-width="1.3"/>
+<path d="M1200,565 a5,5 0 0 1 5,-5 h280 a5,5 0 0 1 5,5 v31 h-290 z" fill="#4f6f7a"/>
+<text x="1208" y="575" font-size="12.5" font-weight="bold" text-anchor="start" fill="#ffffff">review</text>
+<text x="1208" y="590" font-size="9.5" font-style="italic" text-anchor="start" fill="#dfe7ef">«supporting»  ·  fields: Student 2</text>
+<text x="1206" y="608" font-size="9" font-weight="bold" text-anchor="start" fill="#9a3b1c">PK</text>
+<text x="1244" y="608" font-size="10.5" font-weight="bold" text-anchor="start" fill="#1d1d1d">id</text>
+<text x="1484" y="608" font-size="10" text-anchor="end" fill="#5a5a5a">uuid</text>
+<rect x="1201" y="612" width="288" height="15" fill="#f3f6f9"/>
+<text x="1206" y="623" font-size="9" font-weight="bold" text-anchor="start" fill="#2d5f8a">FK</text>
+<text x="1244" y="623" font-size="10.5" text-anchor="start" fill="#1d1d1d">transaction_id</text>
+<text x="1484" y="623" font-size="10" text-anchor="end" fill="#5a5a5a">uuid</text>
+<text x="1206" y="638" font-size="9" font-weight="bold" text-anchor="start" fill="#2d5f8a">FK</text>
+<text x="1244" y="638" font-size="10.5" text-anchor="start" fill="#1d1d1d">reviewer_id</text>
+<text x="1484" y="638" font-size="10" text-anchor="end" fill="#5a5a5a">uuid</text>
+<rect x="1201" y="642" width="288" height="15" fill="#f3f6f9"/>
+<text x="1206" y="653" font-size="9" font-weight="bold" text-anchor="start" fill="#2d5f8a">FK</text>
+<text x="1244" y="653" font-size="10.5" text-anchor="start" fill="#1d1d1d">reviewee_id</text>
+<text x="1484" y="653" font-size="10" text-anchor="end" fill="#5a5a5a">uuid</text>
+<text x="1206" y="668" font-size="9" font-weight="bold" text-anchor="start" fill="#2d5f8a"></text>
+<text x="1244" y="668" font-size="10.5" text-anchor="start" fill="#1d1d1d">reviewee_role</text>
+<text x="1484" y="668" font-size="10" text-anchor="end" fill="#5a5a5a">party_role</text>
+<rect x="1201" y="672" width="288" height="15" fill="#f3f6f9"/>
+<text x="1206" y="683" font-size="9" font-weight="bold" text-anchor="start" fill="#2d5f8a"></text>
+<text x="1244" y="683" font-size="10.5" text-anchor="start" fill="#1d1d1d">ratings</text>
+<text x="1484" y="683" font-size="10" text-anchor="end" fill="#5a5a5a">jsonb</text>
+<text x="1206" y="698" font-size="9" font-weight="bold" text-anchor="start" fill="#2d5f8a"></text>
+<text x="1244" y="698" font-size="10.5" text-anchor="start" fill="#888888">comment</text>
+<text x="1484" y="698" font-size="10" text-anchor="end" fill="#a0a0a0">text</text>
+<rect x="1201" y="702" width="288" height="15" fill="#f3f6f9"/>
+<text x="1206" y="713" font-size="9" font-weight="bold" text-anchor="start" fill="#2d5f8a"></text>
+<text x="1244" y="713" font-size="10.5" text-anchor="start" fill="#1d1d1d">retaliation_flag</text>
+<text x="1484" y="713" font-size="10" text-anchor="end" fill="#5a5a5a">bool</text>
+<text x="1206" y="728" font-size="9" font-weight="bold" text-anchor="start" fill="#2d5f8a"></text>
+<text x="1244" y="728" font-size="10.5" text-anchor="start" fill="#1d1d1d">similarity_flag</text>
+<text x="1484" y="728" font-size="10" text-anchor="end" fill="#5a5a5a">bool</text>
+<rect x="1201" y="732" width="288" height="15" fill="#f3f6f9"/>
+<text x="1206" y="743" font-size="9" font-weight="bold" text-anchor="start" fill="#2d5f8a"></text>
+<text x="1244" y="743" font-size="10.5" text-anchor="start" fill="#1d1d1d">created_at</text>
+<text x="1484" y="743" font-size="10" text-anchor="end" fill="#5a5a5a">timestamptz</text>
+<text x="1206" y="758" font-size="9" font-weight="bold" text-anchor="start" fill="#2d5f8a"></text>
+<text x="1244" y="758" font-size="10.5" text-anchor="start" fill="#1d1d1d">edit_until</text>
+<text x="1484" y="758" font-size="10" text-anchor="end" fill="#5a5a5a">timestamptz</text>
+<rect x="1590" y="110" width="290" height="252" rx="5" fill="#ffffff" stroke="#3b4a5e" stroke-width="1.3"/>
+<path d="M1590,115 a5,5 0 0 1 5,-5 h280 a5,5 0 0 1 5,5 v31 h-290 z" fill="#1f3a5f"/>
+<text x="1598" y="125" font-size="12.5" font-weight="bold" text-anchor="start" fill="#ffffff">transaction_event</text>
+<text x="1598" y="140" font-size="9.5" font-style="italic" text-anchor="start" fill="#dfe7ef">«TransactionEvent»  ·  append-only</text>
+<text x="1596" y="158" font-size="9" font-weight="bold" text-anchor="start" fill="#9a3b1c">PK</text>
+<text x="1634" y="158" font-size="10.5" font-weight="bold" text-anchor="start" fill="#1d1d1d">event_id</text>
+<text x="1874" y="158" font-size="10" text-anchor="end" fill="#5a5a5a">bigint</text>
+<rect x="1591" y="162" width="288" height="15" fill="#f3f6f9"/>
+<text x="1596" y="173" font-size="9" font-weight="bold" text-anchor="start" fill="#2d5f8a">FK</text>
+<text x="1634" y="173" font-size="10.5" text-anchor="start" fill="#1d1d1d">transaction_id</text>
+<text x="1874" y="173" font-size="10" text-anchor="end" fill="#5a5a5a">uuid</text>
+<text x="1596" y="188" font-size="9" font-weight="bold" text-anchor="start" fill="#2d5f8a"></text>
+<text x="1634" y="188" font-size="10.5" text-anchor="start" fill="#1d1d1d">sequence_no</text>
+<text x="1874" y="188" font-size="10" text-anchor="end" fill="#5a5a5a">int</text>
+<rect x="1591" y="192" width="288" height="15" fill="#f3f6f9"/>
+<text x="1596" y="203" font-size="9" font-weight="bold" text-anchor="start" fill="#2d5f8a">FK</text>
+<text x="1634" y="203" font-size="10.5" text-anchor="start" fill="#1d1d1d">event_type</text>
+<text x="1874" y="203" font-size="10" text-anchor="end" fill="#5a5a5a">txn_event_type</text>
+<text x="1596" y="218" font-size="9" font-weight="bold" text-anchor="start" fill="#2d5f8a">FK</text>
+<text x="1634" y="218" font-size="10.5" text-anchor="start" fill="#888888">actor_user_id</text>
+<text x="1874" y="218" font-size="10" text-anchor="end" fill="#a0a0a0">uuid</text>
+<rect x="1591" y="222" width="288" height="15" fill="#f3f6f9"/>
+<text x="1596" y="233" font-size="9" font-weight="bold" text-anchor="start" fill="#2d5f8a"></text>
+<text x="1634" y="233" font-size="10.5" text-anchor="start" fill="#1d1d1d">actor_role</text>
+<text x="1874" y="233" font-size="10" text-anchor="end" fill="#5a5a5a">actor_role</text>
+<text x="1596" y="248" font-size="9" font-weight="bold" text-anchor="start" fill="#2d5f8a"></text>
+<text x="1634" y="248" font-size="10.5" text-anchor="start" fill="#1d1d1d">occurred_at</text>
+<text x="1874" y="248" font-size="10" text-anchor="end" fill="#5a5a5a">timestamptz</text>
+<rect x="1591" y="252" width="288" height="15" fill="#f3f6f9"/>
+<text x="1596" y="263" font-size="9" font-weight="bold" text-anchor="start" fill="#2d5f8a">FK</text>
+<text x="1634" y="263" font-size="10.5" text-anchor="start" fill="#888888">previous_state</text>
+<text x="1874" y="263" font-size="10" text-anchor="end" fill="#a0a0a0">txn_state</text>
+<text x="1596" y="278" font-size="9" font-weight="bold" text-anchor="start" fill="#2d5f8a">FK</text>
+<text x="1634" y="278" font-size="10.5" text-anchor="start" fill="#1d1d1d">new_state</text>
+<text x="1874" y="278" font-size="10" text-anchor="end" fill="#5a5a5a">txn_state</text>
+<rect x="1591" y="282" width="288" height="15" fill="#f3f6f9"/>
+<text x="1596" y="293" font-size="9" font-weight="bold" text-anchor="start" fill="#2d5f8a"></text>
+<text x="1634" y="293" font-size="10.5" text-anchor="start" fill="#1d1d1d">evidence</text>
+<text x="1874" y="293" font-size="10" text-anchor="end" fill="#5a5a5a">jsonb</text>
+<text x="1596" y="308" font-size="9" font-weight="bold" text-anchor="start" fill="#2d5f8a"></text>
+<text x="1634" y="308" font-size="10.5" text-anchor="start" fill="#1d1d1d">authorisation</text>
+<text x="1874" y="308" font-size="10" text-anchor="end" fill="#5a5a5a">text</text>
+<rect x="1591" y="312" width="288" height="15" fill="#f3f6f9"/>
+<text x="1596" y="323" font-size="9" font-weight="bold" text-anchor="start" fill="#2d5f8a"></text>
+<text x="1634" y="323" font-size="10.5" text-anchor="start" fill="#1d1d1d">payload</text>
+<text x="1874" y="323" font-size="10" text-anchor="end" fill="#5a5a5a">jsonb</text>
+<text x="1596" y="338" font-size="9" font-weight="bold" text-anchor="start" fill="#2d5f8a"></text>
+<text x="1634" y="338" font-size="10.5" text-anchor="start" fill="#888888">prev_hash</text>
+<text x="1874" y="338" font-size="10" text-anchor="end" fill="#a0a0a0">bytea</text>
+<rect x="1591" y="342" width="288" height="15" fill="#f3f6f9"/>
+<text x="1596" y="353" font-size="9" font-weight="bold" text-anchor="start" fill="#2d5f8a"></text>
+<text x="1634" y="353" font-size="10.5" text-anchor="start" fill="#1d1d1d">row_hash</text>
+<text x="1874" y="353" font-size="10" text-anchor="end" fill="#5a5a5a">bytea</text>
+<rect x="420" y="730" width="290" height="132" rx="5" fill="#ffffff" stroke="#3b4a5e" stroke-width="1.3"/>
+<path d="M420,735 a5,5 0 0 1 5,-5 h280 a5,5 0 0 1 5,5 v31 h-290 z" fill="#1f3a5f"/>
+<text x="428" y="745" font-size="12.5" font-weight="bold" text-anchor="start" fill="#ffffff">trust_edge</text>
+<text x="428" y="760" font-size="9.5" font-style="italic" text-anchor="start" fill="#dfe7ef">«TrustEdge»  ·  fields: Student 2</text>
+<text x="426" y="778" font-size="9" font-weight="bold" text-anchor="start" fill="#9a3b1c">PK,FK</text>
+<text x="464" y="778" font-size="10.5" font-weight="bold" text-anchor="start" fill="#1d1d1d">from_user_id</text>
+<text x="704" y="778" font-size="10" text-anchor="end" fill="#5a5a5a">uuid</text>
+<rect x="421" y="782" width="288" height="15" fill="#f3f6f9"/>
+<text x="426" y="793" font-size="9" font-weight="bold" text-anchor="start" fill="#9a3b1c">PK,FK</text>
+<text x="464" y="793" font-size="10.5" font-weight="bold" text-anchor="start" fill="#1d1d1d">to_user_id</text>
+<text x="704" y="793" font-size="10" text-anchor="end" fill="#5a5a5a">uuid</text>
+<text x="426" y="808" font-size="9" font-weight="bold" text-anchor="start" fill="#2d5f8a"></text>
+<text x="464" y="808" font-size="10.5" text-anchor="start" fill="#1d1d1d">weight</text>
+<text x="704" y="808" font-size="10" text-anchor="end" fill="#5a5a5a">numeric(4,3)</text>
+<rect x="421" y="812" width="288" height="15" fill="#f3f6f9"/>
+<text x="426" y="823" font-size="9" font-weight="bold" text-anchor="start" fill="#2d5f8a"></text>
+<text x="464" y="823" font-size="10.5" text-anchor="start" fill="#1d1d1d">evidence_count</text>
+<text x="704" y="823" font-size="10" text-anchor="end" fill="#5a5a5a">int</text>
+<text x="426" y="838" font-size="9" font-weight="bold" text-anchor="start" fill="#2d5f8a"></text>
+<text x="464" y="838" font-size="10.5" text-anchor="start" fill="#1d1d1d">last_interaction_at</text>
+<text x="704" y="838" font-size="10" text-anchor="end" fill="#5a5a5a">timestamptz</text>
+<rect x="421" y="842" width="288" height="15" fill="#f3f6f9"/>
+<text x="426" y="853" font-size="9" font-weight="bold" text-anchor="start" fill="#2d5f8a"></text>
+<text x="464" y="853" font-size="10.5" text-anchor="start" fill="#1d1d1d">updated_at</text>
+<text x="704" y="853" font-size="10" text-anchor="end" fill="#5a5a5a">timestamptz</text>
+<rect x="420" y="590" width="290" height="87" rx="5" fill="#ffffff" stroke="#3b4a5e" stroke-width="1.3"/>
+<path d="M420,595 a5,5 0 0 1 5,-5 h280 a5,5 0 0 1 5,5 v31 h-290 z" fill="#4f6f7a"/>
+<text x="428" y="605" font-size="12.5" font-weight="bold" text-anchor="start" fill="#ffffff">user_block</text>
+<text x="428" y="620" font-size="9.5" font-style="italic" text-anchor="start" fill="#dfe7ef">«supporting»</text>
+<text x="426" y="638" font-size="9" font-weight="bold" text-anchor="start" fill="#9a3b1c">PK,FK</text>
+<text x="464" y="638" font-size="10.5" font-weight="bold" text-anchor="start" fill="#1d1d1d">blocker_id</text>
+<text x="704" y="638" font-size="10" text-anchor="end" fill="#5a5a5a">uuid</text>
+<rect x="421" y="642" width="288" height="15" fill="#f3f6f9"/>
+<text x="426" y="653" font-size="9" font-weight="bold" text-anchor="start" fill="#9a3b1c">PK,FK</text>
+<text x="464" y="653" font-size="10.5" font-weight="bold" text-anchor="start" fill="#1d1d1d">blocked_id</text>
+<text x="704" y="653" font-size="10" text-anchor="end" fill="#5a5a5a">uuid</text>
+<text x="426" y="668" font-size="9" font-weight="bold" text-anchor="start" fill="#2d5f8a"></text>
+<text x="464" y="668" font-size="10.5" text-anchor="start" fill="#1d1d1d">created_at</text>
+<text x="704" y="668" font-size="10" text-anchor="end" fill="#5a5a5a">timestamptz</text>
+<path d="M 1590,630 L 1550,630 L 1550,440 L 1490,440" fill="none" stroke="#3b4a5e" stroke-width="1.3"/>
+<line x1="1577.0" y1="630.0" x2="1590.0" y2="623.0" stroke="#3b4a5e" stroke-width="1.3"/>
+<line x1="1577.0" y1="630.0" x2="1590.0" y2="637.0" stroke="#3b4a5e" stroke-width="1.3"/>
+<line x1="1577.0" y1="630.0" x2="1590.0" y2="630.0" stroke="#3b4a5e" stroke-width="1.3"/>
+<circle cx="1571.0" cy="630.0" r="4" fill="#ffffff" stroke="#3b4a5e" stroke-width="1.3"/>
+<line x1="1496.0" y1="446.0" x2="1496.0" y2="434.0" stroke="#3b4a5e" stroke-width="1.3"/>
+<line x1="1502.0" y1="446.0" x2="1502.0" y2="434.0" stroke="#3b4a5e" stroke-width="1.3"/>
+<path d="M 1980,970 L 1490,970" fill="none" stroke="#3b4a5e" stroke-width="1.3"/>
+<line x1="1967.0" y1="970.0" x2="1980.0" y2="963.0" stroke="#3b4a5e" stroke-width="1.3"/>
+<line x1="1967.0" y1="970.0" x2="1980.0" y2="977.0" stroke="#3b4a5e" stroke-width="1.3"/>
+<line x1="1967.0" y1="970.0" x2="1980.0" y2="970.0" stroke="#3b4a5e" stroke-width="1.3"/>
+<circle cx="1961.0" cy="970.0" r="4" fill="#ffffff" stroke="#3b4a5e" stroke-width="1.3"/>
+<line x1="1496.0" y1="976.0" x2="1496.0" y2="964.0" stroke="#3b4a5e" stroke-width="1.3"/>
+<circle cx="1509.0" cy="970.0" r="4" fill="#ffffff" stroke="#3b4a5e" stroke-width="1.3"/>
+<path d="M 2125,900 L 2125,842" fill="none" stroke="#3b4a5e" stroke-width="1.3"/>
+<line x1="2125.0" y1="887.0" x2="2132.0" y2="900.0" stroke="#3b4a5e" stroke-width="1.3"/>
+<line x1="2125.0" y1="887.0" x2="2118.0" y2="900.0" stroke="#3b4a5e" stroke-width="1.3"/>
+<line x1="2125.0" y1="887.0" x2="2125.0" y2="900.0" stroke="#3b4a5e" stroke-width="1.3"/>
+<circle cx="2125.0" cy="881.0" r="4" fill="#ffffff" stroke="#3b4a5e" stroke-width="1.3"/>
+<line x1="2119.0" y1="848.0" x2="2131.0" y2="848.0" stroke="#3b4a5e" stroke-width="1.3"/>
+<circle cx="2125.0" cy="861.0" r="4" fill="#ffffff" stroke="#3b4a5e" stroke-width="1.3"/>
+<path d="M 1100,670 L 1140,670 L 1140,350 L 1100,350" fill="none" stroke="#3b4a5e" stroke-width="1.3"/>
+<line x1="1113.0" y1="670.0" x2="1100.0" y2="677.0" stroke="#3b4a5e" stroke-width="1.3"/>
+<line x1="1113.0" y1="670.0" x2="1100.0" y2="663.0" stroke="#3b4a5e" stroke-width="1.3"/>
+<line x1="1113.0" y1="670.0" x2="1100.0" y2="670.0" stroke="#3b4a5e" stroke-width="1.3"/>
+<circle cx="1119.0" cy="670.0" r="4" fill="#ffffff" stroke="#3b4a5e" stroke-width="1.3"/>
+<line x1="1106.0" y1="356.0" x2="1106.0" y2="344.0" stroke="#3b4a5e" stroke-width="1.3"/>
+<line x1="1112.0" y1="356.0" x2="1112.0" y2="344.0" stroke="#3b4a5e" stroke-width="1.3"/>
+<path d="M 1200,470 L 1150,470 L 1150,790 L 780,790 L 780,490 L 710,490" fill="none" stroke="#3b4a5e" stroke-width="1.3"/>
+<line x1="1187.0" y1="470.0" x2="1200.0" y2="463.0" stroke="#3b4a5e" stroke-width="1.3"/>
+<line x1="1187.0" y1="470.0" x2="1200.0" y2="477.0" stroke="#3b4a5e" stroke-width="1.3"/>
+<line x1="1187.0" y1="470.0" x2="1200.0" y2="470.0" stroke="#3b4a5e" stroke-width="1.3"/>
+<circle cx="1181.0" cy="470.0" r="4" fill="#ffffff" stroke="#3b4a5e" stroke-width="1.3"/>
+<line x1="716.0" y1="496.0" x2="716.0" y2="484.0" stroke="#3b4a5e" stroke-width="1.3"/>
+<line x1="722.0" y1="496.0" x2="722.0" y2="484.0" stroke="#3b4a5e" stroke-width="1.3"/>
+<path d="M 1200,320 L 1100,320" fill="none" stroke="#3b4a5e" stroke-width="1.3"/>
+<line x1="1187.0" y1="320.0" x2="1200.0" y2="313.0" stroke="#3b4a5e" stroke-width="1.3"/>
+<line x1="1187.0" y1="320.0" x2="1200.0" y2="327.0" stroke="#3b4a5e" stroke-width="1.3"/>
+<line x1="1187.0" y1="320.0" x2="1200.0" y2="320.0" stroke="#3b4a5e" stroke-width="1.3"/>
+<circle cx="1181.0" cy="320.0" r="4" fill="#ffffff" stroke="#3b4a5e" stroke-width="1.3"/>
+<line x1="1106.0" y1="326.0" x2="1106.0" y2="314.0" stroke="#3b4a5e" stroke-width="1.3"/>
+<line x1="1112.0" y1="326.0" x2="1112.0" y2="314.0" stroke="#3b4a5e" stroke-width="1.3"/>
+<path d="M 1200,485 L 1172,485 L 1172,810 L 750,810 L 750,505 L 710,505" fill="none" stroke="#3b4a5e" stroke-width="1.3"/>
+<line x1="1187.0" y1="485.0" x2="1200.0" y2="478.0" stroke="#3b4a5e" stroke-width="1.3"/>
+<line x1="1187.0" y1="485.0" x2="1200.0" y2="492.0" stroke="#3b4a5e" stroke-width="1.3"/>
+<line x1="1187.0" y1="485.0" x2="1200.0" y2="485.0" stroke="#3b4a5e" stroke-width="1.3"/>
+<circle cx="1181.0" cy="485.0" r="4" fill="#ffffff" stroke="#3b4a5e" stroke-width="1.3"/>
+<line x1="716.0" y1="511.0" x2="716.0" y2="499.0" stroke="#3b4a5e" stroke-width="1.3"/>
+<line x1="722.0" y1="511.0" x2="722.0" y2="499.0" stroke="#3b4a5e" stroke-width="1.3"/>
+<path d="M 1490,860 L 1520,860 L 1520,470 L 1490,470" fill="none" stroke="#3b4a5e" stroke-width="1.3"/>
+<line x1="1503.0" y1="860.0" x2="1490.0" y2="867.0" stroke="#3b4a5e" stroke-width="1.3"/>
+<line x1="1503.0" y1="860.0" x2="1490.0" y2="853.0" stroke="#3b4a5e" stroke-width="1.3"/>
+<line x1="1503.0" y1="860.0" x2="1490.0" y2="860.0" stroke="#3b4a5e" stroke-width="1.3"/>
+<circle cx="1509.0" cy="860.0" r="4" fill="#ffffff" stroke="#3b4a5e" stroke-width="1.3"/>
+<line x1="1496.0" y1="476.0" x2="1496.0" y2="464.0" stroke="#3b4a5e" stroke-width="1.3"/>
+<line x1="1502.0" y1="476.0" x2="1502.0" y2="464.0" stroke="#3b4a5e" stroke-width="1.3"/>
+<path d="M 1980,430 L 1935,430 L 1935,340 L 1880,340" fill="none" stroke="#3b4a5e" stroke-width="1.3"/>
+<line x1="1974.0" y1="424.0" x2="1974.0" y2="436.0" stroke="#3b4a5e" stroke-width="1.3"/>
+<circle cx="1961.0" cy="430.0" r="4" fill="#ffffff" stroke="#3b4a5e" stroke-width="1.3"/>
+<line x1="1886.0" y1="346.0" x2="1886.0" y2="334.0" stroke="#3b4a5e" stroke-width="1.3"/>
+<line x1="1892.0" y1="346.0" x2="1892.0" y2="334.0" stroke="#3b4a5e" stroke-width="1.3"/>
+<path d="M 2125,710 L 2125,647" fill="none" stroke="#3b4a5e" stroke-width="1.3"/>
+<line x1="2125.0" y1="697.0" x2="2132.0" y2="710.0" stroke="#3b4a5e" stroke-width="1.3"/>
+<line x1="2125.0" y1="697.0" x2="2118.0" y2="710.0" stroke="#3b4a5e" stroke-width="1.3"/>
+<line x1="2125.0" y1="697.0" x2="2125.0" y2="710.0" stroke="#3b4a5e" stroke-width="1.3"/>
+<circle cx="2125.0" cy="691.0" r="4" fill="#ffffff" stroke="#3b4a5e" stroke-width="1.3"/>
+<line x1="2119.0" y1="653.0" x2="2131.0" y2="653.0" stroke="#3b4a5e" stroke-width="1.3"/>
+<line x1="2119.0" y1="659.0" x2="2131.0" y2="659.0" stroke="#3b4a5e" stroke-width="1.3"/>
+<path d="M 1980,470 L 1915,470 L 1915,408 L 1741,408 A 6 6 0 0 0 1729,408 L 1490,408" fill="none" stroke="#3b4a5e" stroke-width="1.3"/>
+<line x1="1967.0" y1="470.0" x2="1980.0" y2="463.0" stroke="#3b4a5e" stroke-width="1.3"/>
+<line x1="1967.0" y1="470.0" x2="1980.0" y2="477.0" stroke="#3b4a5e" stroke-width="1.3"/>
+<line x1="1967.0" y1="470.0" x2="1980.0" y2="470.0" stroke="#3b4a5e" stroke-width="1.3"/>
+<circle cx="1961.0" cy="470.0" r="4" fill="#ffffff" stroke="#3b4a5e" stroke-width="1.3"/>
+<line x1="1496.0" y1="414.0" x2="1496.0" y2="402.0" stroke="#3b4a5e" stroke-width="1.3"/>
+<line x1="1502.0" y1="414.0" x2="1502.0" y2="402.0" stroke="#3b4a5e" stroke-width="1.3"/>
+<path d="M 1735,362 L 1735,450" fill="none" stroke="#3b4a5e" stroke-width="1.3"/>
+<line x1="1735.0" y1="375.0" x2="1728.0" y2="362.0" stroke="#3b4a5e" stroke-width="1.3"/>
+<line x1="1735.0" y1="375.0" x2="1742.0" y2="362.0" stroke="#3b4a5e" stroke-width="1.3"/>
+<line x1="1735.0" y1="375.0" x2="1735.0" y2="362.0" stroke="#3b4a5e" stroke-width="1.3"/>
+<circle cx="1735.0" cy="381.0" r="4" fill="#ffffff" stroke="#3b4a5e" stroke-width="1.3"/>
+<line x1="1741.0" y1="444.0" x2="1729.0" y2="444.0" stroke="#3b4a5e" stroke-width="1.3"/>
+<circle cx="1735.0" cy="431.0" r="4" fill="#ffffff" stroke="#3b4a5e" stroke-width="1.3"/>
+<path d="M 2270,270 L 2330,270 L 2330,1320 L 2270,1320" fill="none" stroke="#3b4a5e" stroke-width="1.3"/>
+<line x1="2283.0" y1="270.0" x2="2270.0" y2="277.0" stroke="#3b4a5e" stroke-width="1.3"/>
+<line x1="2283.0" y1="270.0" x2="2270.0" y2="263.0" stroke="#3b4a5e" stroke-width="1.3"/>
+<line x1="2283.0" y1="270.0" x2="2270.0" y2="270.0" stroke="#3b4a5e" stroke-width="1.3"/>
+<circle cx="2289.0" cy="270.0" r="4" fill="#ffffff" stroke="#3b4a5e" stroke-width="1.3"/>
+<line x1="2276.0" y1="1326.0" x2="2276.0" y2="1314.0" stroke="#3b4a5e" stroke-width="1.3"/>
+<circle cx="2289.0" cy="1320.0" r="4" fill="#ffffff" stroke="#3b4a5e" stroke-width="1.3"/>
+<path d="M 1980,220 L 1880,220" fill="none" stroke="#3b4a5e" stroke-width="1.3"/>
+<line x1="1967.0" y1="220.0" x2="1980.0" y2="213.0" stroke="#3b4a5e" stroke-width="1.3"/>
+<line x1="1967.0" y1="220.0" x2="1980.0" y2="227.0" stroke="#3b4a5e" stroke-width="1.3"/>
+<line x1="1967.0" y1="220.0" x2="1980.0" y2="220.0" stroke="#3b4a5e" stroke-width="1.3"/>
+<circle cx="1961.0" cy="220.0" r="4" fill="#ffffff" stroke="#3b4a5e" stroke-width="1.3"/>
+<line x1="1886.0" y1="226.0" x2="1886.0" y2="214.0" stroke="#3b4a5e" stroke-width="1.3"/>
+<line x1="1892.0" y1="226.0" x2="1892.0" y2="214.0" stroke="#3b4a5e" stroke-width="1.3"/>
+<path d="M 175,360 L 175,302" fill="none" stroke="#3b4a5e" stroke-width="1.3"/>
+<line x1="175.0" y1="347.0" x2="182.0" y2="360.0" stroke="#3b4a5e" stroke-width="1.3"/>
+<line x1="175.0" y1="347.0" x2="168.0" y2="360.0" stroke="#3b4a5e" stroke-width="1.3"/>
+<line x1="175.0" y1="347.0" x2="175.0" y2="360.0" stroke="#3b4a5e" stroke-width="1.3"/>
+<circle cx="175.0" cy="341.0" r="4" fill="#ffffff" stroke="#3b4a5e" stroke-width="1.3"/>
+<line x1="169.0" y1="308.0" x2="181.0" y2="308.0" stroke="#3b4a5e" stroke-width="1.3"/>
+<line x1="169.0" y1="314.0" x2="181.0" y2="314.0" stroke="#3b4a5e" stroke-width="1.3"/>
+<path d="M 955,407 L 955,470" fill="none" stroke="#3b4a5e" stroke-width="1.3"/>
+<line x1="955.0" y1="420.0" x2="948.0" y2="407.0" stroke="#3b4a5e" stroke-width="1.3"/>
+<line x1="955.0" y1="420.0" x2="962.0" y2="407.0" stroke="#3b4a5e" stroke-width="1.3"/>
+<line x1="955.0" y1="420.0" x2="955.0" y2="407.0" stroke="#3b4a5e" stroke-width="1.3"/>
+<circle cx="955.0" cy="426.0" r="4" fill="#ffffff" stroke="#3b4a5e" stroke-width="1.3"/>
+<line x1="961.0" y1="464.0" x2="949.0" y2="464.0" stroke="#3b4a5e" stroke-width="1.3"/>
+<line x1="961.0" y1="458.0" x2="949.0" y2="458.0" stroke="#3b4a5e" stroke-width="1.3"/>
+<path d="M 870,110 L 870,84 L 175,84 L 175,110" fill="none" stroke="#3b4a5e" stroke-width="1.3"/>
+<line x1="870.0" y1="97.0" x2="877.0" y2="110.0" stroke="#3b4a5e" stroke-width="1.3"/>
+<line x1="870.0" y1="97.0" x2="863.0" y2="110.0" stroke="#3b4a5e" stroke-width="1.3"/>
+<line x1="870.0" y1="97.0" x2="870.0" y2="110.0" stroke="#3b4a5e" stroke-width="1.3"/>
+<circle cx="870.0" cy="91.0" r="4" fill="#ffffff" stroke="#3b4a5e" stroke-width="1.3"/>
+<line x1="181.0" y1="104.0" x2="169.0" y2="104.0" stroke="#3b4a5e" stroke-width="1.3"/>
+<line x1="181.0" y1="98.0" x2="169.0" y2="98.0" stroke="#3b4a5e" stroke-width="1.3"/>
+<path d="M 810,370 L 710,370" fill="none" stroke="#3b4a5e" stroke-width="1.3"/>
+<line x1="797.0" y1="370.0" x2="810.0" y2="363.0" stroke="#3b4a5e" stroke-width="1.3"/>
+<line x1="797.0" y1="370.0" x2="810.0" y2="377.0" stroke="#3b4a5e" stroke-width="1.3"/>
+<line x1="797.0" y1="370.0" x2="810.0" y2="370.0" stroke="#3b4a5e" stroke-width="1.3"/>
+<circle cx="791.0" cy="370.0" r="4" fill="#ffffff" stroke="#3b4a5e" stroke-width="1.3"/>
+<line x1="716.0" y1="376.0" x2="716.0" y2="364.0" stroke="#3b4a5e" stroke-width="1.3"/>
+<line x1="722.0" y1="376.0" x2="722.0" y2="364.0" stroke="#3b4a5e" stroke-width="1.3"/>
+<path d="M 175,550 L 175,492" fill="none" stroke="#3b4a5e" stroke-width="1.3"/>
+<line x1="175.0" y1="537.0" x2="182.0" y2="550.0" stroke="#3b4a5e" stroke-width="1.3"/>
+<line x1="175.0" y1="537.0" x2="168.0" y2="550.0" stroke="#3b4a5e" stroke-width="1.3"/>
+<line x1="175.0" y1="537.0" x2="175.0" y2="550.0" stroke="#3b4a5e" stroke-width="1.3"/>
+<circle cx="175.0" cy="531.0" r="4" fill="#ffffff" stroke="#3b4a5e" stroke-width="1.3"/>
+<line x1="169.0" y1="498.0" x2="181.0" y2="498.0" stroke="#3b4a5e" stroke-width="1.3"/>
+<circle cx="175.0" cy="511.0" r="4" fill="#ffffff" stroke="#3b4a5e" stroke-width="1.3"/>
+<path d="M 320,590 L 350,590 L 350,230 L 420,230" fill="none" stroke="#3b4a5e" stroke-width="1.3"/>
+<line x1="333.0" y1="590.0" x2="320.0" y2="597.0" stroke="#3b4a5e" stroke-width="1.3"/>
+<line x1="333.0" y1="590.0" x2="320.0" y2="583.0" stroke="#3b4a5e" stroke-width="1.3"/>
+<line x1="333.0" y1="590.0" x2="320.0" y2="590.0" stroke="#3b4a5e" stroke-width="1.3"/>
+<circle cx="339.0" cy="590.0" r="4" fill="#ffffff" stroke="#3b4a5e" stroke-width="1.3"/>
+<line x1="414.0" y1="224.0" x2="414.0" y2="236.0" stroke="#3b4a5e" stroke-width="1.3"/>
+<line x1="408.0" y1="224.0" x2="408.0" y2="236.0" stroke="#3b4a5e" stroke-width="1.3"/>
+<path d="M 420,170 L 320,170" fill="none" stroke="#3b4a5e" stroke-width="1.3"/>
+<line x1="407.0" y1="170.0" x2="420.0" y2="163.0" stroke="#3b4a5e" stroke-width="1.3"/>
+<line x1="407.0" y1="170.0" x2="420.0" y2="177.0" stroke="#3b4a5e" stroke-width="1.3"/>
+<line x1="407.0" y1="170.0" x2="420.0" y2="170.0" stroke="#3b4a5e" stroke-width="1.3"/>
+<circle cx="401.0" cy="170.0" r="4" fill="#ffffff" stroke="#3b4a5e" stroke-width="1.3"/>
+<line x1="326.0" y1="176.0" x2="326.0" y2="164.0" stroke="#3b4a5e" stroke-width="1.3"/>
+<line x1="332.0" y1="176.0" x2="332.0" y2="164.0" stroke="#3b4a5e" stroke-width="1.3"/>
+<path d="M 565,257 L 565,330" fill="none" stroke="#3b4a5e" stroke-width="1.3"/>
+<line x1="565.0" y1="270.0" x2="558.0" y2="257.0" stroke="#3b4a5e" stroke-width="1.3"/>
+<line x1="565.0" y1="270.0" x2="572.0" y2="257.0" stroke="#3b4a5e" stroke-width="1.3"/>
+<line x1="565.0" y1="270.0" x2="565.0" y2="257.0" stroke="#3b4a5e" stroke-width="1.3"/>
+<circle cx="565.0" cy="276.0" r="4" fill="#ffffff" stroke="#3b4a5e" stroke-width="1.3"/>
+<line x1="571.0" y1="324.0" x2="559.0" y2="324.0" stroke="#3b4a5e" stroke-width="1.3"/>
+<line x1="571.0" y1="318.0" x2="559.0" y2="318.0" stroke="#3b4a5e" stroke-width="1.3"/>
+<path d="M 2270,1250 L 2300,1250 L 2300,520 L 2270,520" fill="none" stroke="#3b4a5e" stroke-width="1.3"/>
+<line x1="2283.0" y1="1250.0" x2="2270.0" y2="1257.0" stroke="#3b4a5e" stroke-width="1.3"/>
+<line x1="2283.0" y1="1250.0" x2="2270.0" y2="1243.0" stroke="#3b4a5e" stroke-width="1.3"/>
+<line x1="2283.0" y1="1250.0" x2="2270.0" y2="1250.0" stroke="#3b4a5e" stroke-width="1.3"/>
+<circle cx="2289.0" cy="1250.0" r="4" fill="#ffffff" stroke="#3b4a5e" stroke-width="1.3"/>
+<line x1="2276.0" y1="526.0" x2="2276.0" y2="514.0" stroke="#3b4a5e" stroke-width="1.3"/>
+<circle cx="2289.0" cy="520.0" r="4" fill="#ffffff" stroke="#3b4a5e" stroke-width="1.3"/>
+<path d="M 1980,1220 L 1945,1220 L 1945,1285 L 1980,1285" fill="none" stroke="#3b4a5e" stroke-width="1.3"/>
+<line x1="1967.0" y1="1220.0" x2="1980.0" y2="1213.0" stroke="#3b4a5e" stroke-width="1.3"/>
+<line x1="1967.0" y1="1220.0" x2="1980.0" y2="1227.0" stroke="#3b4a5e" stroke-width="1.3"/>
+<line x1="1967.0" y1="1220.0" x2="1980.0" y2="1220.0" stroke="#3b4a5e" stroke-width="1.3"/>
+<circle cx="1961.0" cy="1220.0" r="4" fill="#ffffff" stroke="#3b4a5e" stroke-width="1.3"/>
+<line x1="1974.0" y1="1279.0" x2="1974.0" y2="1291.0" stroke="#3b4a5e" stroke-width="1.3"/>
+<circle cx="1961.0" cy="1285.0" r="4" fill="#ffffff" stroke="#3b4a5e" stroke-width="1.3"/>
+<path d="M 1345,227 L 1345,290" fill="none" stroke="#3b4a5e" stroke-width="1.3"/>
+<line x1="1339.0" y1="233.0" x2="1351.0" y2="233.0" stroke="#3b4a5e" stroke-width="1.3"/>
+<line x1="1339.0" y1="239.0" x2="1351.0" y2="239.0" stroke="#3b4a5e" stroke-width="1.3"/>
+<line x1="1351.0" y1="284.0" x2="1339.0" y2="284.0" stroke="#3b4a5e" stroke-width="1.3"/>
+<line x1="1351.0" y1="278.0" x2="1339.0" y2="278.0" stroke="#3b4a5e" stroke-width="1.3"/>
+<path d="M 1345,560 L 1345,497" fill="none" stroke="#3b4a5e" stroke-width="1.3"/>
+<line x1="1345.0" y1="547.0" x2="1352.0" y2="560.0" stroke="#3b4a5e" stroke-width="1.3"/>
+<line x1="1345.0" y1="547.0" x2="1338.0" y2="560.0" stroke="#3b4a5e" stroke-width="1.3"/>
+<line x1="1345.0" y1="547.0" x2="1345.0" y2="560.0" stroke="#3b4a5e" stroke-width="1.3"/>
+<circle cx="1345.0" cy="541.0" r="4" fill="#ffffff" stroke="#3b4a5e" stroke-width="1.3"/>
+<line x1="1339.0" y1="503.0" x2="1351.0" y2="503.0" stroke="#3b4a5e" stroke-width="1.3"/>
+<line x1="1339.0" y1="509.0" x2="1351.0" y2="509.0" stroke="#3b4a5e" stroke-width="1.3"/>
+<path d="M 1590,320 L 1490,320" fill="none" stroke="#3b4a5e" stroke-width="1.3"/>
+<line x1="1577.0" y1="320.0" x2="1590.0" y2="313.0" stroke="#3b4a5e" stroke-width="1.3"/>
+<line x1="1577.0" y1="320.0" x2="1590.0" y2="327.0" stroke="#3b4a5e" stroke-width="1.3"/>
+<line x1="1577.0" y1="320.0" x2="1590.0" y2="320.0" stroke="#3b4a5e" stroke-width="1.3"/>
+<line x1="1573.0" y1="314.0" x2="1573.0" y2="326.0" stroke="#3b4a5e" stroke-width="1.3"/>
+<line x1="1496.0" y1="326.0" x2="1496.0" y2="314.0" stroke="#3b4a5e" stroke-width="1.3"/>
+<line x1="1502.0" y1="326.0" x2="1502.0" y2="314.0" stroke="#3b4a5e" stroke-width="1.3"/>
+<path d="M 420,770 L 385,770 L 385,400 L 420,400" fill="none" stroke="#3b4a5e" stroke-width="1.3"/>
+<line x1="407.0" y1="770.0" x2="420.0" y2="763.0" stroke="#3b4a5e" stroke-width="1.3"/>
+<line x1="407.0" y1="770.0" x2="420.0" y2="777.0" stroke="#3b4a5e" stroke-width="1.3"/>
+<line x1="407.0" y1="770.0" x2="420.0" y2="770.0" stroke="#3b4a5e" stroke-width="1.3"/>
+<circle cx="401.0" cy="770.0" r="4" fill="#ffffff" stroke="#3b4a5e" stroke-width="1.3"/>
+<line x1="414.0" y1="394.0" x2="414.0" y2="406.0" stroke="#3b4a5e" stroke-width="1.3"/>
+<line x1="408.0" y1="394.0" x2="408.0" y2="406.0" stroke="#3b4a5e" stroke-width="1.3"/>
+<path d="M 420,810 L 365,810 L 365,370 L 420,370" fill="none" stroke="#3b4a5e" stroke-width="1.3"/>
+<line x1="407.0" y1="810.0" x2="420.0" y2="803.0" stroke="#3b4a5e" stroke-width="1.3"/>
+<line x1="407.0" y1="810.0" x2="420.0" y2="817.0" stroke="#3b4a5e" stroke-width="1.3"/>
+<line x1="407.0" y1="810.0" x2="420.0" y2="810.0" stroke="#3b4a5e" stroke-width="1.3"/>
+<circle cx="401.0" cy="810.0" r="4" fill="#ffffff" stroke="#3b4a5e" stroke-width="1.3"/>
+<line x1="414.0" y1="364.0" x2="414.0" y2="376.0" stroke="#3b4a5e" stroke-width="1.3"/>
+<line x1="408.0" y1="364.0" x2="408.0" y2="376.0" stroke="#3b4a5e" stroke-width="1.3"/>
+<path d="M 600,590 L 600,522" fill="none" stroke="#3b4a5e" stroke-width="1.3"/>
+<line x1="600.0" y1="577.0" x2="607.0" y2="590.0" stroke="#3b4a5e" stroke-width="1.3"/>
+<line x1="600.0" y1="577.0" x2="593.0" y2="590.0" stroke="#3b4a5e" stroke-width="1.3"/>
+<line x1="600.0" y1="577.0" x2="600.0" y2="590.0" stroke="#3b4a5e" stroke-width="1.3"/>
+<circle cx="600.0" cy="571.0" r="4" fill="#ffffff" stroke="#3b4a5e" stroke-width="1.3"/>
+<line x1="594.0" y1="528.0" x2="606.0" y2="528.0" stroke="#3b4a5e" stroke-width="1.3"/>
+<line x1="594.0" y1="534.0" x2="606.0" y2="534.0" stroke="#3b4a5e" stroke-width="1.3"/>
+<path d="M 530,590 L 530,522" fill="none" stroke="#3b4a5e" stroke-width="1.3"/>
+<line x1="530.0" y1="577.0" x2="537.0" y2="590.0" stroke="#3b4a5e" stroke-width="1.3"/>
+<line x1="530.0" y1="577.0" x2="523.0" y2="590.0" stroke="#3b4a5e" stroke-width="1.3"/>
+<line x1="530.0" y1="577.0" x2="530.0" y2="590.0" stroke="#3b4a5e" stroke-width="1.3"/>
+<circle cx="530.0" cy="571.0" r="4" fill="#ffffff" stroke="#3b4a5e" stroke-width="1.3"/>
+<line x1="524.0" y1="528.0" x2="536.0" y2="528.0" stroke="#3b4a5e" stroke-width="1.3"/>
+<line x1="524.0" y1="534.0" x2="536.0" y2="534.0" stroke="#3b4a5e" stroke-width="1.3"/>
+<rect x="420" y="900" width="760" height="350" rx="6" fill="#ffffff" stroke="#999"/>
+<text x="432" y="920" font-size="13" font-weight="bold" text-anchor="start" fill="#1d1d1d">Legend</text>
+<line x1="440" y1="945" x2="500" y2="945" stroke="#3b4a5e" stroke-width="1.3"/>
+<line x1="494.0" y1="939.0" x2="494.0" y2="951.0" stroke="#3b4a5e" stroke-width="1.3"/>
+<line x1="488.0" y1="939.0" x2="488.0" y2="951.0" stroke="#3b4a5e" stroke-width="1.3"/>
+<text x="508" y="949" font-size="11" text-anchor="start" fill="#1d1d1d">exactly one</text>
+<line x1="625" y1="945" x2="685" y2="945" stroke="#3b4a5e" stroke-width="1.3"/>
+<line x1="679.0" y1="939.0" x2="679.0" y2="951.0" stroke="#3b4a5e" stroke-width="1.3"/>
+<circle cx="666.0" cy="945.0" r="4" fill="#ffffff" stroke="#3b4a5e" stroke-width="1.3"/>
+<text x="693" y="949" font-size="11" text-anchor="start" fill="#1d1d1d">zero or one</text>
+<line x1="810" y1="945" x2="870" y2="945" stroke="#3b4a5e" stroke-width="1.3"/>
+<line x1="857.0" y1="945.0" x2="870.0" y2="938.0" stroke="#3b4a5e" stroke-width="1.3"/>
+<line x1="857.0" y1="945.0" x2="870.0" y2="952.0" stroke="#3b4a5e" stroke-width="1.3"/>
+<line x1="857.0" y1="945.0" x2="870.0" y2="945.0" stroke="#3b4a5e" stroke-width="1.3"/>
+<circle cx="851.0" cy="945.0" r="4" fill="#ffffff" stroke="#3b4a5e" stroke-width="1.3"/>
+<text x="878" y="949" font-size="11" text-anchor="start" fill="#1d1d1d">zero or many</text>
+<line x1="995" y1="945" x2="1055" y2="945" stroke="#3b4a5e" stroke-width="1.3"/>
+<line x1="1042.0" y1="945.0" x2="1055.0" y2="938.0" stroke="#3b4a5e" stroke-width="1.3"/>
+<line x1="1042.0" y1="945.0" x2="1055.0" y2="952.0" stroke="#3b4a5e" stroke-width="1.3"/>
+<line x1="1042.0" y1="945.0" x2="1055.0" y2="945.0" stroke="#3b4a5e" stroke-width="1.3"/>
+<line x1="1038.0" y1="939.0" x2="1038.0" y2="951.0" stroke="#3b4a5e" stroke-width="1.3"/>
+<text x="1063" y="949" font-size="11" text-anchor="start" fill="#1d1d1d">one or many</text>
+<rect x="440" y="966" width="22" height="12" fill="#1f3a5f"/>
+<text x="470" y="976" font-size="11" text-anchor="start" fill="#1d1d1d">Entity agreed at Step 0 («Name» = agreed entity name)</text>
+<rect x="440" y="984" width="22" height="12" fill="#4f6f7a"/>
+<text x="470" y="994" font-size="11" text-anchor="start" fill="#1d1d1d">Supporting table added by this design</text>
+<rect x="440" y="1002" width="22" height="12" fill="#7a5a12"/>
+<text x="470" y="1012" font-size="11" text-anchor="start" fill="#1d1d1d">Reference data (state machine transitions)</text>
+<text x="440" y="1040" font-size="11" text-anchor="start" fill="#1d1d1d">PK primary key · FK foreign key · UQ unique.  Grey column = nullable; black = NOT NULL.</text>
+<text x="440" y="1056" font-size="11" text-anchor="start" fill="#1d1d1d">"append-only": UPDATE, DELETE and TRUNCATE are blocked by trigger (history cannot be rewritten).</text>
+<text x="440" y="1072" font-size="11" text-anchor="start" fill="#1d1d1d">"fields: Student 2": structure agreed for integration; Student 2 owns the field-level design.</text>
+<text x="432" y="1100" font-size="11.5" font-weight="bold" text-anchor="start" fill="#1d1d1d">Foreign keys not drawn as lines (18), to keep the diagram readable:</text>
+<text x="440" y="1120" font-size="10.5" text-anchor="start" fill="#333">attachment.transaction_id → borrow_transaction</text>
+<text x="810" y="1120" font-size="10.5" text-anchor="start" fill="#333">attachment.uploaded_by → app_user</text>
+<text x="440" y="1135" font-size="10.5" text-anchor="start" fill="#333">audit_log.actor_user_id → app_user</text>
+<text x="810" y="1135" font-size="10.5" text-anchor="start" fill="#333">condition_report.reported_by → app_user</text>
+<text x="440" y="1150" font-size="10.5" text-anchor="start" fill="#333">dispute.assigned_to → app_user</text>
+<text x="810" y="1150" font-size="10.5" text-anchor="start" fill="#333">dispute.closing_event_id → transaction_event</text>
+<text x="440" y="1165" font-size="10.5" text-anchor="start" fill="#333">dispute.raised_by → app_user</text>
+<text x="810" y="1165" font-size="10.5" text-anchor="start" fill="#333">dispute_statement.author_id → app_user</text>
+<text x="440" y="1180" font-size="10.5" text-anchor="start" fill="#333">evidence_record.category_id → category</text>
+<text x="810" y="1180" font-size="10.5" text-anchor="start" fill="#333">evidence_record.subject_user_id → app_user</text>
+<text x="440" y="1195" font-size="10.5" text-anchor="start" fill="#333">invitation.inviter_id → app_user</text>
+<text x="810" y="1195" font-size="10.5" text-anchor="start" fill="#333">moderator_decision.decided_by → app_user</text>
+<text x="440" y="1210" font-size="10.5" text-anchor="start" fill="#333">moderator_decision.event_id → transaction_event</text>
+<text x="810" y="1210" font-size="10.5" text-anchor="start" fill="#333">moderator_decision.membership_id → membership</text>
+<text x="440" y="1225" font-size="10.5" text-anchor="start" fill="#333">moderator_decision.transaction_id → borrow_transaction</text>
+<text x="810" y="1225" font-size="10.5" text-anchor="start" fill="#333">review.reviewee_id → app_user</text>
+<text x="440" y="1240" font-size="10.5" text-anchor="start" fill="#333">review.reviewer_id → app_user</text>
+<text x="810" y="1240" font-size="10.5" text-anchor="start" fill="#333">transaction_event.actor_user_id → app_user</text>
+</svg>
