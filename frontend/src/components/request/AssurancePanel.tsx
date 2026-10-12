@@ -1,0 +1,115 @@
+import { Text, View } from 'react-native';
+
+import type { Assessment } from '@/api/hooks';
+import {
+  AssuranceBadge,
+  Banner,
+  Body,
+  Card,
+  Collapsible,
+  IntervalBar,
+  RiskPill,
+  SectionLabel,
+} from '@/components/ui';
+import { useTheme } from '@/theme/ThemeProvider';
+
+const SAFEGUARD_LABEL: Record<string, string> = {
+  DEPOSIT_RECORD: 'Record the deposit before handover',
+  HANDOVER_PHOTOS: 'Take item photos at handover',
+  FIXED_RETURN_DATE: 'Agree a fixed return date',
+};
+
+function safeguardLabel(s: unknown): string {
+  if (typeof s === 'string') return SAFEGUARD_LABEL[s] ?? s;
+  if (s && typeof s === 'object') {
+    const o = s as { code?: string; label?: string };
+    return o.label ?? SAFEGUARD_LABEL[o.code ?? ''] ?? String(o.code ?? 'Safeguard');
+  }
+  return String(s);
+}
+
+/** What the evidence says, in plain language. Never one trust number (NFR-U-01, W1). */
+function stateBanner(state: string, name: string) {
+  switch (state) {
+    case 'SUFFICIENT_EVIDENCE':
+      return ['Enough verified history', `${name} has enough verified history for this item. You still decide.`];
+    case 'REVIEW_RECOMMENDED':
+      return ['Take a closer look', `${name}'s evidence is mixed, dated or unusual. Review the details below before deciding.`];
+    case 'ACTIVE_DISPUTE':
+      return ['Open dispute', `${name} has an unresolved dispute that affects this request.`];
+    default:
+      return [
+        'Not enough history yet',
+        `${name} has no verified transaction history. This is normal for new members and does not mean they are risky. You decide.`,
+      ];
+  }
+}
+
+export function AssurancePanel({ assessment, name }: { assessment: Assessment; name: string }) {
+  const { theme } = useTheme();
+  const [title, body] = stateBanner(assessment.assurance_state, name);
+  const tone = theme.state[assessment.assurance_state as keyof typeof theme.state] ?? theme.colors.info;
+  const hasInterval =
+    assessment.ci90_low != null && assessment.ci90_high != null && assessment.posterior_mean != null;
+
+  return (
+    <View style={{ gap: 12 }}>
+      <SectionLabel>Evidence summary</SectionLabel>
+      <AssuranceBadge state={assessment.assurance_state} />
+      <Banner tone={tone} title={title}>
+        <Body muted>{body}</Body>
+      </Banner>
+
+      <Card>
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+          <Text style={{ fontSize: 13, fontWeight: '700', color: theme.colors.text }}>
+            Direct reliability
+          </Text>
+          <Text style={{ fontSize: 11, color: theme.colors.textMuted }}>
+            {(assessment.effective_evidence ?? 0).toFixed(1)} verified transactions (weighted)
+          </Text>
+        </View>
+        {hasInterval ? (
+          <IntervalBar
+            low={assessment.ci90_low as number}
+            high={assessment.ci90_high as number}
+            mean={assessment.posterior_mean as number}
+          />
+        ) : (
+          <Body muted>No direct evidence yet.</Body>
+        )}
+      </Card>
+
+      <Card>
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+          <Text style={{ fontSize: 13, fontWeight: '700', color: theme.colors.text }}>
+            Manipulation risk
+          </Text>
+          <RiskPill level={assessment.manipulation_level ?? 1} score={assessment.manipulation_risk ?? 0} />
+        </View>
+        <Text style={{ fontSize: 11, color: theme.colors.textMuted, fontStyle: 'italic' }}>
+          Shown separately from reliability and never averaged with it. A flag is a reason to look, not
+          an accusation.
+        </Text>
+      </Card>
+
+      <Collapsible title="Why this assessment?">
+        <Card style={{ backgroundColor: theme.colors.surface2 }}>
+          <Body muted>{assessment.explanation}</Body>
+          <Text style={{ fontSize: 11, color: theme.colors.textMuted }}>
+            Rule {assessment.rule_fired} · config {assessment.config_version}
+          </Text>
+        </Card>
+      </Collapsible>
+
+      {assessment.safeguards.length > 0 ? (
+        <Card>
+          <SectionLabel>Recommended safeguards</SectionLabel>
+          {assessment.safeguards.map((s, i) => (
+            <Body key={i}>• {safeguardLabel(s)}</Body>
+          ))}
+        </Card>
+      ) : null}
+    </View>
+  );
+}
