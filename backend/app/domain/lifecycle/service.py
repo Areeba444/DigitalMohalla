@@ -318,6 +318,7 @@ class BorrowingService:
         closed = self._system_event(txn_id, "transaction_closed", "COMPLETED", {"outcome": outcome})
         # FR-B-15: the confirmed outcome becomes evidence in the same DB transaction as the close
         self.store.record_outcomes(closed)
+        self.store.refresh_trust_edges(txn_id)  # ADR-0006: edges follow the new outcomes
         return CommandResult(txn_id, "COMPLETED", f"returned {outcome.replace('_', ' ')}")
 
     # ------------------------------------------------------------------ queries
