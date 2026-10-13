@@ -1,0 +1,64 @@
+{
+ "meta": {
+  "run_at": "2026-10-13T01:06:02+00:00",
+  "commit": "f7afd92",
+  "config_version": "1.2.0-iteration1-draft",
+  "tier": "standard",
+  "seed": 20261001,
+  "generator_version": "1.0.0",
+  "synthetic": true,
+  "nodes_with_out_edges": 42,
+  "edges": 138,
+  "machine": "Windows AMD64, Python 3.12.11"
+ },
+ "rows": [
+  {
+   "k": 1,
+   "pairs": 167,
+   "p50_ms": 0.024,
+   "p95_ms": 0.073,
+   "max_ms": 0.378,
+   "pairs_with_a_path": 138,
+   "coverage": 0.8263,
+   "pairs_with_rho_ge_rho_sup": 0,
+   "mean_paths_found": 0.83,
+   "max_paths_found": 1
+  },
+  {
+   "k": 2,
+   "pairs": 167,
+   "p50_ms": 0.036,
+   "p95_ms": 0.115,
+   "max_ms": 4.917,
+   "pairs_with_a_path": 145,
+   "coverage": 0.8683,
+   "pairs_with_rho_ge_rho_sup": 30,
+   "mean_paths_found": 1.14,
+   "max_paths_found": 4
+  },
+  {
+   "k": 3,
+   "pairs": 167,
+   "p50_ms": 0.044,
+   "p95_ms": 0.172,
+   "max_ms": 4.372,
+   "pairs_with_a_path": 145,
+   "coverage": 0.8683,
+   "pairs_with_rho_ge_rho_sup": 41,
+   "mean_paths_found": 1.57,
+   "max_paths_found": 9
+  },
+  {
+   "k": 4,
+   "pairs": 167,
+   "p50_ms": 0.055,
+   "p95_ms": 0.446,
+   "max_ms": 5.012,
+   "pairs_with_a_path": 148,
+   "coverage": 0.8862,
+   "pairs_with_rho_ge_rho_sup": 46,
+   "mean_paths_found": 1.98,
+   "max_paths_found": 13
+  }
+ ]
+}
