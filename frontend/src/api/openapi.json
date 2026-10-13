@@ -804,6 +804,27 @@
             ],
             "title": "Effective Evidence"
           },
+          "verified_loans": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Verified Loans"
+          },
+          "community": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/CommunityOut"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
           "manipulation_risk": {
             "type": "integer",
             "title": "Manipulation Risk",
@@ -941,6 +962,28 @@
           "state"
         ],
         "title": "CommandOut"
+      },
+      "CommunityOut": {
+        "properties": {
+          "reliability": {
+            "type": "number",
+            "title": "Reliability"
+          },
+          "paths": {
+            "items": {
+              "$ref": "#/components/schemas/PathOut"
+            },
+            "type": "array",
+            "title": "Paths"
+          }
+        },
+        "type": "object",
+        "required": [
+          "reliability",
+          "paths"
+        ],
+        "title": "CommunityOut",
+        "description": "Indirect evidence (FR-T-04): it can support a request but never makes it SUFFICIENT."
       },
       "ConfirmIn": {
         "properties": {
@@ -1242,6 +1285,28 @@
           "assurance_state"
         ],
         "title": "MyRequestOut"
+      },
+      "PathOut": {
+        "properties": {
+          "via": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Via"
+          },
+          "strength": {
+            "type": "number",
+            "title": "Strength"
+          }
+        },
+        "type": "object",
+        "required": [
+          "via",
+          "strength"
+        ],
+        "title": "PathOut",
+        "description": "One community path from the lender to the borrower, by display name only (no user ids)."
       },
       "ReportOut": {
         "properties": {

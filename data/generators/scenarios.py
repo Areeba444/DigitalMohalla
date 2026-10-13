@@ -105,6 +105,25 @@ def _clean_history(
         hist_loan(w, borrower, lenders[i % len(lenders)], ago, tags=[tag], key=f"{tag}{i}")
 
 
+def _similar_history(
+    w: World, rng: Any, borrower: str, n: int, lo: float, hi: float, items: list[str], tag: str
+) -> None:
+    """Clean loans of items like the request under test (same kind and value band, 2 or 3 days),
+    so the engine's similarity weighting (D17) keeps most of their weight."""
+    for i, ago in enumerate(_spread(rng, n, lo, hi)):
+        item = items[i % len(items)]
+        hist_loan(
+            w,
+            borrower,
+            w.items[item].owner,
+            ago,
+            item=item,
+            duration=rng.choice([2, 3]),
+            tags=[tag],
+            key=f"{tag}{i}",
+        )
+
+
 def build_scenarios(w: World, c1: str, c2: str) -> None:
     fx = fixture_expectations()
     L = _lenders(w, c1)
@@ -127,7 +146,9 @@ def build_scenarios(w: World, c1: str, c2: str) -> None:
     # ES-02: consistently reliable
     rng = rng_for(w.seed, "cast:ES-02")
     cast_user(w, "es02.borrower", c1, 300, archetype="cast_reliable", p_on_time=0.97, p_cond=0.97)
-    _clean_history(w, rng, "es02.borrower", 10, 12, 240, [L1, L2, L3, L4], "es02")
+    _similar_history(
+        w, rng, "es02.borrower", 10, 12, 160, [f"{L2}.i1", f"{L1}.i3", f"{L2}.i2"], "es02"
+    )
     t = request_under_test(w, "es02.borrower", L2, f"{L2}.i1")
     add_manifest(
         w,
@@ -137,7 +158,8 @@ def build_scenarios(w: World, c1: str, c2: str) -> None:
         requirements="D-10 rich evidence; C1",
         expected=fx["ES-02"],
         source=FIX,
-        notes="Ten on-time, condition-agreed loans with four different lenders over eight months.",
+        notes="Ten on-time, condition-agreed loans of small kitchen appliances (like the requested rice cooker) "
+        "from two lenders over five months.",
     )
 
     # ES-03: reliable, one recent RESOLVED dispute; ES-03b: the same with the dispute still OPEN
@@ -222,7 +244,9 @@ def build_scenarios(w: World, c1: str, c2: str) -> None:
     )
     cast_item(w, "es05.lender.i1", "es05.lender", "Cricket Kit", 4500, "sports")
     cast_item(w, "es05.lender.i2", "es05.lender", "Badminton Set", 1400, "sports")
-    _clean_history(w, rng, "es05.borrower", 4, 120, 200, [L1, L2, L3], "es05")
+    _similar_history(
+        w, rng, "es05.borrower", 7, 8, 120, [f"{L3}.i2", f"{L4}.i2", f"{L1}.i1"], "es05"
+    )
     t1 = hist_loan(
         w,
         "es05.borrower",

@@ -34,10 +34,6 @@ CFG = load_engine_config()
 KNOWN = {
     # manipulation detection arrives in Slice C; until then the risk level is 1 and R2 cannot fire
     "ES-04": "R2 needs corroborated manipulation signals (Slice C)",
-    # the generator's casts predate the similarity weighting (D17) and are thinner than their
-    # fixtures; the engine matches the fixtures themselves (tests/unit/test_assurance_engine.py)
-    "ES-02": "mini cast: mixed categories and bands, n_eff 4.1 after similarity (fixture 9.5); B5",
-    "ES-05": "mini cast: 5 loans, newest 79 days old, n_eff 2.9 before similarity (fixture 6.6); B5",
 }
 
 

@@ -150,7 +150,7 @@ def farm_review(rng: random.Random) -> str:
 
 
 _BURST_BASE = "Very reliable person, quick and smooth deal, thanks"
-_BURST_TAILS = ["!", ".", " a lot!", "!!", " :)"]
+_BURST_TAILS = ["!", ".", "!!", "!!!"]
 
 
 def burst_review(rng: random.Random) -> str:

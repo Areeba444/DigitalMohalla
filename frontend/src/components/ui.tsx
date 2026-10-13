@@ -450,10 +450,11 @@ const RISK_LABEL: Record<number, string> = {
   4: 'Moderator review',
 };
 
-export function RiskPill({ level, score }: { level: number; score: number }) {
+/** The manipulation band only: a number next to the evidence could be read as a rating (NFR-U-01). */
+export function RiskPill({ level }: { level: number }) {
   const { theme } = useTheme();
   const tone = level <= 1 ? theme.colors.success : level === 2 ? theme.colors.info : theme.colors.warning;
-  return <Badge label={`${RISK_LABEL[level] ?? 'Unknown'} · ${score}/100`} tone={tone} />;
+  return <Badge label={RISK_LABEL[level] ?? 'Unknown'} tone={tone} />;
 }
 
 export function Collapsible({ title, children }: { title: string; children: React.ReactNode }) {
