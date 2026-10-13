@@ -1,8 +1,7 @@
 import { router, usePathname, type Href } from 'expo-router';
 import { Platform, Pressable, StyleSheet, Text, View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { Icon, type IconName } from '@/components/ui';
+import { Icon, type IconName, useInsets } from '@/components/ui';
 import { useTheme } from '@/theme/ThemeProvider';
 
 const TABS: { href: Href; path: string; label: string; icon: IconName }[] = [
@@ -19,7 +18,7 @@ const TABS: { href: Href; path: string; label: string; icon: IconName }[] = [
  */
 export function TabBar({ badge }: { badge?: number }) {
   const { theme } = useTheme();
-  const insets = useSafeAreaInsets();
+  const insets = useInsets();
   const pathname = usePathname();
   return (
     <View

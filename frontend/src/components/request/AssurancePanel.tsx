@@ -1,10 +1,10 @@
 import { Text, View } from 'react-native';
 
 import type { Assessment } from '@/api/hooks';
+import type { components } from '@/api/schema';
 import {
   ASSURANCE,
   assuranceTone,
-  Badge,
   Body,
   Caption,
   Card,
@@ -16,6 +16,9 @@ import {
   SectionLabel,
 } from '@/components/ui';
 import { useTheme } from '@/theme/ThemeProvider';
+
+// Manipulation detection arrives with the human loop (Slice C); until then every request is level 1.
+const MANIPULATION_CHECKS_ACTIVE = false;
 
 const SAFEGUARD_LABEL: Record<string, string> = {
   DEPOSIT_RECORD: 'Record the deposit before handover',
@@ -32,26 +35,79 @@ function safeguardLabel(s: unknown): string {
   return String(s);
 }
 
+type Community = components['schemas']['CommunityOut'];
+
 /** What the evidence says, in plain language and about this request only (HCI analysis, W1). */
 function stateSentence(state: string, name: string): string {
   switch (state) {
     case 'SUFFICIENT_EVIDENCE':
-      return `${name} has verified loans like this one that went well. You still decide.`;
+      return `${name} has enough verified history for this item. You still decide.`;
     case 'REVIEW_RECOMMENDED':
-      return `${name}'s evidence is mixed, old or unusual for this item. Look at the details before deciding.`;
+      return `${name}'s evidence is mixed, dated or unusual for this item. Look at the details before deciding.`;
     case 'ACTIVE_DISPUTE':
-      return `An unresolved dispute affects this request. A moderator is handling it.`;
+      return `${name} has an unresolved dispute that affects this request. A moderator is handling it.`;
     default:
-      return `${name} has little or no verified history yet. That is normal for new members and does not mean they are risky. You decide.`;
+      return `${name} has no verified transaction history yet. This is normal for new members and does not mean they are risky. You decide.`;
   }
+}
+
+function evidenceCount(a: Assessment): string {
+  const weighted = (a.effective_evidence ?? 0).toFixed(1);
+  if (a.verified_loans == null) return `${weighted} verified transactions (weighted)`;
+  const loans = `${a.verified_loans} verified loan${a.verified_loans === 1 ? '' : 's'}`;
+  return `${loans} · ${weighted} after weighting for recency and similarity`;
+}
+
+/** Indirect evidence (FR-T-04): people the lender trusts who lent to this borrower. */
+function CommunityPaths({ community, name }: { community: Community; name: string }) {
+  const { theme } = useTheme();
+  return (
+    <View style={{ gap: 8 }}>
+      <Text style={{ fontFamily: theme.fonts.bold, fontSize: 15, color: theme.colors.text }}>
+        Community paths
+      </Text>
+      {community.paths.length === 0 ? (
+        <Body muted style={{ fontSize: 14 }}>
+          No community paths found between you and {name}.
+        </Body>
+      ) : (
+        <>
+          {community.paths.map((p, i) => (
+            <View
+              key={i}
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                gap: 10,
+                padding: 10,
+                borderRadius: theme.radius.sm,
+                backgroundColor: theme.colors.accentSoft,
+              }}>
+              <Icon name="hub" size={18} color={theme.colors.accent} />
+              <Body style={{ flex: 1, fontSize: 14 }}>
+                • {p.via.length > 0 ? `Through ${p.via.join(' → ')}` : `${name} borrowed from you before`} (path
+                strength {p.strength.toFixed(2)})
+              </Body>
+            </View>
+          ))}
+          <Caption>
+            Community support {community.reliability.toFixed(2)}. It can support a request but is never enough
+            on its own.
+          </Caption>
+        </>
+      )}
+    </View>
+  );
 }
 
 /**
  * The lender's evidence summary in three layers (HCI analysis, principle 1):
- * 1. always visible: the state, one sentence and the suggested safeguards;
- * 2. on tap: the evidence (interval, amount of evidence, manipulation checks, the engine's explanation);
- * 3. on tap: technical details (rule, configuration version, raw risk score).
- * Never a single trust number (NFR-U-01).
+ * 1. the state, one sentence and the suggested safeguards;
+ * 2. the evidence (interval, verified loans, community paths, manipulation checks),
+ *    open by default because the lender's decision rests on it (TC-100), and collapsible;
+ * 3. technical details (rule, policy decision, configuration version and the engine's own wording, which
+ *    contains raw values), closed by default.
+ * Never a single trust number or rating (NFR-U-01).
  */
 export function AssurancePanel({ assessment, name }: { assessment: Assessment; name: string }) {
   const { theme } = useTheme();
@@ -60,9 +116,6 @@ export function AssurancePanel({ assessment, name }: { assessment: Assessment; n
   const a = ASSURANCE[state] ?? { label: state, icon: 'info' as const };
   const hasInterval =
     assessment.ci90_low != null && assessment.ci90_high != null && assessment.posterior_mean != null;
-  const n = assessment.effective_evidence ?? 0;
-  // Until the detector ships (Slice C) the engine says so in its explanation; never imply checks ran.
-  const checksActive = !/manipulation checks: not active/i.test(assessment.explanation);
 
   return (
     <View style={{ gap: 12 }}>
@@ -109,17 +162,13 @@ export function AssurancePanel({ assessment, name }: { assessment: Assessment; n
       </Card>
 
       <Card>
-        <Collapsible title="See the evidence" icon="visibility">
-          <View style={{ gap: 16 }}>
+        <Collapsible title="The evidence" icon="visibility" defaultOpen>
+          <View style={{ gap: 18 }}>
             <View style={{ gap: 8 }}>
-              <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-                <Text style={{ fontFamily: theme.fonts.bold, fontSize: 15, color: theme.colors.text }}>
-                  Past loans as a borrower
-                </Text>
-                <Caption>
-                  {n === 0 ? 'none verified yet' : `${n.toFixed(1)} verified, weighted`}
-                </Caption>
-              </View>
+              <Text style={{ fontFamily: theme.fonts.bold, fontSize: 15, color: theme.colors.text }}>
+                Direct reliability
+              </Text>
+              <Caption>{evidenceCount(assessment)}</Caption>
               {hasInterval ? (
                 <IntervalBar
                   low={assessment.ci90_low as number}
@@ -130,29 +179,42 @@ export function AssurancePanel({ assessment, name }: { assessment: Assessment; n
                 <Body muted>No direct evidence yet.</Body>
               )}
               <Caption>
-                The bar shows a range, not a score: it is wide when there is little evidence and narrows as
-                verified loans add up. Recent loans and loans of similar items count more.
+                The bar shows a range, wide when there is little evidence and narrower as verified loans add up.
+                Recent loans and loans of similar items count more.
               </Caption>
             </View>
+
+            {assessment.community ? <CommunityPaths community={assessment.community} name={name} /> : null}
 
             <View style={{ gap: 8 }}>
               <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
                 <Text style={{ fontFamily: theme.fonts.bold, fontSize: 15, color: theme.colors.text }}>
-                  Manipulation checks
+                  Manipulation risk
                 </Text>
-                {checksActive ? (
-                  <RiskPill level={assessment.manipulation_level ?? 1} />
-                ) : (
-                  <Badge label="Not active yet" tone={theme.colors.neutral} icon="schedule" />
-                )}
+                <RiskPill level={assessment.manipulation_level ?? 1} />
               </View>
+              {MANIPULATION_CHECKS_ACTIVE ? null : (
+                <Body muted style={{ fontSize: 14 }}>
+                  Manipulation checks are not active in this version yet.
+                </Body>
+              )}
               <Caption>
-                {checksActive
-                  ? 'Checked separately and never averaged with the evidence above. A flag is a reason to look, not an accusation.'
-                  : 'Checks for collusion and retaliation arrive in a later version, so nothing is flagged yet.'}
+                Shown separately from reliability and never averaged with it. A flag is a reason to look, not an
+                accusation.
               </Caption>
             </View>
+          </View>
+        </Collapsible>
+      </Card>
 
+      <Card>
+        <Collapsible title="Technical details" icon="tune">
+          <View style={{ gap: 12 }}>
+            <View style={{ gap: 8 }}>
+              <Row label="Rule" value={assessment.rule_fired} />
+              <Row label="Policy decision" value={assessment.policy_decision} />
+              <Row label="Configuration" value={assessment.config_version} />
+            </View>
             <View
               style={{
                 padding: 12,
@@ -165,23 +227,6 @@ export function AssurancePanel({ assessment, name }: { assessment: Assessment; n
                 {assessment.explanation}
               </Body>
             </View>
-          </View>
-        </Collapsible>
-      </Card>
-
-      <Card>
-        <Collapsible title="Technical details" icon="tune">
-          <View style={{ gap: 8 }}>
-            <Row label="Rule" value={assessment.rule_fired} />
-            <Row label="Policy decision" value={assessment.policy_decision} />
-            {hasInterval ? (
-              <Row
-                label="90% credible interval"
-                value={`${(assessment.ci90_low as number).toFixed(2)} to ${(assessment.ci90_high as number).toFixed(2)}`}
-              />
-            ) : null}
-            <Row label="Manipulation risk score" value={`${assessment.manipulation_risk ?? 0} of 100`} />
-            <Row label="Configuration" value={assessment.config_version} />
           </View>
         </Collapsible>
       </Card>

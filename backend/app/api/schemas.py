@@ -61,6 +61,20 @@ class CommandOut(BaseModel):
     hold_reason: str | None = None
 
 
+class PathOut(BaseModel):
+    """One community path from the lender to the borrower, by display name only (no user ids)."""
+
+    via: list[str]  # the intermediaries; empty when the lender lent to the borrower before
+    strength: float
+
+
+class CommunityOut(BaseModel):
+    """Indirect evidence (FR-T-04): it can support a request but never makes it SUFFICIENT."""
+
+    reliability: float  # rho, capped by the config
+    paths: list[PathOut]
+
+
 class AssessmentOut(BaseModel):
     assurance_state: str
     policy_decision: str
@@ -72,6 +86,8 @@ class AssessmentOut(BaseModel):
     ci90_low: float | None = None
     ci90_high: float | None = None
     effective_evidence: float | None = None
+    verified_loans: int | None = None  # the borrower's verified outcomes behind the interval
+    community: CommunityOut | None = None
     # risk is a separate dimension and is never averaged with reliability (FR-T-05, NFR-U-01)
     manipulation_risk: int = 0
     manipulation_level: int = 1

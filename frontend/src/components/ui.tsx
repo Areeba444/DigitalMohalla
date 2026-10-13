@@ -11,7 +11,7 @@ import { Image } from 'expo-image';
 import { router } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { SymbolView, type AndroidSymbol } from 'expo-symbols';
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import {
   ActivityIndicator,
   Platform,
@@ -25,7 +25,7 @@ import {
   type TextStyle,
   type ViewStyle,
 } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { SafeAreaInsetsContext } from 'react-native-safe-area-context';
 
 import { useTheme } from '@/theme/ThemeProvider';
 import type { Theme, Tone } from '@/theme/themes';
@@ -40,6 +40,13 @@ export function gradient(css: string): ViewStyle {
 }
 
 const useT = () => useTheme().theme;
+
+const NO_INSETS = { top: 0, bottom: 0, left: 0, right: 0 };
+
+/** Safe-area insets; zero when rendered without a provider (e.g. in screen tests). Expo Router provides one in the app. */
+export function useInsets() {
+  return useContext(SafeAreaInsetsContext) ?? NO_INSETS;
+}
 
 export type IconName = AndroidSymbol;
 
@@ -234,7 +241,7 @@ export function Screen({
   children: React.ReactNode;
 }) {
   const theme = useT();
-  const insets = useSafeAreaInsets();
+  const insets = useInsets();
   return (
     <View style={{ flex: 1, backgroundColor: theme.colors.bg }}>
       <StatusBar style="dark" />
@@ -285,7 +292,7 @@ export function HeroScreen({
   children: React.ReactNode;
 }) {
   const theme = useT();
-  const insets = useSafeAreaInsets();
+  const insets = useInsets();
   return (
     <View style={{ flex: 1, backgroundColor: theme.colors.bg }}>
       <ScrollView
@@ -622,14 +629,16 @@ export function Chip({
 export function Collapsible({
   title,
   icon,
+  defaultOpen = false,
   children,
 }: {
   title: string;
   icon?: IconName;
+  defaultOpen?: boolean;
   children: React.ReactNode;
 }) {
   const theme = useT();
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(defaultOpen);
   return (
     <View style={{ gap: 10 }}>
       <Pressable
@@ -709,8 +718,8 @@ export function LifecycleBadge({ state, role }: { state: string | null | undefin
 }
 
 export const ASSURANCE: Record<string, { label: string; icon: IconName }> = {
-  SUFFICIENT_EVIDENCE: { label: 'Evidence looks good', icon: 'verified' },
-  REVIEW_RECOMMENDED: { label: 'Worth a closer look', icon: 'visibility' },
+  SUFFICIENT_EVIDENCE: { label: 'Enough verified history', icon: 'verified' },
+  REVIEW_RECOMMENDED: { label: 'Take a closer look', icon: 'visibility' },
   INSUFFICIENT_EVIDENCE: { label: 'Not enough history yet', icon: 'hourglass_top' },
   ACTIVE_DISPUTE: { label: 'Open dispute', icon: 'gavel' },
 };
@@ -777,7 +786,7 @@ export function IntervalBar({ low, high, mean }: { low: number; high: number; me
     <View style={{ gap: 8 }}>
       <View
         accessible
-        accessibilityLabel={`90 percent credible interval from ${low.toFixed(2)} to ${high.toFixed(2)}`}
+        accessibilityLabel={`90% credible interval from ${low.toFixed(2)} to ${high.toFixed(2)}`}
         style={{
           height: 18,
           borderRadius: 9999,
@@ -826,13 +835,13 @@ export function IntervalBar({ low, high, mean }: { low: number; high: number; me
 }
 
 const RISK: Record<number, [string, ToneKey]> = {
-  1: ['No signals', 'success'],
+  1: ['Low', 'success'],
   2: ['Monitor', 'info'],
   3: ['Verification advised', 'warning'],
   4: ['Moderator review', 'warning'],
 };
 
-/** Manipulation risk as a band; the raw score is only in the technical details. */
+/** The manipulation band only: a number next to the evidence could be read as a rating (NFR-U-01). */
 export function RiskPill({ level }: { level: number }) {
   const theme = useT();
   const [label, tone] = RISK[level] ?? ['Unknown', 'neutral'];
