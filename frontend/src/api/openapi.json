@@ -1500,6 +1500,7 @@
             "title": "At Fault"
           }
         },
+        "additionalProperties": false,
         "type": "object",
         "required": [
           "kind",
@@ -1591,6 +1592,7 @@
             "title": "Description"
           }
         },
+        "additionalProperties": false,
         "type": "object",
         "required": [
           "reason"

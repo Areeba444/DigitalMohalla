@@ -176,7 +176,7 @@ class EventOut(BaseModel):
     config_version: str | None = None
 
 
-class DisputeIn(BaseModel):
+class DisputeIn(StrictIn):
     """UC-B12 step 2: a reason from the fixed list and a description (photos come with C2 uploads)."""
 
     reason: Literal["DAMAGE", "NON_RETURN", "CONDITION_MISMATCH", "NO_SHOW", "OTHER"]
@@ -215,7 +215,7 @@ class DisputeTrailOut(BaseModel):
     available_actions: list[str]
 
 
-class DecisionIn(BaseModel):
+class DecisionIn(StrictIn):
     """UC-I4: the decision, its mandatory reason (FR-T-11), and what it needs."""
 
     kind: Literal["CLEARED", "SAFEGUARDS_IMPOSED", "RESTRICTED", "DISPUTE_RESOLVED"]
