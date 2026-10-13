@@ -9,10 +9,35 @@ from datetime import date, datetime
 from typing import Any
 from uuid import UUID
 
-from pydantic import BaseModel, Field, model_validator
+from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 
-class LoginIn(BaseModel):
+class StrictIn(BaseModel):
+    """Request bodies refuse unknown fields (422), so no client can send a location, an address or
+    an identity number that would be silently ignored (TC-60, NFR-PR-01)."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    @model_validator(mode="before")
+    @classmethod
+    def _no_nul_characters(cls, data: Any) -> Any:
+        """PostgreSQL text cannot hold NUL; refuse it as bad input (422) instead of failing (500)."""
+
+        def has_nul(v: Any) -> bool:
+            if isinstance(v, str):
+                return "\x00" in v
+            if isinstance(v, dict):
+                return any(has_nul(k) or has_nul(x) for k, x in v.items())
+            if isinstance(v, list):
+                return any(has_nul(x) for x in v)
+            return False
+
+        if has_nul(data):
+            raise ValueError("text may not contain NUL characters")
+        return data
+
+
+class LoginIn(StrictIn):
     email: str
     password: str
 
@@ -22,7 +47,7 @@ class TokenOut(BaseModel):
     token_type: str = "bearer"
 
 
-class RequestIn(BaseModel):
+class RequestIn(StrictIn):
     item_id: UUID
     start_date: date
     end_date: date = Field(description="Exclusive end: the item is returned by this date")
@@ -38,17 +63,17 @@ class RequestIn(BaseModel):
         return f"[{self.start_date}T00:00:00+00,{self.end_date}T00:00:00+00)"
 
 
-class DeclineIn(BaseModel):
+class DeclineIn(StrictIn):
     reason: str | None = Field(default=None, max_length=200)
 
 
-class ChecklistIn(BaseModel):
+class ChecklistIn(StrictIn):
     checklist: dict[str, Any] = Field(default_factory=dict)
     deposit_received: bool | None = None
     notes: str | None = Field(default=None, max_length=500)
 
 
-class ConfirmIn(BaseModel):
+class ConfirmIn(StrictIn):
     condition_agreed: bool = True
     checklist: dict[str, Any] = Field(default_factory=dict)
     notes: str | None = Field(default=None, max_length=500)
