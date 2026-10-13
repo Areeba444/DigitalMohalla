@@ -88,7 +88,7 @@ describe('TC-100 lender request with assurance summary', () => {
       await show(id);
       expect(screen.getByText('Manipulation risk')).toBeOnTheScreen();
       expect(screen.getByText('Low')).toBeOnTheScreen();
-      expect(screen.getByText(/not active in this version yet/)).toBeOnTheScreen();
+      expect(screen.queryByText(/not active in this version/)).toBeNull(); // checks run since C1
       const text = allText();
       const mean = CASES[id].assessment!.posterior_mean!.toFixed(2);
       expect(text).not.toContain(mean); // the posterior mean is drawn as a marker, never printed

@@ -7,6 +7,8 @@ Every number is printed next to what it means ("from 6.2 effective outcomes", "9
 from collections.abc import Sequence
 from dataclasses import dataclass
 
+from app.domain.assurance.detection.manipulation import S1, S4, ManipulationRisk
+
 NO_HISTORY = "Insufficient verified history; lender review required."
 
 _STATE = {
@@ -15,6 +17,41 @@ _STATE = {
     "INSUFFICIENT_EVIDENCE": "Not enough verified evidence to judge this request.",
     "ACTIVE_DISPUTE": "A dispute involving a party is still open.",
 }
+
+
+_LEVEL = {2: "monitor", 3: "extra verification advised", 4: "moderator review"}
+_SIGNAL = {S1: "partners reviewing one another", S4: "similar review texts"}
+HOLD = "Held for a moderator before it reaches the lender; nobody is restricted without a human decision."
+
+
+def _manipulation(m: ManipulationRisk | None) -> list[str]:
+    if m is None:
+        return ["Manipulation checks: not run."]
+    out = []
+    if m.level == 1:
+        out.append("Manipulation checks: no notable signals (level 1 of 4).")
+    else:
+        shown = [
+            f"{_SIGNAL.get(s.name, s.name)} {s.value:.2f}"
+            + (f" ({s.evidence})" if s.evidence else "")
+            for s in m.signals
+            if s.available and s.value > 0
+        ]
+        out.append(f"Manipulation risk: level {m.level} of 4 ({_LEVEL[m.level]}).")
+        if shown:
+            out.append(f"Signals: {'; '.join(shown)}.")
+        out.append("A risk signal is not proof of wrongdoing.")
+        if m.capped:
+            out.append(
+                "Only one signal is strong, so this alone does not send the request to a moderator."
+            )
+    for f in m.retaliation:
+        out.append(
+            f"A low review posted {f.days_after_complaint:.0f} days after this borrower complained about "
+            "its author conflicts with that loan's confirmed return; it is set aside as suspected "
+            "retaliation until a moderator looks at it, and it does not count against the borrower."
+        )
+    return out
 
 
 @dataclass(frozen=True)
@@ -38,7 +75,7 @@ def build_explanation(
     open_dispute: bool,
     is_high_value: bool,
     request_similarity: float,
-    manipulation_active: bool,
+    manipulation: ManipulationRisk | None,
     n_min: float,
     rho_max: float,
     similarity_floor: float,
@@ -82,11 +119,8 @@ def build_explanation(
         parts.append(
             f"High-value item: similarity of earlier loans to this one {request_similarity:.2f} (threshold {similarity_floor:.2f})."
         )
-    if rule == "R4":
-        parts.append(
-            "Held for a moderator before it reaches the lender; nobody is restricted without a human decision."
-        )
-    if not manipulation_active:
-        parts.append("Manipulation checks: not active yet (Slice C).")
+    parts.extend(_manipulation(manipulation))
+    if rule in ("R2", "R4"):
+        parts.append(HOLD)
     parts.append("Decision support, not a guarantee.")
     return " ".join(parts)

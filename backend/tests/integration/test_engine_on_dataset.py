@@ -31,10 +31,7 @@ MINI = ROOT / "data" / "derived" / "mini"
 DB_NAME = "dm_engine_test"
 CFG = load_engine_config()
 # Known gaps, each strict (an unexpected pass fails, so the mark is removed when the gap closes):
-KNOWN = {
-    # manipulation detection arrives in Slice C; until then the risk level is 1 and R2 cannot fire
-    "ES-04": "R2 needs corroborated manipulation signals (Slice C)",
-}
+KNOWN: dict[str, str] = {}  # none left since C1 (manipulation checks)
 
 
 def _loader() -> ModuleType:
