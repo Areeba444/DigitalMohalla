@@ -143,7 +143,8 @@ class PostgresLifecycleStore:
                     "SELECT id, generated_at, config_version, assurance_state::text AS assurance_state, "
                     "policy_decision::text AS policy_decision, rule_fired, posterior_mean, ci90_low, "
                     "ci90_high, effective_evidence, manipulation_risk, manipulation_level, safeguards, "
-                    "explanation FROM assessment WHERE transaction_id = :id "
+                    "explanation, direct_evidence, indirect_evidence FROM assessment "
+                    "WHERE transaction_id = :id "
                     "ORDER BY generated_at DESC LIMIT 1"
                 ),
                 {"id": transaction_id},

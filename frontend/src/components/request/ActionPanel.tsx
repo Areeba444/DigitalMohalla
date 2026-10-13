@@ -109,6 +109,8 @@ export function ActionPanel({ request, id }: { request: RequestDetail; id: strin
             loading={act.isPending}
             onPress={() => run({ name: 'decline' })}
           />
+          {/* UC-B6 counter-offer is planned for iteration 2 (TC-100) */}
+          <Button label="Counter-offer (coming in iteration 2)" variant="ghost" disabled onPress={() => {}} />
         </Card>
       ) : null}
 

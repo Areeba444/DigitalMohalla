@@ -1,0 +1,161 @@
+{
+  "synthetic": true,
+  "cases": {
+    "ES-01": {
+      "transaction_id": "txn-ES-01",
+      "item_id": "item-ES-01",
+      "item_title": "Power Drill",
+      "state": "ASSESSED",
+      "hold_reason": null,
+      "your_role": "LENDER",
+      "borrower_name": "Asad Zaidi",
+      "lender_name": "Mohsin Qureshi",
+      "requested_period": "[\"2026-10-23 00:00:00+00\",\"2026-10-26 00:00:00+00\")",
+      "message": "Synthetic request for the evidence screen test.",
+      "deposit_required": false,
+      "assessment": {
+        "assurance_state": "INSUFFICIENT_EVIDENCE",
+        "policy_decision": "REQUEST_VERIFICATION",
+        "rule_fired": "R3",
+        "config_version": "1.2.0-iteration1-draft",
+        "explanation": "Insufficient verified history; lender review required. This is not a negative finding about the borrower. Direct evidence: no verified loans yet. Community paths from the lender: none found. Manipulation checks: not active yet (Slice C). Decision support, not a guarantee.",
+        "safeguards": [
+          {
+            "code": "DEPOSIT_RECORD",
+            "label": "Record the deposit before handover"
+          },
+          {
+            "code": "HANDOVER_PHOTOS",
+            "label": "Take item photos at handover"
+          },
+          {
+            "code": "FIXED_RETURN_DATE",
+            "label": "Agree a fixed return date"
+          }
+        ],
+        "posterior_mean": 0.5,
+        "ci90_low": 0.05,
+        "ci90_high": 0.95,
+        "effective_evidence": 0.0,
+        "verified_loans": 0,
+        "community": {
+          "reliability": 0.0,
+          "paths": []
+        },
+        "manipulation_risk": 0,
+        "manipulation_level": 1
+      },
+      "reports": [],
+      "available_actions": [
+        "accept",
+        "decline"
+      ]
+    },
+    "ES-02": {
+      "transaction_id": "txn-ES-02",
+      "item_id": "item-ES-02",
+      "item_title": "Rice Cooker",
+      "state": "ASSESSED",
+      "hold_reason": null,
+      "your_role": "LENDER",
+      "borrower_name": "Hamid Rana",
+      "lender_name": "Tariq Rana",
+      "requested_period": "[\"2026-10-23 00:00:00+00\",\"2026-10-26 00:00:00+00\")",
+      "message": "Synthetic request for the evidence screen test.",
+      "deposit_required": false,
+      "assessment": {
+        "assurance_state": "SUFFICIENT_EVIDENCE",
+        "policy_decision": "PROCEED",
+        "rule_fired": "R7",
+        "config_version": "1.2.0-iteration1-draft",
+        "explanation": "Sufficient verified evidence for this request. Direct evidence: 10 verified loan(s), weighted for recency and similarity to 7.1 effective outcomes; estimated on-time return 0.89 with a 90% interval of 0.69 to 0.99. Community paths from the lender: earlier loans from this lender (path strength 0.86); indirect reliability 0.14 (at most 0.60). Manipulation checks: not active yet (Slice C). Decision support, not a guarantee.",
+        "safeguards": [
+          {
+            "code": "STANDARD_RETURN_REMINDER",
+            "label": "Send the standard return reminder"
+          }
+        ],
+        "posterior_mean": 0.8899,
+        "ci90_low": 0.6903,
+        "ci90_high": 0.9937,
+        "effective_evidence": 7.084,
+        "verified_loans": 10,
+        "community": {
+          "reliability": 0.1435,
+          "paths": [
+            {
+              "via": [],
+              "strength": 0.861
+            }
+          ]
+        },
+        "manipulation_risk": 0,
+        "manipulation_level": 1
+      },
+      "reports": [],
+      "available_actions": [
+        "accept",
+        "decline"
+      ]
+    },
+    "ES-13": {
+      "transaction_id": "txn-ES-13",
+      "item_id": "item-ES-13",
+      "item_title": "Mini Projector",
+      "state": "ASSESSED",
+      "hold_reason": null,
+      "your_role": "LENDER",
+      "borrower_name": "Hina Butt",
+      "lender_name": "Shazia Butt",
+      "requested_period": "[\"2026-10-23 00:00:00+00\",\"2026-10-26 00:00:00+00\")",
+      "message": "Synthetic request for the evidence screen test.",
+      "deposit_required": true,
+      "assessment": {
+        "assurance_state": "REVIEW_RECOMMENDED",
+        "policy_decision": "PROCEED_WITH_SAFEGUARDS",
+        "rule_fired": "R9",
+        "config_version": "1.2.0-iteration1-draft",
+        "explanation": "Review recommended before lending. Direct evidence: 2 verified loan(s), weighted for recency and similarity to 0.9 effective outcomes; estimated on-time return 0.65 with a 90% interval of 0.20 to 0.97. Community paths from the lender: via Kashif Hashmi (path strength 0.36); via Afshan Lodhi (path strength 0.36); indirect reliability 0.39 (at most 0.60). Without these paths the request would be INSUFFICIENT_EVIDENCE. Manipulation checks: not active yet (Slice C). Decision support, not a guarantee.",
+        "safeguards": [
+          {
+            "code": "MEDIUM_VALUE_DEPOSIT_RECORD",
+            "label": "Record a deposit suited to a medium-value item"
+          },
+          {
+            "code": "HANDOVER_PHOTOS",
+            "label": "Take item photos at handover"
+          }
+        ],
+        "posterior_mean": 0.6524,
+        "ci90_low": 0.2027,
+        "ci90_high": 0.973,
+        "effective_evidence": 0.877,
+        "verified_loans": 2,
+        "community": {
+          "reliability": 0.3939,
+          "paths": [
+            {
+              "via": [
+                "Kashif Hashmi"
+              ],
+              "strength": 0.3584
+            },
+            {
+              "via": [
+                "Afshan Lodhi"
+              ],
+              "strength": 0.3622
+            }
+          ]
+        },
+        "manipulation_risk": 0,
+        "manipulation_level": 1
+      },
+      "reports": [],
+      "available_actions": [
+        "accept",
+        "decline"
+      ]
+    }
+  }
+}
