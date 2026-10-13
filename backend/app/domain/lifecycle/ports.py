@@ -138,6 +138,10 @@ class LifecycleStore(Protocol):
         """Write the verified outcomes of a closing event (FR-B-15); returns rows added."""
         ...
 
+    def refresh_trust_edges(self, transaction_id: UUID) -> int:
+        """Recompute the trust edges between the two parties (ADR-0006); returns rows written."""
+        ...
+
 
 class AuditLog(Protocol):
     """Records rejected commands outside the command's own transaction (suite 1, FR-M-05)."""
