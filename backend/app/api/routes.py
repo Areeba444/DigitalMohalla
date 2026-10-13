@@ -257,3 +257,60 @@ def transaction_events(
         return [schemas.EventOut(**e) for e in svc.store.events(txn_id)]
 
     return commands.run(read)
+
+
+# ----------------------------------------------------------------------------- disputes (B12, D6)
+@router.post("/transactions/{txn_id}/dispute", response_model=schemas.CommandOut)
+def raise_dispute(
+    txn_id: UUID,
+    body: schemas.DisputeIn,
+    actor: Actor = Depends(current_actor),
+    commands: Commands = Depends(get_commands),
+) -> schemas.CommandOut:
+    return _out(
+        commands.run(lambda svc: svc.raise_dispute(actor, txn_id, body.reason, body.description))
+    )
+
+
+@router.post("/transactions/{txn_id}/dispute/withdraw", response_model=schemas.CommandOut)
+def withdraw_dispute(
+    txn_id: UUID,
+    actor: Actor = Depends(current_actor),
+    commands: Commands = Depends(get_commands),
+) -> schemas.CommandOut:
+    return _out(commands.run(lambda svc: svc.withdraw_dispute(actor, txn_id)))
+
+
+@router.get("/transactions/{txn_id}/dispute", response_model=schemas.DisputeTrailOut)
+def dispute_trail(
+    txn_id: UUID,
+    actor: Actor = Depends(current_actor),
+    commands: Commands = Depends(get_commands),
+    engine: Engine = Depends(get_engine),
+) -> schemas.DisputeTrailOut:
+    found = commands.run(lambda svc: svc.dispute_case(actor, txn_id))
+    view, assessment, details, case = (
+        found["view"],
+        found["assessment"],
+        found["details"],
+        found["case"],
+    )
+    names = (
+        PostgresEvidenceSource(lambda: engine).display_names(intermediaries(assessment))
+        if assessment
+        else {}
+    )
+    return schemas.DisputeTrailOut(
+        case=schemas.CaseOut(**{k: case[k] for k in schemas.CaseOut.model_fields}),
+        transaction_id=view.id,
+        item_title=details["item_title"],
+        state=view.state,
+        your_role=found["role"],
+        borrower_name=details["borrower_name"],
+        lender_name=details["lender_name"],
+        requested_period=details["requested_period"],
+        reports=[schemas.ReportOut(**r) for r in found["reports"].values()],
+        events=[schemas.EventOut(**e) for e in found["events"]],
+        assessment=assessment_out(assessment, names) if assessment else None,
+        available_actions=found["actions"],
+    )

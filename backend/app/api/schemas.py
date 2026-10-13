@@ -6,7 +6,7 @@ explanation, never as a single trust number (NFR-U-01).
 """
 
 from datetime import date, datetime
-from typing import Any
+from typing import Any, Literal
 from uuid import UUID
 
 from pydantic import BaseModel, Field, model_validator
@@ -148,6 +148,45 @@ class EventOut(BaseModel):
     occurred_at: datetime
     authorisation: str
     config_version: str | None = None
+
+
+class DisputeIn(BaseModel):
+    """UC-B12 step 2: a reason from the fixed list and a description (photos come with C2 uploads)."""
+
+    reason: Literal["DAMAGE", "NON_RETURN", "CONDITION_MISMATCH", "NO_SHOW", "OTHER"]
+    description: str | None = Field(default=None, max_length=1000)
+
+
+class CaseOut(BaseModel):
+    """An escalation case. The raiser is given by role only, never by user id."""
+
+    id: UUID
+    trigger_type: str
+    dispute_reason: str | None = None
+    hold_reason: str | None = None
+    raised_by_role: str | None = None
+    status: str
+    priority: int
+    reason: str
+    opened_at: datetime
+    closed_at: datetime | None = None
+
+
+class DisputeTrailOut(BaseModel):
+    """UC-D6 evidence trail: the case, the loan, both sides' reports, the history, the assessment."""
+
+    case: CaseOut
+    transaction_id: UUID
+    item_title: str
+    state: str | None
+    your_role: str | None
+    borrower_name: str
+    lender_name: str
+    requested_period: str
+    reports: list[ReportOut]
+    events: list[EventOut]
+    assessment: AssessmentOut | None
+    available_actions: list[str]
 
 
 class LenderRequestOut(BaseModel):

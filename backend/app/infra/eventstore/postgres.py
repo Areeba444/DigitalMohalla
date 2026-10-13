@@ -66,8 +66,8 @@ class PostgresLifecycleStore:
         row = (
             self.conn.execute(
                 text(
-                    "SELECT event_id, stream_seq, occurred_at FROM lifecycle_event "
-                    "WHERE stream_id = :id AND event_type = CAST(:t AS event_type) "
+                    "SELECT event_id, stream_seq, occurred_at, previous_state::text AS previous_state "
+                    "FROM lifecycle_event WHERE stream_id = :id AND event_type = CAST(:t AS event_type) "
                     "ORDER BY stream_seq DESC LIMIT 1"
                 ),
                 {"id": transaction_id, "t": event_type},
@@ -148,6 +148,29 @@ class PostgresLifecycleStore:
                     "ORDER BY generated_at DESC LIMIT 1"
                 ),
                 {"id": transaction_id},
+            )
+            .mappings()
+            .first()
+        )
+        return dict(row) if row else None
+
+    def open_case(self, transaction_id: UUID) -> dict[str, Any] | None:
+        return self._case(transaction_id, only_open=True)
+
+    def latest_case(self, transaction_id: UUID) -> dict[str, Any] | None:
+        return self._case(transaction_id, only_open=False)
+
+    def _case(self, transaction_id: UUID, *, only_open: bool) -> dict[str, Any] | None:
+        row = (
+            self.conn.execute(
+                text(
+                    "SELECT id, trigger_type::text AS trigger_type, dispute_reason::text AS dispute_reason, "
+                    "hold_reason::text AS hold_reason, raised_by, status::text AS status, priority, reason, "
+                    "opened_at, closed_at FROM escalation_case WHERE transaction_id = :id "
+                    "AND (NOT :only_open OR status IN ('OPEN', 'AWAITING_INFORMATION')) "
+                    "ORDER BY opened_at DESC LIMIT 1"
+                ),
+                {"id": transaction_id, "only_open": only_open},
             )
             .mappings()
             .first()
