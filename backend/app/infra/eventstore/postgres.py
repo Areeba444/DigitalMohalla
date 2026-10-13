@@ -7,13 +7,14 @@ rejected command is still recorded after the command's transaction rolls back (s
 
 import json
 from contextlib import AbstractContextManager
+from datetime import UTC, datetime
 from typing import Any
 from uuid import UUID
 
 from sqlalchemy import Connection, Engine, text
 
 from app.domain.lifecycle.ports import AssessmentResult, TransactionView
-from app.infra.db import outcomes
+from app.infra.db import outcomes, trust_edges
 from app.infra.eventstore import store
 
 
@@ -304,6 +305,15 @@ class PostgresLifecycleStore:
     # evidence -----------------------------------------------------------------------------------
     def record_outcomes(self, event_id: int) -> int:
         return outcomes.record_outcomes(self.conn, event_id)
+
+    def refresh_trust_edges(self, transaction_id: UUID) -> int:
+        b, lnd = self.conn.execute(
+            text(
+                "SELECT borrower_id::text, lender_id::text FROM borrowing_transaction WHERE id = :t"
+            ),
+            {"t": transaction_id},
+        ).one()
+        return trust_edges.refresh_trust_edges(self.conn, datetime.now(UTC), [(lnd, b), (b, lnd)])
 
 
 class PostgresAuditLog:
