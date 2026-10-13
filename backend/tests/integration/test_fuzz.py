@@ -41,6 +41,17 @@ weird_dates: st.SearchStrategy[Any] = st.one_of(
 )
 
 
+_TOKENS: dict[str, dict[str, str]] = {}
+
+
+def headers(client: TestClient, email: str) -> dict[str, str]:
+    """Log in once per account: the token stays valid across examples, and each login runs the
+    deliberately slow password hash, which would otherwise dominate the run."""
+    if email not in _TOKENS:
+        _TOKENS[email] = login(client, email)
+    return _TOKENS[email]
+
+
 def check(response: Any) -> None:
     assert response.status_code < 500, (response.status_code, response.text[:300])
     lowered = response.text.lower()
@@ -59,7 +70,7 @@ def test_request_body_fuzz(
     end: Any,
     item: str,
 ) -> None:
-    borrower = login(client, "borrower2@example.test")
+    borrower = headers(client, "borrower2@example.test")
     for item_id in (item, str(world.items[13])):
         r = client.post(
             "/api/v1/requests",
@@ -78,7 +89,7 @@ def test_hostile_message_on_a_valid_request(
     world: World,
     message: str,
 ) -> None:
-    borrower = login(client, "borrower2@example.test")
+    borrower = headers(client, "borrower2@example.test")
     r = client.post(
         "/api/v1/requests",
         json={"item_id": str(world.items[14]), **dates(120, 2), "message": message},
@@ -95,7 +106,7 @@ def test_hostile_message_on_a_valid_request(
 @FUZZ
 @given(raw=texts)
 def test_path_id_fuzz(client: TestClient, raw: str) -> None:  # noqa: F811
-    borrower = login(client, "borrower2@example.test")
+    borrower = headers(client, "borrower2@example.test")
     part = quote(raw, safe="")
     for url in (
         f"/api/v1/requests/{part}",
@@ -128,7 +139,7 @@ json_values = st.recursive(
     )
 )
 def test_checklist_body_fuzz(client: TestClient, world: World, body: dict) -> None:  # noqa: F811
-    lender = login(client, "lender@example.test")
+    lender = headers(client, "lender@example.test")
     # an unknown transaction: the body is validated first, and nothing may crash either way
     txn = "00000000-0000-0000-0000-000000000000"
     check(client.post(f"/api/v1/transactions/{txn}/handover/checklist", json=body, headers=lender))
