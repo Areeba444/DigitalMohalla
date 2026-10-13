@@ -67,7 +67,7 @@ From the Overview's evaluation scenarios (expected states are the team's startin
 | ES-02 | Consistently reliable | SUFFICIENT_EVIDENCE |
 | ES-03 | Reliable with one recent dispute | REVIEW_RECOMMENDED (ACTIVE_DISPUTE if still open) |
 | ES-04 | Colluding participants | REVIEW_RECOMMENDED |
-| ES-05 | Retaliatory review | REVIEW_RECOMMENDED |
+| ES-05 | Retaliatory review | SUFFICIENT_EVIDENCE with safeguards (rule R8: the retaliatory review is detected and down-weighted; team decision D13, 13 October, matching the fixture and Test Plan TC-44) |
 | ES-06 | High-value request with weak evidence | REVIEW_RECOMMENDED |
 | ES-07 | Conflicting condition reports | ACTIVE_DISPUTE |
 | ES-08 | Failure to return | ACTIVE_DISPUTE |
