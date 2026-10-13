@@ -38,7 +38,7 @@ The technical core is a **trust and risk decision engine**. It estimates whether
 | Assurance engine | **Placeholder only.** A stub always answers "not enough history yet". The real engine is Slice B |
 | Login and roles | Done (argon2 passwords, JWT tokens) |
 | REST API (`/api/v1`) | Done for the Slice A loop |
-| Web UI (Expo) | Done for Slice A: login, home, browse, new request, lender evidence screen, handover, return. Three themes to choose from |
+| Web UI (Expo) | Done for Slice A: login, home dashboard, browse, activity, profile, new request with date chips, lender evidence summary, handover, return. Two themes (Terracotta, Cream Green) |
 | Disputes, moderator console, audit view | Not yet (Slice C) |
 | k-hop indirect trust, manipulation checks, decision policy | Not yet (Slices B and C) |
 | CI pipeline | GitHub Actions (`.github/workflows/ci.yml`): backend, frontend and API-client checks on every push and pull request; Dependabot weekly. Runs once the code is on GitHub |
@@ -84,7 +84,7 @@ frontend/
   src/app/                Expo Router routes: login, (resident)/..., (moderator)/ (later)
   src/api/                generated API client and TanStack Query hooks
   src/components/         UI components and request screens
-  src/theme/              the three themes and the theme provider
+  src/theme/              the two themes (Terracotta, Cream Green) and the theme provider
 docs/
   design/                 Part A design baseline (diagrams, schema, ADRs, test plan, UI prototypes)
   DigitalMohalla_Project_Context.md   full project handoff
@@ -211,7 +211,7 @@ Demo accounts (password: the demo password above):
 3. Ayesha records the handover checklist. Bilal confirms receipt. Bilal starts the return, Ayesha records the return inspection, Bilal agrees. The request is **Completed**.
 4. Open **History of this request** to see the event stream.
 
-The three theme buttons (Terracotta, Nordic, Midnight) at the top of the login and home screens let the team compare looks. The choice is remembered per browser.
+Two themes are available, Terracotta and Cream Green: switch them with the swatches on the login screen or under Profile, Appearance. The choice is remembered per browser.
 
 ## 7. Running the tests and checks
 
