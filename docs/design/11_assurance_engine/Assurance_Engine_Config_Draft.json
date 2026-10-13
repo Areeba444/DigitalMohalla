@@ -2,15 +2,16 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "config_metadata": {
     "config_name": "digital_mohalla_assurance_engine_config",
-    "config_version": "1.1.0-iteration1-draft",
+    "config_version": "1.2.0-iteration1-draft",
     "status": "initial_hypothesis_unvalidated",
     "created_at": "2026-10-11T15:20:00Z",
     "module": "Module 5: Trust, Safety and Assurance Engine",
     "author": "Student 2 (Trust & Assurance Lead)",
     "description": "Baseline operational and algorithmic parameters for Digital Mohalla's assurance pipeline. Every threshold and weight represents an initial experimental hypothesis to be evaluated via time-ordered holdout testing (Overview §5, NFR-D-01, FR-B-09).",
-    "updated_at": "2026-10-11T19:30:00Z",
+    "updated_at": "2026-10-13T12:00:00Z",
     "changelog": [
       "1.0.0-iteration1-draft (2026-10-11, Student 2): initial parameter set.",
+      "1.2.0-iteration1-draft (2026-10-13, Student 2): similarity weighting defined (team decision D17): value band 0.4, category 0.4, duration 0.2; band closeness 1.0 same, 0.5 adjacent, 0.0 two apart; duration closeness shorter / longer; the 0.5 floor applies to each outcome's weight. No other value changed.",
       "1.1.0-iteration1-draft (2026-10-11, integration): s4_review_similarity active in iteration 1 (ADR-0007); rule R6_SPARSE uses rho_sup (ADR-0008); locality_a11 parameters added so one versioned file holds every parameter (NFR-D-01). No numeric value changed."
     ]
   },
@@ -51,6 +52,18 @@
     },
     "similarity_weighting": {
       "similarity_floor": 0.5,
+      "component_weights": {
+        "value_band": 0.4,
+        "category": 0.4,
+        "duration": 0.2
+      },
+      "band_closeness": {
+        "same": 1.0,
+        "adjacent": 0.5,
+        "two_apart": 0.0
+      },
+      "formula": "sigma_raw = 0.4 * band_closeness + 0.4 * (same category) + 0.2 * (shorter / longer duration); outcome weight uses max(similarity_floor, sigma_raw); request_similarity (rule R4) is the recency-weighted mean of sigma_raw",
+      "decision": "Team decision D17, 2026-10-13",
       "source": "Overview §5.12",
       "sensitivity_range": [
         0.3,
