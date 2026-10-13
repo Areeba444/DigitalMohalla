@@ -15,6 +15,7 @@ from app.api.evidence import assessment_out, intermediaries
 from app.config.settings import get_settings
 from app.domain.accounts.auth import InvalidCredentials, create_token
 from app.domain.lifecycle.service import Actor, BorrowingService, CommandResult
+from app.domain.moderation.decisions import Decision
 from app.infra.db.evidence import PostgresEvidenceSource
 from app.infra.db.users import authenticate
 
@@ -107,6 +108,7 @@ def get_request(
         assessment=assessment_out(assessment, names) if assessment else None,
         reports=[schemas.ReportOut(**r) for r in found["reports"].values()],
         available_actions=found["actions"],
+        moderator_safeguards=found["moderator_safeguards"],
     )
 
 
@@ -257,3 +259,117 @@ def transaction_events(
         return [schemas.EventOut(**e) for e in svc.store.events(txn_id)]
 
     return commands.run(read)
+
+
+# ----------------------------------------------------------------------------- disputes (B12, D6)
+@router.post("/transactions/{txn_id}/dispute", response_model=schemas.CommandOut)
+def raise_dispute(
+    txn_id: UUID,
+    body: schemas.DisputeIn,
+    actor: Actor = Depends(current_actor),
+    commands: Commands = Depends(get_commands),
+) -> schemas.CommandOut:
+    return _out(
+        commands.run(lambda svc: svc.raise_dispute(actor, txn_id, body.reason, body.description))
+    )
+
+
+@router.post("/transactions/{txn_id}/dispute/withdraw", response_model=schemas.CommandOut)
+def withdraw_dispute(
+    txn_id: UUID,
+    actor: Actor = Depends(current_actor),
+    commands: Commands = Depends(get_commands),
+) -> schemas.CommandOut:
+    return _out(commands.run(lambda svc: svc.withdraw_dispute(actor, txn_id)))
+
+
+@router.get("/transactions/{txn_id}/dispute", response_model=schemas.DisputeTrailOut)
+def dispute_trail(
+    txn_id: UUID,
+    actor: Actor = Depends(current_actor),
+    commands: Commands = Depends(get_commands),
+    engine: Engine = Depends(get_engine),
+) -> schemas.DisputeTrailOut:
+    found = commands.run(lambda svc: svc.dispute_case(actor, txn_id))
+    view, assessment, details, case = (
+        found["view"],
+        found["assessment"],
+        found["details"],
+        found["case"],
+    )
+    names = (
+        PostgresEvidenceSource(lambda: engine).display_names(intermediaries(assessment))
+        if assessment
+        else {}
+    )
+    return schemas.DisputeTrailOut(
+        case=schemas.CaseOut(**{k: case[k] for k in schemas.CaseOut.model_fields}),
+        transaction_id=view.id,
+        item_title=details["item_title"],
+        state=view.state,
+        your_role=found["role"],
+        borrower_name=details["borrower_name"],
+        lender_name=details["lender_name"],
+        requested_period=details["requested_period"],
+        reports=[schemas.ReportOut(**r) for r in found["reports"].values()],
+        events=[schemas.EventOut(**e) for e in found["events"]],
+        assessment=assessment_out(assessment, names) if assessment else None,
+        available_actions=found["actions"],
+    )
+
+
+# ----------------------------------------------------------------------------- moderation (I4)
+@router.get("/moderation/cases", response_model=list[schemas.CaseQueueOut])
+def moderation_queue(
+    actor: Actor = Depends(current_actor),
+    commands: Commands = Depends(get_commands),
+) -> list[schemas.CaseQueueOut]:
+    return [
+        schemas.CaseQueueOut(**c) for c in commands.run(lambda svc: svc.moderation_queue(actor))
+    ]
+
+
+@router.get("/moderation/cases/{case_id}", response_model=schemas.ModeratorCaseOut)
+def moderator_case(
+    case_id: UUID,
+    actor: Actor = Depends(current_actor),
+    commands: Commands = Depends(get_commands),
+    engine: Engine = Depends(get_engine),
+) -> schemas.ModeratorCaseOut:
+    found = commands.run(lambda svc: svc.moderator_case(actor, case_id))
+    view, assessment, details, case = (
+        found["view"],
+        found["assessment"],
+        found["details"],
+        found["case"],
+    )
+    names = (
+        PostgresEvidenceSource(lambda: engine).display_names(intermediaries(assessment))
+        if assessment
+        else {}
+    )
+    return schemas.ModeratorCaseOut(
+        case=schemas.CaseOut(**{k: case[k] for k in schemas.CaseOut.model_fields}),
+        transaction_id=view.id,
+        item_title=details["item_title"],
+        state=view.state,
+        hold_reason=view.hold_reason,
+        borrower_name=details["borrower_name"],
+        lender_name=details["lender_name"],
+        requested_period=details["requested_period"],
+        reports=[schemas.ReportOut(**r) for r in found["reports"].values()],
+        events=[schemas.EventOut(**e) for e in found["events"]],
+        assessment=assessment_out(assessment, names) if assessment else None,
+        decisions=[schemas.DecisionOut(**d) for d in found["decisions"]],
+    )
+
+
+@router.post("/moderation/cases/{case_id}/decision", response_model=schemas.CommandOut)
+def decide_case(
+    case_id: UUID,
+    body: schemas.DecisionIn,
+    actor: Actor = Depends(current_actor),
+    commands: Commands = Depends(get_commands),
+) -> schemas.CommandOut:
+    decision = Decision(body.kind, body.reason, tuple(body.safeguards), body.at_fault)
+    return _out(commands.run(lambda svc: svc.decide(actor, case_id, decision)))

@@ -729,6 +729,276 @@
           }
         }
       }
+    },
+    "/api/v1/transactions/{txn_id}/dispute": {
+      "post": {
+        "summary": "Raise Dispute",
+        "operationId": "raise_dispute_api_v1_transactions__txn_id__dispute_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "txn_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Txn Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DisputeIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CommandOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "summary": "Dispute Trail",
+        "operationId": "dispute_trail_api_v1_transactions__txn_id__dispute_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "txn_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Txn Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DisputeTrailOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/transactions/{txn_id}/dispute/withdraw": {
+      "post": {
+        "summary": "Withdraw Dispute",
+        "operationId": "withdraw_dispute_api_v1_transactions__txn_id__dispute_withdraw_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "txn_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Txn Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CommandOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/moderation/cases": {
+      "get": {
+        "summary": "Moderation Queue",
+        "operationId": "moderation_queue_api_v1_moderation_cases_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/CaseQueueOut"
+                  },
+                  "type": "array",
+                  "title": "Response Moderation Queue Api V1 Moderation Cases Get"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/moderation/cases/{case_id}": {
+      "get": {
+        "summary": "Moderator Case",
+        "operationId": "moderator_case_api_v1_moderation_cases__case_id__get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "case_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Case Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ModeratorCaseOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/moderation/cases/{case_id}/decision": {
+      "post": {
+        "summary": "Decide Case",
+        "operationId": "decide_case_api_v1_moderation_cases__case_id__decision_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "case_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Case Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DecisionIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CommandOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -881,6 +1151,178 @@
         ],
         "title": "BrowseItemOut"
       },
+      "CaseOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "trigger_type": {
+            "type": "string",
+            "title": "Trigger Type"
+          },
+          "dispute_reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Dispute Reason"
+          },
+          "hold_reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Hold Reason"
+          },
+          "raised_by_role": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Raised By Role"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "priority": {
+            "type": "integer",
+            "title": "Priority"
+          },
+          "reason": {
+            "type": "string",
+            "title": "Reason"
+          },
+          "opened_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Opened At"
+          },
+          "closed_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Closed At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "trigger_type",
+          "status",
+          "priority",
+          "reason",
+          "opened_at"
+        ],
+        "title": "CaseOut",
+        "description": "An escalation case. The raiser is given by role only, never by user id."
+      },
+      "CaseQueueOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "transaction_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Transaction Id"
+          },
+          "trigger_type": {
+            "type": "string",
+            "title": "Trigger Type"
+          },
+          "dispute_reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Dispute Reason"
+          },
+          "hold_reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Hold Reason"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "priority": {
+            "type": "integer",
+            "title": "Priority"
+          },
+          "reason": {
+            "type": "string",
+            "title": "Reason"
+          },
+          "opened_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Opened At"
+          },
+          "item_title": {
+            "type": "string",
+            "title": "Item Title"
+          },
+          "state": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "State"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "transaction_id",
+          "trigger_type",
+          "status",
+          "priority",
+          "reason",
+          "opened_at",
+          "item_title",
+          "state"
+        ],
+        "title": "CaseQueueOut",
+        "description": "One row of the moderator queue (W6): no names or ids of the people involved."
+      },
       "ChecklistIn": {
         "properties": {
           "checklist": {
@@ -912,6 +1354,7 @@
             "title": "Notes"
           }
         },
+        "additionalProperties": false,
         "type": "object",
         "title": "ChecklistIn"
       },
@@ -1010,8 +1453,99 @@
             "title": "Notes"
           }
         },
+        "additionalProperties": false,
         "type": "object",
         "title": "ConfirmIn"
+      },
+      "DecisionIn": {
+        "properties": {
+          "kind": {
+            "type": "string",
+            "enum": [
+              "CLEARED",
+              "SAFEGUARDS_IMPOSED",
+              "RESTRICTED",
+              "DISPUTE_RESOLVED"
+            ],
+            "title": "Kind"
+          },
+          "reason": {
+            "type": "string",
+            "maxLength": 1000,
+            "minLength": 1,
+            "title": "Reason"
+          },
+          "safeguards": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "maxItems": 10,
+            "title": "Safeguards"
+          },
+          "at_fault": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "borrower",
+                  "lender",
+                  "none"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "At Fault"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "kind",
+          "reason"
+        ],
+        "title": "DecisionIn",
+        "description": "UC-I4: the decision, its mandatory reason (FR-T-11), and what it needs."
+      },
+      "DecisionOut": {
+        "properties": {
+          "decider_role": {
+            "type": "string",
+            "title": "Decider Role"
+          },
+          "kind": {
+            "type": "string",
+            "title": "Kind"
+          },
+          "reason": {
+            "type": "string",
+            "title": "Reason"
+          },
+          "safeguards": {
+            "items": {},
+            "type": "array",
+            "title": "Safeguards"
+          },
+          "resolved_outcome": {
+            "title": "Resolved Outcome"
+          },
+          "decided_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Decided At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "decider_role",
+          "kind",
+          "reason",
+          "safeguards",
+          "decided_at"
+        ],
+        "title": "DecisionOut"
       },
       "DeclineIn": {
         "properties": {
@@ -1028,8 +1562,141 @@
             "title": "Reason"
           }
         },
+        "additionalProperties": false,
         "type": "object",
         "title": "DeclineIn"
+      },
+      "DisputeIn": {
+        "properties": {
+          "reason": {
+            "type": "string",
+            "enum": [
+              "DAMAGE",
+              "NON_RETURN",
+              "CONDITION_MISMATCH",
+              "NO_SHOW",
+              "OTHER"
+            ],
+            "title": "Reason"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 1000
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "reason"
+        ],
+        "title": "DisputeIn",
+        "description": "UC-B12 step 2: a reason from the fixed list and a description (photos come with C2 uploads)."
+      },
+      "DisputeTrailOut": {
+        "properties": {
+          "case": {
+            "$ref": "#/components/schemas/CaseOut"
+          },
+          "transaction_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Transaction Id"
+          },
+          "item_title": {
+            "type": "string",
+            "title": "Item Title"
+          },
+          "state": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "State"
+          },
+          "your_role": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Your Role"
+          },
+          "borrower_name": {
+            "type": "string",
+            "title": "Borrower Name"
+          },
+          "lender_name": {
+            "type": "string",
+            "title": "Lender Name"
+          },
+          "requested_period": {
+            "type": "string",
+            "title": "Requested Period"
+          },
+          "reports": {
+            "items": {
+              "$ref": "#/components/schemas/ReportOut"
+            },
+            "type": "array",
+            "title": "Reports"
+          },
+          "events": {
+            "items": {
+              "$ref": "#/components/schemas/EventOut"
+            },
+            "type": "array",
+            "title": "Events"
+          },
+          "assessment": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/AssessmentOut"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "available_actions": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Available Actions"
+          }
+        },
+        "type": "object",
+        "required": [
+          "case",
+          "transaction_id",
+          "item_title",
+          "state",
+          "your_role",
+          "borrower_name",
+          "lender_name",
+          "requested_period",
+          "reports",
+          "events",
+          "assessment",
+          "available_actions"
+        ],
+        "title": "DisputeTrailOut",
+        "description": "UC-D6 evidence trail: the case, the loan, both sides' reports, the history, the assessment."
       },
       "EventOut": {
         "properties": {
@@ -1203,12 +1870,111 @@
             "title": "Password"
           }
         },
+        "additionalProperties": false,
         "type": "object",
         "required": [
           "email",
           "password"
         ],
         "title": "LoginIn"
+      },
+      "ModeratorCaseOut": {
+        "properties": {
+          "case": {
+            "$ref": "#/components/schemas/CaseOut"
+          },
+          "transaction_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Transaction Id"
+          },
+          "item_title": {
+            "type": "string",
+            "title": "Item Title"
+          },
+          "state": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "State"
+          },
+          "hold_reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Hold Reason"
+          },
+          "borrower_name": {
+            "type": "string",
+            "title": "Borrower Name"
+          },
+          "lender_name": {
+            "type": "string",
+            "title": "Lender Name"
+          },
+          "requested_period": {
+            "type": "string",
+            "title": "Requested Period"
+          },
+          "reports": {
+            "items": {
+              "$ref": "#/components/schemas/ReportOut"
+            },
+            "type": "array",
+            "title": "Reports"
+          },
+          "events": {
+            "items": {
+              "$ref": "#/components/schemas/EventOut"
+            },
+            "type": "array",
+            "title": "Events"
+          },
+          "assessment": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/AssessmentOut"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "decisions": {
+            "items": {
+              "$ref": "#/components/schemas/DecisionOut"
+            },
+            "type": "array",
+            "title": "Decisions"
+          }
+        },
+        "type": "object",
+        "required": [
+          "case",
+          "transaction_id",
+          "item_title",
+          "state",
+          "hold_reason",
+          "borrower_name",
+          "lender_name",
+          "requested_period",
+          "reports",
+          "events",
+          "assessment",
+          "decisions"
+        ],
+        "title": "ModeratorCaseOut",
+        "description": "UC-D6 evidence trail for the moderator (W7)."
       },
       "MyRequestOut": {
         "properties": {
@@ -1394,6 +2160,7 @@
             "title": "Message"
           }
         },
+        "additionalProperties": false,
         "type": "object",
         "required": [
           "item_id",
@@ -1501,6 +2268,12 @@
             },
             "type": "array",
             "title": "Available Actions"
+          },
+          "moderator_safeguards": {
+            "items": {},
+            "type": "array",
+            "title": "Moderator Safeguards",
+            "default": []
           }
         },
         "type": "object",

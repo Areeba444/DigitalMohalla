@@ -120,6 +120,37 @@ class LifecycleStore(Protocol):
 
     def latest_assessment(self, transaction_id: UUID) -> dict[str, Any] | None: ...
 
+    def open_case(self, transaction_id: UUID) -> dict[str, Any] | None:
+        """The transaction's escalation case that is still OPEN or AWAITING_INFORMATION, if any."""
+        ...
+
+    def latest_case(self, transaction_id: UUID) -> dict[str, Any] | None:
+        """The transaction's most recent escalation case in any status, if any."""
+        ...
+
+    # moderation (UC-I4)
+    def case_by_id(self, case_id: UUID) -> dict[str, Any] | None: ...
+
+    def is_moderator(self, user_id: UUID, community_id: UUID) -> bool: ...
+
+    def insert_decision(
+        self,
+        case_id: UUID,
+        *,
+        decided_by: UUID,
+        decider_role: str,
+        kind: str,
+        reason: str,
+        safeguards: list[dict[str, Any]],
+        resolved_outcome: dict[str, Any] | None,
+    ) -> UUID: ...
+
+    def decisions(self, case_id: UUID) -> list[dict[str, Any]]: ...
+
+    def open_cases_for(self, user_id: UUID, every_community: bool) -> list[dict[str, Any]]: ...
+
+    def imposed_safeguards(self, transaction_id: UUID) -> list[Any]: ...
+
     def savepoint(self) -> AbstractContextManager[Any]: ...
 
     def list_for_lender(self, lender_id: UUID, state: str | None) -> list[dict[str, Any]]: ...

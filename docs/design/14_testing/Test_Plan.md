@@ -109,7 +109,7 @@ The plan's "Test plan for iteration 1" table, extended with owners, gates and su
 | Every PR | Builds; lint and type checks clean | Regression set green (§11); smoke TC-90; review by a member who did not write the change |
 | D-11 (Slice A) | Lifecycle on stubs deployed | Suites 1 to 5 green; suite 16 handover and return cases (TC-64 to TC-68, TC-70, TC-72) green; TC-80 to TC-83 and TC-87 green; UI TC-101 to TC-104 green; TC-91 passes after the first deploy |
 | D-8 (Slice B) | Engine integrated | Suites 6, 7, 9, 10 green; outcome feed TC-69 and TC-71 green; lender evidence screen TC-100 green; ES-01, ES-02, ES-03, ES-06 and ES-13 pass with state and explanation |
-| D-5 (feature freeze) | Human loop integrated | Suites 12 to 14 and 17 green; UI TC-105 to TC-107 green; ES-04 and ES-05 pass; alpha session held (§12); tag `v0.1.0-rc1` |
+| D-5 (feature freeze) | Human loop integrated | Suites 12 to 14 and 17 green (TC-59 and TC-85 deferred, D20); UI TC-105 to TC-107 green; ES-04 and ES-05 pass; alpha session held (§12); tag `v0.1.0-rc1` |
 | Freeze (D-5 to D-0) | rc1 deployed | Full regression run saved (§11); suite 15 run on the deployed instance; TC-92 before each rehearsal and the demo; no open severity-1 or severity-2 defect; tag `v0.1.0-mid1` |
 
 Testing of a slice is suspended when the deployed smoke test (TC-91) fails. It resumes after the rollback (`04_deployment/Deployment_Design.md` §4) and a smoke rerun.
@@ -195,7 +195,7 @@ Each scenario passes only if the assurance state, the rule, the lifecycle state 
 | TC-56 | 13 | A request cancelled while held | CANCELLED; case WITHDRAWN without a decision | Design-verified | UC-B6 *a, D8 |
 | TC-57 | 13 | Two moderators decide the same case at once | One decision applied; the other sees the current state, nothing applied | Not run | UC-I4 4a |
 | TC-58 | 14 | Every API response of the seeded loop | No address, coordinate or CNIC field | Design-verified (catalogue scan: no such columns); API not run | NFR-PR-01, NFR-S-07 |
-| TC-59 | 14 | An uploaded photo with EXIF GPS data | Refused unless metadata is stripped (`metadata_stripped`) | Design-verified | NFR-PR-01 |
+| TC-59 | 14 | An uploaded photo with EXIF GPS data | Refused unless metadata is stripped (`metadata_stripped`) | Deferred to iteration 2 (D20: no upload storage yet) | NFR-PR-01 |
 | TC-60 | 14 | A borrowing request payload | Contains no location fields; locality read from the stored A11 result | Design-verified (A11, D13) | FR-B-07 |
 | TC-61 | 15 | 200 transition commits under load | P95 ≤ 500 ms recorded with the config version | Not run | NFR-P-04 |
 | TC-62 | — | (v1.0: CD smoke and rollback) | Moved to suite 18 as TC-91 | — | — |
@@ -235,7 +235,7 @@ Each scenario passes only if the assurance state, the rule, the lifecycle state 
 | TC-82 | A borrower requests another pair's transaction, assessment or case | 403 or 404; no data returned | Not run | NFR-S-03 |
 | TC-83 | Stored passwords and log output after logins | Salted argon2 (or bcrypt) hashes only; no plaintext password or token in any log | Not run | NFR-S-01 |
 | TC-84 | Schemathesis fuzzing against the OpenAPI spec: injection strings and malformed payloads in message, date and ID fields | 422 for bad input, never a 500; no database error text leaked | Not run | NFR-S-02 |
-| TC-85 | Upload of a disallowed file type or an oversize file | Rejected with 422 | Not run | NFR-S-06 |
+| TC-85 | Upload of a disallowed file type or an oversize file | Rejected with 422 | Deferred to iteration 2 (D20) | NFR-S-06 |
 | TC-86 | Repeated failed logins | Throttled or locked temporarily (It. 2 if the lockout is not built in iteration 1) | Not run (It. 2) | NFR-S-04, FR-A-04 |
 | TC-87 | CI scans: gitleaks (secrets), bandit, pip-audit, npm audit (app), Trivy (images) | No committed secret; no open high-severity finding | Not run | NFR-D-04, handbook |
 | TC-88 | The deployed host | HTTPS only (HTTP redirects); no stack traces in responses; database port not reachable from outside | Not run | NFR-S-01, NFR-D-03 |
@@ -268,7 +268,7 @@ The screens are the team's wireframes in `13_wireframes/` (PNG files and `Wirefr
 | # | Finding | Effect on testing | Proposed resolution |
 |---|---|---|---|
 | UI-1 | No screen yet for the borrower's request and its status (UC-B5 steps 1–3 and 6, held and engine-failure states) | The request is created through the API in tests; TC-92 step 2.1 and the alpha "happy path" need the screen | **Resolved in Slice A:** new-request and request-detail screens in `frontend/src/app/(resident)/` |
-| UI-2 | No screen yet for the admin audit log (UC-I6) | FR-M-05 is tested at API and database level only (suite 5) | Add a simple audit-log list for the admin role, or record I6's UI as iteration 2 |
+| UI-2 | No screen yet for the admin audit log (UC-I6) | FR-M-05 is tested at API and database level only (suite 5) | Add a simple audit-log list for the admin role, or record I6's UI as iteration 2. **Recorded as iteration 2 (C3, 13 October): there is no audit-log API yet; the moderator screens W5 to W7 were built instead** |
 | UI-3 | W5 lists four dispute reasons; UC-B12 step 2 and the `dispute_reason` enum have five (with "other") | TC-105 expects five | Add "other" to W5 |
 | UI-4 | W1's example interval [0.10, 0.90] differs from the prior Beta(1,1) bounds [0.05, 0.95] | TC-100 checks the API's bounds, so the example values do not affect the test | Correct the example or mark it illustrative |
 | UI-5 | W5 states a 7-day dispute window and W6 an "SLA" auto-route to the admin; both timer values are TBD and the scheduler is iteration 2 | Not tested in iteration 1; TC-106 tests the iteration-1 rule (no moderator → admin) | Keep the values configurable and mark them as iteration 2 in the annotations |

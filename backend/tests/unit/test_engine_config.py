@@ -3,7 +3,7 @@ from app.config.engine_config import load_engine_config
 
 def test_engine_config_loads_with_version() -> None:
     cfg = load_engine_config()
-    assert cfg.config_version == "1.2.0-iteration1-draft"
+    assert cfg.config_version == "1.3.0-iteration1-draft"
 
 
 def test_engine_config_has_all_algorithm_sections() -> None:

@@ -10,6 +10,7 @@ from uuid import UUID
 
 from sqlalchemy import Engine, text
 
+from app.domain.assurance.detection.manipulation import Complaint, ReviewSnapshot
 from app.domain.assurance.engine import OutcomeSnapshot
 from app.infra.db.trust_graph import load_graph
 
@@ -86,3 +87,34 @@ class PostgresEvidenceSource:
                 {"ids": user_ids},
             ).all()
         return {r[0]: r[1] for r in rows}
+
+    def reviews_since(self, since: datetime) -> list[ReviewSnapshot]:
+        """Every review since `since`, with its lowest rating and whether the reviewed loan's return
+        was confirmed (COMPLETED, and neither return report disagrees)."""
+        with self.db().connect() as c:
+            rows = c.execute(
+                text(
+                    "SELECT r.id::text, r.reviewer_id::text, r.reviewee_id::text, "
+                    "(SELECT min(v::int) FROM jsonb_each_text(r.ratings) AS e(k, v)), r.comment, "
+                    "r.created_at, t.current_state = 'COMPLETED' AND NOT EXISTS (SELECT 1 FROM "
+                    "condition_report cr WHERE cr.transaction_id = t.id AND cr.phase = 'RETURN' "
+                    "AND NOT cr.condition_agreed) FROM review r JOIN borrowing_transaction t "
+                    "ON t.id = r.transaction_id WHERE r.created_at >= :since"
+                ),
+                {"since": since},
+            ).all()
+        return [ReviewSnapshot(r[0], r[1], r[2], r[3], r[4], r[5], bool(r[6])) for r in rows]
+
+    def complaints_by(self, user_id: UUID, since: datetime) -> list[Complaint]:
+        """Disputes the user opened since `since`, against the other party of each loan."""
+        with self.db().connect() as c:
+            rows = c.execute(
+                text(
+                    "SELECT CASE WHEN t.borrower_id = :u THEN t.lender_id ELSE t.borrower_id END::text, "
+                    "ec.opened_at FROM escalation_case ec JOIN borrowing_transaction t "
+                    "ON t.id = ec.transaction_id WHERE ec.trigger_type = 'DISPUTE' "
+                    "AND ec.raised_by = :u AND ec.opened_at >= :since"
+                ),
+                {"u": user_id, "since": since},
+            ).all()
+        return [Complaint(str(user_id), r[0], r[1]) for r in rows]

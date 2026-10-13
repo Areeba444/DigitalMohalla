@@ -16,6 +16,7 @@ from uuid import UUID, uuid4
 import pytest
 
 from app.config.engine_config import EngineConfig, load_engine_config
+from app.domain.assurance.detection.manipulation import Complaint, ReviewSnapshot
 from app.domain.assurance.engine import AssuranceEngine, ConfigError, OutcomeSnapshot
 from app.domain.lifecycle.ports import AssessmentRequest
 
@@ -49,6 +50,8 @@ class FakeSource:
         self.resolved = resolved
         self.verified = verified
         self.since: datetime | None = None
+        self.reviews: list[ReviewSnapshot] = []
+        self.complaints: list[Complaint] = []
         self.names_asked: list[str] = []
 
     def borrower_outcomes(self, borrower_id: UUID) -> list[OutcomeSnapshot]:
@@ -70,6 +73,12 @@ class FakeSource:
     def display_names(self, user_ids: list[str]) -> dict[str, str]:
         self.names_asked = user_ids
         return {str(A): "Neighbour A", str(B): "Neighbour B"}
+
+    def reviews_since(self, since: datetime) -> list[ReviewSnapshot]:
+        return self.reviews
+
+    def complaints_by(self, user_id: UUID, since: datetime) -> list[Complaint]:
+        return self.complaints
 
 
 def request(band: str = "LOW", category: int = 1, days: float = 3.0) -> AssessmentRequest:
@@ -154,7 +163,8 @@ def test_strong_recent_history_proceeds() -> None:  # ES-02 pattern
     assert r.ci90_low is not None and r.posterior_mean is not None and r.ci90_high is not None
     assert r.ci90_low <= r.posterior_mean <= r.ci90_high  # the schema's interval check
     assert r.direct_evidence["direct_event_count"] == 10
-    assert r.manipulation_level == 1 and r.manipulation_signals == []  # Slice C
+    assert r.manipulation_level == 1 and r.manipulation_risk == 0  # no reviews at all
+    assert not any(s.get("available") for s in r.manipulation_signals)
 
 
 def test_flagged_outcomes_are_not_counted() -> None:  # ES-11
@@ -204,3 +214,51 @@ def _broken(path: list[str], value: Any = None, delete: bool = False) -> EngineC
 def test_bad_config_stops_the_engine(config: EngineConfig) -> None:  # TC-74
     with pytest.raises(ConfigError):
         engine(FakeSource(), config)
+
+
+def review(rid: str, by: str, about: str, age: float, text: str, low: int = 5) -> ReviewSnapshot:
+    return ReviewSnapshot(rid, by, about, low, text, NOW - timedelta(days=age), True)
+
+
+def test_review_ring_is_held_for_a_moderator() -> None:  # ES-04 pattern, TC-43
+    ring = [str(V), "p1", "p2", "p3"]
+    text = "Excellent person, very trustworthy, highly recommended to everyone"
+    source = FakeSource([outcome(10 * k + 1) for k in range(8)])
+    source.reviews = [
+        review(f"{a}>{b}", a, b, 5, text) for a in ring for b in ring if a != b
+    ]  # everyone reviews everyone with the same text
+    r = engine(source).assess(request())
+    assert (r.rule_fired, r.policy_decision, r.hold_reason) == (
+        "R2",
+        "ESCALATE",
+        "manipulation_risk",
+    )
+    assert r.manipulation_level == 4 and r.manipulation_corroborated
+    assert r.manipulation_risk == 100
+    assert "partners reviewing one another 1.00" in r.explanation
+    assert "not proof of wrongdoing" in r.explanation
+    assert "nobody is restricted without a human decision" in r.explanation
+
+
+def test_retaliatory_review_is_set_aside_and_does_not_change_the_decision() -> None:  # ES-05, TC-44
+    source = FakeSource([outcome(10 * k + 1) for k in range(10)])
+    lender = str(U)
+    source.complaints = [Complaint(str(V), lender, NOW - timedelta(days=20))]
+    source.reviews = [review("rev-1", lender, str(V), 17, "Rude and careless borrower.", low=1)]
+    r = engine(source).assess(request())
+    assert (r.rule_fired, r.assurance_state, r.manipulation_level) == (
+        "R7",
+        "SUFFICIENT_EVIDENCE",
+        1,
+    )
+    flagged = [s for s in r.manipulation_signals if s["name"] == "retaliation_check"]
+    assert flagged == [
+        {
+            "name": "retaliation_check",
+            "review_id": "rev-1",
+            "reviewer": lender,
+            "days_after_complaint": 3.0,
+        }
+    ]
+    assert "set aside as suspected retaliation" in r.explanation
+    assert "does not count against the borrower" in r.explanation

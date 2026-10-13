@@ -4,9 +4,9 @@ Each fixture runs through the decision policy and the explanation builder with t
 numbers, and the result is compared with its expected rule, state, decision, lifecycle state and
 the facts its test case asks the explanation to show. Where the fixture can be rebuilt from raw
 evidence (ES-01: none; ES-02: ten successful loans of the same kind; ES-13: two outcomes and four
-trust edges) the real engine runs on it and must reproduce the fixture's numbers. Parts that need
-manipulation detection (signals for ES-04, the retaliation flag for ES-05) arrive in Slice C and are
-strict expected failures. All data is SYNTHETIC.
+trust edges) the real engine runs on it and must reproduce the fixture's numbers. Manipulation
+signals come from each fixture's own values (ES-04, the PU fixtures) through the real combination
+rule, and ES-05's retaliation check from its retaliation record. All data is SYNTHETIC.
 
 Plain-language note on ES-02: ten loans at the same age a have recency weights 10 * 2^(-a / h);
 choosing a = h * log2(10 / 9.5) makes them add up to the fixture's effective evidence 9.5.
@@ -21,6 +21,15 @@ from uuid import UUID, uuid4
 
 import pytest
 
+from app.domain.assurance.detection.manipulation import (
+    Complaint,
+    ManipulationParams,
+    ManipulationRisk,
+    RetaliationFlag,
+    ReviewSnapshot,
+    Signal,
+    combine,
+)
 from app.domain.assurance.engine import AssuranceEngine, OutcomeSnapshot
 from app.domain.assurance.estimation.posterior import EstimatorParams
 from app.domain.assurance.indirect.khop import KHopParams
@@ -34,6 +43,7 @@ NOW = datetime(2026, 10, 1, 8, 0, tzinfo=UTC)
 TH = PolicyThresholds.from_config(CFG.data)
 RHO_MAX = KHopParams.from_config(CFG.section("indirect_trust_alg2")).rho_max
 HALF_LIFE = EstimatorParams.from_config(CFG.section("trust_estimation_alg1")).half_life_days
+MANIP = ManipulationParams.from_config(CFG.section("manipulation_detection_alg3"))
 LOOKBACK = int(
     CFG.section("decision_policy_alg4")["context_windows"]["resolved_disputes_lookback_months"]
 )
@@ -61,6 +71,27 @@ def decide(sid: str) -> PolicyDecision:
     )
 
 
+def manipulation(sid: str) -> ManipulationRisk:
+    """The fixture's signal values through the real combination rule, plus its retaliation record."""
+    f = FIXTURES[sid]
+    signals = [
+        Signal(s["name"], s["available"], s["value"], s["weight"])
+        for s in f["manipulation_risk"].get("signals", [])
+    ]
+    score, level, corroborated, capped = combine(signals, MANIP)
+    check = f.get("retaliation_check") or {}
+    flags = (
+        [
+            RetaliationFlag(
+                "fixture-review", "fixture-lender", check["review_age_days_post_complaint"]
+            )
+        ]
+        if check.get("retaliation_suspected")
+        else []
+    )
+    return ManipulationRisk(score, level, corroborated, signals, flags, capped)
+
+
 def explain(sid: str) -> str:
     """The explanation for a fixture without community paths, from the fixture's numbers."""
     f, d = FIXTURES[sid], decide(sid)
@@ -79,7 +110,7 @@ def explain(sid: str) -> str:
         open_dispute=ctx["open_dispute"],
         is_high_value=ctx["is_high_value"],
         request_similarity=ctx["request_similarity"],
-        manipulation_active=False,
+        manipulation=manipulation(sid),
         n_min=TH.n_min,
         rho_max=RHO_MAX,
         similarity_floor=TH.similarity_floor,
@@ -119,15 +150,31 @@ def test_tc42_es03_explanation_names_the_resolved_dispute() -> None:
     assert_no_verdict(text)
 
 
-@pytest.mark.xfail(reason="manipulation signals and their evidence arrive in Slice C", strict=True)
-def test_tc43_es04_explanation_shows_both_signals() -> None:
+@pytest.mark.parametrize("sid", sorted(FIXTURES))
+def test_fixture_manipulation_score_level_and_corroboration(sid: str) -> None:
+    want, m = FIXTURES[sid]["manipulation_risk"], manipulation(sid)
+    if "signals" in want:  # fixtures with only a score have no signal values to recombine
+        assert m.score == pytest.approx(want["score"], abs=0.05)
+        assert (m.level, m.corroborated) == (want["level"], want["corroborated"])
+
+
+def test_tc43_es04_explanation_shows_both_signals_and_the_hold() -> None:
     text = explain("ES-04")
-    assert "not proof" in text and "reciprocal" in text.lower()
+    assert "Manipulation risk: level 4 of 4 (moderator review)." in text
+    assert "partners reviewing one another 1.00" in text
+    assert "similar review texts 0.92" in text
+    assert "A risk signal is not proof of wrongdoing." in text
+    assert "nobody is restricted without a human decision" in text
+    assert_no_verdict(text)
 
 
-@pytest.mark.xfail(reason="the retaliation check arrives in Slice C (C1)", strict=True)
-def test_tc44_es05_explanation_flags_the_retaliatory_review() -> None:
-    assert "retaliation" in explain("ES-05").lower()
+def test_tc44_es05_explanation_sets_the_retaliatory_review_aside() -> None:
+    text = explain("ES-05")
+    assert "posted 3 days after this borrower complained" in text
+    assert "set aside as suspected retaliation" in text
+    assert "does not count against the borrower" in text
+    assert "Sufficient verified evidence" in text
+    assert_no_verdict(text)
 
 
 def test_tc45_es06_explanation_gives_similarity_lower_bound_and_hold() -> None:
@@ -167,6 +214,12 @@ class RawEvidence:
 
     def display_names(self, user_ids: list[str]) -> dict[str, str]:
         return {u: self.names[u] for u in user_ids if u in self.names}
+
+    def reviews_since(self, since: datetime) -> list[ReviewSnapshot]:
+        return []
+
+    def complaints_by(self, user_id: UUID, since: datetime) -> list[Complaint]:
+        return []
 
 
 U, A, B, V = uuid4(), uuid4(), uuid4(), uuid4()

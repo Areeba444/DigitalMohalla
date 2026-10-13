@@ -17,8 +17,8 @@
         "assurance_state": "INSUFFICIENT_EVIDENCE",
         "policy_decision": "REQUEST_VERIFICATION",
         "rule_fired": "R3",
-        "config_version": "1.2.0-iteration1-draft",
-        "explanation": "Insufficient verified history; lender review required. This is not a negative finding about the borrower. Direct evidence: no verified loans yet. Community paths from the lender: none found. Manipulation checks: not active yet (Slice C). Decision support, not a guarantee.",
+        "config_version": "1.3.0-iteration1-draft",
+        "explanation": "Insufficient verified history; lender review required. This is not a negative finding about the borrower. Direct evidence: no verified loans yet. Community paths from the lender: none found. Manipulation checks: no notable signals (level 1 of 4). Decision support, not a guarantee.",
         "safeguards": [
           {
             "code": "DEPOSIT_RECORD",
@@ -49,7 +49,8 @@
       "available_actions": [
         "accept",
         "decline"
-      ]
+      ],
+      "moderator_safeguards": []
     },
     "ES-02": {
       "transaction_id": "txn-ES-02",
@@ -67,8 +68,8 @@
         "assurance_state": "SUFFICIENT_EVIDENCE",
         "policy_decision": "PROCEED",
         "rule_fired": "R7",
-        "config_version": "1.2.0-iteration1-draft",
-        "explanation": "Sufficient verified evidence for this request. Direct evidence: 10 verified loan(s), weighted for recency and similarity to 7.1 effective outcomes; estimated on-time return 0.89 with a 90% interval of 0.69 to 0.99. Community paths from the lender: earlier loans from this lender (path strength 0.86); indirect reliability 0.14 (at most 0.60). Manipulation checks: not active yet (Slice C). Decision support, not a guarantee.",
+        "config_version": "1.3.0-iteration1-draft",
+        "explanation": "Sufficient verified evidence for this request. Direct evidence: 10 verified loan(s), weighted for recency and similarity to 7.1 effective outcomes; estimated on-time return 0.89 with a 90% interval of 0.69 to 0.99. Community paths from the lender: earlier loans from this lender (path strength 0.86); indirect reliability 0.14 (at most 0.60). Manipulation checks: no notable signals (level 1 of 4). Decision support, not a guarantee.",
         "safeguards": [
           {
             "code": "STANDARD_RETURN_REMINDER",
@@ -96,7 +97,8 @@
       "available_actions": [
         "accept",
         "decline"
-      ]
+      ],
+      "moderator_safeguards": []
     },
     "ES-13": {
       "transaction_id": "txn-ES-13",
@@ -114,8 +116,8 @@
         "assurance_state": "REVIEW_RECOMMENDED",
         "policy_decision": "PROCEED_WITH_SAFEGUARDS",
         "rule_fired": "R9",
-        "config_version": "1.2.0-iteration1-draft",
-        "explanation": "Review recommended before lending. Direct evidence: 2 verified loan(s), weighted for recency and similarity to 0.9 effective outcomes; estimated on-time return 0.65 with a 90% interval of 0.20 to 0.97. Community paths from the lender: via Kashif Hashmi (path strength 0.36); via Afshan Lodhi (path strength 0.36); indirect reliability 0.39 (at most 0.60). Without these paths the request would be INSUFFICIENT_EVIDENCE. Manipulation checks: not active yet (Slice C). Decision support, not a guarantee.",
+        "config_version": "1.3.0-iteration1-draft",
+        "explanation": "Review recommended before lending. Direct evidence: 2 verified loan(s), weighted for recency and similarity to 0.9 effective outcomes; estimated on-time return 0.65 with a 90% interval of 0.20 to 0.97. Community paths from the lender: via Kashif Hashmi (path strength 0.36); via Afshan Lodhi (path strength 0.36); indirect reliability 0.39 (at most 0.60). Without these paths the request would be INSUFFICIENT_EVIDENCE. Manipulation checks: no notable signals (level 1 of 4). Decision support, not a guarantee.",
         "safeguards": [
           {
             "code": "MEDIUM_VALUE_DEPOSIT_RECORD",
@@ -155,7 +157,8 @@
       "available_actions": [
         "accept",
         "decline"
-      ]
+      ],
+      "moderator_safeguards": []
     }
   }
 }

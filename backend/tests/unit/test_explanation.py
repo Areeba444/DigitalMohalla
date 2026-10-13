@@ -33,7 +33,7 @@ def explain(**overrides: Any) -> str:
         "open_dispute": False,
         "is_high_value": False,
         "request_similarity": 1.0,
-        "manipulation_active": False,
+        "manipulation": None,
         **LIMITS,
     }
     args.update(overrides)
@@ -108,7 +108,7 @@ def test_disputes_and_inactive_checks_are_stated() -> None:
     text = explain(rule="R1", state="ACTIVE_DISPUTE", open_dispute=True, resolved_disputes_12m=2)
     assert "An open dispute must be resolved first." in text
     assert "Resolved disputes in the last 12 months: 2." in text
-    assert "Manipulation checks: not active yet (Slice C)." in text
+    assert "Manipulation checks: not run." in text
     assert text.endswith("Decision support, not a guarantee.")
 
 
