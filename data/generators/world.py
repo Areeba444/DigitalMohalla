@@ -562,7 +562,7 @@ class World:
                     "metric": metric,
                     "weight": round((1.0 + s) / (2.0 + s + f), 3),
                     "evidence_count": n,
-                    "updated_at": last,
+                    "updated_at": REF_DATE,  # when the weight was computed (schema default now())
                 }
             )
         return rows
