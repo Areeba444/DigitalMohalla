@@ -11,7 +11,7 @@ dc3d2baf-970a-587a-8c9a-28bf14c01219,cast.L3,Shahid Khan,g7,cast_lender,2025-04-
 604d1f0a-43e6-5aa0-beea-971291d62cae,es02.borrower,Hamid Rana,g7,cast_reliable,2025-12-05T08:12:13+00:00,0.97,0.97,0.95,10,rich,scripted,,,,false,
 3f7207d7-d03c-5bf4-a2da-95e84304af5c,es03.borrower,Irfan Gillani,g7,cast_reliable,2025-12-05T13:10:36+00:00,0.95,0.95,0.95,10,rich,scripted,,,,false,
 02f0f14d-5209-5be5-a48b-b3da306b932a,es03b.borrower,Mohsin Malik,g7,cast_reliable,2025-12-25T12:32:34+00:00,0.95,0.95,0.95,8,rich,scripted,,,,false,
-27d40f71-4126-591f-b6a9-59c83073721d,es05.borrower,Rabia Malik,g7,cast_reliable,2026-01-24T13:59:38+00:00,0.95,0.95,0.95,6,moderate,scripted,,,,false,
+27d40f71-4126-591f-b6a9-59c83073721d,es05.borrower,Rabia Malik,g7,cast_reliable,2026-01-24T13:59:38+00:00,0.95,0.95,0.95,9,rich,scripted,,,,false,
 9e8b2004-442a-5f39-98fb-0bd099334ace,es05.lender,Zara Butt,g7,cast_lender,2025-11-05T10:37:21+00:00,0.9,0.9,0.7,0,none,scripted,,,,false,
 c5354372-7083-5ab0-ae93-eec8973b8acc,es06.thin,Rozina Awan,g7,cast_thin,2026-08-12T05:27:48+00:00,0.95,0.95,0.95,2,sparse,scripted,,,,false,
 6cb55ab5-4ac9-542b-be9a-9f8e25e42c36,es06b.strong,Bushra Lodhi,g7,cast_reliable,2026-01-04T12:16:47+00:00,0.97,0.97,0.95,12,rich,scripted,,,,false,
@@ -38,10 +38,10 @@ dad7de9f-e5cb-54ab-a3e1-09d00ddda3e7,atk.ring2,Rizwan Javed,g7,attack_ring,2026-
 4724f65f-a635-560e-9841-28c5e3d9873e,atk.ring3,Hassan Hashmi,g7,attack_ring,2026-09-07T06:29:51+00:00,0.99,0.99,0.99,3,moderate,scripted,ring-1,rating_ring,participant,true,dev
 209f0bc2-ffd1-5534-a2cc-2c53b3530aa4,atk.ring4,Junaid Chaudhry,g7,attack_ring,2026-09-08T08:37:18+00:00,0.99,0.99,0.99,4,moderate,scripted,ring-1,rating_ring,participant,true,dev
 cd46f224-4152-5e6f-9a70-0afb4ce8635c,atk.hub,Mohsin Chaudhry,g7,attack_hub,2026-09-27T13:38:56+00:00,0.99,0.99,0.99,0,none,scripted,burst-1,new_account_burst,beneficiary,true,dev
-9bcdb182-154e-52eb-953a-512755011393,atk.syb1,Mehwish Butt,g7,attack_sybil,2026-09-25T04:56:15+00:00,0.99,0.99,0.95,1,sparse,scripted,burst-1,new_account_burst,participant,true,dev
-39b2d01d-b0c7-5a31-b16c-f65804ff7e5a,atk.syb2,Sumaira Akhtar,g7,attack_sybil,2026-09-25T07:00:24+00:00,0.99,0.99,0.95,1,sparse,scripted,burst-1,new_account_burst,participant,true,dev
+9bcdb182-154e-52eb-953a-512755011393,atk.syb1,Mehwish Butt,g7,attack_sybil,2026-09-25T04:56:15+00:00,0.99,0.99,0.95,0,none,scripted,burst-1,new_account_burst,participant,true,dev
+39b2d01d-b0c7-5a31-b16c-f65804ff7e5a,atk.syb2,Sumaira Akhtar,g7,attack_sybil,2026-09-25T07:00:24+00:00,0.99,0.99,0.95,0,none,scripted,burst-1,new_account_burst,participant,true,dev
 a0729209-4ba6-5788-82c7-fbcf68fdc93c,atk.syb3,Kamran Raza,g7,attack_sybil,2026-09-26T11:41:28+00:00,0.99,0.99,0.95,0,none,scripted,burst-1,new_account_burst,participant,true,dev
-dbd6a83a-0273-58f1-8ddc-ad5a4442e7e8,atk.syb4,Samina Chaudhry,g7,attack_sybil,2026-09-26T09:20:04+00:00,0.99,0.99,0.95,1,sparse,scripted,burst-1,new_account_burst,participant,true,dev
+dbd6a83a-0273-58f1-8ddc-ad5a4442e7e8,atk.syb4,Samina Chaudhry,g7,attack_sybil,2026-09-26T09:20:04+00:00,0.99,0.99,0.95,0,none,scripted,burst-1,new_account_burst,participant,true,dev
 c65c3454-d73b-57b7-83a7-694e81e4df6d,atk.syb5,Gulnaz Qureshi,g7,attack_sybil,2026-09-26T05:33:15+00:00,0.99,0.99,0.95,1,sparse,scripted,burst-1,new_account_burst,participant,true,dev
 d1e3fd22-c808-54f8-8f27-5d0f84dc5454,atk.syb6,Afshan Siddiqui,g7,attack_sybil,2026-09-26T13:03:19+00:00,0.99,0.99,0.95,1,sparse,scripted,burst-1,new_account_burst,participant,true,dev
 07a4a70d-34c3-55ab-a860-e213fb0b2404,atk.syb7,Kamran Khan,g7,attack_sybil,2026-09-26T13:30:12+00:00,0.99,0.99,0.95,0,none,scripted,burst-1,new_account_burst,participant,true,dev

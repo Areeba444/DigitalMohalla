@@ -6,12 +6,12 @@
    "sha256": "366397aae6b17d8b967bb9dc19a24af100d804bc76c4a9cfda69178bf3d0fa08"
   },
   "booking.csv": {
-   "rows": 254,
-   "sha256": "da6ba08e9d5333e3226fb48ac8835730b8cd684f6a20eed0fbfe9fc20d19548b"
+   "rows": 251,
+   "sha256": "44fe39001f96e6f292bcc7a623368a2219472f4216cee2d9a3fa65affa815fca"
   },
   "borrowing_transaction.csv": {
-   "rows": 286,
-   "sha256": "f945962cd860a37a9d3be17095db1884ed4a6ce633d55eda008c9cf24b7804ff"
+   "rows": 289,
+   "sha256": "7349d23137c372a588073a9384d588bda186a0b2670f050895871dd59f5936d1"
   },
   "category.csv": {
    "rows": 7,
@@ -22,12 +22,12 @@
    "sha256": "957e05cb6fdb7f7ac6737d8e9ed18bfa0f44d2eb710aa4b54467790a19a151ff"
   },
   "condition_report.csv": {
-   "rows": 962,
-   "sha256": "a2bef13648a59b0d5e69ca136eee52d8ccf893f8d7131c8edaa5cff4bb644f80"
+   "rows": 954,
+   "sha256": "406206a4cf768ece2b40b7704097e2f96a222b761c16023cd73b5696a0a7a90b"
   },
   "escalation_case.csv": {
-   "rows": 38,
-   "sha256": "065f11a911dff874ec8cf86dd4d4e6a9dcef4643de5540dc9a60662f32233a94"
+   "rows": 40,
+   "sha256": "36c51ccf57ee71876b7f120afe6c1a41e8ae13dac3917c00694d415c9df5674e"
   },
   "item.csv": {
    "rows": 108,
@@ -38,24 +38,24 @@
    "sha256": "4e8a9b4aadca6919995f710f9a98574a6b828a1c42dd4bcf52ae7126c83bb515"
   },
   "labels/review_truth.csv": {
-   "rows": 361,
-   "sha256": "c6190fc9dd371379b26592cf1de1cb6f03f119c12d7e6d7034dfbdeefd5935e5"
+   "rows": 344,
+   "sha256": "cdd0f515a4819c2e1ea794f80067070807a86e0858af4bcb02bbfa81572ea3a7"
   },
   "labels/scenario_manifest.csv": {
    "rows": 20,
-   "sha256": "11c61413095e19d3eb57ba70925c32d869a5833071ec97eaa163c4f6a0bac390"
+   "sha256": "f6a847898adea85356968c1423f162e63257e2ccf94ff0212a785497487a90eb"
   },
   "labels/transaction_truth.csv": {
-   "rows": 286,
-   "sha256": "b6d307f0742f0e8eef9c7e110096977a4e3909776f502dc8f153e88b1172884e"
+   "rows": 289,
+   "sha256": "75e9cb2e4cc84b244686d10b4bb4a8ecc31b666ecb27ad71dcca8be446cb97db"
   },
   "labels/user_truth.csv": {
    "rows": 90,
-   "sha256": "b90a34e2bb2beeeb78fa6f74ff398c43cb7fe5d0472b69e86621d44001741b8f"
+   "sha256": "de21b4e1e24854a66d9bf572aa2cd129374613eb0085741d1c0011013e9fc4dc"
   },
   "lifecycle_event.csv": {
-   "rows": 2076,
-   "sha256": "3d6279fdc940af9c40826454d4e1bdf69de8b19da6dbe63df6f40d7f1b64b403"
+   "rows": 2074,
+   "sha256": "9fe27b4ee8aa1daf33fd6c6cf3f9878f9c191b6dc968d3b97e549e37eeb604d4"
   },
   "locality_verification.csv": {
    "rows": 92,
@@ -66,20 +66,20 @@
    "sha256": "8c4bf7f8a548e499cb176b11629a2afaf510c6a078d29c89c663e246d7847ee1"
   },
   "moderator_decision.csv": {
-   "rows": 35,
-   "sha256": "5b6fdafede0b3e845bd4b9bf08a3476309a64ea49f65f7753eb0bba35527fba0"
+   "rows": 37,
+   "sha256": "a84154597bf23217ddbec61b779be14bbecb2cad8beaccaa3cff3c43ad0730c7"
   },
   "outcome.csv": {
-   "rows": 1192,
-   "sha256": "f3b35bf584fffa4a34d419f40062d209c25999175f56e2a3e575452f00b7aed1"
+   "rows": 1172,
+   "sha256": "83e37151923e4b5e870492a3ef2a53fea3180330874da77179e197f942bec0ec"
   },
   "review.csv": {
-   "rows": 361,
-   "sha256": "71fdc4d6353dc55cea492f562e8eedac064aff4ddd96dc5c3dc3ac99399ab0d3"
+   "rows": 344,
+   "sha256": "c3514f9fa4239d255f79f2a87b8ca7d06d55605c1aa62540ccd76e556b994316"
   },
   "trust_edge.csv": {
-   "rows": 708,
-   "sha256": "8bc33076c96bda249603cf1aefd1f46339b4f842ed0bdf11cd67cc43873eda36"
+   "rows": 670,
+   "sha256": "40359014ed13dd34613db0f9c42b8ef7bfec70158841e8db70a6969f3218b7a4"
   }
  },
  "generator_version": "1.0.0",
