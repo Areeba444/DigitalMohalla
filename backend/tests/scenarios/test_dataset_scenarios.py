@@ -29,7 +29,12 @@ FACTS = {
     "ES-02": ["Sufficient verified evidence", "90% interval of"],
     "ES-03": ["Review recommended", "Resolved disputes in the last 12 months: 1."],
     "ES-03b": ["An open dispute must be resolved first."],
-    "ES-05": ["Sufficient verified evidence"],
+    "ES-04": [
+        "Manipulation risk: level 4 of 4 (moderator review).",
+        "A risk signal is not proof of wrongdoing.",
+        "nobody is restricted without a human decision",
+    ],
+    "ES-05": ["Sufficient verified evidence", "set aside as suspected retaliation"],
     "ES-06": ["High-value item: similarity", "nobody is restricted without a human decision"],
     "ES-06b": ["Sufficient verified evidence", "High-value item: similarity"],
     "ES-07": ["An open dispute must be resolved first."],
@@ -42,9 +47,11 @@ FACTS = {
 HELD_RULES = {"R2", "R4"}  # the rules that hold a request for a moderator
 
 
-def send_request(eng: Engine, case: dict[str, str], offset_days: int) -> tuple[str, dict, str]:
-    """Send the probe borrower's request through the service; returns (lifecycle state,
-    stored assessment, config_version on the assessment's event). Rolled back afterwards."""
+def send_request(
+    eng: Engine, case: dict[str, str], offset_days: int
+) -> tuple[str, dict, str, list[str]]:
+    """Send the probe borrower's request through the service; returns (lifecycle state, stored
+    assessment, config_version on the assessment's event, moderator cases opened). Rolled back."""
     as_of = datetime.fromisoformat(case["as_of"])
     engine = AssuranceEngine(PostgresEvidenceSource(lambda: eng), CFG, clock=lambda: as_of)
     with eng.connect() as conn:
@@ -75,7 +82,15 @@ def send_request(eng: Engine, case: dict[str, str], offset_days: int) -> tuple[s
                 ),
                 {"t": result.transaction_id},
             ).scalar_one()
-            return str(result.state), assessment, event_version
+            cases = (
+                conn.execute(
+                    text("SELECT hold_reason::text FROM escalation_case WHERE transaction_id = :t"),
+                    {"t": result.transaction_id},
+                )
+                .scalars()
+                .all()
+            )
+            return str(result.state), assessment, event_version, list(cases)
         finally:
             outer.rollback()
 
@@ -85,7 +100,7 @@ CASES = [c for c in manifest().values() if c["case_id"] in FACTS]
 
 @pytest.mark.parametrize("case", CASES, ids=[c["case_id"] for c in CASES])
 def test_scenario_through_the_lifecycle(mini_db: Engine, case: dict[str, str]) -> None:
-    state, assessment, event_version = send_request(mini_db, case, CASES.index(case))
+    state, assessment, event_version, cases = send_request(mini_db, case, CASES.index(case))
     rule = case["expected_rule"]
     lifecycle = case["expected_lifecycle"] or (
         "HELD_FOR_REVIEW" if rule in HELD_RULES else "ASSESSED"
@@ -98,6 +113,25 @@ def test_scenario_through_the_lifecycle(mini_db: Engine, case: dict[str, str]) -
         assert fact in assessment["explanation"], (fact, assessment["explanation"])
     assert_no_verdict(assessment["explanation"])
     assert assessment["config_version"] == event_version == CFG.config_version  # TC-71
+    if state == "HELD_FOR_REVIEW":  # TC-43, TC-45: the hold opens a case for a moderator
+        assert cases == [assessment_hold(case)]
+    else:
+        assert cases == []
+
+
+def assessment_hold(case: dict[str, str]) -> str:
+    return {"R2": "manipulation_risk", "R4": "high_value_low_confidence"}[case["expected_rule"]]
+
+
+def test_tc38_dense_family_group_is_level_3_and_not_held(mini_db: Engine) -> None:
+    """C3: a family borrowing from one another produces S1 but distinct review texts, so one strong
+    signal is capped at level 3 (ADR-0007): extra verification is suggested, nobody is held."""
+    case = manifest()["C3"]
+    state, assessment, _, cases = send_request(mini_db, case, 50)
+    assert (state, cases) == ("ASSESSED", [])
+    assert assessment["manipulation_level"] == 3 and assessment["rule_fired"] == "R5"
+    assert "Only one signal is strong" in assessment["explanation"]
+    assert_no_verdict(assessment["explanation"])
 
 
 def test_every_target_scenario_is_in_the_dataset() -> None:  # NFR-Q-01: 7 of 7 at Mid-1
