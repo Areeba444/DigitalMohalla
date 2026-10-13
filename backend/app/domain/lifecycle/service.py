@@ -130,6 +130,7 @@ class BorrowingService:
             value_band=view.value_band,
             category_id=view.category_id,
             config_version=self.config_version,
+            duration_days=view.duration_days,
         )
         future = _engine_pool.submit(self.engine.assess, request)
         try:

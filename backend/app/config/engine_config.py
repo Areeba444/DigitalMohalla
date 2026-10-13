@@ -21,7 +21,8 @@ class EngineConfig:
     data: dict[str, Any]
 
     def section(self, name: str) -> dict[str, Any]:
-        return self.data[name]
+        section: dict[str, Any] = self.data[name]
+        return section
 
 
 def load_engine_config(path: Path = DEFAULT_PATH) -> EngineConfig:

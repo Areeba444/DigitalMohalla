@@ -43,7 +43,7 @@ def create_app(engine: Engine | None = None, assess: IAssess | None = None) -> F
         allow_headers=["*"],
     )
     app.state.engine = engine
-    app.state.assess = assess or default_assessor()
+    app.state.assess = assess or default_assessor(lambda: app.state.engine)
 
     @app.get("/health")
     def health() -> dict[str, str]:
