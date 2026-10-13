@@ -11,9 +11,11 @@ from sqlalchemy import Engine
 
 from app.api import schemas
 from app.api.deps import Commands, current_actor, get_commands, get_engine
+from app.api.evidence import assessment_out, intermediaries
 from app.config.settings import get_settings
 from app.domain.accounts.auth import InvalidCredentials, create_token
 from app.domain.lifecycle.service import Actor, BorrowingService, CommandResult
+from app.infra.db.evidence import PostgresEvidenceSource
 from app.infra.db.users import authenticate
 
 router = APIRouter(prefix="/api/v1")
@@ -81,9 +83,15 @@ def get_request(
     txn_id: UUID,
     actor: Actor = Depends(current_actor),
     commands: Commands = Depends(get_commands),
+    engine: Engine = Depends(get_engine),
 ) -> schemas.RequestOut:
     found = commands.run(lambda svc: svc.get_request(actor, txn_id))
     view, assessment, details = found["view"], found["assessment"], found["details"]
+    names = (
+        PostgresEvidenceSource(lambda: engine).display_names(intermediaries(assessment))
+        if assessment
+        else {}
+    )
     return schemas.RequestOut(
         transaction_id=view.id,
         item_id=view.item_id,
@@ -96,11 +104,7 @@ def get_request(
         requested_period=details["requested_period"],
         message=details["message"],
         deposit_required=details["deposit_amount"] > 0,
-        assessment=(
-            schemas.AssessmentOut(**{k: assessment[k] for k in schemas.AssessmentOut.model_fields})
-            if assessment
-            else None
-        ),
+        assessment=assessment_out(assessment, names) if assessment else None,
         reports=[schemas.ReportOut(**r) for r in found["reports"].values()],
         available_actions=found["actions"],
     )

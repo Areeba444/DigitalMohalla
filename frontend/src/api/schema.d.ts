@@ -286,6 +286,9 @@ export interface components {
             ci90_high?: number | null;
             /** Effective Evidence */
             effective_evidence?: number | null;
+            /** Verified Loans */
+            verified_loans?: number | null;
+            community?: components["schemas"]["CommunityOut"] | null;
             /**
              * Manipulation Risk
              * @default 0
@@ -337,6 +340,16 @@ export interface components {
             message?: string | null;
             /** Hold Reason */
             hold_reason?: string | null;
+        };
+        /**
+         * CommunityOut
+         * @description Indirect evidence (FR-T-04): it can support a request but never makes it SUFFICIENT.
+         */
+        CommunityOut: {
+            /** Reliability */
+            reliability: number;
+            /** Paths */
+            paths: components["schemas"]["PathOut"][];
         };
         /** ConfirmIn */
         ConfirmIn: {
@@ -452,6 +465,16 @@ export interface components {
             counterpart_name: string;
             /** Assurance State */
             assurance_state: string | null;
+        };
+        /**
+         * PathOut
+         * @description One community path from the lender to the borrower, by display name only (no user ids).
+         */
+        PathOut: {
+            /** Via */
+            via: string[];
+            /** Strength */
+            strength: number;
         };
         /** ReportOut */
         ReportOut: {
