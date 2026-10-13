@@ -1,4 +1,4 @@
-<mxfile host="Electron" agent="Digital Mohalla design generator" version="24.7.17" type="device">
+<mxfile host="app.diagrams.net" agent="Digital Mohalla design generator" pages="2">
   <diagram id="Sequence__a__B5_request_to_assessment__A" name="Sequence (a) B5 request to assessment (A9)">
     <mxGraphModel dx="1400" dy="900" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1460" pageHeight="1406" math="0" shadow="0" background="#FFFFFF">
       <root>
@@ -283,6 +283,14 @@
         <mxCell id="v42" value="UML 2.5: solid line + filled head = synchronous call; dashed line + open head = reply; solid line + open head = asynchronous message; white bar = activation; alt = alternatives, exactly one operand runs. Never a default assurance state on failure (FR-T-07); no automatic rejection on any hold (FR-B-07)." style="shape=note;size=10;whiteSpace=wrap;html=1;fontSize=10;align=left;spacingLeft=6;fillColor=#F4F6F8;strokeColor=#B26A00;" vertex="1" parent="1">
           <mxGeometry x="30" y="1298" width="1000" height="44" as="geometry" />
         </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram id="ZJevmm0VH2Ozd41ouiBo" name="Page-2">
+    <mxGraphModel dx="934" dy="563" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
       </root>
     </mxGraphModel>
   </diagram>

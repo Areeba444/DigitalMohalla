@@ -1,0 +1,111 @@
+\chapter{Research and Existing Solutions}
+
+\section{Research Method and Approach}
+To ensure methodological rigor, the research and engineering process followed an evidence-driven spiral approach:
+\begin{enumerate}
+    \item \textbf{Formal Problem Decomposition:} Following the proposal defense feedback, the primary technical challenge was isolated: formalizing peer trust and risk assurance under sparse, indirect, and adversarial conditions without violating user privacy.
+    \item \textbf{Theoretical Foundation Review:} Synthesis of foundational literature across subjective logic \citep{josang2007subjective}, distributed reputation management \citep{kamvar2003eigentrust, resnick2000reputation}, trust-aware recommendation \citep{massa2007trust}, and signed graph mining \citep{kumar2016edge}.
+    \item \textbf{Comparative Market \& Architectural Analysis:} Analysis of commercial and informal sharing platforms (OLX, Facebook Marketplace, Peerby, Freecycle) to identify structural vulnerabilities.
+    \item \textbf{Formal Design Artefact Specification:} Developing Unified Modeling Language (UML 2.5) models, architectural decision records (ADRs), state transition tables, and data schemas before committing code.
+    \item \textbf{Synthetic Benchmarking with Ground-Truth Oracles:} Engineering a deterministic synthetic data generator (\texttt{neighborhood-sim}) informed by empirical distributions of real-world trust datasets (Epinions and Bitcoin OTC/Alpha) to rigorously test edge cases, cold-start conditions, and collusion scenarios.
+    \item \textbf{Empirical Software Verification:} Multi-level automated testing (unit, property-based Hypothesis, integration, and scenario tests) enforcing mathematically provable invariants.
+\end{enumerate}
+
+\section{Research Background: R\&D and Recent Technical Work}
+
+\subsection{Bayesian Reputation Systems and Subjective Logic}
+Traditional reputation mechanisms compute arithmetic means of numerical star ratings. As demonstrated by \citet{josang2007subjective}, scalar averages discard sample variance and sample size, treating an average of 5.0 from a single review identically to an average of 5.0 from one hundred reviews. Digital Mohalla adopts a Bayesian framework using a Beta distribution $\text{Beta}(\alpha, \beta)$ to model binary interaction outcomes (successful vs. failed handovers). By updating conjugate Beta priors with historical outcomes, the system derives both the expected posterior mean and analytical 90\% credible intervals:
+\begin{equation}
+    E[\theta] = \frac{\alpha}{\alpha + \beta}, \quad \text{Var}[\theta] = \frac{\alpha \beta}{(\alpha + \beta)^2 (\alpha + \beta + 1)}
+\end{equation}
+To account for behavioral evolution and temporal drift, historical observations are decayed exponentially using a half-life parameter $T_{\text{half}} = 180\text{ days}$, producing a recency-weighted Beta posterior.
+
+\subsection{Indirect Trust Propagation in Social Graphs}
+When two individuals lack direct prior transactions, reputation can be inferred across trust paths within the social or transaction network. While algorithms such as EigenTrust \citep{kamvar2003eigentrust} compute global stationary distribution vectors via power iteration, global trust models suffer from sybil vulnerability and computational opacity in local settings. Following \citet{massa2007trust}, Digital Mohalla employs local, bounded $k$-hop search ($k \le 3$) with multi-path aggregation using the noisy-OR model:
+\begin{equation}
+    T_{\text{indirect}}(u, v) = 1 - \prod_{p \in \text{Paths}(u, v)} \left(1 - \text{strength}(p)\right)
+\end{equation}
+Path strength decays exponentially with topological distance, and indirect evidence is capped to prevent multi-hop hearsay from overwhelming empirical direct interaction.
+
+\section{Existing Solutions and Products}
+Current solutions in peer-to-peer sharing and local commerce fall into three categories:
+\begin{enumerate}
+    \item \textbf{Commercial Classified Platforms (e.g., OLX, Facebook Marketplace):} General-purpose listing portals designed for sales rather than temporary borrowing. Handover risks are transferred entirely to users; ratings are rudimentary or absent; exact phone numbers or locations are often exposed.
+    \item \textbf{Informal Neighbourhood Groups (e.g., WhatsApp, Buy Nothing Project):} Community-driven initiatives relying on informal social norms. While community trust is high, they lack formal inventory tracking, provide zero concurrency controls, maintain no audit trails, and offer no structured recourse when assets are damaged or unreturned.
+    \item \textbf{Dedicated Resource-Sharing Platforms (e.g., Peerby, Library of Things):} Dedicated tool and item sharing systems. However, Peerby relies heavily on commercial insurance models and subscription fees (incompatible with developing community contexts) and collapses reputation into a commercial rating without explainable uncertainty or privacy safeguards.
+\end{enumerate}
+
+\section{Comparison of Existing Solutions}
+\begin{table}[htbp]
+\centering
+\caption{Comparative Analysis: Digital Mohalla vs. Existing Sharing Paradigms}
+\label{tab:comparative_analysis}
+\small
+\begin{tabularx}{\textwidth}{l X X X}
+\toprule
+\textbf{Feature / Dimension} & \textbf{Informal Community} & \textbf{Commercial Marketplace} & \textbf{Digital Mohalla} \\
+\midrule
+Workflow Tracking & Manual / Unstructured & Basic status flags & Event-sourced, replayable lifecycle \\
+Handover Verification & Informal trust & Unregulated & Dual-party photographic inspection \\
+Cold-Start / Newcomers & Subjective vouching & High risk / Ignored & \texttt{INSUFFICIENT\_EVIDENCE} + Safeguards \\
+Uncertainty Modeling & None & Collapsed scalar rating & 90\% Bayesian credible interval \\
+Indirect Social Evidence & Word-of-mouth & Absent & Bounded $k$-hop path inference \\
+Location Privacy & Unprotected & Frequent coordinate leak & Coarse polygon verification \\
+Concurrency Safety & High double-booking risk & Application-level locks & Database exclusion constraints \\
+Auditability & Zero audit trail & Proprietary / Ephemeral & Append-only cryptographic hash chain \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\section{Limitations and Technical Research Gaps}
+Existing systems exhibit three foundational deficiencies:
+\begin{enumerate}
+    \item \textbf{The Scalar Rating Fallacy:} By condensing user history into a static 1--5 star rating, platforms obscure both statistical confidence and interaction recency. A user with 1 positive review is visually conflated with a user possessing 50 reviews.
+    \item \textbf{The Cold-Start Penalty:} New community residents are systematically excluded because platforms treat absence of reputation as equivalent to poor reputation.
+    \item \textbf{Privacy vs. Verification Trade-off:} Existing systems either demand invasive personal tracking (live GPS sharing, national ID scans) or abandon verification entirely, leaving users vulnerable.
+\end{enumerate}
+
+\section{Proposed Solution}
+Digital Mohalla bridges these gaps by constructing an inspectable, uncertainty-aware decision-support architecture. Key aspects include:
+\begin{itemize}
+    \item A clean separation between the transaction lifecycle and the assurance engine via the \texttt{IAssess} domain boundary.
+    \item Direct reputation modeling with recency weighting and multi-attribute contextual similarity (item value tier, category, loan duration).
+    \item Bounded, cycle-safe $k$-hop indirect trust search with explicit evidence thresholds.
+    \item Rule-governed decision support (Rules R1--R9) providing clear physical safeguards and human moderator escalation.
+\end{itemize}
+
+\section{Complex Computing Problem Formulation}
+Digital Mohalla constitutes a complex computing problem in accordance with Washington Accord and FAST-NUCES engineering criteria:
+\begin{enumerate}
+    \item \textbf{Multi-Source Evidence Fusion under Uncertainty:} Combining sparse direct binomial outcomes, decayed indirect multi-hop graph paths, and multidimensional similarity into an explainable posterior confidence interval.
+    \item \textbf{State Machine and Event-Sourced Concurrency:} Enforcing strict state invariants across a distributed lifecycle where concurrent reservations must satisfy mutual exclusion under zero double-booking rules.
+    \item \textbf{Cryptographic Auditability and Tamper Evidence:} Building an append-only transaction event log with cryptographic hash-chaining to ensure that no party can alter past commitments.
+    \item \textbf{Privacy-Preserving Locality Verification:} Validating spatial co-presence and community eligibility without compromising user privacy.
+\end{enumerate}
+
+\section{Technical Challenges}
+\begin{itemize}
+    \item Preventing race conditions during simultaneous loan acceptance without incurring severe database lock contention.
+    \item Ensuring bounded computational latency during graph traversal over dynamic trust networks.
+    \item Guaranteeing that the generated frontend client stays perfectly synchronized with backend OpenAPI schema definitions.
+    \item Managing cold-start borrowers without exposing lenders to disproportionate physical or financial risk.
+\end{itemize}
+
+\section{Research Findings and Key Design Decisions}
+\begin{table}[htbp]
+\centering
+\caption{Research Findings and Architectural Decisions}
+\label{tab:research_findings}
+\small
+\begin{tabularx}{\textwidth}{p{6.5cm} p{8cm}}
+\toprule
+\textbf{Research Finding / Problem Constraint} & \textbf{Architectural Decision / Solution} \\
+\midrule
+Double-booking cannot be reliably prevented by application logic alone under high concurrency. & Enforce exclusion constraints at the database engine level via PostgreSQL 16 \texttt{btree\_gist} (ADR-0005). \\
+Scalar reputation scores conceal variance and bias users. & Expose dual-metric evidence: posterior mean + 90\% credible interval, plus effective observation count $n_{\text{eff}}$. \\
+Indirect graph trust suffers from echo-chamber amplification. & Enforce bounded depth ($k \le 3$), topological path decay, and an absolute cap on indirect trust contribution ($\le 0.30$). \\
+Exact GPS coordinates create stalking and burglary risks. & Enforce coarse locality boundaries; strip all coordinates and street addresses from public API schemas. \\
+Hardcoded thresholds hinder algorithmic tuning. & Encapsulate all engine parameters in versioned configuration files (\texttt{engine.json}) and record \texttt{config\_version} on every assessment. \\
+\bottomrule
+\end{tabularx}
+\end{table}

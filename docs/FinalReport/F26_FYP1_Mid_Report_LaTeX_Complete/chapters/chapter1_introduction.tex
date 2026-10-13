@@ -1,0 +1,130 @@
+\chapter{Introduction and Project Vision}
+
+\section{Project Overview}
+Digital Mohalla is a neighbourhood resource-sharing platform engineered to enable secure, trusted, and privacy-preserving lending, borrowing, and donation within local communities. While conventional sharing-economy and classified platforms focus on listing discovery, communication, and basic transaction flags, Digital Mohalla addresses the foundational, complex computing challenge that arises in peer-to-peer physical exchanges: \textit{evaluating whether sufficient trustworthy evidence exists to justify a physical handover when historical transaction evidence is sparse, indirect, role-dependent, and vulnerable to malicious manipulation.}
+
+The core innovation of the platform is an evidence-based Trust and Risk Assurance Engine integrated into an event-sourced borrowing lifecycle. The engine fuses direct borrower outcome histories using a recency-weighted Beta posterior with 90\% credible intervals, incorporates bounded indirect trust propagation over a community graph using cycle-safe $k$-hop traversal, evaluates contextual similarity between requested and past loans, and generates transparent, rule-governed decision support (Rules R1--R9). Rather than outputting an opaque scalar score or issuing automated punitive bans, Digital Mohalla explicitly separates uncertainty from risk, recommends concrete physical safeguards (e.g., daylight public handover, companion presence, photographic condition verification), and routes ambiguous or high-risk cases to human community moderators.
+
+\section{Problem Statement}
+Given an arbitrary proposed resource handover between an item owner (lender) and an applicant (borrower) in an urban or suburban neighbourhood:
+\begin{enumerate}
+    \item Determine whether the observable evidence is sufficient and reliable to proceed with the transaction, operating under conditions where:
+    \begin{itemize}
+        \item Direct borrower history is sparse or non-existent (cold-start condition).
+        \item Evidence across roles is asymmetric (lender reliability does not imply borrower reliability).
+        \item Useful reputation signals exist only indirectly through multi-hop community trust chains.
+        \item Feedback is susceptible to coordinated collusion, reciprocal inflation, or retaliatory ratings.
+    \end{itemize}
+    \item Preserve strict user location privacy without storing or exposing precise GPS coordinates, continuous trajectory traces, or government identification numbers (CNIC).
+    \item Ensure that lack of evidence or high uncertainty is never transformed into an adverse finding, ensuring fairness for new community residents while protecting asset owners.
+\end{enumerate}
+
+\section{Problem Context and Motivation}
+In rapidly densifying urban environments, households routinely purchase expensive, infrequently used tools, appliances, medical equipment, and educational materials that remain idle for over 95\% of their operational lifespan. Concurrently, neighbouring households experience short-term resource deficits. While informal borrowing historically occurred across physical neighbourhoods, modern urban detachment and safety concerns impede spontaneous sharing.
+
+Lenders face legitimate anxieties regarding asset damage, unreturned items, and personal safety during face-to-face handovers. Borrowers require transparent assurances regarding item condition, non-discriminatory access, and privacy. Commercial marketplaces (such as OLX, Facebook Marketplace, and Peerby) aggregate subjective star ratings that fail to capture statistical uncertainty, offer no tamper-evident transaction auditing, and frequently demand intrusive personal data. Digital Mohalla formalizes mutual trust mathematically, providing an auditable, decentralized-inspired assurance mechanism that empowers communities to share assets securely.
+
+\section{Project Vision}
+To create an open, privacy-preserving, and mathematically grounded neighbourhood resource-sharing ecosystem where residents borrow and lend assets with transparent evidence, proportionate safeguards, and human-in-the-loop escalation for contested or uncertain interactions.
+
+\section{Project Objectives}
+The specific, measurable objectives established for the project are:
+\begin{enumerate}
+    \item \textbf{Lifecycle Enforcement:} Implement a formal, event-sourced request-to-return transaction lifecycle that strictly rejects invalid state transitions.
+    \item \textbf{Concurrency Guarantees:} Guarantee zero double-booking under concurrent reservation attempts using database-level PostgreSQL exclusion constraints.
+    \item \textbf{Tamper-Evident Event Store:} Construct an append-only, cryptographically hash-chained event persistence layer allowing complete state replayability and auditability.
+    \item \textbf{Bayesian Direct Estimation:} Model direct borrower and lender reliability using a recency-weighted Beta posterior distribution, computing analytical 90\% credible intervals and effective sample sizes.
+    \item \textbf{Bounded Indirect Propagation:} Propagate indirect trust across community interaction graphs using cycle-safe $k$-hop search ($k \le 3$) with exponential decay and noisy-OR aggregation, ensuring indirect evidence never dominates direct history.
+    \item \textbf{Contextual Similarity Weighting:} Weight historical loan outcomes by multidimensional similarity (item value band, category, and loan duration) relative to the requested transaction.
+    \item \textbf{Transparent Decision Policy:} Synthesize evidence into actionable decision tiers (Sufficient Evidence, Sufficient with Safeguards, Sparse / Insufficient Evidence, Elevated Risk / Review Recommended) accompanied by natural-language, evidence-backed explanations.
+    \item \textbf{Privacy by Design:} Enforce strict location privacy by storing only coarse neighbourhood eligibility outcomes and actively filtering GPS coordinates, exact addresses, and CNICs from logs and API payloads.
+    \item \textbf{Reproducible Engineering:} Deliver comprehensive unit, property-based (Hypothesis), integration, and scenario-based test suites alongside Dockerized deployment artifacts and continuous integration pipelines.
+\end{enumerate}
+
+\section{Sustainable Development Goal (SDG) Alignment}
+Digital Mohalla aligns directly with the United Nations Sustainable Development Goals:
+\begin{itemize}
+    \item \textbf{SDG 12: Responsible Consumption and Production (Target 12.5):} By substantially increasing resource utilization through neighbourhood sharing, Digital Mohalla reduces unnecessary material consumption, manufacturing demand, and household electronic/tool waste.
+    \item \textbf{SDG 11: Sustainable Cities and Communities (Target 11.3 \& 11.7):} The platform strengthens local community resilience, fosters social cohesion across diverse residential strata, and provides safe, inclusive peer-to-peer sharing mechanisms.
+\end{itemize}
+
+\section{Project Scope}
+
+\subsection{Committed Core Scope}
+The committed project baseline encompasses:
+\begin{itemize}
+    \item User registration, role-based access control, and privacy-preserving neighbourhood membership.
+    \item Item catalog management with value bands, categories, and availability calendars.
+    \item Event-sourced borrowing lifecycle: request, locality check, assurance evaluation, acceptance, handover inspection, return inspection, and completion.
+    \item Computational trust engine: Beta posterior estimation, bounded $k$-hop propagation, and policy rule evaluation.
+    \item Dispute submission and human moderator escalation workflows.
+    \item Synthetic evaluation datasets and reproducible testing pipelines.
+\end{itemize}
+
+\subsection{Mid-Assessment (Iteration 1) Completed Scope}
+As frozen at 13 October 2026, the mid-assessment implementation encompasses:
+\begin{itemize}
+    \item \textbf{Slice A (Completed):} End-to-end lifecycle aggregate, transition table, PostgreSQL append-only event store, FastAPI REST routes under \texttt{/api/v1}, argon2/JWT authentication, and Expo React Native frontend screens.
+    \item \textbf{Slice B (Completed):} Outcome extraction (D11), Beta posterior estimator with 90\% credible intervals, contextual similarity weighting (D17), PostgreSQL trust-edge projection (ADR-0006), bounded $k$-hop search (Algorithm 2), decision policy rules R1--R9 (Algorithm 4), structured lender explanations, synthetic scenario suite (Suite 11), and a three-layer lender evidence screen.
+\end{itemize}
+
+\subsection{Out of Scope and Deferred Features}
+To protect architectural integrity, commercial vendor marketplaces, automated monetary deposits, generalized social feed walls, open AI chatbots, and unsolicited advertising are explicitly excluded from the system scope. Full community event planning, automated phone push notifications, and formal appeal workflows are scheduled for FYP-2.
+
+\section{Project Modules}
+\begin{table}[htbp]
+\centering
+\caption{System Module Decomposition and Implementation Status}
+\label{tab:module_decomposition}
+\small
+\begin{tabularx}{\textwidth}{l p{7.5cm} l}
+\toprule
+\textbf{Module} & \textbf{Core Responsibilities} & \textbf{Mid-Term Status} \\
+\midrule
+M1: Accounts \& Auth & User credentials, JWT issuance, argon2 hashing, roles & Implemented (Slice A) \\
+M2: Item Management & Listings, value tiers, categorisation, availability & Implemented (Slice A) \\
+M3: Borrowing Lifecycle & Event-sourced state machine, transition guards, replay & Implemented (Slice A) \\
+M4: Locality Verification & Boundary verification without storing raw coordinates & Implemented (Boundary) \\
+M5: Assurance Engine & Beta estimation, $k$-hop traversal, policy rules, explanations & Implemented (Slice B) \\
+M6: Persistence \& Events & PostgreSQL 16 schema, append-only triggers, exclusion constraints & Implemented (Slice A) \\
+M7: Presentation Client & React Native / Expo screens, lender evidence panel, action bar & Implemented (Slice A \& B) \\
+M8: Moderation Engine & Dispute filing, escalation queues, moderator case adjudication & In Progress (Slice C) \\
+M9: Evaluation Suite & Synthetic generators, scenario fixtures, validation benchmarks & Implemented (Slice B) \\
+M10: Deployment \& CI & GitHub Actions CI, Render API/Web service, Neon PostgreSQL & Documented / In Progress \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\section{Stakeholders and User Classes}
+\begin{itemize}
+    \item \textbf{Borrower:} Community member seeking to borrow an item. Submits requests, reviews item details, confirms physical handover, and confirms return condition.
+    \item \textbf{Lender:} Community asset owner. Configures item rules, reviews structured assurance evidence and recommended safeguards, decides whether to accept or decline, and inspects returned items.
+    \item \textbf{Community Moderator:} Trusted human adjudicator. Reviews escalated transactions, inspects tamper-evident event histories, and issues formal binding dispute rulings.
+    \item \textbf{System Administrator:} Manages community-level configuration, audits cryptographic event chains, and supervises deployment infrastructure.
+    \item \textbf{Academic Supervisor / Evaluation Panel:} Evaluates software engineering rigor, mathematical correctness of trust algorithms, test reproducibility, and compliance with FAST-NUCES standards.
+\end{itemize}
+
+\section{Measurable Success Criteria}
+\begin{enumerate}
+    \item \textbf{Functional Completeness:} A complete request-to-completion loan flow executes successfully through both backend API and frontend clients.
+    \item \textbf{State Integrity:} 100\% of invalid state transitions (across all 294 transition matrix pairs) are rejected deterministically.
+    \item \textbf{Concurrency Safety:} In concurrent loan acceptance races on overlapping dates, exactly one transaction succeeds and all competing attempts are safely aborted by the database.
+    \item \textbf{Auditability:} Any historical loan state can be reconstructed bit-for-bit via event store replay; tampered events are flagged by hash-chain validation.
+    \item \textbf{Privacy Enforcement:} Zero API responses or application log entries leak exact GPS coordinates, physical street addresses, or national identity numbers.
+    \item \textbf{Test Coverage \& Quality:} All unit, integration, and scenario tests execute cleanly under isolated test environments.
+\end{enumerate}
+
+\section{Constraints and Assumptions}
+\begin{itemize}
+    \item \textbf{Platform Constraints:} Target mobile deployment is scoped strictly to Android devices and modern web browsers (via Expo Web); iOS is not targeted.
+    \item \textbf{Database Requirements:} The backend requires PostgreSQL 16 with the \texttt{btree\_gist} extension to support high-performance exclusion constraints.
+    \item \textbf{Algorithmic Constraints:} Algorithmic trust models are validated against synthetic scenarios with verifiable ground truth. Thresholds in \texttt{engine.json} represent versioned hypotheses subject to continuous empirical calibration.
+    \item \textbf{Data Privacy Assumptions:} Users operate within recognized community zones; location verification operates via coarse polygon or cell intersection rather than granular location tracking.
+\end{itemize}
+
+\section{Ethical, Legal and DEI Considerations}
+\begin{itemize}
+    \item \textbf{Non-Discriminatory Trust Assessment:} Cold-start users with zero prior history are categorized as \texttt{INSUFFICIENT\_EVIDENCE} rather than assigned a low or failing score. This prevents algorithmic bias against new residents.
+    \item \textbf{Human Accountability:} Consequential decisions (such as transaction cancellation due to suspicion or dispute resolution) always escalate to human moderators. Automated algorithmic blacklisting is strictly prohibited.
+    \item \textbf{Data Minimization:} Compliance with emerging data protection regulations is achieved by omitting government ID storage, discarding granular GPS logs, and storing only verified outcome timestamps.
+\end{itemize}
