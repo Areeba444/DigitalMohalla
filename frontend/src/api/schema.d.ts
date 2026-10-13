@@ -260,6 +260,41 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/transactions/{txn_id}/dispute": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Dispute Trail */
+        get: operations["dispute_trail_api_v1_transactions__txn_id__dispute_get"];
+        put?: never;
+        /** Raise Dispute */
+        post: operations["raise_dispute_api_v1_transactions__txn_id__dispute_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/transactions/{txn_id}/dispute/withdraw": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Withdraw Dispute */
+        post: operations["withdraw_dispute_api_v1_transactions__txn_id__dispute_withdraw_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -316,6 +351,38 @@ export interface components {
             /** Owner Name */
             owner_name: string;
         };
+        /**
+         * CaseOut
+         * @description An escalation case. The raiser is given by role only, never by user id.
+         */
+        CaseOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Trigger Type */
+            trigger_type: string;
+            /** Dispute Reason */
+            dispute_reason?: string | null;
+            /** Hold Reason */
+            hold_reason?: string | null;
+            /** Raised By Role */
+            raised_by_role?: string | null;
+            /** Status */
+            status: string;
+            /** Priority */
+            priority: number;
+            /** Reason */
+            reason: string;
+            /**
+             * Opened At
+             * Format: date-time
+             */
+            opened_at: string;
+            /** Closed At */
+            closed_at?: string | null;
+        };
         /** ChecklistIn */
         ChecklistIn: {
             /** Checklist */
@@ -369,6 +436,50 @@ export interface components {
         DeclineIn: {
             /** Reason */
             reason?: string | null;
+        };
+        /**
+         * DisputeIn
+         * @description UC-B12 step 2: a reason from the fixed list and a description (photos come with C2 uploads).
+         */
+        DisputeIn: {
+            /**
+             * Reason
+             * @enum {string}
+             */
+            reason: "DAMAGE" | "NON_RETURN" | "CONDITION_MISMATCH" | "NO_SHOW" | "OTHER";
+            /** Description */
+            description?: string | null;
+        };
+        /**
+         * DisputeTrailOut
+         * @description UC-D6 evidence trail: the case, the loan, both sides' reports, the history, the assessment.
+         */
+        DisputeTrailOut: {
+            case: components["schemas"]["CaseOut"];
+            /**
+             * Transaction Id
+             * Format: uuid
+             */
+            transaction_id: string;
+            /** Item Title */
+            item_title: string;
+            /** State */
+            state: string | null;
+            /** Your Role */
+            your_role: string | null;
+            /** Borrower Name */
+            borrower_name: string;
+            /** Lender Name */
+            lender_name: string;
+            /** Requested Period */
+            requested_period: string;
+            /** Reports */
+            reports: components["schemas"]["ReportOut"][];
+            /** Events */
+            events: components["schemas"]["EventOut"][];
+            assessment: components["schemas"]["AssessmentOut"] | null;
+            /** Available Actions */
+            available_actions: string[];
         };
         /** EventOut */
         EventOut: {
@@ -1057,6 +1168,103 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["EventOut"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    dispute_trail_api_v1_transactions__txn_id__dispute_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                txn_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DisputeTrailOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    raise_dispute_api_v1_transactions__txn_id__dispute_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                txn_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DisputeIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CommandOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    withdraw_dispute_api_v1_transactions__txn_id__dispute_withdraw_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                txn_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CommandOut"];
                 };
             };
             /** @description Validation Error */
