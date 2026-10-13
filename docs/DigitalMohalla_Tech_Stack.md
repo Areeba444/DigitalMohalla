@@ -272,6 +272,7 @@ Licences are the commonly published ones; confirm each at install time and recor
 | ESLint, Prettier, TypeScript | Frontend quality | MIT / MIT / Apache-2.0 |
 | eslint-config-expo (dev; 57.0.2 installed 2026-10-13, with eslint 9.39.5) | Expo's ESLint rules | MIT |
 | @react-native/jest-preset (dev; ^0.86.3, matches React Native 0.86) | Peer of jest-expo 57 | MIT |
+| @expo-google-fonts/fraunces (^0.4.1), @expo-google-fonts/plus-jakarta-sans (^0.4.2); installed 2026-10-13 | App typefaces from the team's design system (Fraunces headlines, Plus Jakarta Sans text); only 7 weights are loaded | Packages MIT; fonts SIL Open Font License 1.1 |
 | uv | Python packaging | MIT / Apache-2.0 |
 | Docker Engine, Compose | Containers | Apache-2.0 |
 | Caddy | Reverse proxy, HTTPS | Apache-2.0 |
