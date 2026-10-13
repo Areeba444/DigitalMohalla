@@ -14,9 +14,6 @@ import {
 } from '@/components/ui';
 import { useTheme } from '@/theme/ThemeProvider';
 
-// Manipulation detection arrives with the human loop (Slice C); until then every request is level 1.
-const MANIPULATION_CHECKS_ACTIVE = false;
-
 const SAFEGUARD_LABEL: Record<string, string> = {
   DEPOSIT_RECORD: 'Record the deposit before handover',
   HANDOVER_PHOTOS: 'Take item photos at handover',
@@ -130,9 +127,6 @@ export function AssurancePanel({ assessment, name }: { assessment: Assessment; n
           </Text>
           <RiskPill level={assessment.manipulation_level ?? 1} />
         </View>
-        {MANIPULATION_CHECKS_ACTIVE ? null : (
-          <Body muted>Manipulation checks are not active in this version yet.</Body>
-        )}
         <Text style={{ fontSize: 11, color: theme.colors.textMuted, fontStyle: 'italic' }}>
           Shown separately from reliability and never averaged with it. A flag is a reason to look, not
           an accusation.
