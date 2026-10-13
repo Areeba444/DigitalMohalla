@@ -42,7 +42,7 @@ The technical core is a **trust and risk decision engine**. It estimates whether
 | Disputes, moderator console, audit view | Not yet (Slice C) |
 | k-hop indirect trust, manipulation checks, decision policy | Not yet (Slices B and C) |
 | CI pipeline | GitHub Actions (`.github/workflows/ci.yml`): backend, frontend and API-client checks on every push and pull request; Dependabot weekly. Runs once the code is on GitHub |
-| Docker, deployment (CD) | API image (`backend/Dockerfile`) and Render Blueprint (`render.yaml`): Render (API) + Neon (PostgreSQL 16), deploying `main` after CI passes. Setup steps in `infra/deploy/README.md`; the hosting ADR (number to be assigned) is still to be recorded |
+| Docker, deployment (CD) | Live on Render: web app https://digitalmohalla-web.onrender.com (static site) and API https://digitalmohalla-api.onrender.com (Docker), database on Neon (PostgreSQL 16). Each deploys from `main` after CI passes. Setup and limits: `infra/deploy/README.md`; the hosting ADR (number to be assigned) is still to be recorded |
 
 The plan, slices and gates are in `docs/DigitalMohalla_Project_Context.md` (sections 9 to 13).
 
@@ -93,7 +93,7 @@ docs/
 scripts/seed_demo.py      seed synthetic users and items
 data/                     dataset catalogue, cards and requirements (raw files stay local)
 infra/deploy/             deployment guide (Render + Neon)
-render.yaml               Render Blueprint for the API service
+render.yaml               Render Blueprint: API service and the web app (static site)
 .github/workflows/        CI (ci.yml); Render deploys main once CI passes
 CLAUDE.md                 project rules and context for Claude Code
 ```
