@@ -3,7 +3,7 @@
 from datetime import UTC, datetime, timedelta
 
 import pytest
-from hypothesis import given
+from hypothesis import given, settings
 from hypothesis import strategies as st
 
 from app.config.engine_config import load_engine_config
@@ -20,6 +20,7 @@ outcome = st.builds(
 )
 
 
+@settings(deadline=None)  # SciPy's first call can be slow on a busy machine
 @given(st.lists(outcome, max_size=40))
 def test_estimate_is_a_proper_probability_with_the_mean_inside_its_interval(
     xs: list[WeightedOutcome],
@@ -31,6 +32,7 @@ def test_estimate_is_a_proper_probability_with_the_mean_inside_its_interval(
     assert e.alpha + e.beta == pytest.approx(P.alpha0 + P.beta0 + e.n_eff)
 
 
+@settings(deadline=None)  # SciPy's first call can be slow on a busy machine
 @given(st.lists(outcome, max_size=30), st.floats(0, 1000))
 def test_another_success_never_lowers_the_mean(xs: list[WeightedOutcome], age: float) -> None:
     before = estimate(xs, P, NOW).mean
@@ -38,6 +40,7 @@ def test_another_success_never_lowers_the_mean(xs: list[WeightedOutcome], age: f
     assert after >= before
 
 
+@settings(deadline=None)  # SciPy's first call can be slow on a busy machine
 @given(st.integers(0, 40))
 def test_interval_narrows_as_consistent_evidence_grows(n: int) -> None:
     def width(k: int) -> float:
@@ -47,6 +50,7 @@ def test_interval_narrows_as_consistent_evidence_grows(n: int) -> None:
     assert width(n + 1) < width(n)
 
 
+@settings(deadline=None)  # SciPy's first call can be slow on a busy machine
 @given(st.floats(0, 1000), st.floats(0, 1000))
 def test_older_evidence_weighs_less(a: float, b: float) -> None:
     young, old = sorted((a, b))
