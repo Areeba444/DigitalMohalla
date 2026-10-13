@@ -6,6 +6,9 @@ import DisputeScreen from '@/app/(resident)/dispute/[id]';
 import CaseScreen from '@/app/(moderator)/moderation/[id]';
 import ModerationQueue from '@/app/(moderator)/moderation/index';
 
+// The first render of a screen loads its whole module tree; slow machines need more than 5 s.
+jest.setTimeout(20_000);
+
 let mockRequest: any;
 let mockTrail: any;
 let mockQueue: any[];

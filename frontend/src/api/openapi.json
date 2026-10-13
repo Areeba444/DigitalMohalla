@@ -1354,6 +1354,7 @@
             "title": "Notes"
           }
         },
+        "additionalProperties": false,
         "type": "object",
         "title": "ChecklistIn"
       },
@@ -1452,6 +1453,7 @@
             "title": "Notes"
           }
         },
+        "additionalProperties": false,
         "type": "object",
         "title": "ConfirmIn"
       },
@@ -1498,6 +1500,7 @@
             "title": "At Fault"
           }
         },
+        "additionalProperties": false,
         "type": "object",
         "required": [
           "kind",
@@ -1559,6 +1562,7 @@
             "title": "Reason"
           }
         },
+        "additionalProperties": false,
         "type": "object",
         "title": "DeclineIn"
       },
@@ -1588,6 +1592,7 @@
             "title": "Description"
           }
         },
+        "additionalProperties": false,
         "type": "object",
         "required": [
           "reason"
@@ -1865,6 +1870,7 @@
             "title": "Password"
           }
         },
+        "additionalProperties": false,
         "type": "object",
         "required": [
           "email",
@@ -2154,6 +2160,7 @@
             "title": "Message"
           }
         },
+        "additionalProperties": false,
         "type": "object",
         "required": [
           "item_id",
