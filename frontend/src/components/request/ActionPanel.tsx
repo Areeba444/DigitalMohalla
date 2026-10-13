@@ -1,3 +1,4 @@
+import { router } from 'expo-router';
 import { useState } from 'react';
 import { View } from 'react-native';
 
@@ -221,6 +222,15 @@ export function ActionPanel({ request, id }: { request: RequestDetail; id: strin
           variant="ghost"
           loading={act.isPending}
           onPress={() => run({ name: 'cancel' })}
+        />
+      ) : null}
+
+      {has('raise_dispute') ? (
+        <Button
+          label="Raise a dispute"
+          icon="flag"
+          variant="ghost"
+          onPress={() => router.push(`/dispute/${id}`)}
         />
       ) : null}
     </View>

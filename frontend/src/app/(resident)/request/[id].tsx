@@ -1,4 +1,4 @@
-import { useLocalSearchParams } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import { Text, View } from 'react-native';
 
 import { useEvents, useRequest } from '@/api/hooks';
@@ -8,6 +8,7 @@ import {
   Avatar,
   Banner,
   Body,
+  Button,
   Caption,
   Card,
   Collapsible,
@@ -171,6 +172,15 @@ export default function RequestScreen() {
             {HOLD_TEXT[r.hold_reason] ?? 'A moderator will review this request.'} Nothing has been rejected; you
             will see the outcome here.
           </Body>
+        </Banner>
+      ) : null}
+
+      {state === 'DISPUTED' ? (
+        <Banner tone={theme.colors.danger} title="This loan is disputed" icon="flag">
+          <Body muted style={{ fontSize: 14 }}>
+            A community moderator reviews the case. Nothing else can change until then.
+          </Body>
+          <Button label="See the dispute" variant="soft" compact onPress={() => router.push(`/dispute/${id}`)} />
         </Banner>
       ) : null}
 
