@@ -2,17 +2,18 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "config_metadata": {
     "config_name": "digital_mohalla_assurance_engine_config",
-    "config_version": "1.2.0-iteration1-draft",
+    "config_version": "1.3.0-iteration1-draft",
     "status": "initial_hypothesis_unvalidated",
     "created_at": "2026-10-11T15:20:00Z",
     "module": "Module 5: Trust, Safety and Assurance Engine",
     "author": "Student 2 (Trust & Assurance Lead)",
     "description": "Baseline operational and algorithmic parameters for Digital Mohalla's assurance pipeline. Every threshold and weight represents an initial experimental hypothesis to be evaluated via time-ordered holdout testing (Overview §5, NFR-D-01, FR-B-09).",
-    "updated_at": "2026-10-13T12:00:00Z",
+    "updated_at": "2026-10-13T18:00:00Z",
     "changelog": [
       "1.0.0-iteration1-draft (2026-10-11, Student 2): initial parameter set.",
       "1.2.0-iteration1-draft (2026-10-13, Student 2): similarity weighting defined (team decision D17): value band 0.4, category 0.4, duration 0.2; band closeness 1.0 same, 0.5 adjacent, 0.0 two apart; duration closeness shorter / longer; the 0.5 floor applies to each outcome's weight. No other value changed.",
-      "1.1.0-iteration1-draft (2026-10-11, integration): s4_review_similarity active in iteration 1 (ADR-0007); rule R6_SPARSE uses rho_sup (ADR-0008); locality_a11 parameters added so one versioned file holds every parameter (NFR-D-01). No numeric value changed."
+      "1.1.0-iteration1-draft (2026-10-11, integration): s4_review_similarity active in iteration 1 (ADR-0007); rule R6_SPARSE uses rho_sup (ADR-0008); locality_a11 parameters added so one versioned file holds every parameter (NFR-D-01). No numeric value changed.",
+      "1.3.0-iteration1-draft (2026-10-13, Student 2, decisions D18 and D19): S1 measures mutual reviews among the subject's rating partners (s1_min_out_degree replaced by s1_min_partners, same value 3); S4 uses character 3-gram TF-IDF over the subject's received reviews (s4_char_ngram, s4_min_reviews); retaliation check: a review counts as negative when its lowest rating is at most retaliation_negative_rating_max. No other value changed."
     ]
   },
   "trust_estimation_alg1": {
@@ -148,7 +149,7 @@
     "signal_scaling_bounds": {
       "s1_min_ratio": 0.3,
       "s1_range": 0.6,
-      "s1_min_out_degree": 3,
+      "s1_min_partners": 3,
       "s2_base_ratio": 2.0,
       "s2_range": 3.0,
       "s2_min_recent": 3,
@@ -156,6 +157,8 @@
       "s3_range": 7.0,
       "s4_min_cosine": 0.7,
       "s4_range": 0.25,
+      "s4_char_ngram": 3,
+      "s4_min_reviews": 2,
       "s5_base_links": 2,
       "s5_range": 8.0
     },
@@ -171,6 +174,11 @@
       "required_corroborating_signals": 2,
       "source": "Algorithm doc §5; ADR-0007",
       "rationale": "Prevents single-signal false alarms (e.g. friend groups) from reaching Level 4."
+    },
+    "retaliation_check": {
+      "negative_rating_max": 2,
+      "source": "Algorithm doc §5 (Suspected Retaliation Check), FR-T-09, decision D19",
+      "rationale": "A review whose lowest rating is at most this value, posted within retaliation_window_days after the subject's complaint against the reviewer, about a loan whose return was confirmed, is set aside as suspected retaliation pending moderator review."
     }
   },
   "decision_policy_alg4": {
