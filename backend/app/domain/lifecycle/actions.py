@@ -4,7 +4,11 @@ HCI constraint 3: buttons for invalid transitions must not appear at all, not me
 Pure function of the lifecycle state, the viewer's role and the condition reports so far; the
 database still re-checks every command, so this only shapes the UI. Names match the REST
 endpoints: accept, decline, cancel, handover_checklist, handover_confirm, initiate_return,
-return_checklist, return_confirm.
+return_checklist, return_confirm, raise_dispute, withdraw_dispute.
+
+Disputes (UC-B12, FR-B-16/17): either party may raise one while the loan is ACCEPTED, ACTIVE or
+RETURN_INITIATED. Once DISPUTED the loan is frozen: no checklist, confirmation or deposit record,
+and the only action is the raising party's withdrawal.
 """
 
 from collections.abc import Mapping
@@ -12,6 +16,7 @@ from datetime import datetime
 from typing import Any
 
 PENDING = {"REQUEST_CREATED", "LOCALITY_CHECKED", "HELD_FOR_REVIEW", "ASSESSED"}
+DISPUTABLE = {"ACCEPTED", "ACTIVE", "RETURN_INITIATED"}
 
 
 def _created(report: Mapping[str, Any] | None) -> datetime | None:
@@ -33,8 +38,10 @@ def available_actions(
     state: str | None,
     role: str | None,
     reports: Mapping[tuple[str, str], Mapping[str, Any]],
+    dispute_raised_by: str | None = None,
 ) -> list[str]:
-    """`reports` maps (phase, reporter_role) -> latest condition report, e.g. ("HANDOVER", "LENDER")."""
+    """`reports` maps (phase, reporter_role) -> latest condition report, e.g. ("HANDOVER", "LENDER").
+    `dispute_raised_by` is the role (BORROWER or LENDER) that raised the open dispute, if any."""
     if state is None or role is None:
         return []
     h_l, h_b = reports.get(("HANDOVER", "LENDER")), reports.get(("HANDOVER", "BORROWER"))
@@ -56,4 +63,8 @@ def available_actions(
             actions = ["initiate_return"]
         elif state == "RETURN_INITIATED" and _borrower_must_confirm(r_l, r_b):
             actions = ["return_confirm"]
+    if state in DISPUTABLE and role in ("BORROWER", "LENDER"):
+        actions.append("raise_dispute")
+    if state == "DISPUTED":
+        actions = ["withdraw_dispute"] if role == dispute_raised_by else []
     return actions

@@ -177,12 +177,13 @@ def test_ui_endpoints_names_actions_and_lists(client: TestClient, world: World) 
 
     client.post(f"/api/v1/requests/{txn}/accept", headers=lender)
     after = client.get(f"/api/v1/requests/{txn}", headers=borrower).json()
-    assert after["available_actions"] == []  # nothing to do until the lender's checklist
+    # only a dispute (UC-B12) until the lender's checklist
+    assert after["available_actions"] == ["raise_dispute"]
     client.post(
         f"/api/v1/transactions/{txn}/handover/checklist", json={"notes": "ok"}, headers=lender
     )
     after = client.get(f"/api/v1/requests/{txn}", headers=borrower).json()
-    assert after["available_actions"] == ["handover_confirm"]
+    assert after["available_actions"] == ["handover_confirm", "raise_dispute"]
     assert [r["reporter_role"] for r in after["reports"]] == ["LENDER"]
 
 
