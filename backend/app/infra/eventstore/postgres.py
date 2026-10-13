@@ -66,8 +66,8 @@ class PostgresLifecycleStore:
         row = (
             self.conn.execute(
                 text(
-                    "SELECT event_id, stream_seq, occurred_at FROM lifecycle_event "
-                    "WHERE stream_id = :id AND event_type = CAST(:t AS event_type) "
+                    "SELECT event_id, stream_seq, occurred_at, previous_state::text AS previous_state "
+                    "FROM lifecycle_event WHERE stream_id = :id AND event_type = CAST(:t AS event_type) "
                     "ORDER BY stream_seq DESC LIMIT 1"
                 ),
                 {"id": transaction_id, "t": event_type},
@@ -148,6 +148,129 @@ class PostgresLifecycleStore:
                     "ORDER BY generated_at DESC LIMIT 1"
                 ),
                 {"id": transaction_id},
+            )
+            .mappings()
+            .first()
+        )
+        return dict(row) if row else None
+
+    def open_case(self, transaction_id: UUID) -> dict[str, Any] | None:
+        return self._case(transaction_id, only_open=True)
+
+    def latest_case(self, transaction_id: UUID) -> dict[str, Any] | None:
+        return self._case(transaction_id, only_open=False)
+
+    # moderation (UC-I4) ---------------------------------------------------------------------
+    def case_by_id(self, case_id: UUID) -> dict[str, Any] | None:
+        row = (
+            self.conn.execute(
+                text(
+                    "SELECT id, transaction_id, trigger_type::text AS trigger_type, "
+                    "dispute_reason::text AS dispute_reason, hold_reason::text AS hold_reason, "
+                    "raised_by, status::text AS status, priority, reason, opened_at, closed_at "
+                    "FROM escalation_case WHERE id = :id"
+                ),
+                {"id": case_id},
+            )
+            .mappings()
+            .first()
+        )
+        return dict(row) if row else None
+
+    def is_moderator(self, user_id: UUID, community_id: UUID) -> bool:
+        return bool(
+            self.conn.execute(
+                text(
+                    "SELECT EXISTS (SELECT 1 FROM membership m JOIN app_user u ON u.id = m.user_id "
+                    "WHERE m.user_id = :u AND m.community_id = :c AND m.role = 'MODERATOR' "
+                    "AND m.status = 'APPROVED' AND u.status = 'ACTIVE')"
+                ),
+                {"u": user_id, "c": community_id},
+            ).scalar_one()
+        )
+
+    def insert_decision(
+        self,
+        case_id: UUID,
+        *,
+        decided_by: UUID,
+        decider_role: str,
+        kind: str,
+        reason: str,
+        safeguards: list[dict[str, Any]],
+        resolved_outcome: dict[str, Any] | None,
+    ) -> UUID:
+        return self.conn.execute(
+            text(
+                "INSERT INTO moderator_decision (case_id, decided_by, decider_role, kind, reason, "
+                "safeguards, resolved_outcome) VALUES (:c, :u, CAST(:r AS actor_role), "
+                "CAST(:k AS decision_kind), :why, CAST(:sg AS jsonb), CAST(:ro AS jsonb)) RETURNING id"
+            ),
+            {
+                "c": case_id,
+                "u": decided_by,
+                "r": decider_role,
+                "k": kind,
+                "why": reason,
+                "sg": json.dumps(safeguards),
+                "ro": json.dumps(resolved_outcome) if resolved_outcome is not None else None,
+            },
+        ).scalar_one()
+
+    def decisions(self, case_id: UUID) -> list[dict[str, Any]]:
+        rows = self.conn.execute(
+            text(
+                "SELECT id, decider_role::text AS decider_role, kind::text AS kind, reason, "
+                "safeguards, resolved_outcome, decided_at FROM moderator_decision "
+                "WHERE case_id = :c ORDER BY decided_at"
+            ),
+            {"c": case_id},
+        ).mappings()
+        return [dict(r) for r in rows]
+
+    def open_cases_for(self, user_id: UUID, every_community: bool) -> list[dict[str, Any]]:
+        """Live cases in the communities the user moderates (all of them for an admin), most
+        urgent first."""
+        rows = self.conn.execute(
+            text(
+                "SELECT ec.id, ec.transaction_id, ec.trigger_type::text AS trigger_type, "
+                "ec.dispute_reason::text AS dispute_reason, ec.hold_reason::text AS hold_reason, "
+                "ec.status::text AS status, ec.priority, ec.reason, ec.opened_at, "
+                "i.title AS item_title, t.current_state::text AS state "
+                "FROM escalation_case ec JOIN borrowing_transaction t ON t.id = ec.transaction_id "
+                "JOIN item i ON i.id = t.item_id "
+                "WHERE ec.status IN ('OPEN', 'AWAITING_INFORMATION') AND (:every OR EXISTS ("
+                " SELECT 1 FROM membership m WHERE m.user_id = :u AND m.community_id = i.community_id "
+                " AND m.role = 'MODERATOR' AND m.status = 'APPROVED')) "
+                "ORDER BY ec.priority, ec.opened_at"
+            ),
+            {"u": user_id, "every": every_community},
+        ).mappings()
+        return [dict(r) for r in rows]
+
+    def imposed_safeguards(self, transaction_id: UUID) -> list[Any]:
+        """Safeguards a moderator imposed when clearing this request's hold (latest decision)."""
+        value = self.conn.execute(
+            text(
+                "SELECT d.safeguards FROM moderator_decision d JOIN escalation_case ec "
+                "ON ec.id = d.case_id WHERE ec.transaction_id = :t AND d.kind = 'SAFEGUARDS_IMPOSED' "
+                "ORDER BY d.decided_at DESC LIMIT 1"
+            ),
+            {"t": transaction_id},
+        ).scalar_one_or_none()
+        return list(value or [])
+
+    def _case(self, transaction_id: UUID, *, only_open: bool) -> dict[str, Any] | None:
+        row = (
+            self.conn.execute(
+                text(
+                    "SELECT id, trigger_type::text AS trigger_type, dispute_reason::text AS dispute_reason, "
+                    "hold_reason::text AS hold_reason, raised_by, status::text AS status, priority, reason, "
+                    "opened_at, closed_at FROM escalation_case WHERE transaction_id = :id "
+                    "AND (NOT :only_open OR status IN ('OPEN', 'AWAITING_INFORMATION')) "
+                    "ORDER BY opened_at DESC LIMIT 1"
+                ),
+                {"id": transaction_id, "only_open": only_open},
             )
             .mappings()
             .first()

@@ -23,6 +23,7 @@ from app.domain.lifecycle.errors import (
     EventStoreError,
     InvalidTransition,
     NotAuthorised,
+    StreamNotFound,
 )
 from app.domain.lifecycle.ports import (
     AssessmentRequest,
@@ -34,6 +35,7 @@ from app.domain.lifecycle.ports import (
     TransactionView,
 )
 from app.domain.lifecycle.transition_table import TransitionTable
+from app.domain.moderation.decisions import Decision, InvalidDecision, plan
 
 SYSTEM_AUTH = "system:borrowing-service"
 _LOCALITY_HOLD = {"INCONCLUSIVE": "locality_inconclusive", "CONFLICTING": "locality_conflict"}
@@ -100,6 +102,11 @@ class BorrowingService:
         self._system_event(
             txn_id, "locality_checked", "LOCALITY_CHECKED", {"locality_outcome": "VERIFIED"}
         )
+        return self._assess(txn_id)
+
+    def _assess(self, txn_id: UUID) -> CommandResult:
+        """Run the engine on a request in LOCALITY_CHECKED: ASSESSED, or HELD_FOR_REVIEW."""
+        view = self.store.view(txn_id)
         try:
             result = self._run_engine(view)
         except Exception as exc:  # timeout or fault: hold, assign no assurance state (FR-T-07)
@@ -323,19 +330,175 @@ class BorrowingService:
         return CommandResult(txn_id, "COMPLETED", f"returned {outcome.replace('_', ' ')}")
 
     # ------------------------------------------------------------------ queries
+    # ------------------------------------------------------------------ B12: disputes
+    def raise_dispute(
+        self, actor: Actor, txn_id: UUID, reason: str, description: str | None = None
+    ) -> CommandResult:
+        """UC-B12: either party, while ACCEPTED, ACTIVE or RETURN_INITIATED. The loan becomes
+        DISPUTED (its previous state is kept in the event) and the database opens a case for a
+        moderator (UC-D6). A second dispute on the same loan shows the open case (FR-B-16)."""
+        view = self._store_view(txn_id)
+        role = self._role_of(actor, view)
+        if role is None:
+            self._reject(actor, txn_id, "dispute_opened", "not a party to this transaction")
+            raise NotAuthorised("only the borrower or the lender of this loan may raise a dispute")
+        if view.state == "DISPUTED":
+            return CommandResult(txn_id, "DISPUTED", "a dispute is already open for this loan")
+        view = self._precheck(actor, txn_id, "dispute_opened", role)
+        payload = {"reason": reason, **({"description": description} if description else {})}
+        self._party_event(actor, view, "dispute_opened", role, payload)
+        return CommandResult(txn_id, "DISPUTED", "dispute raised; a moderator will review it")
+
+    def withdraw_dispute(self, actor: Actor, txn_id: UUID) -> CommandResult:
+        """UC-B12 5b, FR-B-17: only the party who raised it; the loan returns to its previous
+        state (ADR-0004) and the case closes as WITHDRAWN."""
+        view = self._store_view(txn_id)
+        role = self._role_of(actor, view)
+        if role is None:
+            self._reject(actor, txn_id, "dispute_withdrawn", "not a party to this transaction")
+            raise NotAuthorised("only the party who raised the dispute may withdraw it")
+        self._require_state(actor, view, {"DISPUTED"}, "dispute_withdrawn")
+        case = self.store.open_case(txn_id)
+        if case is None or case["raised_by"] != actor.user_id:
+            self._reject(actor, txn_id, "dispute_withdrawn", "not the party who raised the dispute")
+            raise NotAuthorised("only the party who raised the dispute may withdraw it")
+        opened = self.store.last_event(txn_id, "dispute_opened")
+        restore = opened["previous_state"] if opened else None
+        if restore is None:
+            raise InvalidTransition("no dispute_opened event to restore from")
+        self._party_event(actor, view, "dispute_withdrawn", role, new_state=restore)
+        return CommandResult(txn_id, restore, "dispute withdrawn")
+
+    def dispute_case(self, actor: Actor, txn_id: UUID) -> dict[str, Any]:
+        """UC-D6 evidence trail for the parties: the case, the loan, both sides' condition reports,
+        the event history and the assessment. Moderators get the same trail in C2."""
+        found = self.get_request(actor, txn_id)
+        case = self.store.open_case(txn_id) or self.store.latest_case(txn_id)
+        if case is None:
+            raise StreamNotFound(f"no case for {txn_id}")
+        view = found["view"]
+        raiser = case["raised_by"]
+        found["case"] = {
+            **case,
+            "raised_by_role": "BORROWER"
+            if raiser == view.borrower_id
+            else "LENDER"
+            if raiser == view.lender_id
+            else None,
+        }
+        found["events"] = self.store.events(txn_id)
+        return found
+
+    # ------------------------------------------------------------------ I4: moderator decisions
+    def decide(self, actor: Actor, case_id: UUID, decision: Decision) -> CommandResult:
+        """UC-I4: record the decision with its reason, then apply it as one lifecycle event that
+        references it. A resolved dispute becomes trust evidence (FR-B-15); a cleared locality or
+        engine-failure hold runs the assessment again (ADR-0003)."""
+        case = self.store.case_by_id(case_id)
+        if case is None:
+            raise StreamNotFound(f"case {case_id}")
+        txn_id = case["transaction_id"]
+        view = self._store_view(txn_id)
+        role, authorisation = self._moderator_role(actor, view, "decide_case")
+        if case["status"] not in ("OPEN", "AWAITING_INFORMATION"):
+            self._reject(actor, txn_id, "decide_case", f"case already {case['status']}")
+            raise InvalidTransition(f"this case is already {case['status'].lower()}")
+        try:
+            p = plan(view.state, view.hold_reason, decision)
+        except InvalidDecision as exc:
+            self._reject(actor, txn_id, "decide_case", str(exc))
+            raise
+        decision_id = self.store.insert_decision(
+            case_id,
+            decided_by=actor.user_id,
+            decider_role=role,
+            kind=decision.kind,
+            reason=decision.reason.strip(),
+            safeguards=p.safeguards,
+            resolved_outcome=p.resolved_outcome,
+        )
+        try:
+            event_id = self.store.append(
+                txn_id,
+                p.event_type,
+                p.new_state,
+                actor_id=actor.user_id,
+                authorisation=authorisation,
+                payload={"decision": decision.kind},
+                evidence_refs={"decision_id": str(decision_id)},
+            )
+        except EventStoreError as exc:
+            self._reject(actor, txn_id, "decide_case", str(exc))
+            raise
+        if p.event_type == "dispute_resolved":
+            self.store.record_outcomes(event_id)
+            self.store.refresh_trust_edges(txn_id)
+            return CommandResult(txn_id, "COMPLETED", "dispute resolved")
+        if p.new_state == "LOCALITY_CHECKED":
+            return self._assess(txn_id)
+        return CommandResult(txn_id, p.new_state, f"decision recorded: {decision.kind.lower()}")
+
+    def moderation_queue(self, actor: Actor) -> list[dict[str, Any]]:
+        """Live cases this moderator may decide, most urgent first (admins see every community)."""
+        return self.store.open_cases_for(actor.user_id, actor.platform_role == "ADMIN")
+
+    def moderator_case(self, actor: Actor, case_id: UUID) -> dict[str, Any]:
+        """UC-D6 step 3: the case and its evidence trail, for a moderator of the community."""
+        case = self.store.case_by_id(case_id)
+        if case is None:
+            raise StreamNotFound(f"case {case_id}")
+        txn_id = case["transaction_id"]
+        view = self._store_view(txn_id)
+        self._moderator_role(actor, view, "view_case")
+        raiser = case["raised_by"]
+        return {
+            "case": {
+                **case,
+                "raised_by_role": "BORROWER"
+                if raiser == view.borrower_id
+                else "LENDER"
+                if raiser == view.lender_id
+                else None,
+            },
+            "view": view,
+            "details": self.store.details(txn_id),
+            "reports": self.store.latest_reports(txn_id),
+            "events": self.store.events(txn_id),
+            "assessment": self.store.latest_assessment(txn_id),
+            "decisions": self.store.decisions(case_id),
+        }
+
+    def _moderator_role(self, actor: Actor, view: TransactionView, action: str) -> tuple[str, str]:
+        """(role, authorisation) for a moderator of the item's community or an admin; a party to
+        the loan can never act on its own case."""
+        if actor.user_id in (view.borrower_id, view.lender_id):
+            self._reject(actor, view.id, action, "a party cannot decide its own case")
+            raise NotAuthorised("a party cannot decide its own case")
+        if actor.platform_role == "ADMIN":
+            return "ADMIN", "role:admin"
+        if self.store.is_moderator(actor.user_id, view.community_id):
+            return "MODERATOR", f"role:moderator@{view.community_id}"
+        self._reject(actor, view.id, action, "not a moderator of this community")
+        raise NotAuthorised("only a moderator of this community may do this")
+
     def get_request(self, actor: Actor, txn_id: UUID) -> dict[str, Any]:
         view = self._store_view(txn_id)
         role = self._role_of(actor, view)
         if role is None and actor.platform_role != "ADMIN":
             raise NotAuthorised("not a party to this transaction")
         reports = self.store.latest_reports(txn_id)
+        case = self.store.open_case(txn_id) if view.state == "DISPUTED" else None
+        raised_by = None
+        if case is not None:
+            raised_by = "BORROWER" if case["raised_by"] == view.borrower_id else "LENDER"
         return {
             "view": view,
             "role": role,
             "assessment": self.store.latest_assessment(txn_id),
             "details": self.store.details(txn_id),
             "reports": reports,
-            "actions": available_actions(view.state, role, reports),
+            "actions": available_actions(view.state, role, reports, raised_by),
+            "moderator_safeguards": self.store.imposed_safeguards(txn_id),
         }
 
     def my_requests(self, actor: Actor) -> list[dict[str, Any]]:
@@ -391,8 +554,10 @@ class BorrowingService:
         event_type: str,
         role: str,
         payload: Mapping[str, Any] | None = None,
+        new_state: str | None = None,
     ) -> None:
-        new_state = self.table.next_state(view.state or "", event_type)
+        """`new_state` is needed only where the table has several targets (dispute_withdrawn)."""
+        new_state = new_state or self.table.next_state(view.state or "", event_type)
         if new_state is None:
             raise InvalidTransition(f"no unique next state for {view.state} --{event_type}-->")
         try:
