@@ -33,7 +33,7 @@ python -I data/generators/validate.py data/derived/standard
 | `measure_public.py` | Re-measures `data/derived/public_graph_stats.json` from the raw Epinions and Bitcoin files (about 4 minutes; needs `data/raw/`) |
 | `graph_shape.py <folder>` | Compares the generated lending graph with the public networks |
 
-Measured sizes: `mini` 63 users, 190 loans, 1,378 events, 958 KB. `standard` 90 users, 286 loans, 2,076 events, 1.4 MB
+Measured sizes (rebuilt 2026-10-13 for B5): `mini` 63 users, 193 loans, 1,392 events, 0.9 MB. `standard` 90 users, 289 loans, 2,074 events, 1.3 MB
 (the plan said 50 to 100 users and 200 to 300 loans). `scale` about 2,000 users and 12,000 loans (see section 5a for the exact load).
 Build times on a laptop: `mini` and `standard` a few seconds each, `scale` under two minutes.
 
@@ -51,13 +51,13 @@ They can be loaded with PostgreSQL `COPY ... CSV` (identity columns need `OVERRI
 | File | Rows (standard) | Notes |
 | :--- | ---: | :--- |
 | `app_user`, `community`, `membership`, `category`, `item` | 90 / 3 / 92 / 7 / 108 | One moderator per community and one admin. A few members belong to two communities |
-| `borrowing_transaction`, `lifecycle_event` | 286 / 2,076 | Every event is checked against `backend/app/domain/lifecycle/transition_leaves.csv`; the projection columns equal a replay of the events. `request_created` carries the item and period, moderator events carry the decision id, as the schema's triggers require |
-| `booking`, `locality_verification` | 254 / 92 | Projections and baseline rows the database would hold: a booking per acceptance (released when the loan ends); one VERIFIED locality result per member (assumption A10) |
-| `condition_report` | 962 | Handover and return reports; `condition_agreed = false` is a disagreement |
-| `outcome` | 1,192 | Written only at `transaction_closed` or `dispute_resolved`. 5 are `FLAGGED_FOR_REEVALUATION` (ES-11) |
-| `trust_edge` | 708 | Derived from valid outcomes, never entered by hand |
-| `review` | 361 | `retaliation_flag` and `similarity_flag` stay `false`: they are the detectors' output |
-| `escalation_case`, `moderator_decision` | 38 / 35 | 28 disputes (23 decided, 3 open, 1 withdrawn, 1 reversed) and 10 high-value holds. Reason text and priority are what the database trigger would write |
+| `borrowing_transaction`, `lifecycle_event` | 289 / 2,074 | Every event is checked against `backend/app/domain/lifecycle/transition_leaves.csv`; the projection columns equal a replay of the events. `request_created` carries the item and period, moderator events carry the decision id, as the schema's triggers require |
+| `booking`, `locality_verification` | 251 / 92 | Projections and baseline rows the database would hold: a booking per acceptance (released when the loan ends); one VERIFIED locality result per member (assumption A10) |
+| `condition_report` | 954 | Handover and return reports; `condition_agreed = false` is a disagreement |
+| `outcome` | 1,172 | Written only at `transaction_closed` or `dispute_resolved`. 5 are `FLAGGED_FOR_REEVALUATION` (ES-11) |
+| `trust_edge` | 670 | Derived from valid outcomes, never entered by hand |
+| `review` | 344 | `retaliation_flag` and `similarity_flag` stay `false`: they are the detectors' output |
+| `escalation_case`, `moderator_decision` | 40 / 37 | 27 disputes (22 decided, 3 open, 1 withdrawn, 1 reversed) and 13 high-value holds. Reason text and priority are what the database trigger would write |
 | `labels/user_truth.csv` | | Hidden true reliability, group, attack flag, evidence level, whether the history was `sampled` or `scripted` |
 | `labels/transaction_truth.csv`, `review_truth.csv` | | Which loans and reviews belong to an attack or a legitimate dense group |
 | `labels/item_value_pkr.csv` | | Item value in PKR (the schema stores only the band) |
