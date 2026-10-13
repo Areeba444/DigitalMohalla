@@ -177,10 +177,10 @@ It is a **risk detector, not proof of fraud**; it never changes transaction reco
 
 | # | Signal | Input data | Normalised value \(s_i\in[0,1]\) | Evidence shown | Initial weight |
 |---|---|---|---|---|---|
-| S1 | Reciprocal-rating clustering | out-neighbours \(O\), in-neighbours \(In\) within \(W\); needs \(\lvert O\rvert\ge3\) | \(r=\lvert O\cap In\rvert/\lvert O\rvert\); \(s_1=\mathrm{clamp}\big((r-0.3)/0.6\big)\) | partner list, mutual fraction | 0.30 |
+| S1 | Reciprocal-rating clustering (D18) | review partners \(P\) (people the subject reviewed or was reviewed by) within \(W\); needs \(\lvert P\rvert\ge3\) | \(r\) = share of pairs in \(P\) who reviewed each other both ways; \(s_1=\mathrm{clamp}\big((r-0.3)/0.6\big)\) | mutual pairs out of all partner pairs | 0.30 |
 | S2 | Rating velocity | counts in last 7 d vs prior 83 d; needs \(\ge3\) recent | ratio \(=\) recent rate / (baseline rate \(+\epsilon\)); \(s_2=\mathrm{clamp}\big((\text{ratio}-2)/3\big)\) | the two rates, ratio | 0.20 |
 | S3 | New-account activity | account age; ratings received in last 14 d | 0 if age > 30 d; else \(\mathrm{clamp}\big((N-3)/7\big)\) | age, N, rater ids | 0.20 |
-| S4 | Review similarity | review texts (char n-gram TF-IDF, works for Roman Urdu) | max pairwise cosine \(c\); \(s_4=\mathrm{clamp}\big((c-0.7)/0.25\big)\) | the similar review pairs | 0.20 |
+| S4 | Review similarity | reviews the subject received within \(W\), at least 2 with text (character 3-gram TF-IDF over those reviews, works for Roman Urdu) | max pairwise cosine \(c\); \(s_4=\mathrm{clamp}\big((c-0.7)/0.25\big)\) | the similarity of the closest pair | 0.20 |
 | S5 | Linkage (optional) | accounts sharing device/IP/invite where legitimately available | \(m\) = other linked accounts; \(s_5=\mathrm{clamp}\big((m-2)/8\big)\) | linked-account count | 0.10 |
 
 > **Iteration 1 (Mid-1) Scope Note (ADR-0007).** In Iteration 1, the engine actively deploys **S1 (Reciprocal-rating clustering)**, **S4 (Review text similarity)** and the **Suspected Retaliation Check** (below). Signals S2 (velocity), S3 (new-account activity) and S5 (linkage) are fully designed above but activated in Iteration 2. S4 is needed in iteration 1 because level 4 requires two corroborating signals: with S1 alone no request could be held, and ES-04 would fail. When S2, S3 and S5 are unavailable, the combination rule renormalises active weights over available signals as defined below.
@@ -188,7 +188,7 @@ It is a **risk detector, not proof of fraud**; it never changes transaction reco
 **Suspected Retaliation Check (FR-T-09, ES-05):**
 - **Trigger:** A rating/review submitted by party \(A\) against party \(B\) within \(W_{\text{retaliation}} = 14\) days following an adverse complaint, dispute opening, or low rating filed by \(B\) against \(A\).
 - **Condition:** The submitted rating is negative (failure/poor condition claim) but conflicts with objective transaction records (e.g., both handover and return confirmations are confirmed: `handover_confirmed = true` AND `return_confirmed = true`).
-- **Action:** The event is flagged with `retaliation_suspected = true`. It is down-weighted in evidence calculation (\(w_i \leftarrow 0.1 \cdot w_i\) or excluded pending moderator review) and attached as an anomaly record to the transaction explanation, preventing reputation sabotage without accusing the user.
+- **Action (D19):** Reviews never enter the trust estimate or the trust edges (both use verified loan outcomes), so a retaliatory review cannot lower trust there. The flagged review is set aside: excluded from S1 and S4 pending moderator review, recorded with the assessment's signals, and explained to the lender in neutral words, preventing reputation sabotage without accusing anyone. "Negative" means its lowest rating is at most `retaliation_check.negative_rating_max` (2); the engine does not write to the review table (a moderator confirms the flag, C2).
 
 **Combination rule.** Unavailable signals (e.g. no linkage data) are excluded and the remaining weights renormalised:
 \[
@@ -212,7 +212,11 @@ FUNCTION AssessManipulation(subject, data, W, weights):
 
 **Complexity:** S1 \(O(\deg)\) with hash sets; S2 and S3 \(O(R)\) over ratings in window; S4 \(O(m^2L)\) for \(m\) reviews of length \(L\) (bounded by capping \(m\) per window, or use nearest-neighbour hashing); S5 \(O(1)\) with an index. Total \(O(\deg+R+m^2L)\) per subject.
 
-**Edge cases:** insufficient observations make the signal *unavailable*, not zero-evidence-of-fraud; reciprocity must be computed against the **received** set, not inferred from the user's own submissions; windows are isolated so old activity does not fire velocity; family or friend groups are expected to produce S1, which is why S1 alone can never reach level 4; retaliation flags isolate dispute fallout from legitimate transaction evidence.
+**Why S1 looks at partners reviewing each other (D18):** after every loan both sides review each other, so "A rated B and B rated A" is normal in a two-sided system (Bolton, Greiner and Ockenfels 2013; Fradkin, Grewal and Holtz 2021) and flagged 6 of 8 ordinary members of the standard tier. Coordinated groups show as accounts that rate *one another* (Mukherjee, Liu and Glance 2012; dense subgraphs in Hooi et al. 2016). A ring that also trades with outsiders lowers its density; that limit is recorded, not hidden.
+
+**Stored score:** `assessment.manipulation_risk` keeps the score rounded down, so it falls in the same band as the exact score (the band edges are whole numbers) and satisfies `assessment_level_ck`.
+
+**Edge cases:** insufficient observations make the signal *unavailable*, not zero-evidence-of-fraud; reciprocity uses both the given and the **received** reviews, never the user's own submissions alone; windows are isolated so old activity does not fire velocity; family or friend groups are expected to produce S1, which is why S1 alone can never reach level 4; retaliation flags isolate dispute fallout from legitimate transaction evidence.
 
 ---
 
