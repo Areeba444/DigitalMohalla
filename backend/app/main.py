@@ -17,6 +17,7 @@ from app.domain.lifecycle.errors import (
     StreamNotFound,
 )
 from app.domain.lifecycle.ports import IAssess
+from app.domain.moderation.decisions import InvalidDecision
 from app.infra.db.session import make_engine
 
 
@@ -50,6 +51,7 @@ def create_app(engine: Engine | None = None, assess: IAssess | None = None) -> F
         return {"status": "ok"}
 
     app.add_exception_handler(NotAuthorised, _refusal(403))
+    app.add_exception_handler(InvalidDecision, _refusal(422))
     app.add_exception_handler(StreamNotFound, _refusal(404))
     for conflict in (InvalidTransition, StaleCommand, DatesTaken):
         app.add_exception_handler(conflict, _refusal(409))
