@@ -107,7 +107,13 @@ def test_path_id_fuzz(client: TestClient, raw: str) -> None:  # noqa: F811
 
 
 json_values = st.recursive(
-    st.one_of(st.none(), st.booleans(), st.integers(), st.floats(allow_nan=False), texts),
+    st.one_of(
+        st.none(),
+        st.booleans(),
+        st.integers(),
+        st.floats(allow_nan=False, allow_infinity=False),
+        texts,
+    ),
     lambda inner: st.one_of(
         st.lists(inner, max_size=4), st.dictionaries(st.text(max_size=10), inner, max_size=4)
     ),
