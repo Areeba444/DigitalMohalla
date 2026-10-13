@@ -553,7 +553,7 @@ class World:
             agg[k][2] = n + 1
             agg[k][3] = max(last, o["occurred_at"])
         rows = []
-        for (src, tgt, role, metric), (s, f, n, last) in sorted(agg.items()):
+        for (src, tgt, role, metric), (s, f, n, _last) in sorted(agg.items()):
             rows.append(
                 {
                     "source": src,
