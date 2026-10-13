@@ -44,7 +44,7 @@ weird_dates: st.SearchStrategy[Any] = st.one_of(
 _TOKENS: dict[str, dict[str, str]] = {}
 
 
-def headers(client: TestClient, email: str) -> dict[str, str]:
+def headers(client: TestClient, email: str) -> dict[str, str]:  # noqa: F811
     """Log in once per account: the token stays valid across examples, and each login runs the
     deliberately slow password hash, which would otherwise dominate the run."""
     if email not in _TOKENS:
