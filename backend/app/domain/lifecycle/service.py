@@ -153,8 +153,8 @@ class BorrowingService:
         payload: Mapping[str, Any],
         evidence_refs: Mapping[str, Any] | None = None,
         config_version: str | None = None,
-    ) -> None:
-        self.store.append(
+    ) -> int:
+        return self.store.append(
             txn_id,
             event_type,
             new_state,
@@ -315,7 +315,9 @@ class BorrowingService:
         returned = self.store.last_event(txn_id, "return_confirmed")
         due_at = self.store.view(txn_id).due_at
         outcome = "on_time" if returned and due_at and returned["occurred_at"] <= due_at else "late"
-        self._system_event(txn_id, "transaction_closed", "COMPLETED", {"outcome": outcome})
+        closed = self._system_event(txn_id, "transaction_closed", "COMPLETED", {"outcome": outcome})
+        # FR-B-15: the confirmed outcome becomes evidence in the same DB transaction as the close
+        self.store.record_outcomes(closed)
         return CommandResult(txn_id, "COMPLETED", f"returned {outcome.replace('_', ' ')}")
 
     # ------------------------------------------------------------------ queries
