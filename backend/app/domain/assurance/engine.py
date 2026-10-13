@@ -2,7 +2,7 @@
 
 Pipeline (Algorithm doc §1): the borrower's verified outcomes (role BORROWER, metric ON_TIME_RETURN)
 -> recency- and similarity-weighted Beta posterior (B2) -> k-hop community paths from the lender (B3)
--> manipulation risk (Slice C; level 1 with no signals until then, and the explanation says so)
+-> manipulation risk from the borrower's reviews (C1: S1, S4 and the retaliation check; Algorithm 3)
 -> context (open or recent disputes, verification, value band) -> decision table R1 to R9 -> result.
 
 Data comes through `EvidenceSource`, so the engine itself does no I/O and is unit-tested with a fake.
@@ -11,12 +11,18 @@ instead of silently falling back to a default (TC-74). `clock` makes "now" expli
 """
 
 from collections.abc import Callable, Mapping
-from dataclasses import dataclass
+from dataclasses import asdict, dataclass
 from datetime import UTC, datetime, timedelta
 from typing import Any, Protocol
 from uuid import UUID
 
 from app.config.engine_config import EngineConfig
+from app.domain.assurance.detection.manipulation import (
+    Complaint,
+    ManipulationParams,
+    ReviewSnapshot,
+    assess_manipulation,
+)
 from app.domain.assurance.estimation.posterior import (
     EstimatorParams,
     WeightedOutcome,
@@ -63,6 +69,10 @@ class EvidenceSource(Protocol):
 
     def display_names(self, user_ids: list[str]) -> dict[str, str]: ...
 
+    def reviews_since(self, since: datetime) -> list[ReviewSnapshot]: ...
+
+    def complaints_by(self, user_id: UUID, since: datetime) -> list[Complaint]: ...
+
 
 class AssuranceEngine:
     def __init__(
@@ -78,6 +88,9 @@ class AssuranceEngine:
             )
             self.khop = KHopParams.from_config(config.section("indirect_trust_alg2"))
             self.thresholds = PolicyThresholds.from_config(config.data)
+            self.manipulation = ManipulationParams.from_config(
+                config.section("manipulation_detection_alg3")
+            )
             self.lookback_months = int(
                 config.section("decision_policy_alg4")["context_windows"][
                     "resolved_disputes_lookback_months"
@@ -119,6 +132,15 @@ class AssuranceEngine:
         since = now - timedelta(days=30.4375 * self.lookback_months)  # mean month = 365.25 / 12
         recent = self.source.resolved_disputes_since(request.borrower_id, since)
         verified = self.source.verification_ok(request.borrower_id, request.item_id)
+        mp = self.manipulation
+        reach = now - timedelta(days=mp.window_days + mp.retaliation_window_days)
+        risk = assess_manipulation(
+            borrower,
+            self.source.reviews_since(reach),
+            self.source.complaints_by(request.borrower_id, reach),
+            now,
+            mp,
+        )
         d = decide(
             PolicyInputs(
                 mean=direct.mean,
@@ -126,7 +148,7 @@ class AssuranceEngine:
                 n_eff=direct.n_eff,
                 direct_event_count=direct.n_raw,
                 rho=indirect.reliability,
-                risk_level=1,
+                risk_level=risk.level,
                 value_band=request.value_band,
                 open_dispute=open_dispute,
                 resolved_disputes_12m=recent,
@@ -155,7 +177,7 @@ class AssuranceEngine:
             open_dispute=open_dispute,
             is_high_value=request.value_band == "HIGH",
             request_similarity=req_sim,
-            manipulation_active=False,
+            manipulation=risk,
             n_min=self.thresholds.n_min,
             rho_max=self.khop.rho_max,
             similarity_floor=self.thresholds.similarity_floor,
@@ -191,15 +213,16 @@ class AssuranceEngine:
             hold_reason=d.hold_reason,
             explanation=explanation,
             config_version=self.config_version,
-            manipulation_risk=0,
-            manipulation_level=1,
-            manipulation_corroborated=False,
+            manipulation_risk=risk.stored_score,
+            manipulation_level=risk.level,
+            manipulation_corroborated=risk.corroborated,
             posterior_mean=round(direct.mean, 4),
             ci90_low=round(direct.lower_90, 4),
             ci90_high=round(direct.upper_90, 4),
             effective_evidence=round(direct.n_eff, 3),
             direct_evidence=direct_json,
             indirect_evidence=indirect_json,
-            manipulation_signals=[],
+            manipulation_signals=[asdict(s) for s in risk.signals]
+            + [{"name": "retaliation_check", **asdict(f)} for f in risk.retaliation],
             safeguards=d.safeguards,
         )
