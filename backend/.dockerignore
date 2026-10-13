@@ -1,0 +1,15 @@
+# Keep secrets, local environments, caches and tests out of the image
+.env
+.env.*
+.venv/
+**/__pycache__/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.hypothesis/
+.coverage
+coverage.xml
+reports/
+tests/
+Dockerfile
+.dockerignore
