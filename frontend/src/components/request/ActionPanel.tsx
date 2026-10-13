@@ -51,7 +51,7 @@ function ResultBanner({ result }: { result: CommandResult }) {
   const { theme } = useTheme();
   if (result.message === 'dates taken') {
     return (
-      <Banner tone={theme.colors.warning} title="Date conflict detected">
+      <Banner tone={theme.colors.warning} title="These dates were taken" icon="event_busy">
         <Body muted>
           Another request for these dates was accepted first, so this request was declined
           automatically with the reason “dates taken”. The borrower has been told. Your other
@@ -62,7 +62,7 @@ function ResultBanner({ result }: { result: CommandResult }) {
   }
   if (!result.message) return null;
   return (
-    <Banner tone={theme.colors.info} title="Update">
+    <Banner tone={theme.colors.info} title="Update" icon="info">
       <Body muted>{result.message}</Body>
     </Banner>
   );
@@ -98,13 +98,14 @@ export function ActionPanel({ request, id }: { request: RequestDetail; id: strin
       {has('accept') ? (
         <Card>
           <SectionLabel>Your decision</SectionLabel>
-          <Body muted>
+          <Body muted style={{ fontSize: 14 }}>
             Accepting reserves these dates and automatically declines other pending requests for
             them.
           </Body>
-          <Button label="Accept request" loading={act.isPending} onPress={() => run({ name: 'accept' })} />
+          <Button label="Accept request" icon="check_circle" loading={act.isPending} onPress={() => run({ name: 'accept' })} />
           <Button
             label="Decline request"
+            icon="close"
             variant="outline"
             loading={act.isPending}
             onPress={() => run({ name: 'decline' })}
@@ -114,8 +115,8 @@ export function ActionPanel({ request, id }: { request: RequestDetail; id: strin
 
       {has('handover_checklist') ? (
         <>
-          <Banner tone={theme.colors.info} title="Handover">
-            <Body muted>Record the item&apos;s condition before it changes hands. The borrower then confirms receipt.</Body>
+          <Banner tone={theme.colors.info} title="Handover" icon="handshake">
+            <Body muted style={{ fontSize: 14 }}>Record the item&apos;s condition before it changes hands. The borrower then confirms receipt.</Body>
           </Banner>
           <ChecklistForm
             checks={checks}
@@ -126,6 +127,7 @@ export function ActionPanel({ request, id }: { request: RequestDetail; id: strin
           />
           <Button
             label="Send for borrower review"
+            icon="send"
             loading={act.isPending}
             onPress={() =>
               run({
@@ -143,6 +145,7 @@ export function ActionPanel({ request, id }: { request: RequestDetail; id: strin
           <Field label="Your remarks (optional)" value={notes} onChangeText={setNotes} multiline />
           <Button
             label="Confirm receipt & start loan"
+            icon="handshake"
             loading={act.isPending}
             onPress={() =>
               run({ name: 'handover_confirm', body: { condition_agreed: true, notes: notes || undefined } })
@@ -150,6 +153,7 @@ export function ActionPanel({ request, id }: { request: RequestDetail; id: strin
           />
           <Button
             label="I disagree: condition mismatch"
+            icon="flag"
             variant="outline"
             loading={act.isPending}
             onPress={() =>
@@ -162,8 +166,8 @@ export function ActionPanel({ request, id }: { request: RequestDetail; id: strin
       {has('initiate_return') ? (
         <Card>
           <SectionLabel>Return</SectionLabel>
-          <Body muted>Ready to give the item back? Starting the return lets the lender inspect it.</Body>
-          <Button label="Start return" loading={act.isPending} onPress={() => run({ name: 'initiate_return' })} />
+          <Body muted style={{ fontSize: 14 }}>Ready to give the item back? Starting the return lets the lender inspect it.</Body>
+          <Button label="Start return" icon="assignment_return" loading={act.isPending} onPress={() => run({ name: 'initiate_return' })} />
         </Card>
       ) : null}
 
@@ -172,11 +176,13 @@ export function ActionPanel({ request, id }: { request: RequestDetail; id: strin
           <ChecklistForm checks={checks} setChecks={setChecks} notes={notes} setNotes={setNotes} />
           <Button
             label="Condition matches: record inspection"
+            icon="task_alt"
             loading={act.isPending}
             onPress={() => run({ name: 'return_checklist', body: { ...body, condition_agreed: true } })}
           />
           <Button
             label="Report damage"
+            icon="flag"
             variant="outline"
             loading={act.isPending}
             onPress={() => run({ name: 'return_checklist', body: { ...body, condition_agreed: false } })}
@@ -192,11 +198,13 @@ export function ActionPanel({ request, id }: { request: RequestDetail; id: strin
           />
           <Button
             label="Agree condition & close"
+            icon="task_alt"
             loading={act.isPending}
             onPress={() => run({ name: 'return_confirm', body: { condition_agreed: true } })}
           />
           <Button
             label="I disagree"
+            icon="flag"
             variant="outline"
             loading={act.isPending}
             onPress={() => run({ name: 'return_confirm', body: { condition_agreed: false } })}
@@ -207,6 +215,7 @@ export function ActionPanel({ request, id }: { request: RequestDetail; id: strin
       {has('cancel') ? (
         <Button
           label="Cancel request"
+          icon="close"
           variant="ghost"
           loading={act.isPending}
           onPress={() => run({ name: 'cancel' })}

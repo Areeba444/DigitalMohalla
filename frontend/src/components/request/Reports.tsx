@@ -1,7 +1,7 @@
 import { Text, View } from 'react-native';
 
 import type { Report } from '@/api/hooks';
-import { Body, Card, SectionLabel } from '@/components/ui';
+import { Body, Caption, Card, Icon, SectionLabel } from '@/components/ui';
 import { useTheme } from '@/theme/ThemeProvider';
 
 export const CHECKS = [
@@ -18,25 +18,23 @@ function checklistOf(report: Report | undefined): Record<string, boolean> {
 function Items({ report }: { report?: Report }) {
   const { theme } = useTheme();
   const list = checklistOf(report);
-  if (!report) return <Text style={{ color: theme.colors.textMuted, fontSize: 13 }}>Not recorded yet</Text>;
+  if (!report) return <Caption>Not recorded yet</Caption>;
+  const line = (ok: boolean, label: string, key: string) => (
+    <View key={key} style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+      <Icon name={ok ? 'check_circle' : 'error'} size={18} color={ok ? theme.colors.success.fg : theme.colors.warning.fg} />
+      <Text style={{ flex: 1, fontFamily: theme.fonts.medium, fontSize: 14, color: ok ? theme.colors.text : theme.colors.warning.fg }}>
+        {label}
+      </Text>
+    </View>
+  );
   return (
-    <View style={{ gap: 4 }}>
-      {CHECKS.map(([key, label]) => (
-        <Text
-          key={key}
-          style={{ fontSize: 13, color: list[key] ? theme.colors.text : theme.colors.warning.fg }}>
-          {list[key] ? '✓' : '✗'} {label}
-        </Text>
-      ))}
-      {report.deposit_received != null ? (
-        <Text style={{ fontSize: 13, color: theme.colors.text }}>
-          {report.deposit_received ? '✓' : '✗'} Deposit recorded as received
-        </Text>
-      ) : null}
+    <View style={{ gap: 8 }}>
+      {CHECKS.map(([key, label]) => line(!!list[key], label, key))}
+      {report.deposit_received != null ? line(!!report.deposit_received, 'Deposit recorded as received', 'deposit') : null}
       {report.notes ? (
-        <Text style={{ fontSize: 13, color: theme.colors.textSecondary, fontStyle: 'italic' }}>
-          “{report.notes}”
-        </Text>
+        <View style={{ padding: 10, borderRadius: 12, backgroundColor: theme.colors.surface2 }}>
+          <Body muted style={{ fontSize: 14 }}>{report.notes}</Body>
+        </View>
       ) : null}
     </View>
   );
@@ -69,15 +67,11 @@ export function ReturnComparison({
       <SectionLabel>Handover vs return</SectionLabel>
       <View style={{ flexDirection: 'row', gap: 12 }}>
         <View style={{ flex: 1, gap: 6 }}>
-          <Text style={{ fontSize: 12, fontWeight: '700', color: theme.colors.textMuted }}>
-            AT HANDOVER
-          </Text>
+          <SectionLabel>At handover</SectionLabel>
           <Items report={handover} />
         </View>
         <View style={{ flex: 1, gap: 6 }}>
-          <Text style={{ fontSize: 12, fontWeight: '700', color: theme.colors.textMuted }}>
-            AT RETURN
-          </Text>
+          <SectionLabel>At return</SectionLabel>
           <Items report={returned} />
         </View>
       </View>

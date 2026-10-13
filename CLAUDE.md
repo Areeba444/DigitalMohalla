@@ -53,7 +53,7 @@ cd backend && uv run uvicorn app.main:app --port 8000          # API
 cd frontend && npm run web -- --port 8081                      # Expo web app (first bundle takes minutes)
 cd frontend && npm run api:generate                            # after any backend schema change (export openapi.json first)
 ```
-The UI uses three switchable themes in `frontend/src/theme/themes.ts` (team to pick one). Slice A screens only; W5 to W7 (dispute, moderator) come with Slice C.
+The UI has two themes in `frontend/src/theme/themes.ts` (Terracotta and Cream Green), built from the HCI analysis in `docs/design/Digital-MohallaUI/`. Slice A screens only; W5 to W7 (dispute, moderator) come with Slice C.
 
 ## Rules (summary; full text in the context doc §2)
 - Small diffs; no rewrites; don't touch files outside the task; don't delete things unasked. Simplest thing that meets the spec: no extra frameworks.
