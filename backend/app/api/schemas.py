@@ -118,6 +118,7 @@ class RequestOut(BaseModel):
     assessment: AssessmentOut | None
     reports: list[ReportOut]
     available_actions: list[str]
+    moderator_safeguards: list[Any] = []  # imposed when a moderator cleared a hold
 
 
 class MyRequestOut(BaseModel):
@@ -187,6 +188,57 @@ class DisputeTrailOut(BaseModel):
     events: list[EventOut]
     assessment: AssessmentOut | None
     available_actions: list[str]
+
+
+class DecisionIn(BaseModel):
+    """UC-I4: the decision, its mandatory reason (FR-T-11), and what it needs."""
+
+    kind: Literal["CLEARED", "SAFEGUARDS_IMPOSED", "RESTRICTED", "DISPUTE_RESOLVED"]
+    reason: str = Field(min_length=1, max_length=1000)
+    safeguards: list[str] = Field(default_factory=list, max_length=10)
+    at_fault: Literal["borrower", "lender", "none"] | None = None
+
+
+class DecisionOut(BaseModel):
+    decider_role: str
+    kind: str
+    reason: str
+    safeguards: list[Any]
+    resolved_outcome: Any = None
+    decided_at: datetime
+
+
+class CaseQueueOut(BaseModel):
+    """One row of the moderator queue (W6): no names or ids of the people involved."""
+
+    id: UUID
+    transaction_id: UUID
+    trigger_type: str
+    dispute_reason: str | None = None
+    hold_reason: str | None = None
+    status: str
+    priority: int
+    reason: str
+    opened_at: datetime
+    item_title: str
+    state: str | None
+
+
+class ModeratorCaseOut(BaseModel):
+    """UC-D6 evidence trail for the moderator (W7)."""
+
+    case: CaseOut
+    transaction_id: UUID
+    item_title: str
+    state: str | None
+    hold_reason: str | None
+    borrower_name: str
+    lender_name: str
+    requested_period: str
+    reports: list[ReportOut]
+    events: list[EventOut]
+    assessment: AssessmentOut | None
+    decisions: list[DecisionOut]
 
 
 class LenderRequestOut(BaseModel):

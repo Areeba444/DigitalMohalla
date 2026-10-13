@@ -295,6 +295,57 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/moderation/cases": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Moderation Queue */
+        get: operations["moderation_queue_api_v1_moderation_cases_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/moderation/cases/{case_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Moderator Case */
+        get: operations["moderator_case_api_v1_moderation_cases__case_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/moderation/cases/{case_id}/decision": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Decide Case */
+        post: operations["decide_case_api_v1_moderation_cases__case_id__decision_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -383,6 +434,43 @@ export interface components {
             /** Closed At */
             closed_at?: string | null;
         };
+        /**
+         * CaseQueueOut
+         * @description One row of the moderator queue (W6): no names or ids of the people involved.
+         */
+        CaseQueueOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Transaction Id
+             * Format: uuid
+             */
+            transaction_id: string;
+            /** Trigger Type */
+            trigger_type: string;
+            /** Dispute Reason */
+            dispute_reason?: string | null;
+            /** Hold Reason */
+            hold_reason?: string | null;
+            /** Status */
+            status: string;
+            /** Priority */
+            priority: number;
+            /** Reason */
+            reason: string;
+            /**
+             * Opened At
+             * Format: date-time
+             */
+            opened_at: string;
+            /** Item Title */
+            item_title: string;
+            /** State */
+            state: string | null;
+        };
         /** ChecklistIn */
         ChecklistIn: {
             /** Checklist */
@@ -431,6 +519,41 @@ export interface components {
             };
             /** Notes */
             notes?: string | null;
+        };
+        /**
+         * DecisionIn
+         * @description UC-I4: the decision, its mandatory reason (FR-T-11), and what it needs.
+         */
+        DecisionIn: {
+            /**
+             * Kind
+             * @enum {string}
+             */
+            kind: "CLEARED" | "SAFEGUARDS_IMPOSED" | "RESTRICTED" | "DISPUTE_RESOLVED";
+            /** Reason */
+            reason: string;
+            /** Safeguards */
+            safeguards?: string[];
+            /** At Fault */
+            at_fault?: ("borrower" | "lender" | "none") | null;
+        };
+        /** DecisionOut */
+        DecisionOut: {
+            /** Decider Role */
+            decider_role: string;
+            /** Kind */
+            kind: string;
+            /** Reason */
+            reason: string;
+            /** Safeguards */
+            safeguards: unknown[];
+            /** Resolved Outcome */
+            resolved_outcome?: unknown;
+            /**
+             * Decided At
+             * Format: date-time
+             */
+            decided_at: string;
         };
         /** DeclineIn */
         DeclineIn: {
@@ -550,6 +673,37 @@ export interface components {
             /** Password */
             password: string;
         };
+        /**
+         * ModeratorCaseOut
+         * @description UC-D6 evidence trail for the moderator (W7).
+         */
+        ModeratorCaseOut: {
+            case: components["schemas"]["CaseOut"];
+            /**
+             * Transaction Id
+             * Format: uuid
+             */
+            transaction_id: string;
+            /** Item Title */
+            item_title: string;
+            /** State */
+            state: string | null;
+            /** Hold Reason */
+            hold_reason: string | null;
+            /** Borrower Name */
+            borrower_name: string;
+            /** Lender Name */
+            lender_name: string;
+            /** Requested Period */
+            requested_period: string;
+            /** Reports */
+            reports: components["schemas"]["ReportOut"][];
+            /** Events */
+            events: components["schemas"]["EventOut"][];
+            assessment: components["schemas"]["AssessmentOut"] | null;
+            /** Decisions */
+            decisions: components["schemas"]["DecisionOut"][];
+        };
         /** MyRequestOut */
         MyRequestOut: {
             /**
@@ -663,6 +817,11 @@ export interface components {
             reports: components["schemas"]["ReportOut"][];
             /** Available Actions */
             available_actions: string[];
+            /**
+             * Moderator Safeguards
+             * @default []
+             */
+            moderator_safeguards: unknown[];
         };
         /** TokenOut */
         TokenOut: {
@@ -1257,6 +1416,92 @@ export interface operations {
             cookie?: never;
         };
         requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CommandOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    moderation_queue_api_v1_moderation_cases_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CaseQueueOut"][];
+                };
+            };
+        };
+    };
+    moderator_case_api_v1_moderation_cases__case_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                case_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ModeratorCaseOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    decide_case_api_v1_moderation_cases__case_id__decision_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                case_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DecisionIn"];
+            };
+        };
         responses: {
             /** @description Successful Response */
             200: {
