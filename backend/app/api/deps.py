@@ -10,9 +10,10 @@ from sqlalchemy import Engine
 from app.config.engine_config import load_engine_config
 from app.config.settings import get_settings
 from app.domain.accounts.auth import InvalidCredentials, decode_token
-from app.domain.assurance.stub import StubAssuranceEngine
+from app.domain.assurance.engine import AssuranceEngine
 from app.domain.lifecycle.ports import IAssess
 from app.domain.lifecycle.service import Actor, BorrowingService
+from app.infra.db.evidence import PostgresEvidenceSource
 from app.infra.eventstore.postgres import PostgresAuditLog, PostgresLifecycleStore
 
 T = TypeVar("T")
@@ -50,8 +51,9 @@ def get_engine(request: Request) -> Engine:
     return engine
 
 
-def default_assessor() -> IAssess:
-    return StubAssuranceEngine()
+def default_assessor(db: Callable[[], Engine]) -> IAssess:
+    """The real assurance engine (Slice B); `db` returns the app's engine once it exists."""
+    return AssuranceEngine(PostgresEvidenceSource(db), load_engine_config())
 
 
 def current_actor(

@@ -23,6 +23,7 @@ class AssessmentRequest:
     value_band: str
     category_id: int
     config_version: str
+    duration_days: float | None = None  # requested loan length, for similarity weighting (FR-T-03)
 
 
 @dataclass(frozen=True)
@@ -69,6 +70,7 @@ class TransactionView:
     version: int
     hold_reason: str | None
     due_at: Any
+    duration_days: float | None = None
 
 
 class LifecycleStore(Protocol):
@@ -136,6 +138,10 @@ class LifecycleStore(Protocol):
 
     def record_outcomes(self, event_id: int) -> int:
         """Write the verified outcomes of a closing event (FR-B-15); returns rows added."""
+        ...
+
+    def refresh_trust_edges(self, transaction_id: UUID) -> int:
+        """Recompute the trust edges between the two parties (ADR-0006); returns rows written."""
         ...
 
 

@@ -7,13 +7,14 @@ rejected command is still recorded after the command's transaction rolls back (s
 
 import json
 from contextlib import AbstractContextManager
+from datetime import UTC, datetime
 from typing import Any
 from uuid import UUID
 
 from sqlalchemy import Connection, Engine, text
 
 from app.domain.lifecycle.ports import AssessmentResult, TransactionView
-from app.infra.db import outcomes
+from app.infra.db import outcomes, trust_edges
 from app.infra.eventstore import store
 
 
@@ -83,7 +84,9 @@ class PostgresLifecycleStore:
                 text(
                     "SELECT t.id, t.item_id, t.borrower_id, t.lender_id, i.community_id, "
                     "i.value_band::text AS value_band, i.category_id, t.current_state::text AS state, "
-                    "t.stream_version AS version, t.hold_reason::text AS hold_reason, t.due_at "
+                    "t.stream_version AS version, t.hold_reason::text AS hold_reason, t.due_at, "
+                    "EXTRACT(EPOCH FROM upper(t.requested_period) - lower(t.requested_period)) / 86400.0 "
+                    "AS duration_days "
                     "FROM borrowing_transaction t JOIN item i ON i.id = t.item_id WHERE t.id = :id"
                 ),
                 {"id": transaction_id},
@@ -93,7 +96,11 @@ class PostgresLifecycleStore:
         )
         if row is None:
             raise store.StreamNotFound(str(transaction_id))
-        return TransactionView(**row)
+        data = dict(row)
+        data["duration_days"] = (
+            float(data["duration_days"]) if data["duration_days"] is not None else None
+        )
+        return TransactionView(**data)
 
     def item(self, item_id: UUID) -> dict[str, Any]:
         row = (
@@ -304,6 +311,15 @@ class PostgresLifecycleStore:
     # evidence -----------------------------------------------------------------------------------
     def record_outcomes(self, event_id: int) -> int:
         return outcomes.record_outcomes(self.conn, event_id)
+
+    def refresh_trust_edges(self, transaction_id: UUID) -> int:
+        b, lnd = self.conn.execute(
+            text(
+                "SELECT borrower_id::text, lender_id::text FROM borrowing_transaction WHERE id = :t"
+            ),
+            {"t": transaction_id},
+        ).one()
+        return trust_edges.refresh_trust_edges(self.conn, datetime.now(UTC), [(lnd, b), (b, lnd)])
 
 
 class PostgresAuditLog:
