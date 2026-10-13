@@ -102,7 +102,8 @@ def record_outcomes(conn: Connection, event_id: int) -> int:
     if not records:
         return 0
     e = _event(conn, event_id)
-    assert e is not None
+    if e is None:  # cannot happen: outcomes_for_event found the event a moment ago
+        return 0
     inserted = 0
     for r in records:
         inserted += conn.execute(
