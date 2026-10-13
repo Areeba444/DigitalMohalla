@@ -6,7 +6,7 @@
 | Version | 1.2 |
 | Date | 2026-10-11 (v1.0: 2026-10-10; v1.1 and v1.2: 2026-10-11) |
 | Authors | Team Digital Mohalla (drafted with Claude; reviewed by: ______) |
-| Status | ADR-0001 to ADR-0005 Accepted on 2026-10-11 after team discussion; ADR-0006 Proposed (see `00_management/Team_Decisions_2026-10-11.md`); ADR-0007 and ADR-0008 Accepted for integration on 2026-10-11 by Student 1 as integration lead, awaiting the initials of Students 2 and 3 (see `00_management/Integration_Decisions_2026-10-11.md`). Members initial the sign-off table. |
+| Status | ADR-0001 to ADR-0005 Accepted on 2026-10-11 after team discussion; ADR-0006 Accepted as experimental on 2026-10-13 (see `00_management/Team_Decisions_2026-10-13.md`, D10); ADR-0007 and ADR-0008 Accepted for integration on 2026-10-11 by Student 1 as integration lead, awaiting the initials of Students 2 and 3 (see `00_management/Integration_Decisions_2026-10-11.md`). Members initial the sign-off table. |
 | Applies to | `01_requirements/DigitalMohalla_Use_Cases_Ver1.md` v1.3, `01_requirements/DigitalMohalla_FR_NFR_Ver1.md` v1.3 |
 
 An ADR records one design decision, the reason for it and what it changes. Later ADRs may supersede earlier ones, but none is edited after acceptance.
@@ -111,7 +111,7 @@ A request that is held again after clearance (for example, the re-run assessment
 
 ## ADR-0006: Trust-edge weight is the recency-weighted Beta posterior mean
 
-**Status:** Proposed, 2026-10-11 (Student 1). Becomes Accepted when Student 2 signs `11_assurance_engine/Edge_Weight_Rule_Student2_Confirmation.md`.
+**Status:** Accepted as experimental, 2026-10-13 (team decision D10). Proposed 2026-10-11 by Student 1. The rule is used in iteration 1 and its effect is evaluated in iteration 4; it may change then.
 
 **Context.** FR-T-04 and Overview §5.5 define bounded k-hop indirect evidence over a graph whose edges carry "verified evidence strength for the same role and metric", derived from the source user's evidence, but not how outcomes become an edge weight. Test suite 7 and the ES-13 demo need a fixed rule.
 
@@ -166,6 +166,6 @@ Agreed in team discussion on 2026-10-11 (recorded by Student 1). Each member sho
 | ADR-0003 | agreed | agreed | agreed | 2026-10-11 |
 | ADR-0004 | agreed | agreed | agreed | 2026-10-11 |
 | ADR-0005 | agreed | agreed | agreed | 2026-10-11 |
-| ADR-0006 (proposed) | proposed | pending | — | — |
+| ADR-0006 (experimental) | agreed | agreed | agreed | 2026-10-13 |
 | ADR-0007 | accepted (integration lead) | pending | pending | 2026-10-11 (for integration) |
 | ADR-0008 | accepted (integration lead) | pending | pending | 2026-10-11 (for integration) |

@@ -42,7 +42,7 @@ The technical core is a **trust and risk decision engine**. It estimates whether
 | Disputes, moderator console, audit view | Not yet (Slice C) |
 | k-hop indirect trust, manipulation checks, decision policy | Not yet (Slices B and C) |
 | CI pipeline | GitHub Actions (`.github/workflows/ci.yml`): backend, frontend and API-client checks on every push and pull request; Dependabot weekly. Runs once the code is on GitHub |
-| Docker, deployment (CD) | API image (`backend/Dockerfile`) and Render Blueprint (`render.yaml`): Render (API) + Neon (PostgreSQL 16), deploying `main` after CI passes. Setup steps in `infra/deploy/README.md`; ADR-0006 to be recorded |
+| Docker, deployment (CD) | API image (`backend/Dockerfile`) and Render Blueprint (`render.yaml`): Render (API) + Neon (PostgreSQL 16), deploying `main` after CI passes. Setup steps in `infra/deploy/README.md`; the hosting ADR (number to be assigned) is still to be recorded |
 
 The plan, slices and gates are in `docs/DigitalMohalla_Project_Context.md` (sections 9 to 13).
 
@@ -60,7 +60,7 @@ The plan, slices and gates are in `docs/DigitalMohalla_Project_Context.md` (sect
 | Backend tooling | uv, pytest, ruff, mypy, bandit, pip-audit |
 | Frontend tooling | TypeScript, Jest and Playwright (installed, not yet configured) |
 
-The full list with licences is in `docs/DigitalMohalla_Tech_Stack.md`. Hosting: Render (API, Docker) and Neon (PostgreSQL 16), see `infra/deploy/README.md`; ADR-0006 to be recorded.
+The full list with licences is in `docs/DigitalMohalla_Tech_Stack.md`. Hosting: Render (API, Docker) and Neon (PostgreSQL 16), see `infra/deploy/README.md`. The hosting ADR (number to be assigned) is still to be recorded.
 
 ## 3. Repository layout
 

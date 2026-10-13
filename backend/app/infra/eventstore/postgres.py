@@ -13,6 +13,7 @@ from uuid import UUID
 from sqlalchemy import Connection, Engine, text
 
 from app.domain.lifecycle.ports import AssessmentResult, TransactionView
+from app.infra.db import outcomes
 from app.infra.eventstore import store
 
 
@@ -299,6 +300,10 @@ class PostgresLifecycleStore:
                 "n": notes,
             },
         ).scalar_one()
+
+    # evidence -----------------------------------------------------------------------------------
+    def record_outcomes(self, event_id: int) -> int:
+        return outcomes.record_outcomes(self.conn, event_id)
 
 
 class PostgresAuditLog:

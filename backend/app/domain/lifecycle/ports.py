@@ -134,6 +134,10 @@ class LifecycleStore(Protocol):
 
     def latest_reports(self, transaction_id: UUID) -> dict[tuple[str, str], dict[str, Any]]: ...
 
+    def record_outcomes(self, event_id: int) -> int:
+        """Write the verified outcomes of a closing event (FR-B-15); returns rows added."""
+        ...
+
 
 class AuditLog(Protocol):
     """Records rejected commands outside the command's own transaction (suite 1, FR-M-05)."""
