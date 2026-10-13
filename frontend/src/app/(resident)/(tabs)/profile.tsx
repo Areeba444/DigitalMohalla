@@ -1,6 +1,8 @@
+import { router } from 'expo-router';
 import { Image } from 'expo-image';
 import { Pressable, Text, View } from 'react-native';
 
+import { useModerationQueue } from '@/api/hooks';
 import { useAuth } from '@/auth/AuthProvider';
 import {
   ASSURANCE,
@@ -85,6 +87,8 @@ function ThemeOption({ name }: { name: string }) {
 export default function Profile() {
   const { theme, themes } = useTheme();
   const { signOut } = useAuth();
+  const queue = useModerationQueue();
+  const waiting = queue.data?.length ?? 0;
   return (
     <HeroScreen
       tabs
@@ -97,6 +101,15 @@ export default function Profile() {
           </Title>
         </View>
       }>
+      {waiting > 0 ? (
+        <Card>
+          <SectionLabel>Moderation</SectionLabel>
+          <Body muted style={{ fontSize: 14 }}>
+            {waiting} {waiting === 1 ? 'case is' : 'cases are'} waiting in the communities you moderate.
+          </Body>
+          <Button label="Open the triage queue" icon="gavel" onPress={() => router.push('/moderation')} />
+        </Card>
+      ) : null}
       <Card>
         <SectionLabel>Appearance</SectionLabel>
         <View accessibilityRole="radiogroup" style={{ flexDirection: 'row', gap: 12 }}>

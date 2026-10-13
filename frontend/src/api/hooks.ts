@@ -9,6 +9,11 @@ export type BrowseItem = components['schemas']['BrowseItemOut'];
 export type CommandResult = components['schemas']['CommandOut'];
 export type Assessment = components['schemas']['AssessmentOut'];
 export type Report = components['schemas']['ReportOut'];
+export type DisputeTrail = components['schemas']['DisputeTrailOut'];
+export type QueueCase = components['schemas']['CaseQueueOut'];
+export type ModeratorCase = components['schemas']['ModeratorCaseOut'];
+export type DecisionIn = components['schemas']['DecisionIn'];
+export type DisputeReason = components['schemas']['DisputeIn']['reason'];
 
 const A = '/api/v1' as const;
 
@@ -64,7 +69,9 @@ export type Action =
   | { name: 'handover_confirm'; body: components['schemas']['ConfirmIn'] }
   | { name: 'initiate_return' }
   | { name: 'return_checklist'; body: components['schemas']['ConfirmIn'] }
-  | { name: 'return_confirm'; body: components['schemas']['ConfirmIn'] };
+  | { name: 'return_confirm'; body: components['schemas']['ConfirmIn'] }
+  | { name: 'raise_dispute'; body: components['schemas']['DisputeIn'] }
+  | { name: 'withdraw_dispute' };
 
 /** One mutation for every state-changing button; the backend decides what is allowed. */
 export function useAction(id: string) {
@@ -108,12 +115,62 @@ export function useAction(id: string) {
               body: action.body,
             }),
           );
+        case 'raise_dispute':
+          return unwrap(
+            await api.POST(`${A}/transactions/{txn_id}/dispute`, { ...path, body: action.body }),
+          );
+        case 'withdraw_dispute':
+          return unwrap(await api.POST(`${A}/transactions/{txn_id}/dispute/withdraw`, path));
       }
     },
     onSettled: () => {
       qc.invalidateQueries({ queryKey: ['request', id] });
       qc.invalidateQueries({ queryKey: ['events', id] });
       qc.invalidateQueries({ queryKey: ['requests'] });
+      qc.invalidateQueries({ queryKey: ['dispute', id] });
     },
   });
 }
+
+// ---------------------------------------------------------------- disputes (W5) and moderation (W6, W7)
+
+/** The dispute case and its evidence trail for a party; disabled until a case may exist. */
+export const useDisputeTrail = (id: string, enabled: boolean) =>
+  useQuery({
+    queryKey: ['dispute', id],
+    enabled,
+    queryFn: async () =>
+      unwrap(await api.GET(`${A}/transactions/{txn_id}/dispute`, { params: { path: { txn_id: id } } })),
+  });
+
+export const useModerationQueue = () =>
+  useQuery({
+    queryKey: ['moderation'],
+    queryFn: async () => unwrap(await api.GET(`${A}/moderation/cases`)),
+  });
+
+export const useModeratorCase = (caseId: string) =>
+  useQuery({
+    queryKey: ['moderation', caseId],
+    queryFn: async () =>
+      unwrap(
+        await api.GET(`${A}/moderation/cases/{case_id}`, { params: { path: { case_id: caseId } } }),
+      ),
+  });
+
+export function useDecide(caseId: string) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (body: DecisionIn): Promise<CommandResult> =>
+      unwrap(
+        await api.POST(`${A}/moderation/cases/{case_id}/decision`, {
+          params: { path: { case_id: caseId } },
+          body,
+        }),
+      ),
+    onSettled: () => {
+      qc.invalidateQueries({ queryKey: ['moderation'] });
+    },
+  });
+}
+

@@ -268,7 +268,7 @@ The screens are the team's wireframes in `13_wireframes/` (PNG files and `Wirefr
 | # | Finding | Effect on testing | Proposed resolution |
 |---|---|---|---|
 | UI-1 | No screen yet for the borrower's request and its status (UC-B5 steps 1–3 and 6, held and engine-failure states) | The request is created through the API in tests; TC-92 step 2.1 and the alpha "happy path" need the screen | **Resolved in Slice A:** new-request and request-detail screens in `frontend/src/app/(resident)/` |
-| UI-2 | No screen yet for the admin audit log (UC-I6) | FR-M-05 is tested at API and database level only (suite 5) | Add a simple audit-log list for the admin role, or record I6's UI as iteration 2 |
+| UI-2 | No screen yet for the admin audit log (UC-I6) | FR-M-05 is tested at API and database level only (suite 5) | Add a simple audit-log list for the admin role, or record I6's UI as iteration 2. **Recorded as iteration 2 (C3, 13 October): there is no audit-log API yet; the moderator screens W5 to W7 were built instead** |
 | UI-3 | W5 lists four dispute reasons; UC-B12 step 2 and the `dispute_reason` enum have five (with "other") | TC-105 expects five | Add "other" to W5 |
 | UI-4 | W1's example interval [0.10, 0.90] differs from the prior Beta(1,1) bounds [0.05, 0.95] | TC-100 checks the API's bounds, so the example values do not affect the test | Correct the example or mark it illustrative |
 | UI-5 | W5 states a 7-day dispute window and W6 an "SLA" auto-route to the admin; both timer values are TBD and the scheduler is iteration 2 | Not tested in iteration 1; TC-106 tests the iteration-1 rule (no moderator → admin) | Keep the values configurable and mark them as iteration 2 in the annotations |
