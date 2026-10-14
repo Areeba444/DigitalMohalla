@@ -1,0 +1,170 @@
+% oneside: no blank pages before chapters; every chapter and front-matter heading still starts a new page
+\documentclass[oneside]{fast-nuces-bs}
+%\documentclass{article}
+
+\usepackage{blindtext}
+\usepackage{mathptmx}% Times Roman font
+\usepackage[T1]{fontenc}
+\usepackage{lipsum}
+\usepackage{sectsty}
+\usepackage{tikz-uml}
+\usepackage{titlesec}
+
+% Packages used by the report body
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{tabularx}
+\usepackage{array}
+\usepackage{float}
+\usepackage{rotating}
+\usepackage{enumitem}
+\usepackage{xcolor}
+\setlist{itemsep=2pt,topsep=4pt}
+\newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
+\newcolumntype{Y}{>{\raggedright\arraybackslash}X}
+\renewcommand{\arraystretch}{1.15}
+\setlength{\LTpre}{6pt}
+\setlength{\LTpost}{6pt}
+\setcounter{tocdepth}{1}
+\setcitestyle{numbers,square,comma}
+\setlength{\tabcolsep}{4pt}
+\setlength{\emergencystretch}{3em}
+
+% Measured figures, kept in one place so every chapter quotes the same number.
+% Source: test runs on commit b47243a (backend: pytest, frontend: Jest), 14 October 2026.
+\newcommand{\NBackendTests}{623}
+\newcommand{\NFrontendTests}{29}
+\newcommand{\NFrontendSuites}{4}
+\newcommand{\NCommits}{126}
+\newcommand{\NMergedPRs}{30}
+\newcommand{\ConfigVersion}{1.3.0-iteration1-draft}
+% Large diagrams split into a left and a right half (4% overlap), one full page each, so the
+% text stays readable in print. #1 image, #2 caption, #3 label.
+\usepackage{adjustbox}
+\newcommand{\splitfigure}[3]{%
+\begin{figure}[p]\centering
+\adjincludegraphics[width=\textwidth,height=0.86\textheight,keepaspectratio,trim={0 0 {.48\width} 0},clip]{#1}
+\caption[#2]{#2. Left half; the right half is on the next page.}\label{#3}
+\end{figure}
+\begin{figure}[p]\centering
+\adjincludegraphics[width=\textwidth,height=0.86\textheight,keepaspectratio,trim={{.48\width} 0 0 0},clip]{#1}
+\caption[#2 (continued)]{#2. Right half (continued).}
+\end{figure}}
+
+% Inline code: typewriter, may break after an underscore so long names fit table cells
+\newcommand{\code}[1]{{\small\ttfamily\def\_{\textunderscore\allowbreak}#1}}
+% State names such as INSUFFICIENT_EVIDENCE may also break after an underscore
+\AtBeginDocument{\renewcommand{\_}{\textunderscore\allowbreak}}
+
+% Information about the Thesis
+% -----------------------------------------------------------------------------
+% (All are compulsory, do not delete any line other than author Information)
+% For e.g., usually there are 3 students in a group, so leave authorone,
+% authortwo, and authorthree, and delete authorfour.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\department{FAST School of Computing}
+\faculty{Computer Science}
+\degreeyear{2026}
+\degreemonth{October}
+\degreename{Computer Science}
+\campuscity{Islamabad}
+\authorone{Fatima Khursheed}{23i-0746}
+\authortwo{Areeba Javed}{23i-0570}
+\authorthree{Minahil Kashif}{23i-0554}
+\supervisor{Dr. Ali Zeeshan}
+\sessionduration{2023-2027}
+\deanname{Dr. Dean Computing}
+\directorname{Dr. Director of the Campus}
+\hodname{Dr. Head of Computer Science Department}
+\fypcoordinatorname{Name of FYP Coordinator}
+\title{Digital Mohalla: A Trust-Based Platform for Neighbors}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% The class calls \maketitle automatically after the preamble, which prints a title page
+% plus the contents and lists. This report places those itself (below), so that call is
+% switched off here; the title page is set at the start of the document instead.
+\renewcommand{\maketitle}{}
+
+% Names used by the front-matter pages
+\newcommand{\projecttitle}{Digital Mohalla: A Trust-Based Platform for Neighbors}
+\newcommand{\studentone}{Fatima Khursheed (23i-0746)}
+\newcommand{\studenttwo}{Areeba Javed (23i-0570)}
+\newcommand{\studentthree}{Minahil Kashif (23i-0554)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Former document starts below this
+\begin{document}
+
+% Title page (same layout as the class's \maketitle, without its built-in lists)
+\begin{titlepage}
+\begin{center}
+{\setstretch{1}
+{\fontsize{24}{30}\selectfont \textbf{\projecttitle}\par}
+\vspace{0.6cm}
+{\fontsize{14}{17}\selectfont FYP-1 Mid-Evaluation Report (Iteration 1)\par}
+\vspace{0.3cm}
+{\fontsize{14}{17}\selectfont Project ID: F26-188\par}
+\vspace{1cm}
+{\fontsize{14}{17}\selectfont Project Team\par}
+\vspace{0.2cm}
+{\fontsize{16}{20}\selectfont
+\begin{tabular}{lr}
+Fatima Khursheed & 23i-0746\\
+Areeba Javed & 23i-0570\\
+Minahil Kashif & 23i-0554
+\end{tabular}\par}
+\vspace{0.4cm}
+{\fontsize{14}{17}\selectfont Session 2023--2027\par}
+\vspace{1cm}
+{\fontsize{14}{17}\selectfont Supervised by\par}
+\vspace{0.2cm}
+{\fontsize{17}{20}\selectfont Dr. Ali Zeeshan\par}
+\vspace{0.8cm}
+\includegraphics[width=.25\columnwidth]{ThesisFigs/FASTLogo}\par
+\vspace{0.5cm}
+{\fontsize{15}{19}\selectfont \textbf{FAST School of Computing}\par}
+\vspace{0.2cm}
+{\fontsize{15}{19}\selectfont \textbf{National University of Computer and Emerging Sciences\\Islamabad, Pakistan}\par}
+\vspace{0.3cm}
+{\fontsize{15}{19}\selectfont \textbf{October, 2026}\par}
+}
+\end{center}
+\end{titlepage}
+
+\cleardoublepage
+\pagenumbering{roman}
+\input{chapters/01_students_submission}
+\input{chapters/02_anti_plagiarism}
+\input{chapters/03_authors_declaration}
+\input{chapters/04_abstract}
+\input{chapters/05_acknowledgments}
+\input{chapters/06_executive_summary}
+\tableofcontents
+\listoffigures
+\listoftables
+\input{chapters/07_abbreviations}
+
+\cleardoublepage
+\pagenumbering{arabic}
+\input{chapters/chapter1_introduction}
+\input{chapters/chapter2_research}
+\input{chapters/chapter3_iteration_plan}
+\input{chapters/chapter4_requirements}
+\input{chapters/chapter5_design}
+\input{chapters/chapter6_iteration1}
+\input{chapters/chapter8_testing}
+\input{chapters/chapter9_development_evidence}
+\input{chapters/chapter10_fyp2_plan}
+\input{chapters/conclusion}
+
+\appendix
+\input{chapters/appendix_action_register}
+\input{chapters/appendix_requirements}
+\input{chapters/appendix_test_cases}
+\input{chapters/appendix_repository}
+\input{chapters/appendix_diagrams}
+\input{chapters/appendix_meetings}
+
+\bibliographystyle{IEEEtran}
+\bibliography{references/references}
+\end{document}

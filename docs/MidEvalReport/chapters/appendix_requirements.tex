@@ -1,0 +1,23 @@
+\chapter{Detailed Requirements}
+\label{app:requirements}
+The full texts are \code{DigitalMohalla\_Use\_Cases\_Ver1.\allowbreak{}md} and \code{DigitalMohalla\_FR\_NFR\_Ver1.\allowbreak{}md} (baseline v1.3) in \code{docs/\allowbreak{}design/\allowbreak{}01\_requirements/\allowbreak{}}, with the traceability matrix in \code{Traceability\_Matrix.\allowbreak{}md}.
+
+\section{Dressed core use cases (summary)}
+\begin{longtable}{L{0.17\textwidth}L{0.76\textwidth}}
+\caption{Main success scenarios and key extensions of the core use cases}\label{tab:ucsummary}\\
+\toprule Use case & Summary \\ \midrule \endfirsthead
+\toprule Use case & Summary \\ \midrule \endhead
+B6 Respond & The lender sees the request with its evidence summary and accepts or declines. Acceptance commits under the overlap constraint, blocks the dates and declines overlapping pending requests; a refused acceptance ends DECLINED ``dates taken''. The borrower may cancel from any pending state. \\
+B7 Handover & The lender records the condition checklist (and deposit, record only); the borrower confirms receipt; the loan becomes ACTIVE only when both have confirmed, in that order. \\
+B8 Return & The borrower initiates the return; both confirm condition; the loan passes RETURNED to COMPLETED through \code{transaction\_closed}, on time or late; outcomes go to the engine and the booking is released. \\
+B12 Dispute & Either party, while ACCEPTED, ACTIVE or RETURN\_INITIATED, raises a dispute with one of five reasons; the loan is DISPUTED with its previous state stored, frozen, and a case opens. Only the raising party may withdraw, which restores the previous state. A second dispute shows the open case. \\
+D3/4/5 Assess & For every request, the engine returns one of four states with interval, evidence, signals, safeguards and explanation; failure or timeout holds the request (\code{engine\_failure}). \\
+D6 Escalate & A dispute or hold opens a case with trigger, priority, reason and evidence trail, attached to an open case if one exists. \\
+I4 Resolve & A moderator of the community decides with a mandatory reason: a dispute closes through \code{dispute\_resolved} with a finding; a hold is cleared, cleared with safeguards, or restricted (declined); no safeguards on an engine-failure hold. \\
+I6 Audit & Every transition is in the hash-chained event log and refused commands in the audit log; the viewing screen comes in Iteration~2. \\
+A3/A4 Membership & A member selects a community, passes the A11 locality check (one in-memory GPS reading and an invitation), and a moderator approves or decides uncertain cases (Iteration~2). \\
+\bottomrule
+\end{longtable}
+
+\section{Requirement counts}
+68 use case IDs; functional requirements in eight groups (A accounts, B borrowing, S search, T trust, M moderation, C communication, N analytics, and condensed stretch groups); 35 functional requirements are CORE-tagged in Modules 1, 3, 5, 9 and 10, and 25 of them have a Given/When/Then acceptance criterion in Part~E. Non-functional requirements are grouped as reliability (R), performance (P), decision quality (Q), security (S), privacy (PR), usability and explainability (U) and maintainability and deployment (D); numeric gates are set only where Iteration~1 can measure them.
