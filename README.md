@@ -4,11 +4,36 @@ A neighbourhood resource-sharing platform (lending, borrowing, donation) built a
 
 The technical core is a **trust and risk decision engine**. It estimates whether a physical handover is safe from sparse, indirect and potentially manipulated evidence, reports its own uncertainty, and recommends safeguards or human escalation. Listings, workflow and UI exist to feed or act on that decision. The app shows decision support, never a single trust score and never a guarantee.
 
-- **Team:** Fatima Khursheed, Areeba Javed, Minahil Kashif
+- **Project:** Digital Mohalla: A Trust-Based Platform for Neighbors (project ID F26-188)
+- **Team:** Fatima Khursheed (S1), Areeba Javed (S2), Minahil Kashif (S3)
 - **Supervisor:** Dr. Ali Zeeshan
-- **Stage:** Iteration 1 (FYP-1 Mid), Part B (implementation)
+- **Stage:** Iteration 1 (FYP-1 Mid) complete: Slices A, B and C merged and deployed
 
 > **Synthetic data only.** Every user, item and scenario in this repository is synthetic and labelled so. No real personal data, exact location or CNIC is stored anywhere.
+
+---
+
+## Quick check: live demo and logins
+
+| | |
+| :--- | :--- |
+| Web app | https://digitalmohalla-web.onrender.com |
+| API health check | https://digitalmohalla-api.onrender.com/health (returns `{"status":"ok"}`) |
+| API docs | https://digitalmohalla-api.onrender.com/docs |
+
+The free hosting plan sleeps when idle: open the health check link first and wait about a minute for it to answer, then open the web app.
+
+**Demo accounts** (all synthetic, all with the same password: `demo-password-synthetic`):
+
+| Person | Email | What to try |
+| :--- | :--- | :--- |
+| Bilal | `borrower@example.test` | Borrower: browse items, send a request, confirm handover, return, raise a dispute |
+| Chand | `borrower2@example.test` | Second borrower: request the same dates to see a date conflict |
+| Ayesha | `lender@example.test` | Lender: owns the items; sees each request with its evidence summary, accepts or declines, records handover and return checklists |
+| Dua | `moderator@example.test` | Community moderator: Profile, then **Open the triage queue** for disputes and holds; case view; decision with a reason |
+| Admin | `admin@example.test` | Platform admin: can also decide cases |
+
+These are throwaway accounts for synthetic demo data only (`DEMO_PASSWORD` in `scripts/seed_demo.py`, which the live database was seeded with following `infra/deploy/README.md`). Never reuse this password anywhere real. A suggested walk-through is in [Try the loop](#try-the-loop).
 
 ---
 
@@ -34,17 +59,19 @@ The technical core is a **trust and risk decision engine**. It estimates whether
 | :--- | :--- |
 | Design baseline (Part A) | Complete: `docs/design/` |
 | Database schema v2.3 | Applied by Alembic migration 0001 (tables, lifecycle triggers, hash-chained append-only log, no-double-booking constraint) |
-| Borrowing lifecycle (request → locality → assessment → accept → handover → return → completed) | Done, with event store, replay and audit of rejected commands |
-| Assurance engine | **Placeholder only.** A stub always answers "not enough history yet". The real engine is Slice B |
+| Borrowing lifecycle (request → locality → assessment → accept → handover → return → completed) | Done: 14 states, event store, replay, audit of rejected commands, no double booking |
+| Assurance engine | Done: recency-weighted Beta posterior with 90% interval and similarity weighting, trust edges and bounded k-hop search (k = 3), manipulation checks (S1 partner clustering, S4 review similarity, retaliation check), decision rules R1 to R9 with safeguards and plain-language explanations, engine-failure hold. Engine config `1.3.0-iteration1-draft` |
+| Disputes and moderation | Done: raise and withdraw disputes (the loan is frozen), escalation cases with evidence trail, moderator decisions on disputes and holds with a mandatory reason |
 | Login and roles | Done (argon2 passwords, JWT tokens) |
-| REST API (`/api/v1`) | Done for the Slice A loop |
-| Web UI (Expo) | Done for Slice A: login, home dashboard, browse, activity, profile, new request with date chips, lender evidence summary, handover, return. Two themes (Terracotta, Cream Green) |
-| Disputes, moderator console, audit view | Not yet (Slice C) |
-| k-hop indirect trust, manipulation checks, decision policy | Not yet (Slices B and C) |
-| CI pipeline | GitHub Actions (`.github/workflows/ci.yml`): backend, frontend and API-client checks on every push and pull request; Dependabot weekly. Runs once the code is on GitHub |
-| Docker, deployment (CD) | Live on Render: web app https://digitalmohalla-web.onrender.com (static site) and API https://digitalmohalla-api.onrender.com (Docker), database on Neon (PostgreSQL 16). Each deploys from `main` after CI passes. Setup and limits: `infra/deploy/README.md`; the hosting ADR (number to be assigned) is still to be recorded |
+| REST API (`/api/v1`) | Done: 21 endpoints plus `/health` |
+| Web UI (Expo) | Done: resident app (browse, request, lender evidence summary, handover, return, dispute) and moderator app (queue, case adjudication). Two themes (Terracotta, Cream Green) |
+| Privacy checks | Done: no location or identity fields in any response or log line; request bodies refuse unknown fields; fuzzing |
+| Tests | 623 backend tests (97% line coverage in CI) and 29 frontend tests, all passing; all 7 mid-term evaluation scenarios pass |
+| CI pipeline | GitHub Actions (`.github/workflows/ci.yml`): backend, frontend and API-client checks on every push and pull request; Dependabot weekly |
+| Docker, deployment (CD) | Live on Render: web app https://digitalmohalla-web.onrender.com (static site) and API https://digitalmohalla-api.onrender.com (Docker), database on Neon (PostgreSQL 16). Each deploys from `main` after CI passes. Setup and limits: `infra/deploy/README.md`. Hosting is recorded as a design change; its ADR is pending |
+| Not yet built (Iteration 2) | Locality method (designed in A11), photo uploads, scheduler jobs, reviews and signals S2, S3, S5, information requests and appeals, audit-log screen, notifications |
 
-The plan, slices and gates are in `docs/DigitalMohalla_Project_Context.md` (sections 9 to 13).
+The plan, slices and gates are in `docs/DigitalMohalla_Project_Context.md` (sections 9 to 13). The FYP-1 mid report is in `docs/MidEvalReport/`.
 
 ## 2. Tech stack
 
@@ -54,13 +81,13 @@ The plan, slices and gates are in `docs/DigitalMohalla_Project_Context.md` (sect
 | Database | PostgreSQL 16 with the `btree_gist` extension |
 | Data access | SQLAlchemy 2.0 (synchronous, Core), Alembic migrations, psycopg 3 |
 | Auth | argon2 password hashes, JWT bearer tokens (PyJWT) |
-| Engine maths (later) | NumPy, SciPy; own bounded k-hop search |
+| Engine maths | NumPy, SciPy (Beta quantiles); own bounded k-hop search |
 | Frontend | React Native via Expo (TypeScript, Expo Router), web build first |
 | Frontend data | TanStack Query, typed client generated from the backend OpenAPI spec (openapi-typescript, openapi-fetch) |
 | Backend tooling | uv, pytest, ruff, mypy, bandit, pip-audit |
-| Frontend tooling | TypeScript, Jest and Playwright (installed, not yet configured) |
+| Frontend tooling | TypeScript, ESLint, Jest with React Native Testing Library (Playwright installed, not yet used) |
 
-The full list with licences is in `docs/DigitalMohalla_Tech_Stack.md`. Hosting: Render (API, Docker) and Neon (PostgreSQL 16), see `infra/deploy/README.md`. The hosting ADR (number to be assigned) is still to be recorded.
+The stack decision is in `docs/DigitalMohalla_Tech_Stack.md`; the dependency register with pinned versions and licences is in the mid report (section 8.8). Hosting: Render (API, Docker) and Neon (PostgreSQL 16), see `infra/deploy/README.md`; its ADR is pending.
 
 ## 3. Repository layout
 
@@ -70,18 +97,19 @@ backend/
     api/                  FastAPI routes, request/response models, dependencies
     domain/
       lifecycle/          transition table, aggregate, BorrowingService, ports, actions
-      assurance/          engine package (stub.py now; estimation, indirect, detection, policy later)
+      assurance/          engine: estimation/ (posterior, similarity, outcomes), indirect/ (trust edges, k-hop),
+                          detection/ (manipulation checks), policy/ (decision rules, explanation), engine.py
       accounts/           login and tokens
-      moderation/         (Slice C)
+      moderation/         moderator decision rules
     infra/
-      db/                 engine factory, user lookup
+      db/                 engine factory, user lookup, evidence, outcome and trust-edge readers and writers
       eventstore/         event store and PostgreSQL adapters
     config/               settings and the engine-config loader
   alembic/                migrations (0001 applies docs/design schema v2.3)
   config/engine.json      versioned engine parameters (config_version on every assessment)
   tests/                  unit/ integration/ scenarios/
 frontend/
-  src/app/                Expo Router routes: login, (resident)/..., (moderator)/ (later)
+  src/app/                Expo Router routes: login, (resident)/... (incl. dispute), (moderator)/moderation
   src/api/                generated API client and TanStack Query hooks
   src/components/         UI components and request screens
   src/theme/              the two themes (Terracotta, Cream Green) and the theme provider
@@ -90,6 +118,7 @@ docs/
   DigitalMohalla_Project_Context.md   full project handoff
   DigitalMohalla_Tech_Stack.md        stack and ADR-0005
   ai-usage-log.md                     record of AI-assisted work (keep updated)
+  MidEvalReport/                      FYP-1 mid report (LaTeX sources and PDF)
 scripts/seed_demo.py      seed synthetic users and items
 data/                     dataset catalogue, cards and requirements (raw files stay local)
 infra/deploy/             deployment guide (Render + Neon)
@@ -198,18 +227,14 @@ The very first bundle can take several minutes on a slow machine; later loads ar
 
 ### Try the loop
 
-Demo accounts (password: the demo password above):
-
-| Person | Email | Role in the demo |
-| :--- | :--- | :--- |
-| Bilal | `borrower@example.test` | borrower |
-| Chand | `borrower2@example.test` | second borrower (for date conflicts) |
-| Ayesha | `lender@example.test` | lender, owns the items |
+Use the demo accounts in [Quick check](#quick-check-live-demo-and-logins) (password `demo-password-synthetic`), locally or on the live site.
 
 1. Sign in as Bilal, **Browse items**, pick an item, **Send request**.
-2. Sign out, sign in as Ayesha. Open the request: you see the evidence summary (interval bar, separate manipulation risk, safeguards). **Accept request**.
+2. Sign out, sign in as Ayesha. Open the request: you see the evidence summary (state, interval bar, verified loans, community paths, separate manipulation risk, safeguards). **Accept request**.
 3. Ayesha records the handover checklist. Bilal confirms receipt. Bilal starts the return, Ayesha records the return inspection, Bilal agrees. The request is **Completed**.
 4. Open **History of this request** to see the event stream.
+5. Disputes: on an accepted or active loan, either party chooses **Raise a dispute**, picks a reason and submits. The loan is frozen until a moderator rules; the raising party can withdraw.
+6. Sign in as Dua (moderator), go to **Profile** and choose **Open the triage queue**: the queue lists open disputes and held requests for her community. Open a case, read the evidence trail and decide with a reason. A resolved dispute completes the loan and its outcome becomes evidence for the next assessment.
 
 Two themes are available, Terracotta and Cream Green: switch them with the swatches on the login screen or under Profile, Appearance. The choice is remembered per browser.
 
@@ -230,7 +255,7 @@ uv run bandit -q -r app            # security scan
 
 PowerShell sets the variable with `$env:TEST_DATABASE_URL = "..."`.
 
-What the suite covers today (about 340 tests): the 294-pair transition matrix from the design, event replay, rejected-command audit, the full loop, locality and engine-failure holds, the no-double-booking race (5 simultaneous acceptances, exactly one wins), authorisation, login, the REST API and a privacy check that no location or secret fields appear in responses.
+What the suite covers today (623 tests; 97% line coverage in CI): the 294-pair transition matrix, event replay, rejected-command audit, the full loop, locality and engine-failure holds, the no-double-booking race (5 simultaneous acceptances, exactly one wins), authorisation, the Beta posterior and its properties, k-hop search, manipulation checks, the decision rules, explanations, disputes and moderator decisions, the evaluation scenarios on fixtures and end to end, privacy checks and API fuzzing.
 
 ### Design checks
 
@@ -271,7 +296,7 @@ Details: `data/generators/README.md`.
 | Frontend | `npm ci`, `tsc --noEmit`, `expo lint`, Jest; npm audit as a warning |
 | API client in sync | Re-exports the OpenAPI spec (`scripts/export_openapi.py`) and regenerates `schema.d.ts`; fails if either differs from the committed files |
 
-A green tick means every check passed. To reproduce a failure locally, run the same command from the table above. Coverage is reported, not yet enforced (the tech stack doc proposes 80% on the engine and lifecycle packages once the engine exists).
+A green tick means every check passed. To reproduce a failure locally, run the same command from the table above. Coverage is reported (97% on the last run), not enforced.
 
 ## 8. Working on the code
 
@@ -320,7 +345,8 @@ The complete rules are in `CLAUDE.md` and section 2 of the project context.
 | `docs/design/14_testing/` | Test plan, scenario fixtures, transition test matrix |
 | `docs/design/Digital-MohallaUI/` | UI prototypes (static HTML), design system, HCI analysis |
 | `data/README.md` | The data rules, folder map and workflow: what data the project needs, dataset cards, how derived datasets are built |
-| `docs/ai-usage-log.md` | Record of AI-assisted changes (reviewer column to be filled in by a team member) |
+| `docs/ai-usage-log.md` | Record of AI-assisted changes, with the team member who reviewed each |
+| `docs/MidEvalReport/` | FYP-1 mid report: LaTeX sources and the compiled PDF |
 
 ## 10. Team workflow
 
@@ -333,7 +359,7 @@ Branch model (from the CI/CD plan; CI now exists, branch protection is set in th
 - Commit messages start with a type: `feat:`, `fix:`, `test:`, `docs:`, `chore:`.
 - No secrets in the repository. `.env` files are gitignored.
 
-Module ownership follows the project plan (S1 lifecycle, indirect trust and locality; S2 trust estimation, policy and manipulation checks; S3 moderation, evaluation and apps). Names for S1 to S3 are not yet assigned in the documents.
+Module ownership follows the Iteration 1 plan: S1 Fatima Khursheed (lifecycle, indirect trust, locality, CI), S2 Areeba Javed (trust estimation, decision policy, manipulation checks), S3 Minahil Kashif (moderation, evaluation, apps).
 
 ## 11. Troubleshooting
 
@@ -353,4 +379,4 @@ Module ownership follows the project plan (S1 lifecycle, indirect trust and loca
 
 ---
 
-Licence and academic notes: this is a student project. AI assistance is disclosed in `docs/ai-usage-log.md` and on Form 13.
+Licence and academic notes: this is a student project. AI assistance is disclosed in `docs/ai-usage-log.md`, in the mid report (section 8.7) and on Form 13.
