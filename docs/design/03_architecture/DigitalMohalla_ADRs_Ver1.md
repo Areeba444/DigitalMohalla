@@ -5,7 +5,7 @@
 | Document | Architecture Decision Records, design step A1 |
 | Version | 1.2 |
 | Date | 2026-10-11 (v1.0: 2026-10-10; v1.1 and v1.2: 2026-10-11) |
-| Authors | Team Digital Mohalla (drafted with Claude; reviewed by: ______) |
+| Authors | Team Digital Mohalla (drafted with Claude; reviewed by: Fatima Khursheed, Areeba Javed, Minahil Kashif) |
 | Status | ADR-0001 to ADR-0005 Accepted on 2026-10-11 after team discussion; ADR-0006 Accepted as experimental on 2026-10-13 (see `00_management/Team_Decisions_2026-10-13.md`, D10); ADR-0007 and ADR-0008 Accepted for integration on 2026-10-11 by Student 1 as integration lead, awaiting the initials of Students 2 and 3 (see `00_management/Integration_Decisions_2026-10-11.md`). Members initial the sign-off table. |
 | Applies to | `01_requirements/DigitalMohalla_Use_Cases_Ver1.md` v1.3, `01_requirements/DigitalMohalla_FR_NFR_Ver1.md` v1.3 |
 
