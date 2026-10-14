@@ -1,0 +1,24 @@
+\chapter{Detailed Test Cases Register}
+\label{app:test_cases_register}
+
+\begin{longtable}{p{2cm} p{4.5cm} p{5.5cm} l}
+\toprule
+\textbf{Test ID} & \textbf{Scope / Target} & \textbf{Pass Criterion / Expected Result} & \textbf{Result} \\
+\midrule
+\endhead
+\bottomrule
+\endfoot
+TC-01 to 14 & Valid Lifecycle Moves & Transition table permits valid commands; state advances correctly. & Passed \\
+TC-15 to 294 & Invalid Lifecycle Moves & All invalid state/command pairs raise \texttt{InvalidStateTransitionError}. & Passed \\
+TC-295 & Replay Stream Order & Replay verifies sequence continuity and validates cryptographic hash chain. & Passed \\
+TC-296 & Concurrent Reservations & 5-thread concurrent execution over overlapping dates yields 1 winner. & Passed \\
+TC-297 & Argon2 Generic Rejection & Invalid username or password returns uniform 401 without timing leaks. & Passed \\
+TC-298 & Privacy Response Scan & Recursive payload traversal asserts zero appearance of GPS or street data. & Passed \\
+TC-299 & Posterior Bounds & Posterior lower and upper 90\% bounds satisfy $\theta_{\text{lower}} \le E[\theta] \le \theta_{\text{upper}}$. & Passed \\
+TC-300 & Path Search Depth & Traversal terminates strictly at $k = 3$; rejects cyclic edges. & Passed \\
+TC-301 & Cold-Start Rule R6 & Borrowers with $n_{\text{eff}} < 3.0$ trigger \texttt{INSUFFICIENT\_EVIDENCE} safely. & Passed \\
+TC-302 & Dense Evidence Rule R1 & Borrowers with dense history trigger \texttt{SUFFICIENT\_EVIDENCE}. & Passed \\
+TC-303 & Synthetic Scenario ES-01 & Validates high direct trust scenario on standard benchmark tier. & Passed \\
+TC-304 & Synthetic Scenario ES-13 & Validates indirect community path inference on benchmark tier. & Passed \\
+TC-305 & Lender UI Verification & Expo web rendering validates interval bar, paths, and action buttons. & Passed \\
+\end{longtable}

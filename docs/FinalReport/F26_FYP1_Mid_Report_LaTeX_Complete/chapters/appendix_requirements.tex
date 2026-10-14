@@ -1,0 +1,26 @@
+\chapter{Detailed Requirements Traceability Matrix}
+\label{app:requirements_matrix}
+
+\begin{table}[htbp]
+\centering
+\caption{Bidirectional Requirements Traceability Matrix}
+\label{tab:traceability_matrix}
+\small
+\begin{tabularx}{\textwidth}{l l l l}
+\toprule
+\textbf{Requirement} & \textbf{Design Artefact} & \textbf{Implementation Module} & \textbf{Test Case / Oracle} \\
+\midrule
+FR-A-01 (Auth) & Domain Class S1 & \texttt{backend/app/domain/accounts/} & \texttt{test\_api.py::test\_login} \\
+FR-L-01 (Request) & SSD-B5, State Machine & \texttt{lifecycle/service.py} & \texttt{test\_borrowing\_service.py} \\
+FR-L-03 (Transitions) & State Machine v2.2 & \texttt{lifecycle/aggregate.py} & \texttt{test\_transition\_table.py} \\
+FR-L-04 (No Double Book)& Schema \texttt{btree\_gist} & PostgreSQL \texttt{lifecycle\_events} & Concurrency Integration \\
+FR-L-05 (Handover) & SSD-B7, Sequence B & \texttt{lifecycle/service.py} & \texttt{test\_actions.py} \\
+FR-L-06 (Return) & SSD-B8, Sequence B & \texttt{lifecycle/service.py} & \texttt{test\_actions.py} \\
+FR-T-01 (Beta Posterior)& Algorithm 1, ADR-0004 & \texttt{assurance/estimation/} & \texttt{test\_beta\_posterior.py} \\
+FR-T-02 ($k$-Hop Traversal)& Algorithm 2, ADR-0008 & \texttt{assurance/indirect/} & \texttt{test\_khop.py} \\
+FR-T-03 (Similarity) & Algorithm 3, Decision D17 & \texttt{assurance/estimation/} & \texttt{test\_similarity.py} \\
+FR-T-04 (Decision Policy)& Algorithm 4, Activity A5 & \texttt{assurance/policy/} & \texttt{test\_decision\_policy.py} \\
+FR-T-05 (Evidence UI) & Wireframes W1, W2 & \texttt{AssurancePanel.tsx} & \texttt{lender-evidence-test.tsx} \\
+\bottomrule
+\end{tabularx}
+\end{table}

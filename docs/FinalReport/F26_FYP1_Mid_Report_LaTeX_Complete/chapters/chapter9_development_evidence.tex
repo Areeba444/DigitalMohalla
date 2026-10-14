@@ -1,0 +1,104 @@
+\chapter{Development Evidence, Team Work and Tool Disclosure}
+
+\section{Individual Member Contributions and Ownership}
+The project enforces strict individual module ownership while maintaining cross-cutting architectural accountability:
+\begin{itemize}
+    \item \textbf{Fatima Khursheed (23i-0746, Student 1):} Owned the transaction lifecycle domain aggregate, transition table, append-only PostgreSQL event store, trust-edge projection, bounded $k$-hop indirect graph search algorithm, and the GitHub Actions CI pipeline.
+    \item \textbf{Areeba Javed (23i-0570, Student 2):} Owned the Bayesian Trust Engine core, recency-weighted Beta posterior distribution with 90\% credible intervals, contextual similarity weighting metrics, decision policy rules R1--R9, and collusion detection algorithms.
+    \item \textbf{Minahil Kashif (23i-0554, Student 3):} Owned the cross-platform React Native / Expo presentation layer, three-layer lender evidence dashboard, synthetic dataset generation (\texttt{neighborhood-sim}), scenario test suites, moderation workflow design, and Render/Neon cloud deployment.
+\end{itemize}
+
+\section{Repository Hygiene and Version Control}
+The team maintains professional Git repository standards on GitHub (\url{https://github.com/Areeba444/DigitalMohalla}):
+\begin{itemize}
+    \item \textbf{Branching Strategy:} Trunk-based development using protected \texttt{main} and \texttt{develop} branches. All functional changes are developed on dedicated feature branches (e.g., \texttt{feature/beta-posterior}, \texttt{feature/trust-edges}, \texttt{feature/lender-evidence-screen}).
+    \item \textbf{Pull Request Protocol:} Direct pushes to protected branches are disabled. Every pull request requires green CI checks and peer review from another team member before merging.
+    \item \textbf{Atomic Commits:} Commits are granular, accompanied by imperative semantic commit messages, and pair implementation code with corresponding automated unit and integration tests.
+\end{itemize}
+
+\section{Continuous Integration (CI) Pipeline}
+The repository integrates automated CI via GitHub Actions (\texttt{.github/workflows/ci.yml}):
+\begin{enumerate}
+    \item \textbf{Backend Pipeline:}
+    \begin{itemize}
+        \item Code quality: Linting and formatting enforcement via \texttt{ruff check} and \texttt{ruff format}.
+        \item Static type analysis: Strict type checking of domain logic via \texttt{mypy}.
+        \item Security audits: Automated vulnerability and secret scanning via \texttt{bandit} and \texttt{pip-audit}.
+        \item Automated test execution: Comprehensive test execution against a live PostgreSQL 16 service container.
+    \end{itemize}
+    \item \textbf{Frontend Pipeline:}
+    \begin{itemize}
+        \item Clean dependency installation via \texttt{npm ci}.
+        \item Static type validation using \texttt{tsc --noEmit}.
+        \item Linting via ESLint (flat config) and automated component testing via \texttt{jest}.
+        \item Security auditing via \texttt{npm audit}.
+    \end{itemize}
+    \item \textbf{Contract Drift Guard:} Automated export of \texttt{openapi.json} and verification that the generated TypeScript client has no uncommitted diffs.
+\end{enumerate}
+
+\section{Continuous Deployment (CD) Architecture and Live Status}
+The deployment infrastructure utilizes a containerized cloud deployment model:
+\begin{itemize}
+    \item \textbf{API Service Container:} Packaged via multi-stage \texttt{Dockerfile} using Python 3.12, running under a non-root security context. Applies Alembic database migrations automatically at container startup before launching Uvicorn.
+    \item \textbf{Cloud Hosting Environment:} Hosted on Render (Singapore region) backed by a managed cloud PostgreSQL 16 database on Neon.
+    \item \textbf{Live Deployed Endpoints:}
+    \begin{itemize}
+        \item Web Application: \url{https://digitalmohalla-web.onrender.com}
+        \item Backend API Health Gate: \url{https://digitalmohalla-api.onrender.com/health}
+    \end{itemize}
+    \item \textbf{Rehearsal \& Rollback Verification:} Smoke test verification (TC-90--92), automated zero-downtime health gates (\texttt{/health}), containerized restart validation, and documented rollback rehearsal procedures on Render/Neon infrastructure.
+\end{itemize}
+
+\section{Dependency Register and Licences (Form 13 Compliance)}
+All third-party libraries and runtime dependencies are explicitly pinned, documented, and vetted for permissive open-source licensing (MIT, Apache 2.0, BSD, PostgreSQL licence). No copyleft (GPL) dependencies are incorporated into application code.
+\begin{table}[htbp]
+\centering
+\caption{Core Third-Party Dependency Register}
+\label{tab:dependency_register}
+\small
+\begin{tabularx}{\textwidth}{l l l l}
+\toprule
+\textbf{Component / Library} & \textbf{Pinned Version} & \textbf{License} & \textbf{Architectural Role} \\
+\midrule
+FastAPI & 0.115.0 & MIT & High-performance REST web framework \\
+PostgreSQL & 16.3 & PostgreSQL & Relational persistence and exclusion constraints \\
+SQLAlchemy & 2.0.35 & MIT & Synchronous SQL toolkit and ORM \\
+Alembic & 1.13.3 & MIT & Database schema migration engine \\
+psycopg & 3.2.1 & LGPLv3 (runtime) & PostgreSQL database adapter \\
+argon2-cffi & 23.1.0 & MIT & Cryptographic password hashing \\
+PyJWT & 2.9.0 & MIT & Stateless JSON Web Token authentication \\
+NumPy & 2.1.1 & BSD-3-Clause & Numerical mathematical operations \\
+SciPy & 1.14.1 & BSD-3-Clause & Statistical beta cumulative distribution functions \\
+Expo SDK & 52.0.0 & MIT & Cross-platform React Native development framework \\
+TypeScript & 5.6.3 & Apache-2.0 & Static typing for presentation layer \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\section{Responsible Tool and Generative AI Disclosure (Form 13 / AI Usage Log)}
+In compliance with FAST-NUCES academic integrity standards and Form 13 directives, the project team maintains an exhaustive AI usage log (\texttt{docs/ai-usage-log.md}).
+\begin{itemize}
+    \item \textbf{Scope of Assistance:} Generative AI tooling (Claude Code, GitHub Copilot SDK) was utilized as an assistive programming pair for initial scaffolding, generating synthetic dataset shapes, boilerplate test scripts, and formatting LaTeX documentation.
+    \item \textbf{Human Review and Code Defense:} No AI-generated code was committed without line-by-line review, architectural validation, and manual defense by the designated student module owner. Mathematical formulations (Beta posteriors, $k$-hop algorithms, decision rules) were derived and independently verified by the team.
+    \item \textbf{Academic Integrity \& Evidence Baseline:} Fabricating references, benchmarking numbers, or validation claims via GenAI is strictly prohibited. All reported metrics, scenario fixtures, and test results correspond directly to executable codebase artifacts and verified test suites.
+\end{itemize}
+
+\section{Project Risk Management and Mitigation Matrix}
+\begin{table}[htbp]
+\centering
+\caption{Project Risk Register and Mitigation Protocols}
+\label{tab:risk_matrix}
+\small
+\begin{tabularx}{\textwidth}{p{4.5cm} l p{5.5cm} l}
+\toprule
+\textbf{Identified Risk} & \textbf{Severity} & \textbf{Mitigation Strategy} & \textbf{Status} \\
+\midrule
+Double-booking under concurrent client acceptance & High & PostgreSQL 16 \texttt{btree\_gist} exclusion constraints at DB level & Mitigated \\
+Location privacy exposure (stalking/burglary risks) & Critical & Coarse neighbourhood polygons only; zero GPS in API schemas & Mitigated \\
+Unvalidated mathematical engine thresholds & Medium & Encapsulate in versioned \texttt{engine.json}; tag all assessments & Active \\
+Cold-start discrimination against new residents & High & Categorize as \texttt{INSUFFICIENT\_EVIDENCE}; recommend daylight safeguards & Mitigated \\
+Collusive review inflation and retaliatory bias & High & Algorithmic collusion detection; escalate contested cases to humans & Slice C \\
+Free-tier cloud hosting cold-start delays & Medium & Automated health check warmup script; local Docker fallback & Documented \\
+\bottomrule
+\end{tabularx}
+\end{table}

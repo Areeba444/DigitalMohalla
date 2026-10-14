@@ -1,0 +1,149 @@
+\chapter{Testing and Early Validation}
+\label{ch:testing}
+Testing follows \emph{Test Plan v1.3} (\code{docs/\allowbreak{}design/\allowbreak{}14\_testing/\allowbreak{}Test\_Plan.\allowbreak{}md}): 19 suites, test cases written as input / expected / actual, and traceability to requirements. All test data is synthetic.
+
+\section{Testing Strategy}
+\begin{itemize}
+\item \textbf{Test the invariants where they are enforced.} Rules that must never break (valid transitions, no overlapping bookings, append-only events, \code{config\_version} on every assessment) are enforced in PostgreSQL, so they are tested against a real PostgreSQL~16 database, not a mock.
+\item \textbf{Test the maths against worked numbers.} Every algorithm was worked by hand in Part~A (an 8-node graph, thirteen scenario fixtures, check values such as Beta(19,3)); the code must reproduce those numbers. The $k$-hop search is also cross-checked against NetworkX.
+\item \textbf{Test properties, not only examples.} Hypothesis generates inputs for the posterior (the mean always lies inside its interval; another success never lowers the mean), the policy (indirect evidence alone is never SUFFICIENT), the $k$-hop search and the API (fuzzing).
+\item \textbf{Test behaviour end to end.} The scenario suite drives the real engine through the real lifecycle on a synthetic neighbourhood and checks the state, the rule and the explanation.
+\item \textbf{Deterministic.} Fixed seeds (dataset seed 20261001), no network calls, and the same tests in CI as on a laptop.
+\item \textbf{Gate every change.} A pull request cannot be merged until the three CI jobs pass (NFR-D-04).
+\end{itemize}
+
+\section{Test Levels and Techniques}
+\begin{longtable}{L{0.17\textwidth}L{0.1\textwidth}L{0.65\textwidth}}
+\caption{Test levels}\label{tab:levels}\\
+\toprule Level & Tests & What is tested \\ \midrule \endfirsthead
+\toprule Level & Tests & What is tested \\ \midrule \endhead
+Unit (backend) & 477 & Transition table (all 294 pairs), aggregate and replay, posterior, similarity, outcome rules, trust edges, $k$-hop, manipulation signals, decision policy, explanation, moderation rules, configuration, generator \\
+Integration (backend) & 102 & Event store and triggers, lifecycle service, concurrency, authorisation, disputes, moderation, outcome and trust-edge feeds, privacy, API, fuzzing, engine on the synthetic dataset \\
+Scenario / acceptance & 44 & ES scenarios on the fixtures and end to end; lender evidence API \\
+Frontend component & 29 & Screens W1, W5, W6 and W7 rendered with React Native Testing Library against a mocked API; formatting and moderation helper functions \\
+\midrule
+Total & 652 & \NBackendTests{} backend, \NFrontendTests{} frontend \\
+\bottomrule
+\end{longtable}
+
+Techniques: state-transition testing (the full matrix), decision-table testing (rules R1--R9, moderator decisions), boundary values (value bands at 5{,}000/5{,}001 and 15{,}000/15{,}001~PKR; 10 and 360 days of age), concurrency testing (parallel acceptances behind a barrier), fault injection (engine timeout and exception), property-based testing, oracle testing (worked examples, NetworkX), fuzzing (API bodies), and static analysis (ruff, mypy, bandit, ESLint, tsc).
+
+\section{Test Cases}
+Table~\ref{tab:tc} shows representative test cases, one or more per suite; Appendix~\ref{app:testcases} lists all implemented ones.
+
+\begin{longtable}{L{0.07\textwidth}L{0.27\textwidth}L{0.38\textwidth}L{0.17\textwidth}}
+\caption{Representative test cases (input / expected / actual)}\label{tab:tc}\\
+\toprule TC & Input & Expected & Actual \\ \midrule \endfirsthead
+\toprule TC & Input & Expected & Actual \\ \midrule \endhead
+TC-01 & Each of the 294 state--event pairs & 31 valid pairs accepted; 263 refused & Pass (297 tests) \\
+TC-02 & COMPLETED loan; lender sends accept & 409 ``invalid transition''; audit entry & Pass \\
+TC-05 & RETURNED loan; dispute & Refused (decision D4) & Pass \\
+TC-07 & Happy path, 8 events & Replay equals the stored state & Pass \\
+TC-08 & 5 parallel acceptances, overlapping dates, 3 rounds & Exactly one ACCEPTED per round; others DECLINED ``dates taken'' & Pass \\
+TC-13/14 & UPDATE or DELETE on events; an edited event & Refused; tampering detected by \code{verify\_event\_chain()} & Pass \\
+TC-20 & No outcomes & Beta(1,1), mean 0.5, 90\% CI [0.05, 0.95] & Pass \\
+TC-22 & Ages 10 and 360 days, $h=180$ & Weights 0.962 and 0.25 & Pass \\
+TC-25 & 8-node hand-worked graph, $k=3$ & 3 paths ($q$ = 0.54, 0.2195, 0.21), $I=0.7164$, $\rho=0.6$ & Pass \\
+TC-28 & Graph with a cycle and a self-loop & Search terminates; no repeated node & Pass \\
+TC-34 & Hypothesis: only indirect evidence is strong & Never SUFFICIENT\_EVIDENCE & Pass \\
+TC-36 & Engine stub sleeps past the timeout & HELD\_FOR\_REVIEW (\code{engine\_failure}); no assessment & Pass \\
+TC-38 & Family group, S1 = 1.0, S4 low & Level 3, rule R5, not held & Pass \\
+TC-43 & ES-04 colluding ring & R2; HELD\_FOR\_REVIEW (\code{manipulation\_risk}); case opened; ``not proof'' wording & Pass \\
+TC-46 & ES-13 community paths & R9, REVIEW\_RECOMMENDED; both paths listed & Pass \\
+TC-50 & ACTIVE loan; lender disputes & DISPUTED; previous state stored; case opened & Pass \\
+TC-53 & Moderator resolves with a reason & COMPLETED via \code{dispute\_resolved}; outcome recorded & Pass \\
+TC-55 & Engine-failure hold; safeguards imposed & Refused & Pass \\
+TC-58 & Every API response model & No address, coordinate, CNIC, phone or e-mail field & Pass \\
+TC-84 & Fuzzed bodies (injection strings, malformed values) & 422 for bad input, never 500 & Pass \\
+TC-100 & W1 with ES-01, ES-02, ES-13 assessments & State as text, interval, evidence, no single number & Pass \\
+TC-106 & W6 moderator queue & Own community only; disputes and holds together & Pass \\
+\bottomrule
+\end{longtable}
+
+\section{Test Results}
+\textbf{CI evidence.} GitHub Actions run 38464197964, on the push of commit \code{b47243a} to \code{main} (13 October 2026, 20:36 UTC), passed all three jobs: the backend suite ran \textbf{\NBackendTests{} tests, all passed, in 30.4~s} on Linux with a PostgreSQL~16 service container, with \textbf{97\% line coverage} of the backend application code (1{,}850 statements, 49 not executed); the frontend suite ran \textbf{\NFrontendTests{} tests in \NFrontendSuites{} suites, all passed}; static checks (ruff, ruff format, mypy, bandit) and the API-client check passed.
+
+\textbf{Local re-run.} The same backend suite was re-run on 14 October on a Windows laptop with PostgreSQL~16: 623 passed in 13~min~33~s (the difference is the slower machine and the fuzz tests, Table~\ref{tab:defects}, DF-07). The breakdown below is from that run.
+
+\begin{longtable}{L{0.7\textwidth}r}
+\caption{Backend results by area (14 October 2026)}\label{tab:results}\\
+\toprule Area (test files) & Tests passed \\ \midrule \endfirsthead
+\toprule Area & Tests passed \\ \midrule \endhead
+Lifecycle: transition table, aggregate, actions & 311 \\
+Event store, lifecycle service, disputes & 27 \\
+Assurance maths: posterior and properties, similarity, outcome rules, trust edges, $k$-hop & 69 \\
+Detection and policy: manipulation, decision policy, explanation, engine, configuration & 66 \\
+Moderation: rules and service & 28 \\
+Data feeds on PostgreSQL: outcomes, trust edges, dataset load, engine and $k$-hop on dataset & 34 \\
+API, evidence endpoint, privacy, fuzzing & 23 \\
+Scenarios (fixtures, end to end, lender API) & 44 \\
+Generator and health & 10 \\
+Rule checks in the database & 11 \\
+\midrule
+Total & 623 \\
+\bottomrule
+\end{longtable}
+
+\subsection{Scenario results (NFR-Q-01)}
+\label{sec:scenario-results}
+A scenario passes only if both the state and the explanation match. Fixture tests feed each scenario's hand-checked numbers through the real policy and explanation builder; end-to-end tests send a request on the synthetic \emph{mini} dataset through the lifecycle, the real engine and PostgreSQL.
+
+\begin{longtable}{L{0.08\textwidth}L{0.24\textwidth}L{0.25\textwidth}L{0.1\textwidth}L{0.1\textwidth}L{0.12\textwidth}}
+\caption{Evaluation scenarios after Iteration~1 (SYNTHETIC data)}\label{tab:scenarios}\\
+\toprule ES & Scenario & Expected state (rule) & Fixture & End to end & Required at mid \\ \midrule \endfirsthead
+\toprule ES & Scenario & Expected state (rule) & Fixture & End to end & Required at mid \\ \midrule \endhead
+01 & New user, no history & INSUFFICIENT (R3) & Pass & Pass & Yes \\
+02 & Consistently reliable & SUFFICIENT (R7) & Pass & Pass & Yes \\
+03 & Reliable, one recent resolved dispute & REVIEW (R6\_DISPUTE); ACTIVE\_DISPUTE (R1) while open & Pass & Pass & Yes \\
+04 & Colluding ring & REVIEW (R2), held & Pass & Pass & Yes \\
+05 & Retaliatory review & SUFFICIENT with safeguards (R8) & Pass & Pass & Yes \\
+06 & High value, weak evidence & REVIEW (R4), held & Pass & Pass & Yes \\
+13 & Known only through neighbours & REVIEW (R9); INSUFFICIENT (R6\_SPARSE) without paths & Pass & Pass & Yes \\
+07 & Conflicting condition reports & ACTIVE\_DISPUTE (R1) & -- & State & No \\
+08 & Failure to return & ACTIVE\_DISPUTE (R1) & -- & State & No \\
+11 & Moderator reversal & REVIEW & -- & State & No \\
+12 & Sparse or old history & INSUFFICIENT & -- & State & No \\
+09 & Location mismatch & REVIEW & -- & -- & No (locality, It.~2) \\
+10 & Location permission refused & INSUFFICIENT & -- & -- & No (locality, It.~2) \\
+\bottomrule
+\end{longtable}
+\textbf{Result:} 7 of the 7 scenarios required at mid-term pass with state and explanation (target: at least 7 of 13). A further four (ES-07, 08, 11, 12) already return their expected state end to end; their full workflows (overdue escalation, reversal) are Iteration~2 work. ES-09 and ES-10 need the locality method.
+
+\section{Acceptance Testing / Validation}
+Validation in Iteration~1 is against the acceptance criteria of FR/NFR Part~E and the scenario target of NFR-Q-01: each criterion in Table~\ref{tab:ac} has a passing test. Validation with people has not started: the internal alpha session (the team running the demo story on the deployed instance, Test Plan \S12.1) is scheduled before the demo, and user acceptance with residents (SUS, task completion, understanding of the explanation) belongs to the FYP-2 pilot. The engine's \emph{quality} (whether its uncertainty improves decisions over averages) is not claimed here; it is the subject of the FYP-2 evaluation (Chapter~\ref{ch:plan}).
+
+\section{Edge and Failure Cases}
+\begin{itemize}
+\item \textbf{Concurrency:} simultaneous acceptances for overlapping dates; a stale command (409, nothing appended).
+\item \textbf{Invalid input and transitions:} every invalid state--event pair; disputes from RETURNED; a moderator clearing a manipulation hold to the wrong state; safeguards on an engine-failure hold; a decision without a reason.
+\item \textbf{Authorisation:} a non-owner accepting; a non-party disputing; the other party withdrawing a dispute; a moderator from another community; a party deciding its own case.
+\item \textbf{Engine failure:} timeout and exception both hold with \code{engine\_failure}.
+\item \textbf{Tampering:} UPDATE/DELETE refused; an edited event detected.
+\item \textbf{Graph edge cases:} cycles, self-loops, no path, paths longer than $k$.
+\item \textbf{Hostile input:} unknown fields (e.g.\ latitude, \code{new\_state}) refused with 422; NUL characters and injection strings refused; no database error text leaked.
+\end{itemize}
+
+\section{Defects and Corrective Actions}
+\begin{longtable}{L{0.06\textwidth}L{0.36\textwidth}L{0.17\textwidth}L{0.33\textwidth}}
+\caption{Defect log (Iteration~1)}\label{tab:defects}\\
+\toprule ID & Defect & Found by & Correction \\ \midrule \endfirsthead
+\toprule ID & Defect & Found by & Correction \\ \midrule \endhead
+DF-01 & The written S1 formula (pairwise reciprocity) flagged 6 of 8 ordinary members, and ES-05's borrower scored like the ES-04 ring & Measurement on the synthetic tiers & S1 redefined as partner clustering (D18); 0 of 9 ordinary members flagged \\
+DF-02 & A NUL character in any text field reached PostgreSQL and caused a 500 error & Fuzzing (TC-84) & Request bodies refuse NUL characters with 422 (\code{d4e4dec}) \\
+DF-03 & Unknown fields were silently ignored, so a client could send a latitude or an address without an error & Privacy test TC-60 & All request bodies refuse unknown fields (\code{StrictIn}) \\
+DF-04 & Dispute and decision bodies added in parallel branches were not strict & Guard test, after merging \code{develop} & Made strict (\code{6856b6d}) \\
+DF-05 & ES-02 and ES-05 data did not carry the evidence their rules need once similarity weighting was added ($n_\mathrm{eff}$ 4.1 and 2.0) & Scenario suite & Synthetic casts rebuilt; both pass (\code{5bd6a8c}) \\
+DF-06 & The fuzz test generated an infinite float that JSON cannot encode & CI failure on PR \#34 & Strategy excludes infinity (\code{275f658}) \\
+DF-07 & Fuzz tests took 28 minutes because every example logged in (argon2) & Local run & Tokens cached per user; the fuzz suite now takes about 5 minutes \\
+DF-08 & An \code{assert} used as a runtime check in the outcome writer (removed under \code{python -O}) & bandit & Explicit check (\code{5873d0f}) \\
+DF-09 & A Jest screen test timed out on its first render when run alongside the backend suite & Local run, 14 October & First-render timeout raised to 20~s; passes when run alone; open as a flaky-test risk \\
+\bottomrule
+\end{longtable}
+
+\section{Current Validation Status}
+\begin{itemize}
+\item \textbf{Verified by tests:} all Iteration~1 reliability, security and privacy gates (NFR-R-01 to R-04, S-02, S-03, S-05, S-07, PR-01, D-01, D-04) and NFR-Q-01 at mid-term.
+\item \textbf{Measured, not gated:} $k$-hop latency and coverage for $k=1$ to 4.
+\item \textbf{Not yet run:} full-assessment latency (NFR-P-03) and transition commit latency under load (TC-61, NFR-P-04), both in Iteration~2; deployed-instance system tests and smoke flow (suite 15, TC-91, TC-92), the Android device test (TC-73), upload tests (deferred, D20).
+\item \textbf{Not yet claimed:} decision quality against baselines, calibration and fairness (FYP-2).
+\end{itemize}

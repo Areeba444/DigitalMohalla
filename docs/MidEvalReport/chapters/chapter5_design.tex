@@ -1,0 +1,202 @@
+\chapter{System Design}
+\label{ch:design}
+The design baseline was produced in Part~A (steps A1--A14) and lives in \code{docs/\allowbreak{}design/\allowbreak{}}, one folder per artefact kind. Diagrams follow their standard notation (UML~2.5; crow's foot for the ER diagram; Gane and Sarson for the DFD) and were reviewed against those notations in the A14 design review. Each figure below is followed by the reasoning behind it and the requirements it serves. Where the built system differs from a Part~A diagram, the difference is stated and justified in Section~\ref{sec:evolution}.
+
+\section{System Architecture}
+Digital Mohalla is a \textbf{modular monolith}: one FastAPI service with strict internal layers, one PostgreSQL~16 database, and a React Native (Expo) client that runs on Android and the web. Figure~\ref{fig:layer} shows the layers.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth]{figures/layer.png}
+\caption{Layer diagram, Iteration~1 (UML package diagram, design step A8)}\label{fig:layer}
+\end{figure}
+
+\paragraph{Reasoning.} Each layer depends only on the one below it. The \emph{domain} layer (lifecycle model, assurance engine, moderation rules) is pure Python with no input/output, so the trust maths and the decision rules can be unit-tested without a database (477 unit tests run in seconds). Repositories are declared as interfaces in the application layer and implemented in infrastructure (dependency inversion), which is why the engine reaches the database only through the \code{EvidenceSource} interface. A monolith was chosen over services because three developers and one database do not need network boundaries, and a single transaction must cover the lifecycle transition, the booking and the event (ADR-0002). Cross-cutting policies (authorisation on every transition, the frozen event schema, \code{config\_version} on every assessment, location privacy, synthetic labels) apply to every layer. \emph{Serves:} NFR-D-01, NFR-D-04, NFR-S-02, NFR-PR-01. \emph{Owner:} S1. The platform layer in the figure names the provisional AWS host; the deployed platform is Render and Neon (Section~\ref{sec:evolution}).
+
+\section{Architectural Components}
+Figure~\ref{fig:component} shows the ten modules, with the five worked on in Iteration~1 in detail.
+
+\splitfigure{figures/component.png}{Component diagram, Iteration~1 (UML~2.5, design step A8). Colour shows the owner (S1 blue, S2 orange, S3 purple)}{fig:component}
+
+\paragraph{Reasoning.} The diagram makes ownership and boundaries visible. Module~3 (lifecycle) and Module~5 (assurance) meet at exactly one provided interface, \code{IAssess.\allowbreak{}assess(request)}; inside Module~5 the S1/S2 boundary is the indirect-evidence interface. Module~3 calls the engine once per request, so a slow or failing engine affects one request and is turned into a hold (FR-T-07) instead of an error. Moderation (Module~9) changes the lifecycle only through lifecycle commands, so a moderator's decision passes the same transition checks as any other actor's. Modules~2, 4, 6 and 8 are drawn as deferred so the scope boundary is explicit. \emph{Serves:} FR-T-01, FR-T-07, FR-T-11, FR-B-08.
+
+\paragraph{From design components to code.} During implementation several design classes became plain functions or merged into one service, because Python modules and protocols gave the same boundaries with less code. Table~\ref{tab:design-code} maps every component in Figure~\ref{fig:component} to the code that realises it.
+
+\begingroup\small
+\begin{longtable}{L{0.27\textwidth}L{0.36\textwidth}L{0.29\textwidth}}
+\caption{Design components mapped to the implementation}\label{tab:design-code}\\
+\toprule Design element (A7/A8) & Implementation & Note \\ \midrule \endfirsthead
+\toprule Design element (A7/A8) & Implementation & Note \\ \midrule \endhead
+\code{IAssess} & \code{IAssess} protocol, \code{domain/\allowbreak{}lifecycle/\allowbreak{}ports.\allowbreak{}py} & As designed \\
+\code{AssuranceFacade} & \code{AssuranceEngine.\allowbreak{}assess()}, \code{domain/\allowbreak{}assurance/\allowbreak{}engine.\allowbreak{}py} & Renamed \\
+\code{BetaPosteriorEstimator} & \code{estimate()}, \code{credible\_interval()}, \code{recency\_weight()} in \code{estimation/\allowbreak{}posterior.\allowbreak{}py}; \code{similarity.\allowbreak{}py} & Functions instead of a class (pure) \\
+\code{OutcomeExtractor}, \code{IOutcomeSink} & \code{estimation/\allowbreak{}outcomes.\allowbreak{}py} (rules) and \code{infra/\allowbreak{}db/\allowbreak{}outcomes.\allowbreak{}py} (writer), called from the close hook in \code{BorrowingService} & Interface replaced by a direct, idempotent call on loan close \\
+\code{IndirectTrust}, \code{IIndirectEvidence}, \code{TrustEdgeProjector}, \code{KHopPathSearch} & \code{indirect/\allowbreak{}khop.\allowbreak{}py} (\code{find\_paths}, \code{indirect\_trust}), \code{indirect/\allowbreak{}edges.\allowbreak{}py}, \code{infra/\allowbreak{}db/\allowbreak{}trust\_edges.\allowbreak{}py} & S1/S2 boundary kept as a module boundary \\
+\code{ManipulationDetector}, \code{ReciprocalClustering}, \code{ReviewSimilarity}, \code{RetaliationCheck} & \code{detection/\allowbreak{}manipulation.\allowbreak{}py}: \code{partner\_clustering}, \code{review\_similarity}, retaliation set-aside, \code{combine} & S1 redefined as partner clustering (D18) \\
+\code{DecisionPolicy}, \code{ExplanationBuilder} & \code{policy/\allowbreak{}decision.\allowbreak{}py} (\code{decide}, \code{RULES}), \code{policy/\allowbreak{}explanation.\allowbreak{}py} & As designed \\
+\code{ConfigLoader} & \code{config/\allowbreak{}engine\_config.\allowbreak{}py}, \code{config/\allowbreak{}engine.\allowbreak{}json} & As designed \\
+\code{BorrowingService} & \code{BorrowingService}, \code{domain/\allowbreak{}lifecycle/\allowbreak{}service.\allowbreak{}py} & Also hosts dispute and moderation commands \\
+\code{TransitionValidator} & \code{TransitionTable} (\code{transition\_table.\allowbreak{}py}) and the database foreign key to \code{allowed\_transition} & Checked twice \\
+\code{EventStore}, \code{IEventQuery}, \code{Projector \& Replay} & \code{LifecycleStore} protocol; \code{infra/\allowbreak{}eventstore/\allowbreak{}postgres.\allowbreak{}py}, \code{store.\allowbreak{}py}; \code{aggregate.\allowbreak{}py}; SQL \code{replay\_state()} & As designed \\
+\code{BookingGuard} & PostgreSQL exclusion constraint on \code{booking} & No Python class needed \\
+\code{CaseService}, \code{DecisionService}, \code{ICaseIntake}, \code{IModeration} & \code{domain/\allowbreak{}moderation/\allowbreak{}decisions.\allowbreak{}py} (\code{plan}) and \code{BorrowingService.\allowbreak{}decide}, \code{moderation\_queue}, \code{moderator\_case} & Merged into the lifecycle service \\
+\code{EvidenceTrailBuilder} & \code{BorrowingService.\allowbreak{}dispute\_case}, \code{moderator\_case} (trail read from \code{lifecycle\_event}) & As designed \\
+\code{AuditLogService} & \code{AuditLog} protocol; hash-chained \code{audit\_log} table & Screen in Iteration~2 \\
+\code{LocalityVerifier}, \code{ILocality} & \code{LifecycleStore.\allowbreak{}locality\_outcome()} reading the stored result (\code{locality\_outcome\_for()}) & Stub; method in Iteration~2 \\
+\code{INotify} & Not built & Iteration~2 \\
+\code{AuthService}, \code{IAuth} & \code{domain/\allowbreak{}accounts/\allowbreak{}auth.\allowbreak{}py}, \code{api/\allowbreak{}deps.\allowbreak{}py} & Minimal login \\
+\bottomrule
+\end{longtable}
+\endgroup
+
+\section{Interfaces and Dependencies}
+\subsection{External interface: REST API}
+The API is served under \code{/\allowbreak{}api/\allowbreak{}v1}, takes and returns JSON, and is described by an OpenAPI document from which the app's typed client is generated (a CI job fails if the two drift apart). Every request body refuses unknown fields, so a client cannot set the actor, the authorisation or the next state itself.
+
+\begingroup\small
+\begin{longtable}{L{0.1\textwidth}L{0.42\textwidth}L{0.4\textwidth}}
+\caption{REST endpoints (Iteration~1)}\label{tab:rest}\\
+\toprule Method & Path & Purpose \\ \midrule \endfirsthead
+\toprule Method & Path & Purpose \\ \midrule \endhead
+POST & \code{/\allowbreak{}auth/\allowbreak{}login} & Password login; returns a token \\
+GET & \code{/\allowbreak{}items}, \code{/\allowbreak{}items/\allowbreak{}\{id\}} & Items visible to the member \\
+POST & \code{/\allowbreak{}requests} & Create a borrowing request (UC-B5) \\
+GET & \code{/\allowbreak{}requests}, \code{/\allowbreak{}requests/\allowbreak{}\{id\}}, \code{/\allowbreak{}lender/\allowbreak{}requests} & The member's requests; one request with its assessment; the lender's queue \\
+POST & \code{/\allowbreak{}requests/\allowbreak{}\{id\}/accept}, \code{/\allowbreak{}decline}, \code{/\allowbreak{}cancel} & Lender decision; borrower cancellation (UC-B6) \\
+POST & \code{/\allowbreak{}transactions/\allowbreak{}\{id\}/handover/checklist}, \code{/\allowbreak{}handover/\allowbreak{}confirm} & Handover (UC-B7) \\
+POST & \code{/\allowbreak{}transactions/\allowbreak{}\{id\}/return}, \code{/\allowbreak{}return/\allowbreak{}confirm} & Return (UC-B8) \\
+GET & \code{/\allowbreak{}transactions/\allowbreak{}\{id\}/events} & The event trail \\
+POST, GET & \code{/\allowbreak{}transactions/\allowbreak{}\{id\}/dispute}, \code{/\allowbreak{}dispute/\allowbreak{}withdraw} & Raise, view and withdraw a dispute (UC-B12) \\
+GET & \code{/\allowbreak{}moderation/\allowbreak{}cases}, \code{/\allowbreak{}moderation/\allowbreak{}cases/\allowbreak{}\{id\}} & Moderator queue and case view \\
+POST & \code{/\allowbreak{}moderation/\allowbreak{}cases/\allowbreak{}\{id\}/decision} & Moderator decision with reason (UC-I4) \\
+GET & \code{/\allowbreak{}health} & Liveness check for deployment \\
+\bottomrule
+\end{longtable}
+\endgroup
+Errors follow one mapping: 401 without a valid token, 403 for the wrong actor, 404 for data the member may not see, 409 for an invalid transition, a stale command or ``dates taken'', and 422 for invalid input.
+
+\subsection{Internal interfaces}
+\begin{itemize}
+\item \code{IAssess.\allowbreak{}assess(AssessmentRequest) -> AssessmentResult}: the only way the lifecycle reaches the engine; called with a 2{,}000~ms timeout read from the configuration.
+\item \code{LifecycleStore}: everything the lifecycle service needs from storage (create, append, view, assessments, cases, decisions, bookings), implemented on PostgreSQL.
+\item \code{EvidenceSource}: what the engine reads (the borrower's outcomes, the trust graph, open and recent disputes, verification, reviews and complaints), so the engine itself has no database code.
+\item \code{AuditLog}: records refused commands and privileged actions.
+\end{itemize}
+External dependencies are listed with versions and licences in Section~\ref{sec:dependencies}.
+
+\section{Architecture Decisions and Rationale}
+Eight ADRs record the decisions that shape the code. The hosting choice (Render and Neon instead of the provisional AWS host) is recorded as a design change (Table~\ref{tab:evolution}); its ADR is pending. (\code{docs/\allowbreak{}design/\allowbreak{}03\_architecture/\allowbreak{}DigitalMohalla\_ADRs\_Ver1.\allowbreak{}md}).
+
+\begin{longtable}{L{0.09\textwidth}L{0.33\textwidth}L{0.5\textwidth}}
+\caption{Architecture decision records}\label{tab:adr}\\
+\toprule ADR & Decision & Rationale \\ \midrule \endfirsthead
+\toprule ADR & Decision & Rationale \\ \midrule \endhead
+0001 & Soft hold: pending requests mark dates as requested and block nothing & A lender should see all interest; blocking at request time would let one borrower lock an item with requests \\
+0002 & The database enforces the no-overlap rule at acceptance (exclusion constraint on held bookings); transition, booking and event commit in one transaction & Replaces ``lower \code{stream\_seq} wins'', which only orders events within one transaction and cannot arbitrate between two transactions \\
+0003 & Exits from HELD\_FOR\_REVIEW depend on the hold reason (new event \code{hold\_cleared}) & A cleared locality hold must still be assessed; a cleared manipulation hold already has an assessment; an engine-failure hold has nothing to attach safeguards to \\
+0004 & Separate \code{dispute\_resolved} and \code{dispute\_withdrawn} events & A withdrawal restores the previous state; a resolution completes the loan and creates evidence; one event type could not mean both \\
+0005 & Event-specific data goes in a \code{payload} field defined per event type & Keeps the frozen schema stable while each event carries its own data (dates, reasons, safeguards) \\
+0006 & A trust edge's weight is the recency-weighted Beta posterior mean of the source's verified outcomes with the target (experimental) & One estimator for direct and indirect evidence; never a manual vouch \\
+0007 & A manipulation hold needs corroboration (risk $\geq$ 60 and two signals $\geq$ 0.5); S4 active in Iteration~1 & ``$\geq$ 60 always holds'' contradicted the false-positive guard for real families; with one signal ES-04 could not be held at all \\
+0008 & Community paths lift sparse direct evidence from INSUFFICIENT to REVIEW\_RECOMMENDED, never to SUFFICIENT & Without it the indirect evidence could never change a decision \\
+\bottomrule
+\end{longtable}
+
+Team decisions record the smaller choices: D1--D9 on 11 October (for example the \code{payload} field, no disputes from RETURNED, merging the Request table into the transaction) and D10--D20 on 13 October (Table~\ref{tab:decisions}).
+
+\begin{longtable}{L{0.07\textwidth}L{0.33\textwidth}L{0.52\textwidth}}
+\caption{Team decisions D10--D20 (13 October 2026)}\label{tab:decisions}\\
+\toprule \# & Topic & Decision \\ \midrule \endfirsthead
+\toprule \# & Topic & Decision \\ \midrule \endhead
+D10 & Trust-edge weight & ADR-0006 accepted as experimental \\
+D11 & Outcome mapping & Borrower: on-time return, condition agreed, dispute-free; lender: condition agreed, dispute-free; a party found at fault fails the relevant metrics \\
+D12 & SUFFICIENT\_EVIDENCE thresholds & Mean $\geq$ 0.75, lower 90\% bound $\geq$ 0.60, $n_\mathrm{eff} \geq 3$, $\rho_\mathrm{sup}=0.3$: initial hypotheses \\
+D13 & ES-05 expected result & R8, SUFFICIENT\_EVIDENCE with safeguards: the retaliatory review is detected and set aside \\
+D14 & ES-13 expected result & R9, REVIEW\_RECOMMENDED; without the community paths, R6\_SPARSE \\
+D15 & Device scope & Android only for device testing; iOS not targeted \\
+D16 & Test plan use & Tools added only when a test first needs them \\
+D17 & Similarity of a past loan & $0.4\times$ value-band closeness $+\,0.4\times$ same category $+\,0.2\times$ duration closeness, floor 0.5 (S2) \\
+D18 & Meaning of S1 & Partner clustering instead of pairwise reciprocity (confirmed by S2, 14 October) \\
+D19 & Effect of a retaliation flag & The review is set aside from S1 and S4 and explained; reviews never enter the trust estimate (confirmed by S2, 14 October) \\
+D20 & Photo uploads & Deferred to Iteration~2 (confirmed by S1 and S2, 14 October) \\
+\bottomrule
+\end{longtable}
+
+\section{Design Evolution}
+\label{sec:evolution}
+\begin{longtable}{L{0.27\textwidth}L{0.27\textwidth}L{0.38\textwidth}}
+\caption{Design changes since the proposal}\label{tab:evolution}\\
+\toprule Proposal / earlier design & Now & Why \\ \midrule \endfirsthead
+\toprule Proposal / earlier design & Now & Why \\ \midrule \endhead
+Nine technical components M1--M9 across a broad platform & Ten modules; the assurance engine is the core, stretch modules deferred & Panel point 3; the handbook's scope test needs a technical core per student \\
+Trust shared by all three students & S1 indirect trust, S2 estimation/policy/detection, S3 moderation/evaluation & Each member owns a removable technical part \\
+FAISS search, learning-to-rank, LightGBM & Search in Iteration~3; detection is rule-based and interpretable & No labelled data for a trained detector; every signal must be explainable to a moderator \\
+Four reputation tiers & Four assurance states that describe evidence, not people & A tier labels a person; a state describes this loan's evidence \\
+``Lower \code{stream\_seq} wins'' for double booking & Database exclusion constraint (ADR-0002) & Correct across transactions and atomic \\
+``RESUME'' to end a dispute & \code{dispute\_resolved} / \code{dispute\_withdrawn} (ADR-0004) & Different outcomes need different events \\
+Separate Request table & Merged into \code{borrowing\_transaction} (D7) & One stream per loan from request to close \\
+Any risk $\geq$ 60 holds & Two corroborating signals needed (ADR-0007) & Protects real families (C3 guard) \\
+Indirect evidence with no effect on the decision & R6\_SPARSE / R9 (ADR-0008) & Makes ES-13 decidable \\
+Pairwise reciprocity signal & Partner clustering (D18) & Two-sided reviews are reciprocal by nature; the pairwise rule flagged 6 of 8 ordinary members \\
+GPS sent with every request & Request carries no location; membership-time result is read (D13) & Privacy boundary moves to joining a community \\
+One AWS host with Docker Compose (A13, provisional) & Render (API container and static web app) with Neon PostgreSQL & No server administration; deploys from \code{main} after CI \\
+Design interfaces such as \code{IOutcomeSink}, \code{IIndirectEvidence} & Four protocols (\code{IAssess}, \code{LifecycleStore}, \code{EvidenceSource}, \code{AuditLog}) & Same boundaries, less code (Table~\ref{tab:design-code}) \\
+\bottomrule
+\end{longtable}
+
+\section{Domain Model}
+\begin{sidewaysfigure}
+\centering
+\includegraphics[width=\textheight]{figures/domain_model.png}
+\caption{Domain model v1.0 (UML class diagram without operations, design step A2)}\label{fig:domain}
+\end{sidewaysfigure}
+\paragraph{Reasoning.} The central class is the \emph{BorrowingTransaction}, whose state is derived from its \emph{LifecycleEvents}; an \emph{Assessment} is attached to a transaction, not to a user, because an assurance state describes the evidence for one loan. \emph{Outcome} is separate from \emph{Review}: trust is computed only from verified outcomes, and reviews feed only the manipulation signals (D19), which is why a retaliatory review cannot lower anyone's trust. \emph{Booking}, \emph{ConditionReport} and \emph{LocalityResult} were kept as classes (integration decision of 11 October) because each is realised by a table and guarded by a database rule. \emph{Serves:} FR-B-09, FR-T-01, FR-T-03, FR-T-09.
+
+\section{Data Design}
+\splitfigure{figures/erd.png}{ER diagram, schema v2.3 (crow's foot, design step A6): 22 tables, 217 columns, 48 foreign keys}{fig:erd}
+\paragraph{Reasoning.} The schema (\code{schema.\allowbreak{}sql} v2.3, applied by Alembic migration \code{0001}) enforces the rules that must never depend on application code:
+\begin{itemize}
+\item \textbf{Event store.} \code{lifecycle\_event} is append-only (a trigger refuses UPDATE and DELETE) and hash-chained (\code{prev\_hash}, \code{row\_hash}); \code{verify\_event\_chain()} detects any altered row. \code{(stream\_id, stream\_seq)} is unique.
+\item \textbf{Valid transitions.} \code{(previous\_state, event\_type, new\_state)} is a composite foreign key to \code{allowed\_transition}, so an invalid transition cannot be stored even if the Python check had a bug. The trigger \code{event\_validate} checks the actor and sequence; \code{event\_apply} updates the projection.
+\item \textbf{Bookings.} \code{EXCLUDE (item\_id WITH =, period WITH \&\&) WHERE held}, using \code{btree\_gist}.
+\item \textbf{Assessments.} Every row stores \code{config\_version} (NOT NULL); \code{assessment\_rule\_ck} refuses a row whose rule, state, decision and hold reason disagree with the decision table.
+\item \textbf{Privacy.} No column stores coordinates, an address or a CNIC; a test scans the catalogue for such columns.
+\end{itemize}
+The current state is a projection (\code{borrowing\_transaction.\allowbreak{}current\_state}) that \code{replay\_state()} can rebuild from the events alone. \emph{Serves:} FR-B-05, FR-B-08, FR-B-09, FR-M-05, NFR-D-01, NFR-PR-01. \emph{Owner:} S1 (lifecycle tables), S2 (assessment, outcome, trust edge, review fields).
+
+\section{Process / Behavior Design}
+\subsection{Borrowing lifecycle}
+\splitfigure{figures/sm_lifecycle.png}{Borrowing lifecycle state machine v2.2 (UML~2.5, design step A3)}{fig:sm}
+\paragraph{Reasoning.} Fourteen states in two composites: PENDING (dates only requested) and IN\_PROGRESS (booking held). Transitions that apply to every substate of a composite are drawn once on its border, and DISPUTED returns through a shallow-history state to the state stored in \code{dispute\_opened}. HELD\_FOR\_REVIEW is never an automatic rejection: each hold reason has its own exits (ADR-0003). With the 21 event types this gives 294 state--event pairs, of which 31 are valid; the 31 valid pairs yield 34 leaf transitions because some events have guarded alternatives (for example \code{hold\_cleared} returns to LOCALITY\_CHECKED or ASSESSED depending on the hold reason). Transitions marked ``it.2'' (expiry, no-show, extensions) are part of the table but are triggered by the Iteration~2 scheduler. \emph{Serves:} FR-B-08, FR-B-16, FR-B-17, FR-T-07.
+
+\subsection{Escalation case}
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.9\textwidth]{figures/sm_case.png}
+\caption{Escalation case state machine (UML~2.5, design step A3)}\label{fig:smcase}
+\end{figure}
+\paragraph{Reasoning.} A case opens for a dispute or a hold and ends either decided (with a mandatory reason) or withdrawn without a decision when the loan leaves the hold or dispute, for instance when the borrower cancels or withdraws (D9). A second dispute or hold on the same loan attaches to the open case instead of creating another (FR-T-10). A decision is stored append-only in \code{moderator\_decision} and then applied as a lifecycle event in the hash-chained event log. Iteration~1 builds opening (C01), deciding (C06) and withdrawal (C07); information requests (C02--C04) and the appeal and reversal path (C08--C11) are built in Iteration~2. \emph{Serves:} FR-T-10, FR-T-11.
+
+\subsection{Interactions}
+\begin{sidewaysfigure}
+\centering
+\includegraphics[width=\textheight]{figures/seq_c.png}
+\caption{Sequence (c): raise dispute, escalate, moderator decision (UC-B12, D6, I4)}\label{fig:seqc}
+\end{sidewaysfigure}
+\paragraph{Reasoning.} The dispute freezes the loan and opens a case in the same database transaction as the \code{dispute\_opened} event, so there is never a disputed loan without a case. The moderator's decision is first recorded (\code{moderator\_decision}) and then applied as one lifecycle event that references it (\code{evidence\_refs.\allowbreak{}decision\_id}), so the decision and its effect cannot diverge. Sequence (b), handover to evidence, is in Appendix~\ref{app:diagrams}. \emph{Serves:} FR-B-16, FR-T-10, FR-T-11. \emph{Owner:} S3.
+
+\subsection{Data flow and privacy boundary}
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.9\textwidth]{figures/dfd0.png}
+\caption{Assurance pipeline, DFD level 0 (context diagram; Gane and Sarson, design step A10)}\label{fig:dfd}
+\end{figure}
+\paragraph{Reasoning.} The context diagram shows what enters and leaves the assurance pipeline: lifecycle events and reviews in; assessments, explanations and cases out. Exact location never crosses into the pipeline: GPS is read only at membership time and reduced to a coarse result, and the request carries no location (D13). \emph{Serves:} NFR-PR-01, NFR-PR-02. \emph{Owner:} S2.
+
+\subsection{Deployment}
+\begin{sidewaysfigure}
+\centering
+\includegraphics[width=\textheight]{figures/deployment.png}
+\caption{Deployment diagram as designed in Part~A (A13, provisional). The built system deploys to Render and Neon instead (see text)}\label{fig:deployment}
+\end{sidewaysfigure}
+\paragraph{Reasoning and as-built deployment.} The Part~A design (Figure~\ref{fig:deployment}) fixed what any target must provide: TLS termination, one API process, PostgreSQL~16 with \code{btree\_gist}, migrations before start-up, a \code{/\allowbreak{}health} check and secrets outside the repository; it marked the host itself ``to be confirmed''. The confirmed target keeps every one of these properties on managed services. The API runs as a Docker container on Render (\code{digitalmohalla-api}) that applies \code{alembic upgrade head} and then starts Uvicorn; the web app is an Expo web export served by Render as a static site (\code{digitalmohalla-web}); the database is Neon PostgreSQL~16. Render deploys \code{main} only after the CI checks pass, and secrets live in Render's environment settings. \emph{Serves:} NFR-D-03, NFR-D-04, NFR-S-01.
