@@ -100,4 +100,4 @@ None yet. Planned (from the team's notes, to be confirmed): drop to positive edg
 ## 8. Decision
 
 - **Verdict:** use with changes. The trust file is usable now. Re-download `rating.txt` before using any rating statistics.
-- **Reviewed by:** ______
+- **Reviewed by:** Fatima Khursheed, Areeba Javed, Minahil Kashif

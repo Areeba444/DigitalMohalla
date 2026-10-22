@@ -3,7 +3,7 @@
 | Field | Value |
 | :--- | :--- |
 | Purpose | Single handoff document for coding with Claude Code. Put it at the repo root as `CLAUDE.md`, or keep it in `docs/` and point to it from `CLAUDE.md`. |
-| Compiled | 2026-10-11, from the project files and planning work to date (compiled with Claude; reviewed by: ______) |
+| Compiled | 2026-10-11, from the project files and planning work to date (compiled with Claude; reviewed by: Fatima Khursheed, Areeba Javed, Minahil Kashif) |
 | Current stage | Iteration 1 (FYP-1 Mid). Part A (design) done by the team's account. Part B (implementation) starts now. |
 | Source of truth | The project files listed in §17. Where this summary and a source file disagree, the source file wins; flag the conflict. |
 

@@ -4,7 +4,7 @@
 | :---- | :---- |
 | Version | 1.3 (v1.2 plus the integration decisions of 2026-10-11) |
 | Date | 2026-10-11 (v1.1: 2026-10-10; v1.2 and v1.3: 2026-10-11) |
-| Authors | Team Digital Mohalla (v1.1 edits drafted with Claude; reviewed by: ______) |
+| Authors | Team Digital Mohalla (v1.1 edits drafted with Claude; reviewed by: Fatima Khursheed, Areeba Javed, Minahil Kashif) |
 | Status | Requirements baseline: ADR-0001 to ADR-0005 accepted on 2026-10-11; ADR-0007 and ADR-0008 accepted for integration (Students 2 and 3 to initial) |
 | Changes | See Part D, "Changes in v1.1", "Changes in v1.2" and "Changes in v1.3" |
 

@@ -5,7 +5,7 @@
 | Document | Technology stack and ADR-0005 (stack choice) |
 | Version | 1.0 |
 | Date | 2026-10-11 |
-| Authors | Team Digital Mohalla (drafted with Claude; reviewed by: ______) |
+| Authors | Team Digital Mohalla (drafted with Claude; reviewed by: Fatima Khursheed, Areeba Javed, Minahil Kashif) |
 | Status | Proposed. Becomes accepted when all three students sign off (§13). Hosting is to be decided (§9). |
 | Applies to | Iteration 1 build (Part B) onward; companion to `DigitalMohalla_Project_Context.md` |
 

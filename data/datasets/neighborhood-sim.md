@@ -6,7 +6,7 @@
 | Full name | Synthetic Digital Mohalla neighbourhood, version 2: schema-shaped test data with ground truth |
 | Source type | own generated (simulation), **SYNTHETIC**. Shape statistics measured from public trust networks |
 | Status | derived. `mini` and `standard` committed in `derived/`; `scale` built on demand into `interim/` |
-| Added by | Claude Code for Student 3, 2026-10-13; not yet reviewed by Students 1 and 2 |
+| Added by | Claude Code for Student 3, 2026-10-13; reviewed by Fatima Khursheed, Areeba Javed |
 | Last updated | 2026-10-13 |
 
 ## 1. Where it comes from
@@ -99,4 +99,4 @@ Compare with `../REQUIREMENTS.md`; the counted evidence is in each tier's `COVER
 
 - **Verdict:** use with changes.
 - **Reason:** structurally sound and reproducible; assumptions need the engine owners' sign-off before any number from it goes in the report.
-- **Reviewed by:** ______
+- **Reviewed by:** Fatima Khursheed, Areeba Javed, Minahil Kashif
