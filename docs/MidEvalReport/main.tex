@@ -1,4 +1,7 @@
-% oneside: no blank pages before chapters; every chapter and front-matter heading still starts a new page
+% Digital Mohalla (F26-188) -- FYP-1 Mid-Evaluation Report, Iteration 1
+% Built on the distributed FAST-NUCES template (fast-nuces-bs.cls, unmodified).
+% Compile: pdflatex main -> bibtex main -> pdflatex main -> pdflatex main
+\PassOptionsToPackage{obeyspaces,spaces}{url}
 \documentclass[oneside]{fast-nuces-bs}
 %\documentclass{article}
 
@@ -9,52 +12,17 @@
 \usepackage{sectsty}
 \usepackage{tikz-uml}
 \usepackage{titlesec}
-
-% Packages used by the report body
-\usepackage{booktabs}
+% Packages used by the chapter files (tables, figures, lists)
 \usepackage{longtable}
-\usepackage{tabularx}
+\usepackage{booktabs}
 \usepackage{array}
 \usepackage{float}
-\usepackage{rotating}
 \usepackage{enumitem}
 \usepackage{xcolor}
-\setlist{itemsep=2pt,topsep=4pt}
-\newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
-\newcolumntype{Y}{>{\raggedright\arraybackslash}X}
-\renewcommand{\arraystretch}{1.15}
-\setlength{\LTpre}{6pt}
-\setlength{\LTpost}{6pt}
-\setcounter{tocdepth}{1}
+\usetikzlibrary{shapes.geometric,arrows.meta}
+% The class loads natbib with both "numbers" and "authoryear"; the references are
+% numbered (IEEEtran), so select numeric citations in square brackets.
 \setcitestyle{numbers,square,comma}
-\setlength{\tabcolsep}{4pt}
-\setlength{\emergencystretch}{3em}
-
-% Measured figures, kept in one place so every chapter quotes the same number.
-% Source: test runs on commit b47243a (backend: pytest, frontend: Jest), 14 October 2026.
-\newcommand{\NBackendTests}{623}
-\newcommand{\NFrontendTests}{29}
-\newcommand{\NFrontendSuites}{4}
-\newcommand{\NCommits}{126}
-\newcommand{\NMergedPRs}{30}
-\newcommand{\ConfigVersion}{1.3.0-iteration1-draft}
-% Large diagrams split into a left and a right half (4% overlap), one full page each, so the
-% text stays readable in print. #1 image, #2 caption, #3 label.
-\usepackage{adjustbox}
-\newcommand{\splitfigure}[3]{%
-\begin{figure}[p]\centering
-\adjincludegraphics[width=\textwidth,height=0.86\textheight,keepaspectratio,trim={0 0 {.48\width} 0},clip]{#1}
-\caption[#2]{#2. Left half; the right half is on the next page.}\label{#3}
-\end{figure}
-\begin{figure}[p]\centering
-\adjincludegraphics[width=\textwidth,height=0.86\textheight,keepaspectratio,trim={{.48\width} 0 0 0},clip]{#1}
-\caption[#2 (continued)]{#2. Right half (continued).}
-\end{figure}}
-
-% Inline code: typewriter, may break after an underscore so long names fit table cells
-\newcommand{\code}[1]{{\small\ttfamily\def\_{\textunderscore\allowbreak}#1}}
-% State names such as INSUFFICIENT_EVIDENCE may also break after an underscore
-\AtBeginDocument{\renewcommand{\_}{\textunderscore\allowbreak}}
 
 % Information about the Thesis
 % -----------------------------------------------------------------------------
@@ -72,7 +40,8 @@
 \authortwo{Areeba Javed}{23i-0570}
 \authorthree{Minahil Kashif}{23i-0554}
 \supervisor{Dr. Ali Zeeshan}
-\sessionduration{2023-2027}
+\sessionduration{2023--2027}
+% No co-supervisor for this project, so \cosupervisor is not set (template instruction).
 \deanname{Dr. Dean Computing}
 \directorname{Dr. Director of the Campus}
 \hodname{Dr. Head of Computer Science Department}
@@ -80,56 +49,91 @@
 \title{Digital Mohalla: A Trust-Based Platform for Neighbors}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% The class calls \maketitle automatically after the preamble, which prints a title page
-% plus the contents and lists. This report places those itself (below), so that call is
-% switched off here; the title page is set at the start of the document instead.
-\renewcommand{\maketitle}{}
-
-% Names used by the front-matter pages
+% Names used by the front-matter chapters
 \newcommand{\projecttitle}{Digital Mohalla: A Trust-Based Platform for Neighbors}
+\newcommand{\projectid}{F26-188}
 \newcommand{\studentone}{Fatima Khursheed (23i-0746)}
 \newcommand{\studenttwo}{Areeba Javed (23i-0570)}
 \newcommand{\studentthree}{Minahil Kashif (23i-0554)}
 
+% Inline code, file names and identifiers (small typewriter; may break after / . _)
+\DeclareUrlCommand\code{\def\UrlFont{\small\ttfamily}}
+% Layout settings carried over from the V2 source
+\setlist{itemsep=2pt,topsep=4pt}
+\renewcommand{\arraystretch}{1.15}
+\setcounter{tocdepth}{1}
+% Long identifiers such as INSUFFICIENT_EVIDENCE may break after the underscore
+\let\dmunderscore\_
+\renewcommand{\_}{\dmunderscore\allowbreak}
+
+% Tables: ragged-right paragraph columns
+% Let TeX loosen a line slightly instead of letting long identifiers overflow
+\setlength{\emergencystretch}{3em}
+
+\newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
+\newcolumntype{R}[1]{>{\raggedleft\arraybackslash}p{#1}}
+\setlength{\LTpre}{0.5em}
+\setlength{\LTpost}{0.5em}
+
+% Diagrams too large to read on an A4 page: the picture plus a link that opens
+% the full-size, zoomable diagram in draw.io (diagrams.net viewer).
+% #1 = file name in figures/diagrams and figures/drawio_links,
+% #2 = path of the source file in the design folder.
+\newcommand{\drawionote}[2]{%
+  \par\vspace{0.4em}{\small\centering
+  Full-size diagram: \input{figures/drawio_links/#1}\\
+  Source: \code{#2}\par}}
+
+% Title page in the template's layout, with the report type and project ID
+% added. The table of contents and the lists are printed after the front
+% matter (see below), so the title page does not repeat them.
+\makeatletter
+\renewcommand{\maketitle}{%
+\begin{alwayssingle}
+    \thispagestyle{empty}
+    \begin{center}
+        { \setstretch{1}
+        \par{\fontsize{24}{28}\selectfont \textbf{\@title}}\par
+        \vspace{0.8cm}
+        \par{\fontsize{14}{14}\selectfont FYP-1 Mid-Evaluation Report (Iteration 1)}\par
+        \vspace{0.3cm}
+        \par{\fontsize{14}{14}\selectfont Project ID: \projectid}\par
+        \vspace{1cm}
+        \par{\fontsize{14}{14}\selectfont Project Team}\\~\\
+        {\fontsize{16}{16}\selectfont
+        \begin{tabular}{lr}
+            \@authoronename & \@authoroneroll \\
+            \@authortwoname & \@authortworoll \\
+            \@authorthreename & \@authorthreeroll
+        \end{tabular}
+        }\par
+        \vspace{0.4cm}
+        \par{\fontsize{14}{14}\selectfont Session \@sessionduration}\par
+        \vspace{1.2cm}
+        \par{\fontsize{14}{14}\selectfont Supervised by}\\~\\
+        {\fontsize{17}{17}\selectfont \@supervisor}\par
+        \vspace{.5cm}
+        \begin{figure}[h]\centering
+            \includegraphics[width=.30\columnwidth]{ThesisFigs/FASTLogo}
+        \end{figure}
+        \vspace{0.5cm}
+        \par{\fontsize{15}{15}\selectfont \textbf{\@department}}\par
+        \vspace{0.5cm}
+        \par{\fontsize{15}{18}\selectfont \textbf{National University of
+        Computer and Emerging Sciences\\\@campuscity, Pakistan}}\par
+        \vspace{0.5cm}
+        \par{\fontsize{15}{15}\selectfont \textbf{\@degreemonth, \@degreeyear}}\par
+    }
+    \end{center}
+    \null\vfill
+    \clearpage
+\end{alwayssingle}
+}
+\makeatother
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Former document starts below this
 \begin{document}
-
-% Title page (same layout as the class's \maketitle, without its built-in lists)
-\begin{titlepage}
-\begin{center}
-{\setstretch{1}
-{\fontsize{24}{30}\selectfont \textbf{\projecttitle}\par}
-\vspace{0.6cm}
-{\fontsize{14}{17}\selectfont FYP-1 Mid-Evaluation Report (Iteration 1)\par}
-\vspace{0.3cm}
-{\fontsize{14}{17}\selectfont Project ID: F26-188\par}
-\vspace{1cm}
-{\fontsize{14}{17}\selectfont Project Team\par}
-\vspace{0.2cm}
-{\fontsize{16}{20}\selectfont
-\begin{tabular}{lr}
-Fatima Khursheed & 23i-0746\\
-Areeba Javed & 23i-0570\\
-Minahil Kashif & 23i-0554
-\end{tabular}\par}
-\vspace{0.4cm}
-{\fontsize{14}{17}\selectfont Session 2023--2027\par}
-\vspace{1cm}
-{\fontsize{14}{17}\selectfont Supervised by\par}
-\vspace{0.2cm}
-{\fontsize{17}{20}\selectfont Dr. Ali Zeeshan\par}
-\vspace{0.8cm}
-\includegraphics[width=.25\columnwidth]{ThesisFigs/FASTLogo}\par
-\vspace{0.5cm}
-{\fontsize{15}{19}\selectfont \textbf{FAST School of Computing}\par}
-\vspace{0.2cm}
-{\fontsize{15}{19}\selectfont \textbf{National University of Computer and Emerging Sciences\\Islamabad, Pakistan}\par}
-\vspace{0.3cm}
-{\fontsize{15}{19}\selectfont \textbf{October, 2026}\par}
-}
-\end{center}
-\end{titlepage}
 
 \cleardoublepage
 \pagenumbering{roman}

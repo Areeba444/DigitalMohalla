@@ -1,0 +1,55 @@
+% Core use case diagram (UML 2.5), Figure 4.1, drawn in TikZ.
+% Coordinates in cm; the picture is 15 cm wide (the text width).
+\begin{tikzpicture}[
+    font=\fontsize{8.5}{10}\selectfont,
+    uc/.style={ellipse, draw, fill=blue!20, minimum width=4.06cm, align=center, inner sep=1pt},
+    rel/.style={dashed, -{To[length=4pt]}},
+    stereo/.style={fill=white, inner sep=1pt}]
+  % actor: stick figure with its name below; #1 = name, #2 = position (head centre)
+  \newcommand{\ucactor}[3]{%
+    \begin{scope}[shift={#2}]
+      \draw (0,0) circle (0.17);
+      \draw (0,-0.17) -- (0,-0.62);
+      \draw (-0.3,-0.33) -- (0.3,-0.33);
+      \draw (0,-0.62) -- (-0.25,-0.98);
+      \draw (0,-0.62) -- (0.25,-0.98);
+      \node[below] at (0,-0.98) {#1};
+      \coordinate (#3) at (0,-0.45);
+    \end{scope}}
+
+  % system boundary
+  \draw (2.51,-0.37) rectangle (13.17,-12.44);
+  \node at (7.84,-0.71) {Digital Mohalla};
+
+  % use cases
+  \node[uc, minimum height=1.27cm] (b5)   at (5.11,-1.95)  {B5 Send bor-\\rowing request};
+  \node[uc, minimum height=1.27cm] (d345) at (10.56,-1.95) {D3/4/5 Assess\\transaction assurance};
+  \node[uc, minimum height=1.27cm] (b6)   at (5.11,-3.47)  {B6 Respond\\to request};
+  \node[uc, minimum height=1.27cm] (b7)   at (5.11,-5.05)  {B7 Confirm\\handover};
+  \node[uc, minimum height=0.51cm] (d6)   at (10.56,-5.05) {D6 Escalate case};
+  \node[uc, minimum height=1.27cm] (b8)   at (5.11,-6.57)  {B8 Return\\and complete};
+  \node[uc, minimum height=0.64cm] (i6)   at (10.56,-6.98) {I6 View audit logs};
+  \node[uc, minimum height=0.55cm] (b12)  at (5.11,-8.14)  {B12 Raise dispute};
+  \node[uc, minimum height=1.27cm] (i4)   at (10.56,-8.92) {I4 Resolve case\\or dispute};
+  \node[uc, minimum height=1.27cm] (a3)   at (5.11,-9.70)  {A3 Request mem-\\bership (iteration 2)};
+  \node[uc, minimum height=1.69cm] (a4)   at (10.56,-10.84) {A4 Approve\\membership\\(iteration 2)};
+
+  % actors
+  \ucactor{Borrower}{(0.81,-3.13)}{borrower}
+  \ucactor{Lender}{(0.81,-7.33)}{lender}
+  \ucactor{Admin}{(14.44,-6.57)}{admin}
+  \ucactor{Moderator}{(14.44,-9.45)}{moderator}
+
+  % associations
+  \foreach \u in {b5,b7,b8,b12,a3} \draw (borrower) ++(0.35,0) -- (\u);
+  \foreach \u in {b6,b7,b8,b12} \draw (lender) ++(0.35,0) -- (\u);
+  \draw (admin) ++(-0.35,0) -- (i6);
+  \draw (moderator) ++(-0.35,0) -- (i4);
+  \draw (moderator) ++(-0.35,0) -- (a4);
+
+  % include and extend
+  \draw[rel] (b5) -- node[stereo] {$\ll$include$\gg$} (d345);
+  \draw[rel] (d6) -- node[stereo] {$\ll$extend$\gg$} (d345);
+  % every dispute opens a case (FR-T-10), so raising a dispute always includes escalation
+  \draw[rel] (b12) -- node[stereo, pos=0.56] {$\ll$include$\gg$} (d6);
+\end{tikzpicture}

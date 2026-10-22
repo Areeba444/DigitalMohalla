@@ -1,217 +1,215 @@
-\chapter{Software Requirements}
-\label{ch:requirements}
-The requirements baseline is \emph{FR/NFR v1.3} and \emph{Use Cases v1.3} (11 October 2026), in \code{docs/\allowbreak{}design/\allowbreak{}01\_requirements/\allowbreak{}}. Both use the same identifiers, one state list and one vocabulary. This chapter presents the core; the full set is in Appendix~\ref{app:requirements}.
+\chapter{Software Requirements}\label{ch:software-requirements}
+The requirements baseline is \textit{FR/NFR v1.3} and \textit{Use Cases v1.3} (11 October 2026), in \code{docs/design/01_requirements/}. Both use the same identifiers, one state list and one vocabulary. This chapter presents the core; the full set is in Appendix~\ref{app:detailed-requirements}.
 
-\section{User Interactions / Use Cases}
-The baseline has 68 use case IDs in ten groups (A accounts 9, B borrowing 13, C events 10, D trust 7, E forum 6, F chatbot 5, G communication 4, H vendors 5, I administration 6, J analytics 3). Eleven are core and fully dressed; Table~\ref{tab:uc} lists them with MoSCoW priority and their state after Iteration~1.
+\section{User Interactions / Use Cases}\label{sec:user-interactions-use-cases}
+The baseline has 68 use case IDs in ten groups (A accounts 9, B borrowing 13, C events 10, D trust 7, E forum 6, F chatbot 5, G communication 4, H vendors 5, I administration 6, J analytics 3). Eleven are core and fully dressed; Table~\ref{tab:prioritised-core-use-cases} lists them with MoSCoW priority and their state after Iteration 1.
 
-\begin{longtable}{L{0.32\textwidth}L{0.14\textwidth}L{0.06\textwidth}L{0.17\textwidth}L{0.2\textwidth}}
-\caption{Prioritised core use cases}\label{tab:uc}\\
-\toprule Use case & Scope & Pri & FRs & Iteration 1 \\ \midrule \endfirsthead
-\toprule Use case & Scope & Pri & FRs & Iteration 1 \\ \midrule \endhead
+\begingroup
+\begin{longtable}{@{}L{133pt}L{55pt}L{21pt}L{69pt}L{77pt}@{}}
+\caption{Prioritised core use cases}\label{tab:prioritised-core-use-cases}\\
+\toprule
+Use case & Scope & Pri & FRs & Iteration 1 \\
+\midrule
+\endfirsthead
+\toprule
+Use case & Scope & Pri & FRs & Iteration 1 \\
+\midrule
+\endhead
+\bottomrule
+\endlastfoot
 B5 Send borrowing request & CORE & M & FR-B-05 to B-07 & Built \\
 B6 Respond to request & CORE & M & FR-B-05, B-10 & Built (no counter-offer) \\
-B7 Confirm handover & CORE & M & FR-B-11, B-12 & Built (photos in It.~2) \\
+B7 Confirm handover & CORE & M & FR-B-11, B-12 & Built (photos in It. 2) \\
 B8 Return and complete & CORE & M & FR-B-13 to B-15 & Built \\
 B12 Raise dispute & CORE & M & FR-B-16, B-17 & Built \\
 D3/4/5 Assess transaction assurance & CORE & M & FR-T-01 to T-07 & Built \\
 D6 Escalate case with evidence trail & CORE & M & FR-T-10 & Built \\
 I4 Resolve escalated case or dispute & CORE & M & FR-T-11 & Built (no appeal yet) \\
-I6 View audit logs & CORE & M & FR-M-05 & Log built; screen in It.~2 \\
-A3 Request community membership & CORE (It.~2) & M & FR-A-06 to A-09 & Seeded; It.~2 \\
-A4 Approve membership & CORE (It.~2) & M & FR-A-10, A-11 & Seeded; It.~2 \\
-\bottomrule
+I6 View audit logs & CORE & M & FR-M-05 & Log built; screen in It. 2 \\
+A3 Request community membership & CORE (It. 2) & M & FR-A-06 to A-09 & Seeded; It. 2 \\
+A4 Approve membership & CORE (It. 2) & M & FR-A-10, A-11 & Seeded; It. 2 \\
 \end{longtable}
+\endgroup
+\section{Use Case Diagram}\label{sec:use-case-diagram}
+Figure~\ref{fig:core-use-case-diagram} shows the Iteration 1 core. The Trust Engine is not an actor: it is part of the system, reached through the \textit{include} from B5. A3 and A4 are drawn because they are core, although they are built in Iteration 2.
 
-\section{Use Case Diagram}
-Figure~\ref{fig:usecase} shows the Iteration~1 core. The Trust Engine is not an actor: it is part of the system, reached through the \emph{include} from B5. A3 and A4 are drawn because they are core, although they are built in Iteration~2.
-
-\begin{figure}[H]
+\begin{figure}[htbp]
 \centering
-\resizebox{\textwidth}{!}{%
-\begin{tikzpicture}
-\begin{umlsystem}[x=0, y=0, fill=white]{Digital Mohalla}
-\umlusecase[x=4, y=0, name=b5, width=3.4cm]{B5 Send borrowing request}
-\umlusecase[x=11, y=0, name=d3, width=3.4cm]{D3/4/5 Assess transaction assurance}
-\umlusecase[x=4, y=-2, name=b6, width=3.4cm]{B6 Respond to request}
-\umlusecase[x=4, y=-4, name=b7, width=3.4cm]{B7 Confirm handover}
-\umlusecase[x=4, y=-6, name=b8, width=3.4cm]{B8 Return and complete}
-\umlusecase[x=4, y=-8, name=b12, width=3.4cm]{B12 Raise dispute}
-\umlusecase[x=4, y=-10, name=a3, width=3.4cm]{A3 Request membership (iteration 2)}
-\umlusecase[x=11, y=-11.5, name=a4, width=3.4cm]{A4 Approve membership (iteration 2)}
-\umlusecase[x=11, y=-4, name=d6, width=3.4cm]{D6 Escalate case}
-\umlusecase[x=11, y=-9, name=i4, width=3.4cm]{I4 Resolve case or dispute}
-\umlusecase[x=11, y=-6.5, name=i6, width=3.4cm]{I6 View audit logs}
-\end{umlsystem}
-\umlactor[x=-1.5, y=-2]{Borrower}
-\umlactor[x=-1.5, y=-7.5]{Lender}
-\umlactor[x=16, y=-10.25]{Moderator}
-\umlactor[x=16, y=-6.5]{Admin}
-\umlassoc{Borrower}{b5}
-\umlassoc{Borrower}{b7}
-\umlassoc{Borrower}{b8}
-\umlassoc{Borrower}{b12}
-\umlassoc{Borrower}{a3}
-\umlassoc{Lender}{b6}
-\umlassoc{Lender}{b7}
-\umlassoc{Lender}{b8}
-\umlassoc{Lender}{b12}
-\umlassoc{Moderator}{i4}
-\umlassoc{Moderator}{a4}
-\umlassoc{Admin}{i6}
-\umlinclude[pos stereo=0.55]{b5}{d3}
-\umlextend[pos stereo=0.5]{d6}{d3}
-\umlextend[pos stereo=0.5]{d6}{b12}
-\end{tikzpicture}}
-\caption{Core use case diagram (UML 2.5)}\label{fig:usecase}
+\input{figures/use_case_diagram}
+\caption{Core use case diagram (UML 2.5)}\label{fig:core-use-case-diagram}
 \end{figure}
+\section{Detailed Use Cases}\label{sec:detailed-use-cases}
+Table~\ref{tab:uc-b5-send-borrowing} gives UC-B5, the use case that runs the assurance engine; the other dressed use cases are summarised in Appendix~\ref{app:detailed-requirements}.
 
-\section{Detailed Use Cases}
-Table~\ref{tab:ucb5} gives UC-B5, the use case that runs the assurance engine; the other dressed use cases are summarised in Appendix~\ref{app:requirements}.
-
-\begin{longtable}{L{0.05\textwidth}L{0.86\textwidth}}
-\caption{UC-B5 Send borrowing request (condensed)}\label{tab:ucb5}\\
-\toprule \multicolumn{2}{L{0.93\textwidth}}{\textbf{Primary actor:} Borrower. \textbf{Secondary:} Lender, assurance engine. \textbf{Pre-condition:} the borrower is a verified member of the item's community and the item is published. \textbf{Success:} the request is ASSESSED (or HELD\_FOR\_REVIEW), its dates are marked as requested (soft hold, nothing blocked) and one event is appended per transition.} \\ \midrule \endfirsthead
-\toprule Step & Description \\ \midrule \endhead
-1 & The borrower opens an item and chooses dates and an optional message; the system checks the dates against held bookings. \\
-2 & The system creates the request (REQUEST\_CREATED) and appends \code{request\_created}. \\
-3 & The system reads the borrower's stored coarse locality result for the community and appends \code{locality\_checked} (LOCALITY\_CHECKED). \\
-4 & The system calls the assessment, stores the assurance state, evidence, signals, safeguards and \code{config\_version}, and appends \code{assessment\_generated} (ASSESSED). \\
-5 & The lender sees the request with its evidence summary. \\ \midrule
-\multicolumn{2}{L{0.93\textwidth}}{\textbf{Extensions.} 2a Dates overlap a held booking: refused, next free window suggested. 3a Locality inconclusive or conflicting: HELD\_FOR\_REVIEW (\code{locality\_inconclusive} / \code{locality\_conflict}), never rejected. 4a No verified history: INSUFFICIENT\_EVIDENCE, ``Insufficient verified history; lender review required'', still reaches the lender (ES-01). 4b Corroborated manipulation risk (level 4): HELD\_FOR\_REVIEW (\code{manipulation\_risk}) and a case is opened; nothing is restricted (ES-04). 4c High value with weak or dissimilar evidence (rule R4): HELD\_FOR\_REVIEW (\code{high\_value\_low\_confidence}) (ES-06). 4d Engine fails or exceeds 2{,}000~ms: HELD\_FOR\_REVIEW (\code{engine\_failure}), failure logged, no state assigned.} \\
+\begin{longtable}{@{}L{30pt}L{356pt}@{}}
+\caption{UC-B5 Send borrowing request (condensed)}\label{tab:uc-b5-send-borrowing}\\
+\toprule
+\multicolumn{2}{@{}L{398pt}@{}}{\textbf{Primary actor:} Borrower. \textbf{Secondary:} Lender, assurance engine. \textbf{Pre-condition:} the borrower is a verified member of the item's community and the item is published. \textbf{Success:} the request is ASSESSED (or HELD\_FOR\_REVIEW), its dates are marked as requested (soft hold, nothing blocked) and one event is appended per transition.} \\
+\midrule
+\endfirsthead
+\toprule
+Step & Description \\
+\midrule
+\endhead
 \bottomrule
+\endlastfoot
+1 & The borrower opens an item and chooses dates and an optional message; the system checks the dates against held bookings. \\
+2 & The system creates the request (REQUEST\_CREATED) and appends \code{request_created}. \\
+3 & The system reads the borrower's stored coarse locality result for the community and appends \code{locality_checked} (LOCALITY\_CHECKED). \\
+4 & The system calls the assessment, stores the assurance state, evidence, signals, safeguards and \code{config_version}, and appends \code{assessment_generated} (ASSESSED). \\
+5 & The lender sees the request with its evidence summary. \\
+\midrule
+\multicolumn{2}{@{}L{398pt}@{}}{\textbf{Extensions.} 2a Dates overlap a held booking: refused, next free window suggested. 3a Locality inconclusive or conflicting: HELD\_FOR\_REVIEW (\code{locality_inconclusive} / \code{locality_conflict}), never rejected. 4a No verified history: INSUFFICIENT\_EVIDENCE, ``Insufficient verified history; lender review required'', still reaches the lender (ES-01). 4b Corroborated manipulation risk (level 4): HELD\_FOR\_REVIEW (\code{manipulation_risk}) and a case is opened; nothing is restricted (ES-04). 4c High value with weak or dissimilar evidence (rule R4): HELD\_FOR\_REVIEW (\code{high_value_low_confidence}) (ES-06). 4d Engine fails or exceeds 2,000 ms: HELD\_FOR\_REVIEW (\code{engine_failure}), failure logged, no state assigned.} \\
 \end{longtable}
-
-\section{Functional Requirements}
-Functional requirements are grouped by module. Table~\ref{tab:fr} lists the core (CORE-tagged) requirements of the modules worked on in Iteration~1 and their status. ``Partial'' names what is left.
+\section{Functional Requirements}\label{sec:functional-requirements}
+Functional requirements are grouped by module. Table~\ref{tab:core-functional-requirements-iteration} lists the core (CORE-tagged) requirements of the modules worked on in Iteration 1 and their status. ``Partial'' names what is left.
 
 \begingroup\small
-\begin{longtable}{L{0.11\textwidth}L{0.5\textwidth}L{0.3\textwidth}}
-\caption{Core functional requirements and Iteration~1 status}\label{tab:fr}\\
-\toprule ID & Requirement (shortened) & Iteration 1 \\ \midrule \endfirsthead
-\toprule ID & Requirement (shortened) & Iteration 1 \\ \midrule \endhead
-\multicolumn{3}{l}{\textbf{Module 3: Resource Sharing (borrowing lifecycle)}}\\
+\begin{longtable}{@{}L{43pt}L{209pt}L{115pt}@{}}
+\caption{Core functional requirements and Iteration 1 status}\label{tab:core-functional-requirements-iteration}\\
+\toprule
+ID & Requirement (shortened) & Iteration 1 \\
+\midrule
+\endfirsthead
+\toprule
+ID & Requirement (shortened) & Iteration 1 \\
+\midrule
+\endhead
+\bottomrule
+\endlastfoot
+\multicolumn{3}{@{}l}{\textbf{Module 3: Resource Sharing (borrowing lifecycle)}} \\
 FR-B-05 & No two held bookings for one item overlap; enforced by a database constraint at acceptance & Built \\
-FR-B-06 & Create a request with dates, soft hold, \code{request\_created} & Built; duplicate and blocked-borrower checks in It.~2 \\
+FR-B-06 & Create a request with dates, soft hold, \code{request_created} & Built; duplicate and blocked-borrower checks in It. 2 \\
 FR-B-07 & Locality check, then assessment, before the lender sees the request; holds never reject & Built (locality read from stored result) \\
 FR-B-08 & Enforce the single lifecycle; invalid transitions rejected and logged & Built \\
 FR-B-09 & Immutable events with the frozen schema; state derived by replay & Built \\
-FR-B-10 & Accept or decline; acceptance declines overlapping pending requests & Built; counter-offer, chat and expiry in It.~2 \\
-FR-B-11 & Handover checklist and borrower confirmation; deposit recorded (record only) & Built; photos in It.~2 (D20) \\
-FR-B-12 & No-show after grace period; borrower may dispute condition & It.~2 (scheduler) \\
+FR-B-10 & Accept or decline; acceptance declines overlapping pending requests & Built; counter-offer, chat and expiry in It. 2 \\
+FR-B-11 & Handover checklist and borrower confirmation; deposit recorded (record only) & Built; photos in It. 2 (D20) \\
+FR-B-12 & No-show after grace period; borrower may dispute condition & It. 2 (scheduler) \\
 FR-B-13 & Return, inspection, on-time or late outcome, close & Built \\
-FR-B-14 & Extensions and overdue escalation & It.~2 \\
+FR-B-14 & Extensions and overdue escalation & It. 2 \\
 FR-B-15 & Outcome to the engine, booking released, deposit release recorded & Built \\
 FR-B-16 & Raise a dispute in ACCEPTED, ACTIVE or RETURN\_INITIATED; freeze; evidence trail & Built \\
-FR-B-17 & Withdraw restores the previous state; respond and no-response handling & Withdraw built; response handling in It.~2 \\
-FR-B-18 & Idempotent scheduled jobs & It.~2 \\
-\multicolumn{3}{l}{\textbf{Module 5: Trust, Reputation and Safety (assurance engine)}}\\
+FR-B-17 & Withdraw restores the previous state; respond and no-response handling & Withdraw built; response handling in It. 2 \\
+FR-B-18 & Idempotent scheduled jobs & It. 2 \\
+\multicolumn{3}{@{}l}{\textbf{Module 5: Trust, Reputation and Safety (assurance engine)}} \\
 FR-T-01 & Exactly one of four states with confidence, evidence, signals, safeguards, explanation & Built \\
 FR-T-02 & Recency-weighted Beta posterior per role, 90\% interval; no history gives INSUFFICIENT & Built \\
 FR-T-03 & Weight by recency and similarity (category, value band, duration); confirmed outcomes only & Built \\
 FR-T-04 & Bounded $k$-hop evidence ($k=3$, decay 0.7), capped; lifts sparse cases to REVIEW only & Built \\
-FR-T-05 & Manipulation risk 0--100, separate from trust, with evidence & Partial: S1, S4 and retaliation check; S2, S3, S5 in It.~2 \\
+FR-T-05 & Manipulation risk 0--100, separate from trust, with evidence & Partial: S1, S4 and retaliation check; S2, S3, S5 in It. 2 \\
 FR-T-06 & Context-aware policy; corroborated risk holds for a moderator, never restricts & Built \\
-FR-T-07 & Engine failure or timeout holds with \code{engine\_failure}; no default state & Built \\
-FR-T-08 & Factors shown separately, never one number & Built for the lender screen; trust profile (D2) in It.~2 \\
-FR-T-09 & Reviews after completed loans; retaliation flagged & Partial: retaliation check on recorded reviews; review submission in It.~2 \\
+FR-T-07 & Engine failure or timeout holds with \code{engine_failure}; no default state & Built \\
+FR-T-08 & Factors shown separately, never one number & Built for the lender screen; trust profile (D2) in It. 2 \\
+FR-T-09 & Reviews after completed loans; retaliation flagged & Partial: retaliation check on recorded reviews; review submission in It. 2 \\
 FR-T-10 & Escalation case with trigger, priority and evidence trail; reuse an open case & Built \\
-FR-T-11 & Moderator decides with a mandatory reason; dispute closes via \code{dispute\_resolved} & Built; information requests and reversal in It.~2 \\
-\multicolumn{3}{l}{\textbf{Module 9: Administration and Moderation}}\\
-FR-M-05 & Tamper-evident log of every privileged action and transition & Partial: append-only hash-chained log built; filters, masking and screen in It.~2 \\
-\multicolumn{3}{l}{\textbf{Module 10: Analytics (evaluation support)}}\\
+FR-T-11 & Moderator decides with a mandatory reason; dispute closes via \code{dispute_resolved} & Built; information requests and reversal in It. 2 \\
+\multicolumn{3}{@{}l}{\textbf{Module 9: Administration and Moderation}} \\
+FR-M-05 & Tamper-evident log of every privileged action and transition & Partial: append-only hash-chained log built; filters, masking and screen in It. 2 \\
+\multicolumn{3}{@{}l}{\textbf{Module 10: Analytics (evaluation support)}} \\
 FR-N-03 & Record every event needed for evaluation under the frozen schema & Built \\
-\multicolumn{3}{l}{\textbf{Module 1: User and Community Management}}\\
-FR-A-04 & Authenticate users and manage sessions & Partial: password login (argon2, JWT); lockout and reset in It.~2 \\
-FR-A-06 to A-11 & Community selection, locality verification, membership approval & Designed (A11); It.~2 \\
-\bottomrule
+\multicolumn{3}{@{}l}{\textbf{Module 1: User and Community Management}} \\
+FR-A-04 & Authenticate users and manage sessions & Partial: password login (argon2, JWT); lockout and reset in It. 2 \\
+FR-A-06 to A-11 & Community selection, locality verification, membership approval & Designed (A11); It. 2 \\
 \end{longtable}
 \endgroup
+\section{Non-Functional Requirements}\label{sec:non-functional-requirements}
+Numeric targets are set only where Iteration 1 can measure them; the others are set in Iteration 2, once a baseline exists.
 
-\section{Non-Functional Requirements}
-Numeric targets are set only where Iteration~1 can measure them; the others are set in Iteration~2, once a baseline exists.
-
-\subsection{Reliability}
+\subsection{Reliability}\label{sec:reliability}
 \begin{itemize}
-\item \textbf{NFR-R-01} With N simultaneous acceptances for overlapping dates, exactly one commits, in 100\% of runs. \emph{Met}: 5 parallel acceptances, 3 rounds (TC-08).
-\item \textbf{NFR-R-02} Invalid lifecycle transitions are rejected 100\% of the time. \emph{Met}: 263 of 263 invalid pairs refused in Python and by the database (TC-01).
-\item \textbf{NFR-R-03} Replay reproduces stored state exactly. \emph{Met}: in Python and in SQL (\code{replay\_state()}), TC-07.
-\item \textbf{NFR-R-04} Engine failure routes to human review. \emph{Met}: timeout and exception both hold with \code{engine\_failure} (TC-36, TC-37).
+\item \textbf{NFR-R-01} With N simultaneous acceptances for overlapping dates, exactly one commits, in 100\% of runs. \textit{Met}: 5 parallel acceptances, 3 rounds (TC-08).
+\item \textbf{NFR-R-02} Invalid lifecycle transitions are rejected 100\% of the time. \textit{Met}: 263 of 263 invalid pairs refused in Python and by the database (TC-01).
+\item \textbf{NFR-R-03} Replay reproduces stored state exactly. \textit{Met}: in Python and in SQL (\code{replay_state()}), TC-07.
+\item \textbf{NFR-R-04} Engine failure routes to human review. \textit{Met}: timeout and exception both hold with \code{engine_failure} (TC-36, TC-37).
 \end{itemize}
 
-\subsection{Usability}
+\subsection{Usability}\label{sec:usability}
 \begin{itemize}
-\item \textbf{NFR-U-01} Every screen with an assurance state shows its evidence, never one number. \emph{Met} on the lender and moderator screens (TC-100, TC-107).
-\item \textbf{NFR-U-02, U-03} Task completion and SUS scores: measured with first-time users in Iteration~2.
-\item \textbf{NFR-U-05} Interface language: English in Iteration~1; Urdu is an open question.
+\item \textbf{NFR-U-01} Every screen with an assurance state shows its evidence, never one number. \textit{Met} on the lender and moderator screens (TC-100, TC-107).
+\item \textbf{NFR-U-02, U-03} Task completion and SUS scores: measured with first-time users in Iteration 2.
+\item \textbf{NFR-U-05} Interface language: English in Iteration 1; Urdu is an open question.
 \end{itemize}
 
-\subsection{Performance}
+\subsection{Performance}\label{sec:performance}
 \begin{itemize}
-\item \textbf{NFR-P-03} Direct-evidence assessment P95 $\leq$ 1~s; $k$-hop latency reported for $k=1$ to 4. \emph{Not yet measured} for the full assessment, which will be timed in Iteration~2. Measured so far for the $k$-hop component only: P95 0.08, 0.71, 4.52 and 15.92~ms for $k=1$ to 4 on the 2{,}026-user synthetic tier.
-\item \textbf{NFR-P-04} State transition commit P95 $\leq$ 500~ms. \emph{Not yet measured}; TC-61 (suite 15) runs in Iteration~2.
+\item \textbf{NFR-P-03} Direct-evidence assessment P95 $\leq$1 s; $k$-hop latency reported for $k=1$ to 4. \textit{Not yet measured} for the full assessment, which will be timed in Iteration 2. Measured so far for the $k$-hop component only: P95 0.08, 0.71, 4.52 and 15.92 ms for $k=1$ to 4 on the 2,026-user synthetic tier.
+\item \textbf{NFR-P-04} State transition commit P95 $\leq$500 ms. \textit{Not yet measured}; TC-61 (suite 15) runs in Iteration 2.
 \end{itemize}
 
-\subsection{Security}
+\subsection{Security}\label{sec:security}
 \begin{itemize}
 \item \textbf{NFR-S-01} Passwords stored only as salted argon2 hashes; TLS for all traffic (Render terminates HTTPS).
-\item \textbf{NFR-S-02} Every transition checks and records the actor's authorisation; 100\% of unauthorised attempts rejected and logged. \emph{Met} (TC-10, audit entries for refused commands).
-\item \textbf{NFR-S-03} A moderator acts only in their own community. \emph{Met} (moderation tests).
-\item \textbf{NFR-S-05} Audit and event logs are append-only and tamper-evident. \emph{Met}: UPDATE and DELETE refused; an altered event is detected by \code{verify\_event\_chain()} (TC-13, TC-14).
-\item \textbf{NFR-S-07} No CNIC stored. \emph{Met}: no such column; checked by the privacy suite.
+\item \textbf{NFR-S-02} Every transition checks and records the actor's authorisation; 100\% of unauthorised attempts rejected and logged. \textit{Met} (TC-10, audit entries for refused commands).
+\item \textbf{NFR-S-03} A moderator acts only in their own community. \textit{Met} (moderation tests).
+\item \textbf{NFR-S-05} Audit and event logs are append-only and tamper-evident. \textit{Met}: UPDATE and DELETE refused; an altered event is detected by \code{verify_event_chain()} (TC-13, TC-14).
+\item \textbf{NFR-S-07} No CNIC stored. \textit{Met}: no such column; checked by the privacy suite.
 \end{itemize}
 
-\subsection{Privacy, maintainability and decision quality}
+\subsection{Privacy, maintainability and decision quality}\label{sec:privacy-maintainability-decision-quality}
 \begin{itemize}
-\item \textbf{NFR-PR-01} Exact location never appears in profiles, listings, API responses or logs. \emph{Met} for the built API: every response model and log line is scanned (suite 14).
-\item \textbf{NFR-D-01} 100\% of stored assessments record \code{config\_version}. \emph{Met} (TC-71; the column is NOT NULL).
-\item \textbf{NFR-D-04} Automated tests run on every build and a failing test blocks merge. \emph{Met}: three CI jobs on every pull request.
-\item \textbf{NFR-Q-01} At mid-term, $\geq$7 of 13 scenarios correct in state and explanation. \emph{Met}: 7 of 7 (Section~\ref{sec:scenario-results}).
+\item \textbf{NFR-PR-01} Exact location never appears in profiles, listings, API responses or logs. \textit{Met} for the built API: every response model and log line is scanned (suite 14).
+\item \textbf{NFR-D-01} 100\% of stored assessments record \code{config_version}. \textit{Met} (TC-71; the column is NOT NULL).
+\item \textbf{NFR-D-04} Automated tests run on every build and a failing test blocks merge. \textit{Met}: three CI jobs on every pull request.
+\item \textbf{NFR-Q-01} At mid-term, $\geq$7 of 13 scenarios correct in state and explanation. \textit{Met}: 7 of 7 (Section~\ref{sec:scenario-results-nfr-q-01}).
 \end{itemize}
 
-\section{Acceptance Criteria}
-25 of the 35 core FRs have a Given/When/Then criterion in FR/NFR Part E. Table~\ref{tab:ac} shows a selection with the test that checks it.
+\section{Acceptance Criteria}\label{sec:acceptance-criteria}
+25 of the 35 core FRs have a Given/When/Then criterion in FR/NFR Part E. Table~\ref{tab:selected-acceptance-criteria-their} shows a selection with the test that checks it.
 
 \begingroup\small
-\begin{longtable}{L{0.1\textwidth}L{0.2\textwidth}L{0.18\textwidth}L{0.32\textwidth}L{0.09\textwidth}}
-\caption{Selected acceptance criteria and their tests}\label{tab:ac}\\
-\toprule FR & Given & When & Then & Test \\ \midrule \endfirsthead
-\toprule FR & Given & When & Then & Test \\ \midrule \endhead
+\begin{longtable}{@{}L{39pt}L{81pt}L{72pt}L{133pt}L{30pt}@{}}
+\caption{Selected acceptance criteria and their tests}\label{tab:selected-acceptance-criteria-their}\\
+\toprule
+FR & Given & When & Then & Test \\
+\midrule
+\endfirsthead
+\toprule
+FR & Given & When & Then & Test \\
+\midrule
+\endhead
+\bottomrule
+\endlastfoot
 FR-B-05 & Two ASSESSED requests with overlapping dates & Both lenders accept at the same moment & Exactly one is ACCEPTED; the other ends DECLINED ``dates taken'' & TC-08 \\
 FR-B-08 & A booking in COMPLETED & A transition to ACCEPTED is attempted & Rejected (409) and logged with the reason & TC-02 \\
-FR-B-09 & A transaction with N events & Its state is rebuilt by replay in \code{stream\_seq} order & The rebuilt state equals the stored state & TC-07 \\
+FR-B-09 & A transaction with N events & Its state is rebuilt by replay in \code{stream_seq} order & The rebuilt state equals the stored state & TC-07 \\
 FR-B-16 & An ACTIVE loan & A party raises a dispute with a reason & DISPUTED, previous state stored, transitions frozen, case opened & TC-50 \\
-FR-B-17 & An open dispute & The raising party withdraws & \code{dispute\_withdrawn} restores the previous state & TC-51 \\
+FR-B-17 & An open dispute & The raising party withdraws & \code{dispute_withdrawn} restores the previous state & TC-51 \\
 FR-T-02 & A user with no verified history & The assessment runs & INSUFFICIENT\_EVIDENCE with Beta(1,1) and a wide interval & TC-20, TC-40 \\
 FR-T-03 & Outcomes aged 10 and 360 days, half-life 180 days & Weights are computed & About 0.96 and 0.25; unconfirmed outcomes excluded & TC-22, TC-23 \\
-FR-T-04 & Two paths of at most 3 hops via different first hops & Indirect evidence is computed & Reliability $\leq$ 0.6, decay $0.7^{h-1}$, longer paths ignored & TC-25, TC-26 \\
-FR-T-06 & Strong trust and corroborated risk $\geq$ 60 & The policy runs & HELD\_FOR\_REVIEW (\code{manipulation\_risk}), case opened, nothing restricted & TC-43 \\
-FR-T-07 & An injected engine timeout & A request is assessed & HELD\_FOR\_REVIEW (\code{engine\_failure}), failure logged, no state & TC-36 \\
-FR-T-11 & An open dispute and an authorised moderator & The moderator decides with a reason & \code{dispute\_resolved} completes the loan; the resolved outcome becomes evidence & TC-53 \\
+FR-T-04 & Two paths of at most 3 hops via different first hops & Indirect evidence is computed & Reliability $\leq 0.6$, decay $0.7^{h-1}$, longer paths ignored & TC-25, TC-26 \\
+FR-T-06 & Strong trust and corroborated risk $\geq 60$ & The policy runs & HELD\_FOR\_REVIEW (\code{manipulation_risk}), case opened, nothing restricted & TC-43 \\
+FR-T-07 & An injected engine timeout & A request is assessed & HELD\_FOR\_REVIEW (\code{engine_failure}), failure logged, no state & TC-36 \\
+FR-T-11 & An open dispute and an authorised moderator & The moderator decides with a reason & \code{dispute_resolved} completes the loan; the resolved outcome becomes evidence & TC-53 \\
 FR-M-05 & Any transition & It is performed & An audit entry exists; altering it is detected & TC-14 \\
-\bottomrule
 \end{longtable}
 \endgroup
-
-\section{Requirements Traceability}
+\section{Requirements Traceability}\label{sec:requirements-traceability}
 \begingroup\small
-\begin{longtable}{L{0.12\textwidth}L{0.17\textwidth}L{0.22\textwidth}L{0.26\textwidth}L{0.13\textwidth}}
-\caption{Traceability from requirement to design, code and tests}\label{tab:trace}\\
-\toprule Requirement & Design & Code & Tests & Owner \\ \midrule \endfirsthead
-\toprule Requirement & Design & Code & Tests & Owner \\ \midrule \endhead
-FR-B-05 & ADR-0002; ERD \code{booking} & \code{schema} EXCLUDE; \code{service.\allowbreak{}accept} & \code{test\_borrowing\_service} (TC-08, TC-15) & S1 \\
-FR-B-08 & State machine; transition table & \code{transition\_table.\allowbreak{}py}; FK to \code{allowed\_transition} & \code{test\_transition\_table} (TC-01, TC-02, TC-05) & S1 \\
-FR-B-09 & ADR-0005; event catalogue & \code{eventstore/\allowbreak{}store.\allowbreak{}py}; \code{aggregate.\allowbreak{}py} & \code{test\_event\_store}, \code{test\_aggregate} (TC-07) & S1 \\
-FR-B-16, B-17 & Sequence (c); ADR-0004 & \code{service.\allowbreak{}raise\_dispute}, \code{withdraw\_dispute} & \code{test\_disputes}, \code{test\_api\_disputes} (TC-50--52) & S3 \\
-FR-T-02, T-03 & Algorithm 1 & \code{estimation/\allowbreak{}posterior.\allowbreak{}py}, \code{similarity.\allowbreak{}py} & \code{test\_beta\_posterior}, \code{test\_posterior\_properties}, \code{test\_similarity} (TC-20--24, TC-77) & S2 \\
-FR-T-04 & Algorithm 2; ADR-0006, 0008 & \code{indirect/\allowbreak{}khop.\allowbreak{}py}, \code{edges.\allowbreak{}py} & \code{test\_khop}, \code{test\_trust\_edges}, \code{test\_khop\_on\_dataset} (TC-25--28) & S1 \\
-FR-T-05 & Algorithm 3; ADR-0007; D18, D19 & \code{detection/\allowbreak{}manipulation.\allowbreak{}py} & \code{test\_manipulation} (TC-30, TC-38) & S2 \\
-FR-T-06, T-07 & Algorithm 4; activity diagram & \code{policy/\allowbreak{}decision.\allowbreak{}py}; \code{service} timeout & \code{test\_decision\_policy} (TC-29--39) & S2 \\
-FR-T-01, T-08 & Explanation design; W1 & \code{policy/\allowbreak{}explanation.\allowbreak{}py}; \code{AssurancePanel} & \code{test\_explanation}, \code{lender-evidence-test} (TC-75, TC-100) & S2, S3 \\
-FR-T-10, T-11 & Sequence (c); ADR-0003; escalation state machine & \code{moderation/\allowbreak{}decisions.\allowbreak{}py}; \code{service.\allowbreak{}decide} & \code{test\_moderation}, \code{test\_moderation\_rules} (TC-53--57) & S3 \\
-FR-M-05 & ERD \code{audit\_log} & hash chain triggers; \code{AuditLog} port & \code{test\_event\_store} (TC-13, TC-14) & S1 \\
-NFR-PR-01 & DFD privacy boundary; D13 & \code{StrictIn} request bodies & \code{test\_privacy}, \code{test\_fuzz} (TC-58, TC-60, TC-84) & S1 \\
-NFR-Q-01 & Scenario fixtures & engine end to end & \code{tests/\allowbreak{}scenarios/\allowbreak{}} (TC-40--47) & S3 \\
+\begin{longtable}{@{}L{47pt}L{69pt}L{89pt}L{107pt}L{45pt}@{}}
+\caption{Traceability from requirement to design, code and tests}\label{tab:traceability-from-requirement-design}\\
+\toprule
+Requirement & Design & Code & Tests & Owner \\
+\midrule
+\endfirsthead
+\toprule
+Requirement & Design & Code & Tests & Owner \\
+\midrule
+\endhead
 \bottomrule
+\endlastfoot
+FR-B-05 & ADR-0002; ERD \code{booking} & \code{schema} EXCLUDE; \code{service.accept} & \code{test_borrowing_service} (TC-08, TC-15) & S1 \\
+FR-B-08 & State machine; transition table & \code{transition_table.py}; FK to \code{allowed_transition} & \code{test_transition_table} (TC-01, TC-02, TC-05) & S1 \\
+FR-B-09 & ADR-0005; event catalogue & \code{eventstore/store.py}; \code{aggregate.py} & \code{test_event_store}, \code{test_aggregate} (TC-07) & S1 \\
+FR-B-16, B-17 & Sequence (c); ADR-0004 & \code{service.raise_dispute}, \code{withdraw_dispute} & \code{test_disputes}, \code{test_api_disputes} (TC-50--52) & S3 \\
+FR-T-02, T-03 & Algorithm 1 & \code{estimation/posterior.py}, \code{similarity.py} & \code{test_beta_posterior}, \code{test_posterior_properties}, \code{test_similarity} (TC-20--24, TC-77) & S2 \\
+FR-T-04 & Algorithm 2; ADR-0006, 0008 & \code{indirect/khop.py}, \code{edges.py} & \code{test_khop}, \code{test_trust_edges}, \code{test_khop_on_dataset} (TC-25--28) & S1 \\
+FR-T-05 & Algorithm 3; ADR-0007; D18, D19 & \code{detection/manipulation.py} & \code{test_manipulation} (TC-30, TC-38) & S2 \\
+FR-T-06, T-07 & Algorithm 4; activity diagram & \code{policy/decision.py}; \code{service} timeout & \code{test_decision_policy} (TC-29--39) & S2 \\
+FR-T-01, T-08 & Explanation design; W1 & \code{policy/explanation.py}; \code{AssurancePanel} & \code{test_explanation}, \code{lender-evidence-test} (TC-75, TC-100) & S2, S3 \\
+FR-T-10, T-11 & Sequence (c); ADR-0003; escalation state machine & \code{moderation/decisions.py}; \code{service.decide} & \code{test_moderation}, \code{test_moderation_rules} (TC-53--57) & S3 \\
+FR-M-05 & ERD \code{audit_log} & hash chain triggers; \code{AuditLog} port & \code{test_event_store} (TC-13, TC-14) & S1 \\
+NFR-PR-01 & DFD privacy boundary; D13 & \code{StrictIn} request bodies & \code{test_privacy}, \code{test_fuzz} (TC-58, TC-60, TC-84) & S1 \\
+NFR-Q-01 & Scenario fixtures & engine end to end & \code{tests/scenarios/} (TC-40--47) & S3 \\
 \end{longtable}
 \endgroup

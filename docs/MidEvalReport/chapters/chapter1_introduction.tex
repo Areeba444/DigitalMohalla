@@ -1,16 +1,15 @@
-\chapter{Introduction and Project Vision}
-\label{ch:intro}
+\chapter{Introduction and Project Vision}\label{ch:introduction-project-vision}
+\section{Project Overview}\label{sec:project-overview}
+Digital Mohalla (\textit{mohalla}: neighbourhood) is a neighbourhood borrowing and lending platform. A member lists an item, a neighbour requests it for some dates, the lender decides, the item changes hands, and it comes back. Every step is recorded, and the outcome of each loan becomes evidence for the next one.
 
-\section{Project Overview}
-Digital Mohalla (\emph{mohalla}: neighbourhood) is a neighbourhood borrowing and lending platform. A member lists an item, a neighbour requests it for some dates, the lender decides, the item changes hands, and it comes back. Every step is recorded, and the outcome of each loan becomes evidence for the next one.
+Its central computing problem is to decide whether a proposed loan has enough trustworthy evidence when history is sparse, role-dependent and possibly manipulated, while protecting location privacy and sending uncertain cases to people. A recency-weighted Beta posterior, bounded indirect evidence and interpretable manipulation signals produce an explained \textit{assurance state}; the platform never labels a person or issues a single trust score. Everything else in the platform (listings, workflow, search, interface) exists to feed that decision or to act on it.
 
-Its central computing problem is to decide whether a proposed loan has enough trustworthy evidence when history is sparse, role-dependent and possibly manipulated, while protecting location privacy and sending uncertain cases to people. A recency-weighted Beta posterior, bounded indirect evidence and interpretable manipulation signals produce an explained \emph{assurance state}; the platform never labels a person or issues a single trust score. Everything else in the platform (listings, workflow, search, interface) exists to feed that decision or to act on it.
-
-\section{Problem Statement}
+\section{Problem Statement}\label{sec:problem-statement}
 \begin{quote}
 Determine whether a proposed borrowing transaction has sufficient trustworthy evidence under sparse, role-dependent and potentially manipulated history, while protecting location privacy and escalating uncertain cases to humans.
 \end{quote}
 Four properties make this hard:
+
 \begin{enumerate}
 \item \textbf{Sparse evidence.} Most neighbours have a handful of loans, or none. A newcomer with no history is not a risky person, so ``no evidence'' must not be reported as ``bad evidence''.
 \item \textbf{Role dependence.} Returning items on time as a borrower says little about describing items honestly as a lender, so evidence is kept per role and metric.
@@ -18,98 +17,110 @@ Four properties make this hard:
 \item \textbf{Manipulation.} A small ring of accounts can rate one another up, and a lender can post a retaliatory review after a dispute. A real family that lends within itself looks statistically similar to such a ring, so signals must be evidence for a human, never an automatic verdict.
 \end{enumerate}
 
-\section{Problem Context and Motivation}
-Lending between neighbours is an old practice; what a platform has to add is a way to make a handover between near-strangers feel safe. In the team's own experience of Pakistani neighbourhoods, such lending is arranged informally, in messaging groups and by word of mouth, which leaves no record of who borrowed what, no evidence of the item's condition and no process for resolving a dispute. Research on online marketplaces shows that the trust cues a platform chooses change behaviour \cite{ert2016trust} and that averaged reputation hides uncertainty and is easy to game \cite{josang2007survey}. The project therefore puts its effort into the quality of the evidence behind a decision, not into another listings app.
+\section{Problem Context and Motivation}\label{sec:problem-context-motivation}
+Lending between neighbours is an old practice; what a platform has to add is a way to make a handover between near-strangers feel safe. In the team's own experience of Pakistani neighbourhoods, such lending is arranged informally, in messaging groups and by word of mouth, which leaves no record of who borrowed what, no evidence of the item's condition and no process for resolving a dispute. Research on online marketplaces shows that the trust cues a platform chooses change behaviour \cite{ert2016} and that averaged reputation hides uncertainty and is easy to game \cite{josang2007survey}. The project therefore puts its effort into the quality of the evidence behind a decision, not into another listings app.
 
-\section{Project Vision}
+\section{Project Vision}\label{sec:project-vision}
 A neighbourhood platform where any member can lend to any other member with a clear, honest picture of the evidence behind the request: how much verified history exists, how certain it is, what the community knows, whether anything looks anomalous, and which safeguards are sensible. The platform supports the lender's decision and never makes it for them; whenever the evidence is uncertain or suspicious, a human moderator decides.
 
-\section{Project Objectives}
+\section{Project Objectives}\label{sec:project-objectives}
 \begin{enumerate}
 \item Record every borrowing transaction as an immutable, replayable event stream in which invalid transitions and double bookings are impossible (NFR-R-01 to R-03: 100\% of runs).
-\item Return, for every request, exactly one of four assurance states with its uncertainty, evidence, safeguards and explanation (FR-T-01), with direct-evidence assessment under 1~s at the 95th percentile (NFR-P-03).
+\item Return, for every request, exactly one of four assurance states with its uncertainty, evidence, safeguards and explanation (FR-T-01), with direct-evidence assessment under 1 s at the 95th percentile (NFR-P-03).
 \item Show that the engine behaves as designed on the evaluation scenarios: at least 7 of 13 at mid-term and 13 of 13 at the end, state and explanation both correct (NFR-Q-01).
 \item Route every hold and dispute to a moderator, never restrict anyone automatically, and record each decision with a reason in a tamper-evident log (FR-T-11, FR-M-05).
 \item Keep exact location and identity numbers out of every API response and log (NFR-PR-01, NFR-S-07).
 \item In FYP-2, show that the full engine beats global-average and role-average baselines on Brier score and calibration, with each component justified by ablation (NFR-Q-02).
 \end{enumerate}
 
-\section{Project Scope}
+\section{Project Scope}\label{sec:project-scope}
 The committed core is: community membership with privacy-preserving locality verification, borrowing requests, the event-sourced transaction lifecycle, evidence-based assurance, handover and return confirmation, dispute management and moderator review. Requirements are tagged CORE (named in the committed core), ENAB (core-enabling), SUPP (supporting) and STRC (stretch, only after the core works).
 
-\textbf{Excluded} (or stretch only): vendors, community events, kameti (rotating savings), a general chatbot, a social feed, advertisements and broad analytics. Search and matching are supporting scope for Iteration~3. The project must not become a generic social network, a conventional listings app, a surveillance system, an opaque social-scoring system, or a large-language-model substitute for a computing challenge.
+\textbf{Excluded} (or stretch only): vendors, community events, kameti (rotating savings), a general chatbot, a social feed, advertisements and broad analytics. Search and matching are supporting scope for Iteration 3. The project must not become a generic social network, a conventional listings app, a surveillance system, an opaque social-scoring system, or a large-language-model substitute for a computing challenge.
 
-\section{Project Modules}
-\label{sec:modules}
-The platform is organised into the ten modules of the project overview. Table~\ref{tab:modules} gives each module's scope and its state after Iteration~1.
+\section{Project Modules}\label{sec:project-modules}
+The platform is organised into the ten modules of the project overview. Table~\ref{tab:ten-modules-their-state} gives each module's scope and its state after Iteration 1.
 
-\begin{longtable}{L{0.04\textwidth}L{0.27\textwidth}L{0.13\textwidth}L{0.44\textwidth}}
-\caption{The ten modules and their state after Iteration~1}\label{tab:modules}\\
+\begin{table}[!htbp]
+\centering
+\caption{The ten modules and their state after Iteration 1}\label{tab:ten-modules-their-state}
+\begin{tabular}{@{}L{20pt}L{110pt}L{52pt}L{179pt}@{}}
 \toprule
-\# & Module & Scope & Iteration 1 \\ \midrule \endfirsthead
-\toprule \# & Module & Scope & Iteration 1 \\ \midrule \endhead
-1 & User \& Community Management & Core (membership, locality) & Password login and roles; communities, memberships and items seeded. Locality method designed (A11), build in Iteration~2 \\
+\# & Module & Scope & Iteration 1 \\
+\midrule
+1 & User \& Community Management & Core (membership, locality) & Password login and roles; communities, memberships and items seeded. Locality method designed (A11), build in Iteration 2 \\
 2 & Community Events \& Activities & Stretch & Not started (by design) \\
 3 & Resource Sharing \& Item Management & Core (lifecycle) & \textbf{Built}: event store, 14-state lifecycle, request, accept/decline/cancel, handover, return, disputes, replay, double-booking guard \\
-4 & Search, Discovery \& Matching & Supporting & Not started; Iteration~3 \\
+4 & Search, Discovery \& Matching & Supporting & Not started; Iteration 3 \\
 5 & Trust, Reputation \& Safety & \textbf{Core (CCP)} & \textbf{Built}: Beta posterior, similarity, trust edges, $k$-hop, two manipulation signals and the retaliation check, decision rules R1--R9 (R6 in two variants), explanations, engine-failure hold \\
 6 & Community Forum \& Chatbot & Stretch & Not started (by design) \\
-7 & Communication \& Notifications & Enabling & Not started; in-app notifications in Iteration~2 \\
+7 & Communication \& Notifications & Enabling & Not started; in-app notifications in Iteration 2 \\
 8 & Vendor Management & Stretch & Not started (by design) \\
-9 & Administration \& Moderation & Core (cases, disputes, audit) & \textbf{Built}: escalation cases with evidence trail, moderator decisions on disputes and holds, append-only hash-chained audit log; audit-log screen in Iteration~2 \\
+9 & Administration \& Moderation & Core (cases, disputes, audit) & \textbf{Built}: escalation cases with evidence trail, moderator decisions on disputes and holds, append-only hash-chained audit log; audit-log screen in Iteration 2 \\
 10 & Analytics \& Reports & Core (event logging, evaluation) & \textbf{Built}: frozen event logging, synthetic dataset generator, scenario suite in CI, $k$ sweep \\
 \bottomrule
-\end{longtable}
-
-\section{Stakeholders and User Classes}
-\begin{longtable}{L{0.2\textwidth}L{0.72\textwidth}}
-\caption{User classes}\label{tab:users}\\
-\toprule User class & Characteristics and needs \\ \midrule \endfirsthead
-\toprule User class & Characteristics and needs \\ \midrule \endhead
+\end{tabular}
+\end{table}
+\section{Stakeholders and User Classes}\label{sec:stakeholders-user-classes}
+\begin{table}[H]
+\centering
+\caption{User classes}\label{tab:user-classes}
+\begin{tabular}{@{}L{81pt}L{298pt}@{}}
+\toprule
+User class & Characteristics and needs \\
+\midrule
 Borrower & Requests items for dates; needs a fair hearing even with no history; may raise or withdraw a dispute. \\
 Lender & Owns items; decides requests from the evidence summary; records the handover checklist and deposit (record only, no money moves). \\
 Newcomer & A borrower with no verified history; must receive INSUFFICIENT\_EVIDENCE with a route forward, never a negative label. \\
 Moderator & A member trusted by one community; decides holds and disputes in that community only, always with a reason. \\
-Admin & Manages communities, roles and categories (Iteration~2 onwards). \\
+Admin & Manages communities, roles and categories (Iteration 2 onwards). \\
 Community & The group of members who share a locality; the source of indirect evidence and the unit of moderation. \\
 Project team and examiners & Need replayable events, versioned parameters and reproducible scenario results to evaluate the engine. \\
 \bottomrule
-\end{longtable}
-
-\section{Success Criteria}
-\begin{longtable}{L{0.3\textwidth}L{0.36\textwidth}L{0.26\textwidth}}
-\caption{Measurable success criteria}\label{tab:success}\\
-\toprule Criterion & Measure & Status after Iteration 1 \\ \midrule \endfirsthead
-\toprule Criterion & Measure & Status after Iteration 1 \\ \midrule \endhead
+\end{tabular}
+\end{table}
+\section{Success Criteria}\label{sec:success-criteria}
+\begingroup
+\begin{longtable}{@{}L{124pt}L{149pt}L{98pt}@{}}
+\caption{Measurable success criteria}\label{tab:measurable-success-criteria}\\
+\toprule
+Criterion & Measure & Status after Iteration 1 \\
+\midrule
+\endfirsthead
+\toprule
+Criterion & Measure & Status after Iteration 1 \\
+\midrule
+\endhead
+\bottomrule
+\endlastfoot
 No double booking (NFR-R-01) & Exactly one of N simultaneous acceptances commits, every run & Met (TC-08: 5 simultaneous acceptances, 3 rounds) \\
 Invalid transitions rejected (NFR-R-02) & 100\% of invalid (state, event) pairs refused & Met (TC-01: all 294 state--event pairs, 263 refused) \\
 Replay (NFR-R-03) & Rebuilt state equals stored state & Met (TC-07 and the replay tests of suite 2) \\
 Tamper evidence (NFR-S-05) & 100\% of altered events detected & Met (TC-13, TC-14) \\
-Configuration versioned (NFR-D-01) & 100\% of assessments store \code{config\_version} & Met (TC-71, database NOT NULL) \\
+Configuration versioned (NFR-D-01) & 100\% of assessments store \code{config_version} & Met (TC-71, database NOT NULL) \\
 Scenario quality (NFR-Q-01) & $\geq$7 of 13 at mid-term, 13 of 13 final & 7 of 7 required pass; 11 of 13 states end to end \\
-Assessment latency (NFR-P-03) & Direct evidence P95 $\leq$ 1~s & Not yet measured (Iteration~2); $k$-hop component only: P95 4.5~ms at $k=3$ \\
+Assessment latency (NFR-P-03) & Direct evidence P95 $\leq$1 s & Not yet measured (Iteration 2); $k$-hop component only: P95 4.5 ms at $k=3$ \\
 Privacy (NFR-PR-01, S-07) & No location or CNIC in any response or log & Met for the built API (suite 14) \\
 Decision quality (NFR-Q-02) & Beats averaging baselines on Brier score and calibration & FYP-2 evaluation \\
-Newcomer fairness (NFR-Q-07) & Assurance for new vs.\ established users reported & FYP-2 evaluation \\
-\bottomrule
+Newcomer fairness (NFR-Q-07) & Assurance for new vs. established users reported & FYP-2 evaluation \\
 \end{longtable}
-
-\section{Constraints and Assumptions}
+\endgroup
+\section{Constraints and Assumptions}\label{sec:constraints-assumptions}
 \begin{itemize}
 \item Three students and two semesters: no framework or abstraction is added unless a requirement needs it.
 \item No real user data in FYP-1. All development and test data is synthetic, generated with a fixed seed and labelled synthetic in every file and screen. Public trust networks (Epinions, Bitcoin OTC) are used only for aggregate shape statistics; no rows are copied.
-\item The team does not run interviews or surveys; the location question is answered by a method comparison, threat model and test cases (Section~\ref{sec:actions}).
+\item The team does not run interviews or surveys; the location question is answered by a method comparison, threat model and test cases (Section~\ref{sec:proposal-action-register}).
 \item Free-tier hosting (Render and Neon); the API sleeps when idle, so the first request after a pause is slow.
-\item Every tunable parameter is an initial hypothesis kept in a versioned configuration file (currently \code{\ConfigVersion}) and is to be justified by the FYP-2 sensitivity analysis.
+\item Every tunable parameter is an initial hypothesis kept in a versioned configuration file (currently \code{1.3.0-iteration1-draft}) and is to be justified by the FYP-2 sensitivity analysis.
 \item Android and web are the target clients; iOS is not targeted (team decision, 13 October).
 \end{itemize}
 
-\section{Ethical, Legal and DEI Considerations}
+\section{Ethical, Legal and DEI Considerations}\label{sec:ethical-legal-dei-considerations}
 \begin{itemize}
 \item \textbf{Decision support, not judgement.} Assurance states describe the evidence for a transaction, not the person. No screen shows a single trust number (NFR-U-01), and every state is shown with the evidence behind it.
 \item \textbf{No automatic restriction.} Manipulation signals are anomalies with evidence, worded neutrally; a request is only ever held for a moderator, who must give a reason. Nothing is restricted without a human decision.
 \item \textbf{Newcomers are not penalised.} Zero history yields INSUFFICIENT\_EVIDENCE with the message ``Insufficient verified history; lender review required'' and sensible safeguards, never a low score. Fairness between new and established users is a reported metric (NFR-Q-07).
 \item \textbf{Privacy.} Only approximate (community-level) location is used; GPS is read once, in memory, when a member joins a community, and a borrowing request carries no location. No exact address or CNIC is stored. Automated tests check every API response model and log line.
 \item \textbf{Consent.} Pilot data in FYP-2 will be collected with consent and a right to withdraw (NFR-PR-05); applicable Pakistani data-protection obligations are to be confirmed with the supervisor.
-\item \textbf{Social value.} The project supports SDG~12 (responsible consumption, through reuse and local circulation) and SDG~11 (inclusive, safe communities).
+\item \textbf{Social value.} The project supports SDG 12 (responsible consumption, through reuse and local circulation) and SDG 11 (inclusive, safe communities).
 \end{itemize}

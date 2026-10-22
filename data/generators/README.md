@@ -7,7 +7,7 @@ The same files are used by CI and on a laptop. Python standard library only: no 
 | Field | Value |
 | :--- | :--- |
 | Owner | Student 3 (Module 10), with Student 2 for the engine's data needs |
-| Status | Built 2026-10-13 and loaded into PostgreSQL 16 against the real schema the same day (section 5a). Not yet reviewed by Students 1 and 2; assumptions that need their sign-off are in section 6 |
+| Status | Built 2026-10-13 and loaded into PostgreSQL 16 against the real schema the same day (section 5a). Reviewed by Fatima Khursheed, Areeba Javed; assumptions in section 6 signed off |
 | Generator version | 1.0.0 (`common.py`) |
 | Seed and reference date | seed `20261001`; "today" is `2026-10-01 08:00 UTC` (`common.py`) |
 | Target | `data/REQUIREMENTS.md`: needs D-01 to D-10, claims C1/C3/C5, scenarios ES-01 to ES-13 |

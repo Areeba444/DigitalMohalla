@@ -1,62 +1,91 @@
-\chapter{Additional Design Diagrams}
-\label{app:diagrams}
+\chapter{Additional Design Diagrams}\label{app:additional-design-diagrams}
+\section{Class diagrams}\label{sec:class-diagrams}
+Each member drew the classes of their own packages (design step A7); every class names the requirements it realises. Table~\ref{tab:design-components-mapped-implementation} maps these classes to the code.
 
-\section{Class diagrams}
-Each member drew the classes of their own packages (design step A7); every class names the requirements it realises. Table~\ref{tab:design-code} maps these classes to the code.
-
-\begin{sidewaysfigure}
+\begin{figure}[p]
 \centering
-\includegraphics[width=\textheight]{figures/class_s1.png}
-\caption{Class diagram, Student 1 packages: accounts and locality, lifecycle and event store, indirect trust}\label{fig:class1}
-\end{sidewaysfigure}
-\paragraph{Reasoning.} The lifecycle aggregate depends only on the transition table and the ports, so it can be tested without a database; the PostgreSQL event store implements the port. Indirect trust exposes one operation to Student~2's engine. \emph{Serves:} FR-B-05, B-08, B-09, FR-T-04.
+\begin{minipage}[c][0.92\textheight][c]{\textwidth}\centering
+\includegraphics[width=\textwidth,height=0.80\textheight,keepaspectratio]{figures/diagrams/class_diagram_s1}
+\caption{Class diagram, Student 1 packages: accounts and locality, lifecycle and event store, indirect trust}\label{fig:class-diagram-s1}
+\drawionote{class_diagram_s1}{docs/design/05_class_model/class_diagram_s1.drawio}
+\end{minipage}
+\end{figure}
 
-\begin{sidewaysfigure}
+\textbf{Reasoning.} The lifecycle aggregate depends only on the transition table and the ports, so it can be tested without a database; the PostgreSQL event store implements the port. Indirect trust exposes one operation to Student 2's engine. \textit{Serves:} FR-B-05, B-08, B-09, FR-T-04.
+
+\begin{figure}[p]
 \centering
-\includegraphics[width=\textheight]{figures/class_s2.png}
-\caption{Class diagram, Student 2 packages: estimation, manipulation detection, decision policy and explanation}\label{fig:class2}
-\end{sidewaysfigure}
-\paragraph{Reasoning.} A single facade runs the pipeline and returns one result object in which trust and manipulation risk are separate attributes, never averaged. Signal checks share one interface so that the Iteration~2 signals (S2, S3, S5) are added without changing the detector. The class named \code{ReciprocalClustering} realises S1, which decision D18 redefined as partner clustering. \emph{Serves:} FR-T-01 to T-08.
+\begin{minipage}[c][0.92\textheight][c]{\textwidth}\centering
+\includegraphics[width=\textwidth,height=0.80\textheight,keepaspectratio]{figures/diagrams/class_diagram_s2}
+\caption{Class diagram, Student 2 packages: estimation, manipulation detection, decision policy and explanation}\label{fig:class-diagram-s2}
+\drawionote{class_diagram_s2}{docs/design/05_class_model/class_diagram_s2.drawio}
+\end{minipage}
+\end{figure}
 
-\begin{sidewaysfigure}
+\textbf{Reasoning.} A single facade runs the pipeline and returns one result object in which trust and manipulation risk are separate attributes, never averaged. Signal checks share one interface so that the Iteration 2 signals (S2, S3, S5) are added without changing the detector. The class named \code{ReciprocalClustering} realises S1, which decision D18 redefined as partner clustering. \textit{Serves:} FR-T-01 to T-08.
+
+\begin{figure}[p]
 \centering
-\includegraphics[width=\textheight]{figures/class_s3.png}
-\caption{Class diagram, Student 3 packages: cases, decisions and audit (Module 9) and the scenario suite (Module 10)}\label{fig:class3}
-\end{sidewaysfigure}
-\paragraph{Reasoning.} A moderator decision is a value that the case service turns into exactly one lifecycle command, so moderation cannot bypass the transition rules. \emph{Serves:} FR-T-10, FR-T-11, FR-M-05.
+\begin{minipage}[c][0.92\textheight][c]{\textwidth}\centering
+\includegraphics[width=\textwidth,height=0.80\textheight,keepaspectratio]{figures/diagrams/class_diagram_s3}
+\caption{Class diagram, Student 3 packages: cases, decisions and audit (Module 9) and the scenario suite (Module 10)}\label{fig:class-diagram-s3}
+\drawionote{class_diagram_s3}{docs/design/05_class_model/class_diagram_s3.drawio}
+\end{minipage}
+\end{figure}
 
-\section{Sequence (b): handover and return to evidence}
-\begin{sidewaysfigure}
+\textbf{Reasoning.} A moderator decision is a value that the case service turns into exactly one lifecycle command, so moderation cannot bypass the transition rules. \textit{Serves:} FR-T-10, FR-T-11, FR-M-05.
+
+\section{Sequence (b): handover and return to evidence}\label{sec:sequence-b-handover-return-evidence}
+\textbf{Reasoning.} An outcome is written only after both parties have confirmed, which is what makes it ``verified'' evidence (FR-T-03); the close hook writes the outcomes and refreshes the affected trust edges in the same database transaction as \code{transaction_closed}. \textit{Owner:} S1.
+
+\begin{figure}[p]
 \centering
-\includegraphics[width=\textheight]{figures/seq_b.png}
-\caption{Sequence (b): dual confirmation of handover and return, then outcome to the engine (UC-B7, B8)}\label{fig:seqb}
-\end{sidewaysfigure}
-\paragraph{Reasoning.} An outcome is written only after both parties have confirmed, which is what makes it ``verified'' evidence (FR-T-03); the close hook writes the outcomes and refreshes the affected trust edges in the same database transaction as \code{transaction\_closed}. \emph{Owner:} S1.
+\begin{minipage}[c][0.92\textheight][c]{\textwidth}\centering
+\includegraphics[width=\textwidth,height=0.80\textheight,keepaspectratio]{figures/diagrams/sequence_b_handover_return}
+\caption{Sequence (b): dual confirmation of handover and return, then outcome to the engine (UC-B7, B8)}\label{fig:sequence-b-handover-return}
+\drawionote{sequence_b_handover_return}{docs/design/08_sequence_diagrams/sequence_b_handover_return.drawio}
+\end{minipage}
+\end{figure}
 
-\section{Wireframes}
+\section{Deployment as designed in Part A (historical)}\label{sec:deployment-part-a-historical}
+The provisional Part A deployment design (design step A13) is kept for reference. It placed the whole system on one AWS EC2 host with Docker Compose and images in GitHub Container Registry, and marked the host ``to be confirmed''. The built system runs on Render and Neon instead (Section~\ref{sec:deployment}, Figure~\ref{fig:deployment-diagram}).
+
+\begin{figure}[p]
+\centering
+\begin{minipage}[c][0.92\textheight][c]{\textwidth}\centering
+\includegraphics[width=\textwidth,height=0.80\textheight,keepaspectratio]{figures/diagrams/deployment_diagram_partA}
+\caption{Deployment diagram as designed in Part A (A13, provisional; superseded by the as-built deployment)}\label{fig:deployment-diagram-part-a}
+\drawionote{deployment_diagram_partA}{docs/design/04_deployment/archive_v1/deployment_diagram_v0.9_partA_provisional.drawio}
+\end{minipage}
+\end{figure}
+
+\section{Wireframes}\label{sec:wireframes}
 The wireframes (design step A12, S3) were drawn from the HCI analysis; every screen that shows an assurance state shows its evidence (NFR-U-01). The built screens follow them.
 
-\begin{figure}[H]
+\begin{figure}[htbp]
 \centering
-\includegraphics[width=0.45\textwidth]{figures/wf_W1_Lender_Request_Assurance.png}\hfill
-\includegraphics[width=0.45\textwidth]{figures/wf_W2_Lender_Decision_Conflict.png}
-\caption{W1 lender request with assurance summary; W2 lender decision and date conflict}\label{fig:w12}
+\includegraphics[width=0.45\textwidth]{figures/wireframes/wf_w1}\hfill
+\includegraphics[width=0.45\textwidth]{figures/wireframes/wf_w2}
+\caption{W1 lender request with assurance summary; W2 lender decision and date conflict}\label{fig:wf-w1-w2}
 \end{figure}
-\begin{figure}[H]
+
+\begin{figure}[htbp]
 \centering
-\includegraphics[width=0.45\textwidth]{figures/wf_W3a_Handover_Inspection_Lender.png}\hfill
-\includegraphics[width=0.45\textwidth]{figures/wf_W3b_Handover_Confirmation_Borrower.png}
-\caption{W3a handover inspection (lender); W3b handover confirmation (borrower)}\label{fig:w3}
+\includegraphics[width=0.45\textwidth]{figures/wireframes/wf_w3a}\hfill
+\includegraphics[width=0.45\textwidth]{figures/wireframes/wf_w3b}
+\caption{W3a handover inspection (lender); W3b handover confirmation (borrower)}\label{fig:wf-w3a-w3b}
 \end{figure}
-\begin{figure}[H]
+
+\begin{figure}[htbp]
 \centering
-\includegraphics[width=0.45\textwidth]{figures/wf_W4_Return_Inspection_Comparison.png}\hfill
-\includegraphics[width=0.45\textwidth]{figures/wf_W5_Dispute_Form_Progress.png}
-\caption{W4 return inspection; W5 dispute form and progress}\label{fig:w45}
+\includegraphics[width=0.45\textwidth]{figures/wireframes/wf_w4}\hfill
+\includegraphics[width=0.45\textwidth]{figures/wireframes/wf_w5}
+\caption{W4 return inspection; W5 dispute form and progress}\label{fig:wf-w4-w5}
 \end{figure}
-\begin{figure}[H]
+
+\begin{figure}[htbp]
 \centering
-\includegraphics[width=0.45\textwidth]{figures/wf_W6_Moderator_Queue_Mobile.png}\hfill
-\includegraphics[width=0.45\textwidth]{figures/wf_W7_Moderator_Case_Adjudication_Mobile.png}
-\caption{W6 moderator queue; W7 case adjudication}\label{fig:w67}
+\includegraphics[width=0.45\textwidth]{figures/wireframes/wf_w6}\hfill
+\includegraphics[width=0.45\textwidth]{figures/wireframes/wf_w7}
+\caption{W6 moderator queue; W7 case adjudication}\label{fig:wf-w6-w7}
 \end{figure}

@@ -1,60 +1,73 @@
-\chapter{Proposal Feedback and Iteration Plan}
-\label{ch:feedback}
-
-\section{Proposal Feedback Summary}
+\chapter{Proposal Feedback and Iteration Plan}\label{ch:proposal-feedback-iteration}
+\section{Proposal Feedback Summary}\label{sec:proposal-feedback-summary}
 The proposal was approved with minor modifications. The panel made three points:
+
 \begin{enumerate}
 \item the project should show that location is a real issue for neighbourhood lending;
 \item the platform has positive social potential;
 \item the technical challenge, as proposed, looked limited.
 \end{enumerate}
-The third point had the largest effect. The proposal described a broad platform (listings, events, kameti, vendors, forum and chatbot, search and matching) with trust as one feature among many. After the defence the team made the trust decision the centre of the project: the complex computing problem is now stated as a single question (Section~\ref{ch:intro}), stretch modules were moved behind the core, and Iteration~1 was spent on the assurance engine and the lifecycle that feeds it.
 
-\section{Proposal Action Register}
-\label{sec:actions}
-Table~\ref{tab:actions} is the Form~10 register. Items 1--3 are the panel's points; items 4 and 5 are changes the team identified while planning against the handbook.
+The third point had the largest effect. The proposal described a broad platform (listings, events, kameti, vendors, forum and chatbot, search and matching) with trust as one feature among many. After the defence the team made the trust decision the centre of the project: the complex computing problem is now stated as a single question (Section~\ref{ch:introduction-project-vision}), stretch modules were moved behind the core, and Iteration 1 was spent on the assurance engine and the lifecycle that feeds it.
 
-\begin{longtable}{L{0.03\textwidth}L{0.2\textwidth}L{0.36\textwidth}L{0.13\textwidth}L{0.18\textwidth}}
-\caption{Proposal action register (Form 10)}\label{tab:actions}\\
-\toprule No. & Feedback / required change & Action taken & Status & Evidence\\ \midrule \endfirsthead
-\toprule No. & Feedback / required change & Action taken & Status & Evidence\\ \midrule \endhead
-1 & Show that location is a real issue & \emph{Why location matters:} every loan ends in a physical handover, so the lender needs to know the borrower really lives in the community. Without a locality check, an outsider can join a neighbourhood to borrow and disappear, one person can join with several accounts, and a fake GPS fix can place anyone ``inside'' (threat model in A11). \emph{Response:} five locality methods compared on false accepts, false rejects, privacy, spoofing resistance and cost; chosen: a one-time coarse geofence plus an invitation from a verified member, with a moderator deciding anything inconclusive (never an automatic rejection). The reference rule passes 12 checks in six test-case groups (spoofing, boundary homes, visitors, permission refusal, duplicate accounts, genuine residents), plus 4 invitation-error checks and 2 privacy and no-rejection checks (18 in total). A borrowing request now carries no location at all (decision D13); privacy tests check every API response and log. & Partly addressed: design evidence; method built in Iteration~2 (Module~1) & \code{docs/\allowbreak{}design/\allowbreak{}12\_locality/\allowbreak{}}; \code{test\_privacy.\allowbreak{}py}; Section~\ref{sec:locality} \\
-2 & Positive social potential & Kept as a design constraint: decision support only, newcomers never penalised, no automatic restriction, approximate location only. Aligned with SDG~11 and SDG~12. & Addressed & Chapter~\ref{ch:intro}; FR/NFR Part F (framing note) \\
-3 & Limited technical challenges & Scope re-centred on the assurance engine as the CCP: recency-weighted Beta posterior, bounded $k$-hop indirect evidence, manipulation signals with corroboration, and an ordered decision policy, each with a written algorithm, worked examples and tests. Built and tested in Iteration~1; evaluation against baselines planned for FYP-2. & Addressed in Iteration~1; evaluation in FYP-2 & Chapters~\ref{ch:research}, \ref{ch:design}, \ref{ch:iteration1}; scenario suite in CI \\
-4 & Proposal \S13 planned Iteration~1 as design only (team-identified) & The mid-evaluation brief asks for a live core module with CI/CD, so Iteration~1 was split into Part~A (design) and Part~B (three vertical slices, each deployable). & Done & Section~\ref{sec:progress} \\
-5 & Proposal \S14 listed trust as shared by all three students (team-identified) & Replaced by a module ownership split in which each student owns a technical part of the core (Table~\ref{tab:workdivision}). & Done & Iteration~1 plan; commit history \\
+\section{Proposal Action Register}\label{sec:proposal-action-register}
+Table~\ref{tab:proposal-action-register-form} is the Form 10 register. Items 1--3 are the panel's points; items 4 and 5 are changes the team identified while planning against the handbook.
+
+\begingroup
+\begin{longtable}{@{}L{20pt}L{81pt}L{149pt}L{51pt}L{69pt}@{}}
+\caption{Proposal action register (Form 10)}\label{tab:proposal-action-register-form}\\
+\toprule
+No. & Feedback / required change & Action taken & Status & Evidence \\
+\midrule
+\endfirsthead
+\toprule
+No. & Feedback / required change & Action taken & Status & Evidence \\
+\midrule
+\endhead
 \bottomrule
+\endlastfoot
+1 & Show that location is a real issue & \textit{Why location matters:} every loan ends in a physical handover, so the lender needs to know the borrower really lives in the community. Without a locality check, an outsider can join a neighbourhood to borrow and disappear, one person can join with several accounts, and a fake GPS fix can place anyone ``inside'' (threat model in A11). \textit{Response:} five locality methods compared on false accepts, false rejects, privacy, spoofing resistance and cost; chosen: a one-time coarse geofence plus an invitation from a verified member, with a moderator deciding anything inconclusive (never an automatic rejection). The reference rule passes 12 checks in six test-case groups (spoofing, boundary homes, visitors, permission refusal, duplicate accounts, genuine residents), plus 4 invitation-error checks and 2 privacy and no-rejection checks (18 in total). A borrowing request now carries no location at all (decision D13); privacy tests check every API response and log. & Partly addressed: design evidence; method built in Iteration 2 (Module 1) & \code{docs/design/12_locality/}; \code{test_privacy.py}; Section~\ref{sec:locality-method-comparison-design-step} \\
+2 & Positive social potential & Kept as a design constraint: decision support only, newcomers never penalised, no automatic restriction, approximate location only. Aligned with SDG 11 and SDG 12. & Addressed & Chapter~\ref{ch:introduction-project-vision}; FR/NFR Part F (framing note) \\
+3 & Limited technical challenges & Scope re-centred on the assurance engine as the CCP: recency-weighted Beta posterior, bounded $k$-hop indirect evidence, manipulation signals with corroboration, and an ordered decision policy, each with a written algorithm, worked examples and tests. Built and tested in Iteration 1; evaluation against baselines planned for FYP-2. & Addressed in Iteration 1; evaluation in FYP-2 & Chapters~\ref{ch:research-existing-solutions}, \ref{ch:system-design}, \ref{ch:iteration-1-design}; scenario suite in CI \\
+4 & Proposal \S{}13 planned Iteration 1 as design only (team-identified) & The mid-evaluation brief asks for a live core module with CI/CD, so Iteration 1 was split into Part A (design) and Part B (three vertical slices, each deployable). & Done & Section~\ref{sec:progress-against-plan} \\
+5 & Proposal \S{}14 listed trust as shared by all three students (team-identified) & Replaced by a module ownership split in which each student owns a technical part of the core (Table~\ref{tab:work-division-iteration-1}). & Done & Iteration 1 plan; commit history \\
 \end{longtable}
+\endgroup
+\section{Iteration Strategy}\label{sec:iteration-strategy}
+The project runs in four iterations, each ending in a working system and an evaluation (Table~\ref{tab:four-iterations}). Within Iteration 1, development followed vertical slices: each slice cuts through the database, domain, API and app, ends deployable, and is released from \code{develop} to \code{main} through a pull request.
 
-\section{Iteration Strategy}
-The project runs in four iterations, each ending in a working system and an evaluation (Table~\ref{tab:iterations}). Within Iteration~1, development followed vertical slices: each slice cuts through the database, domain, API and app, ends deployable, and is released from \code{develop} to \code{main} through a pull request.
-
-\begin{longtable}{L{0.1\textwidth}L{0.22\textwidth}L{0.6\textwidth}}
-\caption{The four iterations}\label{tab:iterations}\\
-\toprule Iteration & Stage & Required outcome \\ \midrule \endfirsthead
-\toprule Iteration & Stage & Required outcome \\ \midrule \endhead
+\begin{table}[!htbp]
+\centering
+\caption{The four iterations}\label{tab:four-iterations}
+\begin{tabular}{@{}L{39pt}L{89pt}L{247pt}@{}}
+\toprule
+Iteration & Stage & Required outcome \\
+\midrule
 1 & FYP-1 Mid & Live core module implementing project logic; design evolved since the proposal; one failure case tested; CI/CD with meaningful branches and automated tests \\
 2 & FYP-1 Final & About 45\% of committed scope; testing beyond the happy path; report matches the live system; written FYP-2 evaluation plan \\
 3 & FYP-2 Mid & All major modules connected; realistic scenarios; held-out attack generator; preliminary comparison with the FYP-1 baseline \\
 4 & FYP-2 Final & Evaluation (baselines, ablations, pilot), no regression, honest limitations, no new scope \\
 \bottomrule
-\end{longtable}
-
-\section{Iteration 1 Plan}
+\end{tabular}
+\end{table}
+\section{Iteration 1 Plan}\label{sec:iteration-1-plan}
 \textbf{Objective:} a live, tested core: the borrowing lifecycle and the assurance engine, with the human review loop around them.
 
-\textbf{Part~A, design (steps A0--A14).} Clean baseline; four then eight ADRs; domain model; lifecycle and escalation-case state machines with a transition table; data dictionary and event catalogue; algorithm and policy design with a configuration draft and hand-worked scenario expectations; ER diagram and schema; class, component and layer diagrams with a REST endpoint table; sequence and activity diagrams, SSDs and the use case diagram; DFD; locality design; wireframes; test plan and deployment diagram; and a design review (A14).
+\textbf{Part A, design (steps A0--A14).} Clean baseline; four then eight ADRs; domain model; lifecycle and escalation-case state machines with a transition table; data dictionary and event catalogue; algorithm and policy design with a configuration draft and hand-worked scenario expectations; ER diagram and schema; class, component and layer diagrams with a REST endpoint table; sequence and activity diagrams, SSDs and the use case diagram; DFD; locality design; wireframes; test plan and deployment diagram; and a design review (A14).
 
-\textbf{Part~B, implementation.} B0 setup (repository, CI, configuration loader, synthetic seed data), then:
+\textbf{Part B, implementation.} B0 setup (repository, CI, configuration loader, synthetic seed data), then:
+
 \begin{itemize}
 \item \textbf{Slice A, workflow skeleton:} event store, transition table, aggregate and replay, overlap constraint, authorisation on every transition, the request-to-completion loop with a stub engine, minimal UI, first deployment. Gate: loop runs; matrix, replay, concurrency, authorisation and append-only tests pass.
 \item \textbf{Slice B, assurance core:} outcome extraction, Beta posterior, trust edges and $k$-hop, decision policy with safeguards and explanation, scenario suite in CI, lender evidence screen. Gate: ES-01, 02, 03, 06 and 13 pass with state and explanation.
 \item \textbf{Slice C, human loop:} manipulation checks (ES-04, ES-05, dense-group guard), disputes with freeze and evidence trail, moderator decisions for disputes and holds, privacy checks, moderator app. Gate: feature freeze.
 \end{itemize}
-\textbf{Deliverables:} the deployed system, the repository with CI/CD, the design baseline in \code{docs/\allowbreak{}design/\allowbreak{}}, this report, and the demo.
 
-\section{Iteration 2 Plan}\label{sec:it2}
+\textbf{Deliverables:} the deployed system, the repository with CI/CD, the design baseline in \code{docs/design/}, this report, and the demo.
+
+\section{Iteration 2 Plan}\label{sec:iteration-2-plan}
 \textbf{Objective:} complete the core modules and prepare the FYP-2 evaluation.
+
 \begin{itemize}
 \item \textbf{Module 1:} membership requests and approval (UC-A3, A4) with the A11 locality method; ES-09 and ES-10.
 \item \textbf{Module 3:} scheduler jobs (request expiry, no-show, reminders, overdue escalation), extensions and counter-offers; photo uploads with metadata stripping (decision D20).
@@ -63,50 +76,61 @@ The project runs in four iterations, each ending in a working system and an eval
 \item \textbf{Module 9:} information requests, appeals and reversal; the audit-log screen with filters and masking.
 \item \textbf{Module 10:} simulator (50--100 users, 200--300 transactions), baselines, time-ordered hold-out, the written FYP-2 evaluation plan.
 \end{itemize}
+
 \textbf{Evidence:} all thirteen scenarios in CI, a first baseline comparison, the evaluation plan, and the report matching the live system.
 
-\section{Work Breakdown and Responsibilities}
-\begin{longtable}{L{0.13\textwidth}L{0.25\textwidth}L{0.25\textwidth}L{0.25\textwidth}}
-\caption{Work division for Iteration~1 (from the Iteration~1 plan)}\label{tab:workdivision}\\
-\toprule & S1 Fatima Khursheed: lifecycle, indirect trust, locality & S2 Areeba Javed: estimation, policy, detection & S3 Minahil Kashif: moderation, evaluation, apps \\ \midrule \endfirsthead
-\toprule & S1 Fatima Khursheed & S2 Areeba Javed & S3 Minahil Kashif \\ \midrule \endhead
+\section{Work Breakdown and Responsibilities}\label{sec:work-breakdown-responsibilities}
+\begin{table}[H]
+\centering
+\caption{Work division for Iteration 1 (from the Iteration 1 plan)}\label{tab:work-division-iteration-1}
+\begin{tabular}{@{}L{51pt}L{102pt}L{102pt}L{99pt}@{}}
+\toprule
+ & S1 Fatima Khursheed: lifecycle, indirect trust, locality & S2 Areeba Javed: estimation, policy, detection & S3 Minahil Kashif: moderation, evaluation, apps \\
+\midrule
 Modules & Module 3 lifecycle; Module 5 indirect trust; Module 1 login and locality design; CI & Module 5 trust estimation, decision policy, first manipulation checks & Module 9 cases and disputes; Module 10 scenario suite; resident and moderator apps; deployment \\
 Part A & ADRs (lead), state machines, data dictionary, ERD, architecture, locality, indirect-trust part of A5, sequence (b) & A5 algorithm design (lead), config file, decision-policy activity diagram, sequence (a), DFD & Sequence (c), dispute activity diagram, SSDs, use case diagram, wireframes, test plan, deployment diagram \\
 Part B & Repo and CI; Slice A lifecycle; Slice B trust edges and $k$-hop; Slice C privacy checks & Slice A engine interface; Slice B outcomes, posterior, policy; Slice C manipulation checks & Slice A UI; synthetic data; Slice B scenario suite and lender screen; Slice C disputes, moderator decisions and app \\
 Tests owned & Transition matrix, replay, concurrency, authorisation, append-only, $k$-hop, $k$ sweep, privacy & Beta maths, policy table, scenarios logic, dense-group guard, engine timeout & Dispute and hold resolution, UI tests, scenario suite \\
 \bottomrule
-\end{longtable}
-Module~5 is shared on purpose: S2 owns estimation, policy and detection, S1 owns indirect trust, and the boundary is one interface, \code{IAssess.\allowbreak{}assess(request)}. Module~10 sits with S3, so the Iteration~3 attack generator will not be written by the author of the manipulation checks. Feature pull requests are reviewed by a member other than their main author: 22 of 24 before merge and the remaining two after merge (Section~\ref{sec:repo}).
+\end{tabular}
+\end{table}
+Module 5 is shared on purpose: S2 owns estimation, policy and detection, S1 owns indirect trust, and the boundary is one interface, \code{IAssess.assess(request)}. Module 10 sits with S3, so the Iteration 3 attack generator will not be written by the author of the manipulation checks. Feature pull requests are reviewed by a member other than their main author: 22 of 24 before merge and the remaining two after merge (Section~\ref{sec:repository-version-control-evidence}).
 
-\section{Progress Against Plan}
-\label{sec:progress}
-\begin{longtable}{L{0.24\textwidth}L{0.14\textwidth}L{0.52\textwidth}}
-\caption{Planned milestones against actual progress}\label{tab:progress}\\
-\toprule Milestone & Status & Evidence \\ \midrule \endfirsthead
-\toprule Milestone & Status & Evidence \\ \midrule \endhead
-Part A design baseline (A0--A14) & Done & \code{docs/\allowbreak{}design/\allowbreak{}}; design review A14 (11 Oct); decisions D1--D9 (11 Oct) \\
+\section{Progress Against Plan}\label{sec:progress-against-plan}
+\begin{table}[H]
+\centering
+\caption{Planned milestones against actual progress}\label{tab:planned-milestones-against-actual}
+\begin{tabular}{@{}L{98pt}L{56pt}L{213pt}@{}}
+\toprule
+Milestone & Status & Evidence \\
+\midrule
+Part A design baseline (A0--A14) & Done & \code{docs/design/}; design review A14 (11 Oct); decisions D1--D9 (11 Oct) \\
 B0 setup & Done & PRs \#1, \#6, \#7; CI on every push and pull request \\
 Slice A: workflow skeleton & Done & PRs \#2--\#5; release PR \#8 \\
 Deployment (CD) & Done & PRs \#17, \#20: API and web app on Render, database on Neon; releases \#18, \#24 \\
 Slice B: assurance core & Done & PRs \#15, \#16, \#19, \#21--\#23, \#25, \#27, \#28; releases \#29, \#30 \\
 Slice C: human loop & Done & PRs \#31--\#35; release \#36 (feature freeze) \\
 NFR-Q-01 at mid-term ($\geq$7 of 13) & Met & 7 of 7 required scenarios pass with state and explanation \\
-Freeze activities & Partly done & Report and test evidence done; release tag, alpha session and deployed-instance system tests outstanding (Section~\ref{sec:deviations}) \\
+Freeze activities & Partly done & Report and test evidence done; release tag, alpha session and deployed-instance system tests outstanding (Section~\ref{sec:delays-deviations-recovery-plan}) \\
 \bottomrule
-\end{longtable}
-The design baseline was completed first (Part~A documents dated 10 and 11 October 2026), and implementation followed it closely in an intensive build between 12 and 14 October 2026, with all three slices merged and released. The pace was possible because each task was specified in advance down to its test cases, and because an AI coding assistant drafted code under the team's direction (Section~\ref{sec:tool-use}).
+\end{tabular}
+\end{table}
+The design baseline was completed first (Part A documents dated 10 and 11 October 2026), and implementation followed it closely in an intensive build between 12 and 14 October 2026, with all three slices merged and released. The pace was possible because each task was specified in advance down to its test cases, and because an AI coding assistant drafted code under the team's direction (Section~\ref{sec:tools-tool-assisted-development}).
 
-\section{Delays, Deviations and Recovery Plan}
-\label{sec:deviations}
-\begin{longtable}{L{0.28\textwidth}L{0.32\textwidth}L{0.32\textwidth}}
-\caption{Deviations from the Iteration~1 plan}\label{tab:deviations}\\
-\toprule Deviation & Reason & Recovery \\ \midrule \endfirsthead
-\toprule Deviation & Reason & Recovery \\ \midrule \endhead
-Locality method not built & Built only if the D-11 gate chose it; the slices took priority. Requests read the stored membership-time result (stub), so the lifecycle is unaffected & Built with membership (UC-A3, A4) in Iteration~2; ES-09, ES-10 \\
-Hosting: Render and Neon instead of one AWS host & The free tiers needed no server administration and deploy straight from \code{main} after CI; the provisional A13 design had marked AWS ``to be confirmed'' & Deployment diagram to be redrawn for the as-built target in Iteration~2; rollback rehearsal before the FYP-1 final \\
-Photo uploads (TC-59, TC-85) deferred & No upload storage yet; storing files safely needs size and type checks and EXIF stripping (decision D20) & Iteration~2; the \code{attachment} table already exists as designed \\
-Audit-log screen (UC-I6) not built & The log itself is built (append-only, hash-chained, tamper-tested); the screen was the lowest-value Slice C item & Iteration~2 with filters and masking \\
-Manipulation signals S2, S3, S5 & Planned for Iteration~1: S1 and the retaliation check; ADR-0007 added S4; built: S1, S4 and the retaliation check & Iteration~2 \\
-Release tag \code{v0.1.0-rc1}, alpha session, deployed system tests (suite 15) & Not yet done at the time of writing & Before the demo: tag the release and run the demo story on the deployed instance (alpha session). Iteration~2: the timing tests, full-assessment latency (NFR-P-03) and transition latency (TC-61, NFR-P-04) \\
+\section{Delays, Deviations and Recovery Plan}\label{sec:delays-deviations-recovery-plan}
+\begin{table}[H]
+\centering
+\caption{Deviations from the Iteration 1 plan}\label{tab:deviations-from-iteration-1}
+\begin{tabular}{@{}L{115pt}L{132pt}L{128pt}@{}}
+\toprule
+Deviation & Reason & Recovery \\
+\midrule
+Locality method not built & Built only if the D-11 gate chose it; the slices took priority. Requests read the stored membership-time result (stub), so the lifecycle is unaffected & Built with membership (UC-A3, A4) in Iteration 2; ES-09, ES-10 \\
+Hosting: Render and Neon instead of one AWS host & The free tiers needed no server administration and deploy straight from \code{main} after CI; the provisional A13 design had marked AWS ``to be confirmed'' & Deployment diagram redrawn for the as-built target (Figure~\ref{fig:deployment-diagram}); rollback rehearsal before the FYP-1 final \\
+Photo uploads (TC-59, TC-85) deferred & No upload storage yet; storing files safely needs size and type checks and EXIF stripping (decision D20) & Iteration 2; the \code{attachment} table already exists as designed \\
+Audit-log screen (UC-I6) not built & The log itself is built (append-only, hash-chained, tamper-tested); the screen was the lowest-value Slice C item & Iteration 2 with filters and masking \\
+Manipulation signals S2, S3, S5 & Planned for Iteration 1: S1 and the retaliation check; ADR-0007 added S4; built: S1, S4 and the retaliation check & Iteration 2 \\
+Release tag \code{v0.1.0-rc1}, alpha session, deployed system tests (suite 15) & Not yet done at the time of writing & Before the demo: tag the release and run the demo story on the deployed instance (alpha session). Iteration 2: the timing tests, full-assessment latency (NFR-P-03) and transition latency (TC-61, NFR-P-04) \\
 \bottomrule
-\end{longtable}
+\end{tabular}
+\end{table}

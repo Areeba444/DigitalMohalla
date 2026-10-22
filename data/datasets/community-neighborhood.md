@@ -109,4 +109,4 @@ None yet. Planned: map to the project's outcome records and value bands; derive 
 ## 8. Decision
 
 - **Verdict:** use with changes: a second generator version with a fixed reference date, account dates that precede first transactions, high-value items, open disputes and varied review text (gaps 1, 2, 3 and 9), and an explicit mapping to the project's records.
-- **Reviewed by:** ______
+- **Reviewed by:** Fatima Khursheed, Areeba Javed, Minahil Kashif

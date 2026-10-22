@@ -82,4 +82,4 @@ None yet.
 ## 8. Decision
 
 - **Verdict:** use with changes (relabel, decide which scenarios match iteration 1, add a retaliation case, define the injection protocol).
-- **Reviewed by:** ______
+- **Reviewed by:** Fatima Khursheed, Areeba Javed, Minahil Kashif
