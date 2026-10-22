@@ -1,0 +1,59 @@
+\chapter{Proposal Action Register}\label{app:proposal-action-register}
+The register itself is Table~\ref{tab:proposal-action-register-form} in Section~\ref{sec:proposal-action-register}. This appendix gives the supporting evidence for the location action, the panel point that required evidence beyond the implementation.
+
+\section{Why location matters: threat model}\label{sec:why-location-matters-threat-model}
+Every loan in Digital Mohalla ends in a physical handover at or near a member's home, so membership of the community is itself a safety claim. The A11 design and its test cases cover the following risks; without a locality check:
+
+\begin{itemize}
+\item \textbf{Outsiders (visitors).} A person who does not live in the neighbourhood joins, borrows and is never seen again; nobody nearby knows them, so there is no social or community evidence about them.
+\item \textbf{GPS spoofing.} Mock-location apps let anyone report a position inside the community.
+\item \textbf{Duplicate accounts (Sybil).} One person with several accounts can build fake history or return after a dispute under a new name.
+\item \textbf{Genuine residents wrongly rejected.} Homes on the boundary, poor indoor GPS, refusal of location permission and newcomers who know nobody must not be shut out.
+\end{itemize}
+
+The method therefore has to resist spoofing and outsiders while never rejecting a resident automatically, and it must do so without storing anyone's exact location.
+
+\section{Locality method comparison (design step A11)}\label{sec:locality-method-comparison-design-step}
+Five candidate methods were rated before any measurement (design judgements; NFR-Q-04 measures the chosen method later).
+
+\begin{table}[!htbp]
+\centering
+\caption{Candidate locality methods}\label{tab:candidate-locality-methods}
+\begin{tabular}{@{}L{81pt}L{55pt}L{56pt}L{47pt}L{55pt}L{52pt}@{}}
+\toprule
+Method & False accepts & False rejects & Privacy & Spoofing resistance & Cost \\
+\midrule
+Coarse GPS geofence alone & Medium & Medium & Medium & Low & Low \\
+Community invitation alone & Medium & Medium--high & High & Medium & Low \\
+Moderator approval alone & Low & Low & Medium & High & High \\
+Address evidence, shown not kept & Low--medium & Medium & Low & Medium & Medium--high \\
+\textbf{Geofence + invitation, moderator for the rest (chosen)} & Low & Low & Medium--high & Medium--high & Medium \\
+\bottomrule
+\end{tabular}
+\end{table}
+\textbf{Why the combination:} neither signal alone is enough. GPS is easy to spoof, and invitations alone ignore the location question the panel raised. Together, a spoofer must also obtain a real member's single-use invitation. Uncertainty costs moderator time, never a rejection (FR-A-08).
+
+\section{Locality test cases}\label{sec:locality-test-cases}
+The reference rule (\code{docs/design/12_locality/locality_rule.py}) was checked on synthetic inputs: 12 checks in the six test-case groups of the project overview, plus 4 invitation-error checks and 2 privacy and no-rejection checks; all 18 pass.
+
+\begin{table}[!htbp]
+\centering
+\caption{Locality test cases (SYNTHETIC inputs)}\label{tab:locality-test-cases-synthetic}
+\begin{tabular}{@{}L{26pt}L{98pt}L{149pt}L{90pt}@{}}
+\toprule
+ID & Case & Input & Expected = actual \\
+\midrule
+L1a--c & GPS spoofing & Mock-location provider; undetected spoof without invitation; spoofed fix 2 km away & CONFLICTING; INCONCLUSIVE; CONFLICTING \\
+L2a--c & Boundary users & 30 m inside or outside the edge at 20 m accuracy; 150 m inside & INCONCLUSIVE; INCONCLUSIVE; VERIFIED \\
+L3 & Visitors & Inside, no invitation & INCONCLUSIVE \\
+L4 & Permission refused & No location, valid invitation & INCONCLUSIVE \\
+L5 & Duplicate accounts & Inside, invitation, duplicate signal & CONFLICTING \\
+L6a--c & Genuine residents & At home; indoors with 250 m accuracy; new resident without invitation & VERIFIED; INCONCLUSIVE; INCONCLUSIVE \\
+E1--E4 & Invitation errors & Expired, used, wrong community, self-invitation & Error, retry \\
+P1 & Privacy & Fields stored after a check & No coordinates or accuracy \\
+P2 & No automatic rejection & 64 combinations of inputs & Only VERIFIED, INCONCLUSIVE or CONFLICTING \\
+\bottomrule
+\end{tabular}
+\end{table}
+\section{Privacy boundary in the built system}\label{sec:privacy-boundary-built-system}
+A borrowing request carries no location (decision D13); the lifecycle reads the member's stored coarse result. Tests TC-58 and TC-60 check that no response model contains a location or identity field, that a whole loan through the API reveals no personal data, and that a request body carrying a latitude or an address is refused with 422.

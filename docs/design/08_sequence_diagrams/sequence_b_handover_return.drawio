@@ -1,41 +1,41 @@
 <mxfile host="Electron" agent="Digital Mohalla design generator" version="24.7.17" type="device">
   <diagram id="Sequence__b__B7___B8__A9_" name="Sequence (b) B7 + B8 (A9)">
-    <mxGraphModel dx="1400" dy="900" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1680" pageHeight="2116" math="0" shadow="0" background="#FFFFFF">
+    <mxGraphModel dx="1400" dy="900" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1680" pageHeight="2186" math="0" shadow="0" background="#FFFFFF">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
-        <mxCell id="v1" value="&lt;b&gt;Digital Mohalla &amp;#8212; Sequence diagram (b): confirm handover (UC-B7) and return &amp;#8594; evidence (UC-B8)&lt;/b&gt; &amp;#8212; design step A9 (b), Student 1, v1.1" style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=top;fontSize=15;fontStyle=0;fontColor=#1d1d1d;spacing=2;overflow=visible;" vertex="1" parent="1">
+        <mxCell id="v1" value="&lt;b&gt;Digital Mohalla &amp;#8212; Sequence diagram (b): confirm handover (UC-B7) and return &amp;#8594; evidence (UC-B8)&lt;/b&gt; &amp;#8212; design step A9 (b), Student 1, v1.2 (as built, 14 October 2026)" style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=top;fontSize=15;fontStyle=0;fontColor=#1d1d1d;spacing=2;overflow=visible;" vertex="1" parent="1">
           <mxGeometry x="30" y="12" width="1500" height="24" as="geometry" />
         </mxCell>
-        <mxCell id="v2" value="Precondition: request is ACCEPTED (UC-B6, T13; booking HELD). Event types and T-numbers: State_Machine_Design.md v2.2. Every append runs event_validate / event_apply (schema.sql) in one DB transaction." style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=top;fontSize=11;fontStyle=0;fontColor=#4A5560;spacing=2;overflow=visible;" vertex="1" parent="1">
+        <mxCell id="v2" value="Precondition: request is ACCEPTED (UC-B6, T13; booking HELD). Event types and T-numbers: State_Machine_Design.md v2.2. Each API request runs in one database transaction (api/deps.py), committed when the request ends; every append runs event_validate / event_apply (schema.sql). Grey messages = planned, not built." style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=top;fontSize=11;fontStyle=0;fontColor=#4A5560;spacing=2;overflow=visible;" vertex="1" parent="1">
           <mxGeometry x="30" y="36" width="1600" height="20" as="geometry" />
         </mxCell>
         <mxCell id="ll_L" value="Lender" style="shape=umlLifeline;participant=umlActor;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=0;verticalAlign=top;spacingTop=36;size=42;fontSize=11;fontStyle=1;" vertex="1" parent="1">
-          <mxGeometry x="40" y="80" width="80" height="2006" as="geometry" />
+          <mxGeometry x="40" y="80" width="80" height="2076" as="geometry" />
         </mxCell>
         <mxCell id="ll_B" value="Borrower" style="shape=umlLifeline;participant=umlActor;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=0;verticalAlign=top;spacingTop=36;size=42;fontSize=11;fontStyle=1;" vertex="1" parent="1">
-          <mxGeometry x="170" y="80" width="80" height="2006" as="geometry" />
+          <mxGeometry x="170" y="80" width="80" height="2076" as="geometry" />
         </mxCell>
         <mxCell id="ll_API" value=":REST API" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=0;collapsible=0;size=56;fontSize=11;fillColor=#F2F2F2;strokeColor=#46535F;" vertex="1" parent="1">
-          <mxGeometry x="290" y="80" width="160" height="2006" as="geometry" />
+          <mxGeometry x="290" y="80" width="160" height="2076" as="geometry" />
         </mxCell>
         <mxCell id="ll_SVC" value=":BorrowingService&lt;br&gt;(M3)" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=0;collapsible=0;size=56;fontSize=11;fillColor=#E3EEF9;strokeColor=#46535F;" vertex="1" parent="1">
-          <mxGeometry x="480" y="80" width="160" height="2006" as="geometry" />
+          <mxGeometry x="480" y="80" width="160" height="2076" as="geometry" />
         </mxCell>
         <mxCell id="ll_VAL" value=":TransitionValidator&lt;br&gt;(M3)" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=0;collapsible=0;size=56;fontSize=11;fillColor=#E3EEF9;strokeColor=#46535F;" vertex="1" parent="1">
-          <mxGeometry x="680" y="80" width="160" height="2006" as="geometry" />
+          <mxGeometry x="680" y="80" width="160" height="2076" as="geometry" />
         </mxCell>
         <mxCell id="ll_DB" value=":EventStore&lt;br&gt;(PostgreSQL, triggers)" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=0;collapsible=0;size=56;fontSize=11;fillColor=#E3EEF9;strokeColor=#46535F;" vertex="1" parent="1">
-          <mxGeometry x="880" y="80" width="160" height="2006" as="geometry" />
+          <mxGeometry x="880" y="80" width="160" height="2076" as="geometry" />
         </mxCell>
-        <mxCell id="ll_ENG" value=":AssuranceEngine&lt;br&gt;&amp;#171;IOutcomeSink&amp;#187; (M5)" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=0;collapsible=0;size=56;fontSize=11;fillColor=#FDEBDD;strokeColor=#46535F;" vertex="1" parent="1">
-          <mxGeometry x="1090" y="80" width="160" height="2006" as="geometry" />
+        <mxCell id="ll_ENG" value=":OutcomeWriter&lt;br&gt;(infra/db/outcomes.py, M5)" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=0;collapsible=0;size=56;fontSize=11;fillColor=#FDEBDD;strokeColor=#46535F;" vertex="1" parent="1">
+          <mxGeometry x="1090" y="80" width="160" height="2076" as="geometry" />
         </mxCell>
-        <mxCell id="ll_TEP" value=":TrustEdgeProjector&lt;br&gt;(M5, S1)" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=0;collapsible=0;size=56;fontSize=11;fillColor=#E3EEF9;strokeColor=#46535F;" vertex="1" parent="1">
-          <mxGeometry x="1290" y="80" width="160" height="2006" as="geometry" />
+        <mxCell id="ll_TEP" value=":TrustEdgeRefresh&lt;br&gt;(infra/db/trust_edges.py, S1)" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=0;collapsible=0;size=56;fontSize=11;fillColor=#E3EEF9;strokeColor=#46535F;" vertex="1" parent="1">
+          <mxGeometry x="1290" y="80" width="160" height="2076" as="geometry" />
         </mxCell>
-        <mxCell id="ll_NOT" value=":Notifier&lt;br&gt;&amp;#171;stub&amp;#187; (M7)" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=0;collapsible=0;size=56;fontSize=11;fillColor=#F2F2F2;strokeColor=#46535F;" vertex="1" parent="1">
-          <mxGeometry x="1470" y="80" width="160" height="2006" as="geometry" />
+        <mxCell id="ll_NOT" value=":Notifier (M7)&lt;br&gt;planned, iteration 2" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=0;collapsible=0;size=56;fontSize=11;fillColor=#F7F7F7;strokeColor=#46535F;" vertex="1" parent="1">
+          <mxGeometry x="1470" y="80" width="160" height="2076" as="geometry" />
         </mxCell>
         <mxCell id="v3" value="&lt;b&gt;UC-B7 Confirm handover&lt;/b&gt; (FR-B-11, FR-B-12)" style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=top;fontSize=12;fontStyle=0;fontColor=#1F4E79;spacing=2;overflow=visible;" vertex="1" parent="1">
           <mxGeometry x="30" y="152" width="400" height="18" as="geometry" />
@@ -75,7 +75,7 @@
             <mxPoint x="0" y="-9" as="offset" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="e9" value="&lt;b&gt;6&lt;/b&gt; notify(borrower, review_handover)" style="html=1;rounded=0;fontSize=10.5;labelBackgroundColor=#FFFFFF;fontColor=#1d1d1d;endSize=8;endArrow=open;endFill=0;strokeColor=#1D1D1D;fontSize=10.5" edge="1" parent="1">
+        <mxCell id="e9" value="&lt;b&gt;6&lt;/b&gt; notify(borrower, review_handover) &amp;#8212; planned (it.2)" style="html=1;rounded=0;fontSize=10.5;labelBackgroundColor=#FFFFFF;fontColor=#1d1d1d;endSize=8;endArrow=open;endFill=0;strokeColor=#9A9A9A;fontColor=#7A7A7A;fontSize=10.5" edge="1" parent="1">
           <mxGeometry relative="1" as="geometry">
             <mxPoint x="565" y="350" as="sourcePoint" />
             <mxPoint x="1545" y="350" as="targetPoint" />
@@ -142,7 +142,7 @@
             <mxPoint x="178.40" y="0" as="offset" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="e18" value="&lt;b&gt;15&lt;/b&gt; notify(both, loan_active, due_at)" style="html=1;rounded=0;fontSize=10.5;labelBackgroundColor=#FFFFFF;fontColor=#1d1d1d;endSize=8;endArrow=open;endFill=0;strokeColor=#1D1D1D;fontSize=10.5" edge="1" parent="1">
+        <mxCell id="e18" value="&lt;b&gt;15&lt;/b&gt; notify(both, loan_active, due_at) &amp;#8212; planned (it.2)" style="html=1;rounded=0;fontSize=10.5;labelBackgroundColor=#FFFFFF;fontColor=#1d1d1d;endSize=8;endArrow=open;endFill=0;strokeColor=#9A9A9A;fontColor=#7A7A7A;fontSize=10.5" edge="1" parent="1">
           <mxGeometry relative="1" as="geometry">
             <mxPoint x="565" y="686" as="sourcePoint" />
             <mxPoint x="1545" y="686" as="targetPoint" />
@@ -228,7 +228,7 @@
             <mxPoint x="0" y="-9" as="offset" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="e34" value="&lt;b&gt;23&lt;/b&gt; notify(lender, return_started)" style="html=1;rounded=0;fontSize=10.5;labelBackgroundColor=#FFFFFF;fontColor=#1d1d1d;endSize=8;endArrow=open;endFill=0;strokeColor=#1D1D1D;fontSize=10.5" edge="1" parent="1">
+        <mxCell id="e34" value="&lt;b&gt;23&lt;/b&gt; notify(lender, return_started) &amp;#8212; planned (it.2)" style="html=1;rounded=0;fontSize=10.5;labelBackgroundColor=#FFFFFF;fontColor=#1d1d1d;endSize=8;endArrow=open;endFill=0;strokeColor=#9A9A9A;fontColor=#7A7A7A;fontSize=10.5" edge="1" parent="1">
           <mxGeometry relative="1" as="geometry">
             <mxPoint x="565" y="1098" as="sourcePoint" />
             <mxPoint x="1545" y="1098" as="targetPoint" />
@@ -305,7 +305,7 @@
             <mxPoint x="0" y="-9" as="offset" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="e45" value="&lt;b&gt;34&lt;/b&gt; BEGIN; append return_confirmed (&amp;#8594; RETURNED, T21)" style="html=1;rounded=0;fontSize=10.5;labelBackgroundColor=#FFFFFF;fontColor=#1d1d1d;endSize=8;endArrow=block;endFill=1;strokeColor=#1D1D1D;fontSize=10.5" edge="1" parent="1">
+        <mxCell id="e45" value="&lt;b&gt;34&lt;/b&gt; append return_confirmed (&amp;#8594; RETURNED, T21)" style="html=1;rounded=0;fontSize=10.5;labelBackgroundColor=#FFFFFF;fontColor=#1d1d1d;endSize=8;endArrow=block;endFill=1;strokeColor=#1D1D1D;fontSize=10.5" edge="1" parent="1">
           <mxGeometry relative="1" as="geometry">
             <mxPoint x="565" y="1484" as="sourcePoint" />
             <mxPoint x="955" y="1484" as="targetPoint" />
@@ -319,7 +319,7 @@
             <mxPoint x="0" y="-9" as="offset" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="e47" value="&lt;b&gt;36&lt;/b&gt; trigger: outcome checked vs due_at; booking RELEASED; COMMIT" style="html=1;rounded=0;fontSize=10.5;labelBackgroundColor=#FFFFFF;fontColor=#1d1d1d;endSize=8;endArrow=block;endFill=1;strokeColor=#1D1D1D;fontSize=10.5" edge="1" parent="1">
+        <mxCell id="e47" value="&lt;b&gt;36&lt;/b&gt; trigger: outcome checked vs due_at; booking RELEASED" style="html=1;rounded=0;fontSize=10.5;labelBackgroundColor=#FFFFFF;fontColor=#1d1d1d;endSize=8;endArrow=block;endFill=1;strokeColor=#1D1D1D;fontSize=10.5" edge="1" parent="1">
           <mxGeometry relative="1" as="geometry">
             <mxPoint x="965" y="1544" as="sourcePoint" />
             <mxPoint x="965" y="1562" as="targetPoint" />
@@ -327,17 +327,17 @@
               <mxPoint x="995" y="1544" />
               <mxPoint x="995" y="1562" />
             </Array>
-            <mxPoint x="168" y="0" as="offset" />
+            <mxPoint x="147.20" y="0" as="offset" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="e48" value="&lt;b&gt;37&lt;/b&gt; recordOutcome(closing event_id)  [after commit; idempotent]" style="html=1;rounded=0;fontSize=10.5;labelBackgroundColor=#FFFFFF;fontColor=#1d1d1d;endSize=8;endArrow=open;endFill=0;strokeColor=#1D1D1D;fontSize=10.5" edge="1" parent="1">
+        <mxCell id="e48" value="&lt;b&gt;37&lt;/b&gt; record_outcomes(closing event_id)  [same DB transaction]" style="html=1;rounded=0;fontSize=10.5;labelBackgroundColor=#FFFFFF;fontColor=#1d1d1d;endSize=8;endArrow=block;endFill=1;strokeColor=#1D1D1D;fontSize=10.5" edge="1" parent="1">
           <mxGeometry relative="1" as="geometry">
             <mxPoint x="565" y="1584" as="sourcePoint" />
             <mxPoint x="1165" y="1584" as="targetPoint" />
             <mxPoint x="-120" y="-9" as="offset" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="e49" value="&lt;b&gt;38&lt;/b&gt; OutcomeExtractor: confirmed outcomes per role / metric &amp;#8594; INSERT outcome" style="html=1;rounded=0;fontSize=10.5;labelBackgroundColor=#FFFFFF;fontColor=#1d1d1d;endSize=8;endArrow=block;endFill=1;strokeColor=#1D1D1D;fontSize=10.5" edge="1" parent="1">
+        <mxCell id="e49" value="&lt;b&gt;38&lt;/b&gt; outcome rules (D11): confirmed outcomes per role / metric &amp;#8594; INSERT outcome" style="html=1;rounded=0;fontSize=10.5;labelBackgroundColor=#FFFFFF;fontColor=#1d1d1d;endSize=8;endArrow=block;endFill=1;strokeColor=#1D1D1D;fontSize=10.5" edge="1" parent="1">
           <mxGeometry relative="1" as="geometry">
             <mxPoint x="1175" y="1614" as="sourcePoint" />
             <mxPoint x="1175" y="1632" as="targetPoint" />
@@ -345,89 +345,107 @@
               <mxPoint x="1205" y="1614" />
               <mxPoint x="1205" y="1632" />
             </Array>
-            <mxPoint x="212.20" y="0" as="offset" />
+            <mxPoint x="220" y="0" as="offset" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="e50" value="&lt;b&gt;39&lt;/b&gt; onOutcomes(outcomes)" style="html=1;rounded=0;fontSize=10.5;labelBackgroundColor=#FFFFFF;fontColor=#1d1d1d;endSize=8;endArrow=block;endFill=1;strokeColor=#1D1D1D;fontSize=10.5" edge="1" parent="1">
+        <mxCell id="e50" value="&lt;b&gt;39&lt;/b&gt; outcomes recorded" style="html=1;rounded=0;fontSize=10.5;labelBackgroundColor=#FFFFFF;fontColor=#1d1d1d;endSize=8;endArrow=open;endFill=0;dashed=1;strokeColor=#46535F;fontColor=#33404D;fontSize=10.5" edge="1" parent="1">
           <mxGeometry relative="1" as="geometry">
-            <mxPoint x="1175" y="1654" as="sourcePoint" />
-            <mxPoint x="1365" y="1654" as="targetPoint" />
+            <mxPoint x="1165" y="1654" as="sourcePoint" />
+            <mxPoint x="565" y="1654" as="targetPoint" />
             <mxPoint x="0" y="-9" as="offset" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="e51" value="&lt;b&gt;40&lt;/b&gt; upsert trust_edge (both directions)" style="html=1;rounded=0;fontSize=10.5;labelBackgroundColor=#FFFFFF;fontColor=#1d1d1d;endSize=8;endArrow=block;endFill=1;strokeColor=#1D1D1D;fontSize=10.5" edge="1" parent="1">
+        <mxCell id="e51" value="&lt;b&gt;40&lt;/b&gt; refresh_trust_edges(transaction id)" style="html=1;rounded=0;fontSize=10.5;labelBackgroundColor=#FFFFFF;fontColor=#1d1d1d;endSize=8;endArrow=block;endFill=1;strokeColor=#1D1D1D;fontSize=10.5" edge="1" parent="1">
           <mxGeometry relative="1" as="geometry">
-            <mxPoint x="1375" y="1684" as="sourcePoint" />
-            <mxPoint x="1375" y="1702" as="targetPoint" />
+            <mxPoint x="565" y="1684" as="sourcePoint" />
+            <mxPoint x="1365" y="1684" as="targetPoint" />
+            <mxPoint x="-200" y="-9" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e52" value="&lt;b&gt;41&lt;/b&gt; recompute and upsert trust_edge, both directions (ADR-0006)" style="html=1;rounded=0;fontSize=10.5;labelBackgroundColor=#FFFFFF;fontColor=#1d1d1d;endSize=8;endArrow=block;endFill=1;strokeColor=#1D1D1D;fontSize=10.5" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1375" y="1714" as="sourcePoint" />
+            <mxPoint x="1375" y="1732" as="targetPoint" />
             <Array as="points">
-              <mxPoint x="1405" y="1684" />
-              <mxPoint x="1405" y="1702" />
+              <mxPoint x="1405" y="1714" />
+              <mxPoint x="1405" y="1732" />
             </Array>
-            <mxPoint x="103" y="0" as="offset" />
+            <mxPoint x="165.40" y="0" as="offset" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="e52" value="&lt;b&gt;41&lt;/b&gt; edges updated" style="html=1;rounded=0;fontSize=10.5;labelBackgroundColor=#FFFFFF;fontColor=#1d1d1d;endSize=8;endArrow=open;endFill=0;dashed=1;strokeColor=#46535F;fontColor=#33404D;fontSize=10.5" edge="1" parent="1">
+        <mxCell id="e53" value="&lt;b&gt;42&lt;/b&gt; edges updated" style="html=1;rounded=0;fontSize=10.5;labelBackgroundColor=#FFFFFF;fontColor=#1d1d1d;endSize=8;endArrow=open;endFill=0;dashed=1;strokeColor=#46535F;fontColor=#33404D;fontSize=10.5" edge="1" parent="1">
           <mxGeometry relative="1" as="geometry">
-            <mxPoint x="1365" y="1724" as="sourcePoint" />
-            <mxPoint x="1175" y="1724" as="targetPoint" />
+            <mxPoint x="1365" y="1754" as="sourcePoint" />
+            <mxPoint x="565" y="1754" as="targetPoint" />
             <mxPoint x="0" y="-9" as="offset" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="e53" value="&lt;b&gt;42&lt;/b&gt; notify(both, completed; deposit release recorded)" style="html=1;rounded=0;fontSize=10.5;labelBackgroundColor=#FFFFFF;fontColor=#1d1d1d;endSize=8;endArrow=open;endFill=0;strokeColor=#1D1D1D;fontSize=10.5" edge="1" parent="1">
+        <mxCell id="e54" value="&lt;b&gt;43&lt;/b&gt; COMMIT at the end of the request: events, booking release, outcomes and edges together" style="html=1;rounded=0;fontSize=10.5;labelBackgroundColor=#FFFFFF;fontColor=#1d1d1d;endSize=8;endArrow=block;endFill=1;strokeColor=#1D1D1D;fontSize=10.5" edge="1" parent="1">
           <mxGeometry relative="1" as="geometry">
-            <mxPoint x="565" y="1754" as="sourcePoint" />
-            <mxPoint x="1545" y="1754" as="targetPoint" />
+            <mxPoint x="965" y="1784" as="sourcePoint" />
+            <mxPoint x="965" y="1802" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="995" y="1784" />
+              <mxPoint x="995" y="1802" />
+            </Array>
+            <mxPoint x="235.60" y="0" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e55" value="&lt;b&gt;44&lt;/b&gt; notify(both, completed; deposit release recorded) &amp;#8212; planned (it.2)" style="html=1;rounded=0;fontSize=10.5;labelBackgroundColor=#FFFFFF;fontColor=#1d1d1d;endSize=8;endArrow=open;endFill=0;strokeColor=#9A9A9A;fontColor=#7A7A7A;fontSize=10.5" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="565" y="1824" as="sourcePoint" />
+            <mxPoint x="1545" y="1824" as="targetPoint" />
             <mxPoint x="200" y="-9" as="offset" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="e54" value="&lt;b&gt;43&lt;/b&gt; 200 {state: COMPLETED, outcome}" style="html=1;rounded=0;fontSize=10.5;labelBackgroundColor=#FFFFFF;fontColor=#1d1d1d;endSize=8;endArrow=open;endFill=0;dashed=1;strokeColor=#46535F;fontColor=#33404D;fontSize=10.5" edge="1" parent="1">
+        <mxCell id="e56" value="&lt;b&gt;45&lt;/b&gt; 200 {state: COMPLETED, outcome}" style="html=1;rounded=0;fontSize=10.5;labelBackgroundColor=#FFFFFF;fontColor=#1d1d1d;endSize=8;endArrow=open;endFill=0;dashed=1;strokeColor=#46535F;fontColor=#33404D;fontSize=10.5" edge="1" parent="1">
           <mxGeometry relative="1" as="geometry">
-            <mxPoint x="365" y="1784" as="sourcePoint" />
-            <mxPoint x="215" y="1784" as="targetPoint" />
+            <mxPoint x="365" y="1854" as="sourcePoint" />
+            <mxPoint x="215" y="1854" as="targetPoint" />
             <mxPoint x="0" y="-9" as="offset" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="e55" value="&lt;b&gt;44&lt;/b&gt; validate(RETURN_INITIATED, return_confirmed)" style="html=1;rounded=0;fontSize=10.5;labelBackgroundColor=#FFFFFF;fontColor=#1d1d1d;endSize=8;endArrow=block;endFill=1;strokeColor=#1D1D1D;fontSize=10.5" edge="1" parent="1">
+        <mxCell id="e57" value="&lt;b&gt;46&lt;/b&gt; validate(RETURN_INITIATED, return_confirmed)" style="html=1;rounded=0;fontSize=10.5;labelBackgroundColor=#FFFFFF;fontColor=#1d1d1d;endSize=8;endArrow=block;endFill=1;strokeColor=#1D1D1D;fontSize=10.5" edge="1" parent="1">
           <mxGeometry relative="1" as="geometry">
-            <mxPoint x="565" y="1848" as="sourcePoint" />
-            <mxPoint x="755" y="1848" as="targetPoint" />
+            <mxPoint x="565" y="1918" as="sourcePoint" />
+            <mxPoint x="755" y="1918" as="targetPoint" />
             <mxPoint x="0" y="-9" as="offset" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="e56" value="&lt;b&gt;45&lt;/b&gt; rejected: parties disagree on condition" style="html=1;rounded=0;fontSize=10.5;labelBackgroundColor=#FFFFFF;fontColor=#1d1d1d;endSize=8;endArrow=open;endFill=0;dashed=1;strokeColor=#B00020;fontColor=#B00020;fontSize=10.5" edge="1" parent="1">
+        <mxCell id="e58" value="&lt;b&gt;47&lt;/b&gt; rejected: parties disagree on condition" style="html=1;rounded=0;fontSize=10.5;labelBackgroundColor=#FFFFFF;fontColor=#1d1d1d;endSize=8;endArrow=open;endFill=0;dashed=1;strokeColor=#B00020;fontColor=#B00020;fontSize=10.5" edge="1" parent="1">
           <mxGeometry relative="1" as="geometry">
-            <mxPoint x="755" y="1878" as="sourcePoint" />
-            <mxPoint x="565" y="1878" as="targetPoint" />
+            <mxPoint x="755" y="1948" as="sourcePoint" />
+            <mxPoint x="565" y="1948" as="targetPoint" />
             <mxPoint x="0" y="-9" as="offset" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="e57" value="&lt;b&gt;46&lt;/b&gt; 409: condition disputed &amp;#8212; raise a dispute" style="html=1;rounded=0;fontSize=10.5;labelBackgroundColor=#FFFFFF;fontColor=#1d1d1d;endSize=8;endArrow=open;endFill=0;dashed=1;strokeColor=#B00020;fontColor=#B00020;fontSize=10.5" edge="1" parent="1">
+        <mxCell id="e59" value="&lt;b&gt;48&lt;/b&gt; 409: condition disputed &amp;#8212; raise a dispute" style="html=1;rounded=0;fontSize=10.5;labelBackgroundColor=#FFFFFF;fontColor=#1d1d1d;endSize=8;endArrow=open;endFill=0;dashed=1;strokeColor=#B00020;fontColor=#B00020;fontSize=10.5" edge="1" parent="1">
           <mxGeometry relative="1" as="geometry">
-            <mxPoint x="365" y="1908" as="sourcePoint" />
-            <mxPoint x="215" y="1908" as="targetPoint" />
+            <mxPoint x="365" y="1978" as="sourcePoint" />
+            <mxPoint x="215" y="1978" as="targetPoint" />
             <mxPoint x="0" y="-9" as="offset" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="v58" value="&lt;b&gt;ref&lt;/b&gt; sequence (c): dispute_opened T23 (RETURN_INITIATED &amp;#8594; DISPUTED); deposit record frozen; outcome not counted until dispute_resolved (UC-B8 3a, ES-07)" style="shape=note;size=10;whiteSpace=wrap;html=1;fontSize=10;align=left;spacingLeft=6;fillColor=#FFF8E1;strokeColor=#B26A00;" vertex="1" parent="1">
-          <mxGeometry x="310" y="1932" width="640" height="34" as="geometry" />
+        <mxCell id="v60" value="&lt;b&gt;ref&lt;/b&gt; sequence (c): dispute_opened T23 (RETURN_INITIATED &amp;#8594; DISPUTED); deposit record frozen; outcome not counted until dispute_resolved (UC-B8 3a, ES-07)" style="shape=note;size=10;whiteSpace=wrap;html=1;fontSize=10;align=left;spacingLeft=6;fillColor=#FFF8E1;strokeColor=#B26A00;" vertex="1" parent="1">
+          <mxGeometry x="310" y="2002" width="640" height="34" as="geometry" />
         </mxCell>
-        <mxCell id="v59" value="alt" style="shape=umlFrame;whiteSpace=wrap;html=1;width=46;height=22;boundedLbl=1;verticalAlign=middle;align=left;spacingLeft=4;fontStyle=1;fontSize=11;fillColor=none;strokeColor=#5F6B76;" vertex="1" parent="1">
-          <mxGeometry x="20" y="1366" width="1620" height="612" as="geometry" />
+        <mxCell id="v61" value="alt" style="shape=umlFrame;whiteSpace=wrap;html=1;width=46;height=22;boundedLbl=1;verticalAlign=middle;align=left;spacingLeft=4;fontStyle=1;fontSize=11;fillColor=none;strokeColor=#5F6B76;" vertex="1" parent="1">
+          <mxGeometry x="20" y="1366" width="1620" height="682" as="geometry" />
         </mxCell>
-        <mxCell id="v60" value="&lt;b&gt;[both parties confirm and agree on condition]&lt;/b&gt;" style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=top;fontSize=10.5;fontStyle=0;fontColor=#33404D;spacing=2;overflow=visible;" vertex="1" parent="1">
+        <mxCell id="v62" value="&lt;b&gt;[both parties confirm and agree on condition]&lt;/b&gt;" style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=top;fontSize=10.5;fontStyle=0;fontColor=#33404D;spacing=2;overflow=visible;" vertex="1" parent="1">
           <mxGeometry x="72" y="1380" width="760" height="18" as="geometry" />
         </mxCell>
-        <mxCell id="e61" value="" style="endArrow=none;dashed=1;html=1;strokeColor=#5F6B76" edge="1" parent="1">
+        <mxCell id="e63" value="" style="endArrow=none;dashed=1;html=1;strokeColor=#5F6B76" edge="1" parent="1">
           <mxGeometry relative="1" as="geometry">
-            <mxPoint x="20" y="1812" as="sourcePoint" />
-            <mxPoint x="1640" y="1812" as="targetPoint" />
+            <mxPoint x="20" y="1882" as="sourcePoint" />
+            <mxPoint x="1640" y="1882" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="v62" value="&lt;b&gt;[lender reports damage or the parties disagree]&lt;/b&gt;" style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=top;fontSize=10.5;fontStyle=0;fontColor=#33404D;spacing=2;overflow=visible;" vertex="1" parent="1">
-          <mxGeometry x="28" y="1814" width="760" height="18" as="geometry" />
+        <mxCell id="v64" value="&lt;b&gt;[lender reports damage or the parties disagree]&lt;/b&gt;" style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=top;fontSize=10.5;fontStyle=0;fontColor=#33404D;spacing=2;overflow=visible;" vertex="1" parent="1">
+          <mxGeometry x="28" y="1884" width="760" height="18" as="geometry" />
         </mxCell>
-        <mxCell id="v63" value="Concurrency: two confirmations arriving together both try stream_seq n+1; the unique (stream_id, stream_seq) key lets one commit and the other is re-read and retried (409 stale). Missed outcome deliveries are found by the view v_pending_outcomes and retried; outcome (source_event_id, subject_id, metric) is unique, so a retry never double-counts. Trust-edge weight: recency-weighted Beta posterior mean (ADR-0006)." style="shape=note;size=10;whiteSpace=wrap;html=1;fontSize=10;align=left;spacingLeft=6;fillColor=#F4F6F8;strokeColor=#B26A00;" vertex="1" parent="1">
-          <mxGeometry x="40" y="1998" width="1580" height="46" as="geometry" />
+        <mxCell id="v65" value="Concurrency: two confirmations arriving together both try stream_seq n+1; the unique (stream_id, stream_seq) key lets one commit and the other is re-read and retried (409 stale). Outcomes are written in the same transaction as the close, so a loan is never closed without its outcomes; outcome (source_event_id, subject_id, metric) is unique, so a retry never double-counts. Trust-edge weight: recency-weighted Beta posterior mean (ADR-0006)." style="shape=note;size=10;whiteSpace=wrap;html=1;fontSize=10;align=left;spacingLeft=6;fillColor=#F4F6F8;strokeColor=#B26A00;" vertex="1" parent="1">
+          <mxGeometry x="40" y="2068" width="1580" height="46" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>

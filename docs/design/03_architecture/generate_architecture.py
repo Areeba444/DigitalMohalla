@@ -73,8 +73,8 @@ def component_diagram() -> Diagram:
            40, 36, 1500, 20, size=11, color="#4A5560", check=False)
 
     # clients
-    component(d, "resident", "Resident app", 520, 72, 240, 60, owner="S3")
-    component(d, "console", "Moderator &amp; admin console", 820, 72, 240, 60, owner="S3")
+    component(d, "app", "Mobile app (Expo / React Native)<br><span style='font-weight:normal;font-size:10px'>one app for "
+              "residents, lenders, moderators and admins (screens W1&#8211;W7)</span>", 520, 72, 540, 60, owner="S3")
 
     sysb = d.node("<span style='font-size:10px'>&#171;subsystem&#187;</span> <b>Digital Mohalla backend</b> "
                   "<span style='font-size:10.5px'>(Python / FastAPI service, PostgreSQL; proposal &#167;8.1, confirmed at "
@@ -171,8 +171,7 @@ def component_diagram() -> Diagram:
 
     # ---------------- interfaces
     ball(d, api, "IRestApi", 790, 222, "T", "REST API (JSON over HTTPS)", (850, 203, 200, "left"))
-    uses(d, (740, 132), "i_IRestApi", (0, 0.5), points=[(740, 222)])
-    uses(d, (840, 132), "i_IRestApi", (1, 0.5), points=[(840, 222)])
+    uses(d, (790, 132), "i_IRestApi", (0.5, 0))
     # Module 1
     ball(d, m1, "IAuth", 330, 372, "T", "IAuth", (340, 350, 60, "left"))
     uses(d, (440, 315), "i_IAuth", (0.5, 0), points=[(330, 315)])
@@ -223,18 +222,20 @@ def component_diagram() -> Diagram:
 
 # =============================================================================== layer diagram
 def layer_diagram() -> Diagram:
-    d = Diagram("Layer diagram (A8)", 1640, 1030)
-    d.text("<b>Digital Mohalla &#8212; Layer diagram, iteration 1</b> (UML package diagram; design step A8, v1.1)",
-           40, 12, 1100, 24,
-           size=16, check=False)
-    d.text("Strict layering: each layer depends only on the layer directly below it. The domain layer has no I/O; "
-           "repositories are interfaces in the application layer, implemented in infrastructure (dependency inversion).",
-           40, 36, 1500, 20, size=11, color="#4A5560", check=False)
+    d = Diagram("Layer diagram (A8)", 1700, 1030)
+    d.text("<b>Digital Mohalla &#8212; Layer diagram, iteration 1</b> (UML package diagram; design step A8, v1.2, "
+           "as built 14 October 2026)", 40, 12, 1300, 24, size=16, check=False)
+    d.text("Layers with dependency inversion: each upper layer uses only the layer directly below it; the domain layer "
+           "has no I/O and depends on no other layer; infrastructure implements the ports (store and repository "
+           "interfaces) declared in the application layer, and uses the platform.",
+           40, 36, 1600, 20, size=11, color="#4A5560", check=False)
     layers = [
         ("Presentation", "#EEE5F6", "#5B2C83",
-         [("Resident app", "request, evidence summary, accept / decline, handover &amp; return checklists, dispute", "S3"),
-          ("Moderator &amp; admin console", "case queue, evidence trail, decision with reason, audit log view", "S3")],
-         "Client stack open until the D-15 gate (NFR-D-05 assumes React Native / Expo)."),
+         [("Mobile app: resident and lender screens", "W1&#8211;W2 request and decision, W3a&#8211;W4 handover and "
+           "return, W5 dispute", "S3"),
+          ("Mobile app: moderator and admin screens", "W6 case queue, W7 case view and decision; audit log view "
+           "(screen to be designed)", "S3")],
+         "One Expo / React Native app for every role, with screens chosen by role (NFR-D-05); Android and web."),
         ("API / interface", "#F2F2F2", "#4D4D4D",
          [("REST endpoints /api/v1", "Architecture_Design.md section 4; JSON over HTTPS", "ALL"),
           ("Auth &amp; authorisation", "session, role, community scope (NFR-S-02, S-03)", "S1"),
@@ -242,7 +243,7 @@ def layer_diagram() -> Diagram:
            "S1"),
           ("Privacy filter", "no address, coordinates or CNIC in any response (NFR-PR-01)", "S1")], ""),
         ("Application (use-case services)", "#E3EEF9", "#1F4E79",
-         [("BorrowingService (M3)", "B5&#8211;B8, B12 command handlers", "S1"),
+         [("BorrowingService (M3)", "B5&#8211;B8, B12 command handlers; ports LifecycleStore, AuditLog", "S1"),
           ("CaseService, DecisionService (M9)", "D6, I4", "S3"),
           ("AuditLogService (M9)", "I6", "S3"),
           ("Auth &amp; Membership (M1)", "login, roles, coarse locality outcome", "S1"),
@@ -257,39 +258,45 @@ def layer_diagram() -> Diagram:
           ("Booking constraint", "EXCLUDE on held bookings (ADR-0002)", "S1"),
           ("Repositories", "assessment, outcome, trust_edge, case, decision, audit_log", "ALL"),
           ("ConfigLoader", "versioned engine config, config_version (NFR-D-01)", "S2"),
-          ("Notification adapter", "&#171;stub&#187; in iteration 1", "ALL")], ""),
-        ("Platform", "#F4F6F8", "#46535F",
-         [("PostgreSQL 16 + btree_gist", "schema.sql v2.3", "S1"),
-          ("Docker Compose", "local run and demo fallback", "S1"),
-          ("AWS host", "target to be confirmed by D-14 (NFR-D-03)", "S3"),
-          ("GitHub Actions", "ci.yml (lint, types, tests, scenarios), cd.yml (deploy, smoke, rollback)", "S1")], ""),
+          ("Notification adapter", "planned, iteration 2 (not built)", "OFF")], ""),
+        ("Platform (as built)", "#F4F6F8", "#46535F",
+         [("PostgreSQL 16 + btree_gist", "on Neon (AWS Singapore); schema.sql v2.3 via Alembic migration 0001", "S1"),
+          ("Render", "API as a Docker web service, web app as a static site; deploys main after CI passes", "S1"),
+          ("GitHub Actions", "ci.yml: lint, types, security scan, backend and frontend tests, API client check", "S1"),
+          ("Local run", "PostgreSQL 16, Uvicorn, Expo dev server: development and demo fallback", "ALL")], ""),
     ]
     y = 70
     band_ids = []
     for name, fill, ink, chips, note in layers:
         h = 120
         bid = d.node(f"&#171;layer&#187; <b>{name}</b>", 40, y, 1240, h,
-                     f"shape=folder;tabWidth=190;tabHeight=22;tabPosition=left;html=1;whiteSpace=wrap;"
+                     f"shape=folder;tabWidth=290;tabHeight=22;tabPosition=left;html=1;whiteSpace=wrap;"
                      f"verticalAlign=top;align=left;spacingLeft=10;spacingTop=2;fontSize=12;fillColor={fill};"
                      f"strokeColor={ink};container=1;collapsible=0;", id=f"L{len(band_ids)}")
         d.mark_container(bid)
         cw = (1240 - 30 - 12 * (len(chips) - 1)) / len(chips)
         for k, (title, desc, owner) in enumerate(chips):
             f2, i2 = OWNER[owner]
+            dash = "dashed=1;fontColor=#7A7A7A;" if owner == "OFF" else ""
             d.node(f"<b>{title}</b><br><span style='font-size:10px'>{desc}</span>", 55 + k * (cw + 12), y + 32, cw, 64,
-                   f"rounded=0;whiteSpace=wrap;html=1;fontSize=11;fillColor=#FFFFFF;strokeColor={i2};",
+                   f"rounded=0;whiteSpace=wrap;html=1;fontSize=11;fillColor=#FFFFFF;strokeColor={i2};{dash}",
                    parent=bid)
         if note:
             d.text(note, 55, y + 98, 900, 18, size=10, color="#5B2C83", parent=bid, check=False)
         band_ids.append(bid)
         y += h + 26
-    for k in range(len(band_ids) - 1):
-        top = d.box(band_ids[k])
-        d.edge(None, None, "&#171;use&#187;", style=EDGE_BASE + "endArrow=open;endFill=0;dashed=1;"
-               "strokeColor=#46535F;strokeWidth=1.5;fontSize=10;", src_pt=(1300, top[3] - 50),
-               tgt_pt=(1300, top[3] + 70), label_dx=0, check=False)
+    dep = ("endArrow=open;endFill=0;dashed=1;strokeColor=#46535F;strokeWidth=1.5;fontSize=10;")
+    boxes = [d.box(b) for b in band_ids]
+    # downward use: presentation -> API -> application -> domain, and infrastructure -> platform
+    for upper, lower in ((0, 1), (1, 2), (2, 3), (4, 5)):
+        d.edge(None, None, "&#171;use&#187;", style=EDGE_BASE + dep, src_pt=(1300, boxes[upper][3] - 50),
+               tgt_pt=(1300, boxes[lower][1] + 50), label_dx=0, check=False)
+    # dependency inversion: infrastructure realises the application layer's ports (arrow points upward)
+    d.edge(None, None, "&#171;realize&#187;<br>ports", style=EDGE_BASE + dep.replace("strokeColor=#46535F",
+           "strokeColor=#8A4B12"), src_pt=(1345, boxes[4][1] + 50), tgt_pt=(1345, boxes[2][3] - 30),
+           label_dx=0, check=False)
     # cross-cutting concerns
-    cc = d.node("&#171;crosscutting&#187; <b>Policies</b>", 1340, 70, 260, 866,
+    cc = d.node("&#171;crosscutting&#187; <b>Policies</b>", 1400, 70, 260, 866,
                 "shape=folder;tabWidth=170;tabHeight=22;tabPosition=left;html=1;whiteSpace=wrap;verticalAlign=top;"
                 "align=left;spacingLeft=8;spacingTop=2;fontSize=12;fillColor=#FFF8E1;strokeColor=#B26A00;"
                 "container=1;collapsible=0;", id="cc")
@@ -301,12 +308,12 @@ def layer_diagram() -> Diagram:
                                 ("Location privacy", "coarse outcome only (NFR-PR-01/02)"),
                                 ("Synthetic data labels", "seed data marked synthetic"),
                                 ("Logging", "no request bodies with location; no secrets")]):
-        d.node(f"<b>{t}</b><br><span style='font-size:10px'>{s}</span>", 1355, 112 + k * 115, 230, 90,
+        d.node(f"<b>{t}</b><br><span style='font-size:10px'>{s}</span>", 1415, 112 + k * 115, 230, 90,
                "rounded=0;whiteSpace=wrap;html=1;fontSize=11;fillColor=#FFFFFF;strokeColor=#B26A00;", parent=cc)
-    d.text("UML package diagram: folder = package with stereotype &#171;layer&#187;; dashed open arrow = &#171;use&#187; "
-           "dependency (each layer uses only the one below). Border colour of an element = owner (purple S3, blue S1, "
-           "orange S2, grey shared).", 40, 960, 1240, 20, size=10.5,
-           color="#4A5560", check=False)
+    d.text("UML package diagram: folder = package with stereotype &#171;layer&#187;; dashed open arrow = dependency "
+           "(&#171;use&#187; downward; &#171;realize&#187; from infrastructure up to the ports it implements). Border colour "
+           "of an element = owner (purple S3, blue S1, orange S2, grey shared); grey dashed = planned, not built.",
+           40, 960, 1300, 20, size=10.5, color="#4A5560", check=False)
     return d
 
 

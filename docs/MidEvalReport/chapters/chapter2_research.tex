@@ -1,0 +1,115 @@
+\chapter{Research and Existing Solutions}\label{ch:research-existing-solutions}
+\section{Research Method / Approach}\label{sec:research-method-approach}
+The research had four strands, each feeding a specific design question:
+
+\begin{enumerate}
+\item \textbf{Literature on reputation and trust.} Beta reputation and its uncertainty \cite{josang2002beta,josang2016subjective}, surveys of trust and reputation systems \cite{josang2007survey,resnick2000}, trust propagation in social networks \cite{golbeck2005,kamvar2003}, graph anomaly and collusion detection \cite{akoglu2015,mukherjee2012,hooi2016}, and reciprocity in two-sided review systems \cite{bolton2013,fradkin2021}. Each source is cited where it shaped a decision, and the report states whether a method was reproduced, adapted or replaced.
+\item \textbf{Products and prior projects.} The products residents use today and four earlier FAST final-year projects in the same space were compared on the features that matter for safe lending (Section~\ref{sec:comparison-existing-solutions}).
+\item \textbf{Public data, for shape only.} Aggregate statistics of public trust networks (Epinions \cite{massa2007} and Bitcoin OTC/Alpha \cite{kumar2016,kumar2018}), such as degree distributions and the share of positive edges, were measured to make the synthetic neighbourhood data realistic. No rows from these datasets are copied into the project.
+\item \textbf{Design-time verification.} Every algorithm was worked by hand on small examples (for instance an 8-node graph for the $k$-hop search and thirteen scenario fixtures for the decision policy) before code was written, and the code is tested against those worked numbers (Chapter~\ref{ch:testing-early-validation}).
+\end{enumerate}
+
+\section{Existing Solutions / Products}\label{sec:existing-solutions-products}
+\begin{itemize}
+\item \textbf{OLX and Facebook Marketplace} \cite{olx,fbmarketplace}. General classifieds. Strong reach and listings, but built for one-off sales between strangers; trust cues are a profile and, at most, a star average.
+\item \textbf{WhatsApp groups and kameti apps.} In the team's experience, the informal channel through which neighbourhood lending is arranged today. Familiar and immediate, but there is no record of who borrowed what, no condition evidence and no dispute process. Kameti (rotating savings) apps digitise contributions \cite{mehmood2019} but not item lending.
+\item \textbf{Nextdoor} \cite{nextdoor}. A neighbourhood social network with verified addresses and posts; lending is informal and outside any workflow.
+\item \textbf{Peerby and Fat Llama} \cite{peerby,fatllama}. Peer-to-peer rental platforms with listings and booking flows; reputation is a review average, without a statement of how much evidence stands behind it.
+\item \textbf{Prior FAST FYPs} (identified by their FAST FYP project IDs). Kiraya (F22-071) and AIRental (F23-029) address rentals, Kitabiyat (S25-040) book sharing and PawPal (F25-101) a pet community. None models evidence quality or manipulation.
+\end{itemize}
+
+\section{Comparison of Existing Solutions}\label{sec:comparison-existing-solutions}
+Table~\ref{tab:comparison-existing-products-prior} repeats the comparison presented at the proposal defence. Ratings are the team's assessment of each product's public features at that time: $\checkmark$~supported, $\sim$~partial, $\times$ not supported.
+
+\begin{table}[!htbp]
+\centering
+\caption{Comparison with existing products and prior projects (proposal defence)}\label{tab:comparison-existing-products-prior}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{@{}lccccccccc@{}}
+\toprule
+Feature & DM & OLX/FB & WA/kameti & Nextdoor & Peerby/FL & Kiraya & AIRental & Kitabiyat & PawPal \\
+\midrule
+P2P lending & $\checkmark$ & $\checkmark$ & $\sim$ & $\times$ & $\checkmark$ & $\sim$ & $\checkmark$ & $\checkmark$ & $\times$ \\
+Shared reputation & $\checkmark$ & $\sim$ & $\times$ & $\sim$ & $\sim$ & $\times$ & $\times$ & $\times$ & $\sim$ \\
+Trust-aware decisions & $\checkmark$ & $\times$ & $\times$ & $\times$ & $\sim$ & $\times$ & $\sim$ & $\sim$ & $\times$ \\
+Moderation workflow & $\checkmark$ & $\sim$ & $\sim$ & $\sim$ & $\sim$ & $\times$ & $\times$ & $\times$ & $\sim$ \\
+Unified neighbourhood platform & $\checkmark$ & $\times$ & $\times$ & $\checkmark$ & $\times$ & $\times$ & $\times$ & $\times$ & $\sim$ \\
+\bottomrule
+\end{tabular}}
+\par\vspace{0.3em}{\footnotesize DM = Digital Mohalla; FB = Facebook; WA = WhatsApp; FL = Fat Llama. The DM column shows the proposal-time vision: ``Unified neighbourhood platform'' and ``Shared reputation'' describe the full platform. After the defence the scope was narrowed (Section~\ref{sec:project-modules}), and the engine reports evidence states for a loan rather than a reputation score for a person.\par}
+\end{table}
+
+
+After the defence the comparison was narrowed to the properties the assurance engine adds, which none of the compared products offers as a whole: (1) reporting how much verified evidence stands behind a judgement, with an interval, instead of an average; (2) keeping evidence per role; (3) using the community's indirect evidence while capping it below direct evidence; (4) treating manipulation as a separate risk dimension reviewed by a person; and (5) recording handover, return and disputes as evidence for future decisions.
+
+\section{Limitations and Gaps}\label{sec:limitations-gaps}
+\begin{itemize}
+\item \textbf{Averages hide uncertainty.} A 5.0 from one review and a 4.8 from two hundred look alike, and averaged reputation is easy to game \cite{josang2007survey,resnick2000}.
+\item \textbf{Newcomers are invisible or penalised.} Cold start cannot be solved by a model, because the history does not exist \cite{schein2002}; it needs an explicit policy.
+\item \textbf{No evidence trail.} Informal channels record nothing about handover condition or returns, so a dispute is one person's word against another's.
+\item \textbf{Manipulation is handled by deletion or not at all.} Where it is handled, it is usually an opaque automatic action, which is unacceptable in a neighbourhood where members cannot simply leave.
+\end{itemize}
+
+\section{Proposed Solution}\label{sec:proposed-solution}
+Digital Mohalla records every loan as an immutable event stream and turns confirmed outcomes into evidence. For each request the assurance engine (i) estimates the borrower's reliability in the borrower role with a recency-weighted Beta posterior and a 90\% credible interval, (ii) adds capped indirect evidence from at most three hops in the lender's community, (iii) computes manipulation signals as a separate risk, and (iv) applies an ordered decision table that returns one of four states (SUFFICIENT\_EVIDENCE, REVIEW\_RECOMMENDED, INSUFFICIENT\_EVIDENCE, ACTIVE\_DISPUTE) with safeguards and an explanation. Requests the engine cannot clear are held for a moderator; nothing is rejected automatically.
+
+\section{Complex Computing Problem}\label{sec:complex-computing-problem}
+The problem meets the Seoul Accord characteristics of a complex computing problem (Table~\ref{tab:mapping-seoul-accord-complex}).
+
+\begin{table}[!htbp]
+\centering
+\caption{Mapping to the Seoul Accord complex computing problem characteristics}\label{tab:mapping-seoul-accord-complex}
+\begin{tabular}{@{}L{111pt}L{268pt}@{}}
+\toprule
+Characteristic & How Digital Mohalla meets it \\
+\midrule
+Depth of knowledge & Bayesian inference with recency weighting; bounded graph search with path-diversity rules; anomaly detection on review graphs and text; concurrency control and event sourcing in a relational database. \\
+Conflicting requirements & Safety vs. inclusion of newcomers; manipulation detection vs. false suspicion of real families; trust verification vs. location privacy; explanation detail vs. disclosure of other members' data. \\
+Depth of analysis, no obvious solution & No off-the-shelf model answers ``is there enough evidence for this loan''; the rule order, thresholds and caps had to be analysed on worked scenarios (ADR-0007, ADR-0008). \\
+Infrequently encountered issues & Collusion in sparse graphs; retaliatory reviews after disputes; a ring that also trades with outsiders lowers its own density (camouflage \cite{hooi2016}). \\
+Beyond standards and codes & Reputation averages, the usual practice, are what the design replaces. \\
+Diverse stakeholders & Borrowers, lenders, newcomers, moderators, admins and the community as a whole, with different and sometimes opposed interests. \\
+Significant consequences & A wrong ``sufficient'' risks a physical item and a relationship between neighbours; a wrong ``suspicious'' damages a person's standing in a place they cannot leave. \\
+Interdependence & The engine depends on lifecycle evidence (only confirmed outcomes count), and the lifecycle depends on the engine (holds, safeguards); disputes feed back into evidence after a moderator rules. \\
+Ill-defined requirements & ``Enough evidence'' has no external definition; thresholds are hypotheses to be calibrated in FYP-2 against baselines and ablations. \\
+\bottomrule
+\end{tabular}
+\end{table}
+\section{Technical Challenges}\label{sec:technical-challenges}
+\begin{enumerate}
+\item \textbf{Concurrent acceptances.} Two lenders' (or one lender's two) acceptances for overlapping dates can race. Solved in the database: an exclusion constraint on held bookings makes the second commit fail, and the transition, booking and event commit in one transaction (ADR-0002).
+\item \textbf{Correctness of the lifecycle under every command.} 14 states and 21 event types give 294 pairs; only 31 are valid. The transition table is enforced in Python and by a composite foreign key in PostgreSQL, and all 294 pairs are tested.
+\item \textbf{Uncertainty under sparse data.} The posterior must distinguish ``no evidence'' from ``bad evidence''; the effective evidence count $n_{\mathrm{eff}}$ and the interval's lower bound enter the rules directly.
+\item \textbf{Correlated indirect evidence.} Several paths through the same neighbour are not independent; only the strongest path per first-hop neighbour is kept before combining with noisy-OR.
+\item \textbf{Latency of graph search.} Path enumeration grows quickly with $k$; the $k=1$ to 4 sweep (Section~\ref{sec:algorithm-2-bounded-hop-indirect}) measured a 3.5-fold rise in 95th-percentile latency from $k=3$ to $k=4$ for one percentage point more coverage.
+\item \textbf{Real families vs. rings.} A family that lends within itself fills its review graph like a ring. A hold now needs two corroborating signals (ADR-0007), so one strong signal alone only asks for verification.
+\item \textbf{Engine failure.} A slow or failing engine must never yield a default state; requests are held with reason \code{engine_failure} after a 2,000 ms timeout.
+\end{enumerate}
+
+\section{Research Findings and Design Decisions}\label{sec:research-findings-design-decisions}
+\begingroup
+\begin{longtable}{@{}L{136pt}L{69pt}L{170pt}@{}}
+\caption{How research findings shaped the design}\label{tab:how-research-findings-shaped}\\
+\toprule
+Finding & Source & Design consequence \\
+\midrule
+\endfirsthead
+\toprule
+Finding & Source & Design consequence \\
+\midrule
+\endhead
+\bottomrule
+\endlastfoot
+Averaged reputation hides uncertainty and is easy to game & \cite{josang2007survey,resnick2000} & Report a posterior with a 90\% interval and effective evidence; never show a single number (NFR-U-01). \\
+Binary outcomes have a conjugate Beta posterior & \cite{josang2002beta} & \textit{Adapted}: Beta(1,1) prior updated with outcomes weighted by a 180-day half-life, kept per role and metric. \\
+Trust propagates with decreasing influence & \cite{golbeck2005} & \textit{Adapted}: bounded $k$-hop paths with decay $\gamma^{h-1}$, one path per first hop, noisy-OR, capped at $\rho \leq 0.6$. A global score such as EigenTrust \cite{kamvar2003} was not used, because it gives every user one number. \\
+Two-sided reviews are reciprocal by nature & \cite{bolton2013,fradkin2021} & ``A rated B and B rated A'' was rejected as a signal; on the synthetic data it flagged 6 of 8 ordinary members (decision D18). \\
+Collusion shows as groups that rate one another & \cite{mukherjee2012,hooi2016} & S1 measures how many of a member's review partners also reviewed each other both ways (partner clustering, D18). \\
+Graph anomaly methods trade accuracy for interpretability & \cite{akoglu2015} & Rule-based, interpretable signals rather than a trained model: there is no labelled neighbourhood fraud data, and every signal must be explainable to a moderator. \\
+Cold start is a policy problem & \cite{schein2002} & Zero history gives INSUFFICIENT\_EVIDENCE with safeguards (rule R3), not a low score. \\
+Trust cues change behaviour & \cite{ert2016} & States are worded as evidence, not as judgements of people; tests check that explanations contain no accusing words. \\
+Explanations raise transparency and trust & \cite{zhang2020} & Every assessment carries a written explanation naming the rule that fired and the evidence behind it. \\
+Event logs make state reproducible and auditable & \cite{fowler2005es,kleppmann2017} & Append-only, hash-chained event log; current state is a replay, and evaluation data is recorded from day one (FR-N-03). \\
+Exclusion constraints prevent overlapping ranges atomically & \cite{postgres16} & Double booking prevented in PostgreSQL with \code{btree_gist} (ADR-0002), not in application code. \\
+\end{longtable}
+\endgroup

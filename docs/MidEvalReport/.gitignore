@@ -1,0 +1,13 @@
+# LaTeX build output (compile locally; only the final PDF is committed)
+*.aux
+*.log
+*.out
+*.toc
+*.lof
+*.lot
+*.bbl
+*.blg
+*.synctex.gz
+*.fls
+*.fdb_latexmk
+main.pdf

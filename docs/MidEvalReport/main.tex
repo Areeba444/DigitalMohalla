@@ -1,0 +1,174 @@
+% Digital Mohalla (F26-188) -- FYP-1 Mid-Evaluation Report, Iteration 1
+% Built on the distributed FAST-NUCES template (fast-nuces-bs.cls, unmodified).
+% Compile: pdflatex main -> bibtex main -> pdflatex main -> pdflatex main
+\PassOptionsToPackage{obeyspaces,spaces}{url}
+\documentclass[oneside]{fast-nuces-bs}
+%\documentclass{article}
+
+\usepackage{blindtext}
+\usepackage{mathptmx}% Times Roman font
+\usepackage[T1]{fontenc}
+\usepackage{lipsum}
+\usepackage{sectsty}
+\usepackage{tikz-uml}
+\usepackage{titlesec}
+% Packages used by the chapter files (tables, figures, lists)
+\usepackage{longtable}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{float}
+\usepackage{enumitem}
+\usepackage{xcolor}
+\usetikzlibrary{shapes.geometric,arrows.meta}
+% The class loads natbib with both "numbers" and "authoryear"; the references are
+% numbered (IEEEtran), so select numeric citations in square brackets.
+\setcitestyle{numbers,square,comma}
+
+% Information about the Thesis
+% -----------------------------------------------------------------------------
+% (All are compulsory, do not delete any line other than author Information)
+% For e.g., usually there are 3 students in a group, so leave authorone,
+% authortwo, and authorthree, and delete authorfour.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\department{FAST School of Computing}
+\faculty{Computer Science}
+\degreeyear{2026}
+\degreemonth{October}
+\degreename{Computer Science}
+\campuscity{Islamabad}
+\authorone{Fatima Khursheed}{23i-0746}
+\authortwo{Areeba Javed}{23i-0570}
+\authorthree{Minahil Kashif}{23i-0554}
+\supervisor{Dr. Ali Zeeshan}
+\sessionduration{2023--2027}
+% No co-supervisor for this project, so \cosupervisor is not set (template instruction).
+\deanname{Dr. Dean Computing}
+\directorname{Dr. Director of the Campus}
+\hodname{Dr. Head of Computer Science Department}
+\fypcoordinatorname{Name of FYP Coordinator}
+\title{Digital Mohalla: A Trust-Based Platform for Neighbors}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Names used by the front-matter chapters
+\newcommand{\projecttitle}{Digital Mohalla: A Trust-Based Platform for Neighbors}
+\newcommand{\projectid}{F26-188}
+\newcommand{\studentone}{Fatima Khursheed (23i-0746)}
+\newcommand{\studenttwo}{Areeba Javed (23i-0570)}
+\newcommand{\studentthree}{Minahil Kashif (23i-0554)}
+
+% Inline code, file names and identifiers (small typewriter; may break after / . _)
+\DeclareUrlCommand\code{\def\UrlFont{\small\ttfamily}}
+% Layout settings carried over from the V2 source
+\setlist{itemsep=2pt,topsep=4pt}
+\renewcommand{\arraystretch}{1.15}
+\setcounter{tocdepth}{1}
+% Long identifiers such as INSUFFICIENT_EVIDENCE may break after the underscore
+\let\dmunderscore\_
+\renewcommand{\_}{\dmunderscore\allowbreak}
+
+% Tables: ragged-right paragraph columns
+% Let TeX loosen a line slightly instead of letting long identifiers overflow
+\setlength{\emergencystretch}{3em}
+
+\newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
+\newcolumntype{R}[1]{>{\raggedleft\arraybackslash}p{#1}}
+\setlength{\LTpre}{0.5em}
+\setlength{\LTpost}{0.5em}
+
+% Diagrams too large to read on an A4 page: the picture plus a link that opens
+% the full-size, zoomable diagram in draw.io (diagrams.net viewer).
+% #1 = file name in figures/diagrams and figures/drawio_links,
+% #2 = path of the source file in the design folder.
+\newcommand{\drawionote}[2]{%
+  \par\vspace{0.4em}{\small\centering
+  Full-size diagram: \input{figures/drawio_links/#1}\\
+  Source: \code{#2}\par}}
+
+% Title page in the template's layout, with the report type and project ID
+% added. The table of contents and the lists are printed after the front
+% matter (see below), so the title page does not repeat them.
+\makeatletter
+\renewcommand{\maketitle}{%
+\begin{alwayssingle}
+    \thispagestyle{empty}
+    \begin{center}
+        { \setstretch{1}
+        \par{\fontsize{24}{28}\selectfont \textbf{\@title}}\par
+        \vspace{0.8cm}
+        \par{\fontsize{14}{14}\selectfont FYP-1 Mid-Evaluation Report (Iteration 1)}\par
+        \vspace{0.3cm}
+        \par{\fontsize{14}{14}\selectfont Project ID: \projectid}\par
+        \vspace{1cm}
+        \par{\fontsize{14}{14}\selectfont Project Team}\\~\\
+        {\fontsize{16}{16}\selectfont
+        \begin{tabular}{lr}
+            \@authoronename & \@authoroneroll \\
+            \@authortwoname & \@authortworoll \\
+            \@authorthreename & \@authorthreeroll
+        \end{tabular}
+        }\par
+        \vspace{0.4cm}
+        \par{\fontsize{14}{14}\selectfont Session \@sessionduration}\par
+        \vspace{1.2cm}
+        \par{\fontsize{14}{14}\selectfont Supervised by}\\~\\
+        {\fontsize{17}{17}\selectfont \@supervisor}\par
+        \vspace{.5cm}
+        \begin{figure}[h]\centering
+            \includegraphics[width=.30\columnwidth]{ThesisFigs/FASTLogo}
+        \end{figure}
+        \vspace{0.5cm}
+        \par{\fontsize{15}{15}\selectfont \textbf{\@department}}\par
+        \vspace{0.5cm}
+        \par{\fontsize{15}{18}\selectfont \textbf{National University of
+        Computer and Emerging Sciences\\\@campuscity, Pakistan}}\par
+        \vspace{0.5cm}
+        \par{\fontsize{15}{15}\selectfont \textbf{\@degreemonth, \@degreeyear}}\par
+    }
+    \end{center}
+    \null\vfill
+    \clearpage
+\end{alwayssingle}
+}
+\makeatother
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Former document starts below this
+\begin{document}
+
+\cleardoublepage
+\pagenumbering{roman}
+\input{chapters/01_students_submission}
+\input{chapters/02_anti_plagiarism}
+\input{chapters/03_authors_declaration}
+\input{chapters/04_abstract}
+\input{chapters/05_acknowledgments}
+\input{chapters/06_executive_summary}
+\tableofcontents
+\listoffigures
+\listoftables
+\input{chapters/07_abbreviations}
+
+\cleardoublepage
+\pagenumbering{arabic}
+\input{chapters/chapter1_introduction}
+\input{chapters/chapter2_research}
+\input{chapters/chapter3_iteration_plan}
+\input{chapters/chapter4_requirements}
+\input{chapters/chapter5_design}
+\input{chapters/chapter6_iteration1}
+\input{chapters/chapter8_testing}
+\input{chapters/chapter9_development_evidence}
+\input{chapters/chapter10_fyp2_plan}
+\input{chapters/conclusion}
+
+\appendix
+\input{chapters/appendix_action_register}
+\input{chapters/appendix_requirements}
+\input{chapters/appendix_test_cases}
+\input{chapters/appendix_repository}
+\input{chapters/appendix_diagrams}
+\input{chapters/appendix_meetings}
+
+\bibliographystyle{IEEEtran}
+\bibliography{references/references}
+\end{document}

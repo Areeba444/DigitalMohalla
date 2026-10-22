@@ -1,0 +1,189 @@
+\chapter{Project Management and Development Evidence}\label{ch:project-management-development}
+\section{Work Completed}\label{sec:work-completed}
+\begin{itemize}
+\item \textbf{Design:} the Part A baseline (requirements and use cases v1.3, eight ADRs, domain model, state machines, data dictionary, ER schema v2.3, class, component, layer, sequence, activity and DFD diagrams, algorithm design, locality design, wireframes, test plan v1.3) and decisions D1--D20.
+\item \textbf{Implementation:} Slices A, B and C (Chapter~\ref{ch:iteration-1-design}), deployed on Render and Neon.
+\item \textbf{Verification:} 623 backend and 29 frontend tests; the mid-term scenario target met; the $k$ sweep measured.
+\item \textbf{Process:} 30 merged pull requests, six release pull requests to \code{main}, CI on every pull request, an AI usage log and a decisions log.
+\end{itemize}
+
+\section{Work Remaining}\label{sec:work-remaining}
+For FYP-1 final (Iteration 2): membership and the locality method; scheduler jobs, extensions and counter-offers; uploads; reviews and the remaining manipulation signals; information requests, appeals and the audit-log screen; in-app notifications; the simulator, baselines and the written FYP-2 evaluation plan. Before the mid-term demo: the release tag and the alpha session on the deployed instance. The latency tests (NFR-P-03, NFR-P-04) run in Iteration 2. Details in Chapter~\ref{ch:remaining-fyp-plan}.
+
+\section{Individual Responsibilities}\label{sec:individual-responsibilities}
+Responsibilities follow the Iteration 1 plan's work division (Table~\ref{tab:work-division-iteration-1}): S1 Fatima Khursheed owns the lifecycle, indirect trust, locality and CI; S2 Areeba Javed owns estimation, the decision policy and manipulation detection; S3 Minahil Kashif owns moderation, evaluation (scenarios and synthetic data) and the apps. Two pieces of work changed hands: deployment and the two-theme mobile UI (\#27), both planned for S3 and carried out by S1.
+
+\section{Contribution of Each Team Member}\label{sec:contribution-each-team-member}
+\textbf{Fatima Khursheed (S1).} Part A: ADRs, lifecycle state machines and transition table, data dictionary, ER schema, architecture (component and layer diagrams), locality design (A11), the indirect-trust part of the algorithm design, sequence (b), and the integration of the three members' artefacts into one baseline. Part B: lifecycle core and event store (\#2), login and REST API (\#4), CI (\#7), trust edges (\#21), $k$-hop search and $k$ sweep (\#22), deployment of the API and web app (\#17, \#20), the two-theme mobile UI (\#27), and privacy checks with fuzzing (\#34). 39 commits.
+
+\textbf{Areeba Javed (S2).} Part A: the algorithm and data-structure design (Algorithms 1, 3 and 4), the engine configuration, the decision-policy activity diagram, sequence (a) and the DFD. Part B: versioned configuration and the Slice A engine stub (\#3), outcome extraction (\#16), the recency-weighted Beta posterior and the similarity formula (D17) (\#19), the decision policy, explanation and real engine (\#23), the manipulation checks with retaliation handling (\#31), and team decisions D10--D16 (\#15). 37 commits.
+
+\textbf{Minahil Kashif (S3).} Part A: sequence (c), the dispute activity diagram, SSDs, the use case diagram, wireframes W1--W7 and the test plan. Part B: project scaffold, the resident app (\#5), the synthetic dataset generator, validator and loader (\#6), the scenario suite (\#25), the lender evidence screen (\#28), disputes (\#32), moderator decisions (\#33), the moderator app (\#35), and the defence slides document (\#26). 50 commits.
+
+All three members took part in the design review, the team decisions and the review of one another's pull requests.
+
+\section{Repository and Version Control Evidence}\label{sec:repository-version-control-evidence}
+\begin{itemize}
+\item \textbf{Repository:} \code{https://github.com/Areeba444/DigitalMohalla}.
+\item \textbf{Branches:} \code{main} (deployed; changed only by release pull requests from \code{develop}), \code{develop} (integration), and one branch per piece of work: \texttt{feature/...}, \texttt{docs/...}, \texttt{ci/...}. 24 feature, documentation and CI branches were merged through pull requests.
+\item \textbf{Reviews:} 22 of the 24 feature pull requests were reviewed by another member before merge (\#1 and \#15 were joint pull requests by all three members; in \#7 the reviewer, Areeba, had also contributed a commit). \#21 and \#27 were merged without a review; Areeba reviewed and approved both after merge, on 14 October. GitHub Copilot's automatic reviewer also commented on 13 pull requests (Section~\ref{sec:tools-tool-assisted-development}).
+\item \textbf{CI evidence:} every pull request shows the three checks (Backend, Frontend, API client in sync); a failing check on PR \#34 (DF-06) was fixed before the pull request was merged.
+\item \textbf{Dependabot:} six dependency-update pull requests are open and are reviewed before merge, not merged automatically.
+\end{itemize}
+
+\section{Milestones and Commit Evidence}\label{sec:milestones-commit-evidence}
+\begin{table}[H]
+\centering
+\caption{Release milestones (merge times in Pakistan time)}\label{tab:release-milestones-merge-times}
+\begin{tabular}{@{}L{81pt}L{124pt}L{170pt}@{}}
+\toprule
+Release PR & Merged & Content \\
+\midrule
+\#8 & 13 Oct, 04:35 & Slice A: lifecycle loop, API, login, resident app, CI, dataset \\
+\#18 & 13 Oct, 05:32 & Outcome extraction; API deployment \\
+\#24 & 13 Oct, 12:29 & Assurance engine; web app deployment \\
+\#29 & 13 Oct, 13:44 & Slice B complete: scenario suite, lender evidence screen \\
+\#30 & 13 Oct, 14:10 & Mobile UI, two themes \\
+\#36 & 14 Oct, 00:27 & Slice C: human loop; feature freeze \\
+\bottomrule
+\end{tabular}
+\end{table}
+126 commits (excluding merges) are on \code{main}: Minahil Kashif 50, Fatima Khursheed 39, Areeba Javed 37. Each commit is authored by the member who owns the change, and 125 of the 126 carry a \code{Co-Authored-By: Claude} trailer marking AI assistance. The repository history starts on 12 October 2026: the design baseline was prepared before that and committed to the repository on 13 October (PR \#1), and implementation took place between 12 and 14 October. The release tag \code{v0.1.0-rc1} has not been created yet; it will mark the demo version.
+
+\section{Tools and Tool-Assisted Development}\label{sec:tools-tool-assisted-development}
+The team used \textbf{Claude Code} (Anthropic's AI coding assistant, model Claude Opus 5.5) during Iteration 1, and \textbf{GitHub Copilot} in two places (an earlier draft of this report, and automatic pull-request review comments). Use is declared per module at two levels:
+
+\begin{itemize}
+\item \textbf{L2, assisted:} GenAI produced code, tests, diagrams or document drafts that the team reviewed, modified, integrated and tested, and can explain.
+\item \textbf{L3, core-assist:} GenAI was used inside a core feature; for these modules the team states below what was generated, what the team contributed, why the design works and its limits.
+\end{itemize}
+
+Every substantial AI-assisted change has a row in \code{docs/ai-usage-log.md} (date, tool, work, files and reviewer), and AI-assisted commits carry a \code{Co-Authored-By: Claude} trailer, so the repository history itself shows which commits had AI help.
+
+\textbf{Working method.} The design baseline came first. For each implementation task: (1) the module owner specified the task from the baseline (module, requirement, test cases); (2) Claude Code drafted the code and tests; (3) the team reviewed the draft line by line and asked for changes where it departed from the design; (4) the change had to pass CI (ruff, mypy, bandit, the backend and frontend test suites); (5) it was merged through a reviewed pull request. Most first-draft code in the repository was produced this way.
+
+\begingroup\small
+\begin{longtable}{@{}L{56pt}L{21pt}L{68pt}L{98pt}L{69pt}L{43pt}@{}}
+\caption{GenAI use by module}\label{tab:genai-use-module}\\
+\toprule
+Module (owner) & Level & GenAI produced & Team contribution & Why the design works & Known limits \\
+\midrule
+\endfirsthead
+\toprule
+Module (owner) & Level & GenAI produced & Team contribution & Why the design works & Known limits \\
+\midrule
+\endhead
+\bottomrule
+\endlastfoot
+Assurance engine: estimation and decision policy (S2) & L3 & Python implementation of the posterior, rules R1--R9, the explanation builder; unit and scenario tests & Algorithm design (Algorithm 1 and 4); outcome mapping (D11); thresholds (D12); similarity formula (D17, decided by S2); hand-checked expected results for ES-05 and ES-13 (D13, D14) & The posterior reports its own uncertainty; zero history is INSUFFICIENT, not negative; every result names the rule that fired & Thresholds are initial hypotheses checked only on synthetic data \\
+Indirect trust (S1) & L3 & $k$-hop search, edge projection and the $k$ sweep harness & Edge-weight rule (ADR-0006, D10, confirmed by S2); $k$-hop design ($k$, $\gamma$, noisy-OR, cap); the hand-worked example graph & Indirect evidence is capped and never sufficient alone (ADR-0008); $k=3$ chosen from the measured sweep & ADR-0006 accepted as experimental \\
+Manipulation checks (S2) & L3 & S1 partner clustering, S4 review similarity, retaliation set-aside and tests & Rejected the first S1 version after measuring that it flagged ordinary members; D18 and D19 were proposed with AI help from measurements and published work and confirmed by S2 & Signals only raise a review flag; a hold needs two signals and a moderator decides (ADR-0007) & S2, S3, S5 in Iteration 2; synthetic attacks only \\
+Lifecycle and event store (S1) & L3 & Transition table code, aggregate, PostgreSQL adapters, the 294-pair matrix test & State machine design (14 states), transition table, schema v2.3 with triggers and hash chain, ADRs 0001--0005 & The database enforces the rules as well (foreign key to allowed transitions, exclusion constraint, append-only triggers), so an application bug cannot store an invalid state & -- \\
+Disputes and moderation (S3) & L2 & Dispute and decision services, endpoints, moderator screens & Case workflow and decision rules from the use cases; upload deferral (D20, S3) & -- & Audit screen and uploads in Iteration 2 \\
+Resident and moderator apps (S3) & L2 & Expo screens, API client wiring, Jest tests & HCI analysis, wireframes W1--W7, both themes & -- & Android and web only \\
+CI/CD (S1) & L2 & GitHub Actions workflow, Dockerfile, Render configuration & Choice of hosting and pipeline gates & -- & No rollback rehearsal yet \\
+Synthetic data (S3) & L2 & Generator, validator and loader & Dataset requirements, scenario casts, the rule that public datasets supply shape statistics only & -- & Synthetic, not real behaviour \\
+Design documents (all) & L2 & Drafts of several Part A documents and two class diagrams; their headers say ``drafted with Claude'' & Every design decision (D1--D20, ADRs, the locality method choice), review and sign-off & -- & -- \\
+This report (all) & L2 & Draft text; an earlier draft was produced with GitHub Copilot & Structure, framing, and checking every figure against the code and test output & -- & -- \\
+\end{longtable}
+\endgroup
+\textbf{Errors found in AI output.} Review, measurement and CI caught generated defects before merge, among them: the first version of S1, which flagged ordinary community members (DF-01); request bodies that silently ignored unknown fields (DF-03); a fuzz test that generated values JSON cannot encode (DF-06); a fuzz test that took 28 minutes (DF-07); an \code{assert} used as a runtime check (DF-08); and a stray control character written into a source file. These are reported to show that output was checked, not accepted as written.
+
+\textbf{What is not AI.} The product contains no generative AI and makes no calls to an AI service. The assurance engine is a statistical model with deterministic, explainable rules. No real personal data was given to any tool; all data in the project is synthetic.
+
+\textbf{Accountability.} Each member owns the modules in Table~\ref{tab:work-division-iteration-1}, has reviewed their design, code and tests, and can explain them. The team takes full responsibility for all submitted work.
+
+\section{External Components and Dependencies}\label{sec:external-components-dependencies}
+Dependencies are pinned by lock files (\code{backend/uv.lock}, \code{frontend/package-lock.json}) and installed exactly as locked in CI. Table~\ref{tab:dependency-register-versions-as} is the dependency register (Form 13); all licences are open source and permit use in this project.
+
+\begingroup\small
+\begin{longtable}{@{}L{123pt}L{56pt}L{98pt}L{77pt}@{}}
+\caption{Dependency register (versions as locked on 14 October 2026)}\label{tab:dependency-register-versions-as}\\
+\toprule
+Component & Version & Licence & Use \\
+\midrule
+\endfirsthead
+\toprule
+Component & Version & Licence & Use \\
+\midrule
+\endhead
+\bottomrule
+\endlastfoot
+\multicolumn{4}{@{}l}{\textbf{Backend, runtime}} \\
+FastAPI & 0.143.0 & MIT & Web framework \\
+Pydantic / pydantic-settings & 2.14.0 / 2.15.0 & MIT & Validation, settings \\
+Uvicorn & 0.54.0 & BSD-3-Clause & ASGI server \\
+SQLAlchemy & 2.1.4 & MIT & Database access \\
+Alembic & 1.20.0 & MIT & Migrations \\
+psycopg & 3.3.6 & LGPL-3.0 & PostgreSQL driver (used unmodified as a library) \\
+NumPy & 2.5.4 & BSD-3-Clause (with bundled MIT/0BSD/Zlib parts) & Numerics \\
+SciPy & 1.18.1 & BSD-3-Clause & Beta quantiles \\
+argon2-cffi & 25.1.0 & MIT & Password hashing \\
+PyJWT & 2.15.1 & MIT & Tokens \\
+python-multipart, PyYAML, structlog & 0.0.32, 6.0.3, 26.1.0 & Apache-2.0, MIT, MIT or Apache-2.0 & Forms, config, logging \\
+\multicolumn{4}{@{}l}{\textbf{Backend, development only}} \\
+pytest, pytest-cov & 9.1.1, 7.1.0 & MIT & Tests, coverage \\
+Hypothesis & 6.169.0 & MPL-2.0 & Property tests, fuzzing \\
+httpx, NetworkX & 0.28.1, 3.7 & BSD-3-Clause & API test client; $k$-hop cross-check \\
+ruff, mypy, pre-commit & 0.17.0, 2.4.0, 4.6.2 & MIT & Lint, types, hooks \\
+bandit, pip-audit & 1.9.4, 2.10.1 & Apache-2.0 & Security scans \\
+Locust & 2.46.7 & MIT & Load tests (suite 15) \\
+\multicolumn{4}{@{}l}{\textbf{Frontend, runtime}} \\
+Expo SDK and Expo modules & 57.0.x & MIT & App framework, router, secure store, image picker \\
+React / React Native / react-native-web & 19.2.3 / 0.86.3 / 0.21.4 & MIT & UI \\
+React Native Paper & 5.15.3 & MIT & Components \\
+TanStack Query & 5.104.1 & MIT & Server state \\
+openapi-fetch & 0.17.0 & MIT & Typed API client \\
+react-hook-form, zod & 7.90.0, 4.6.6 & MIT & Forms, validation \\
+Fraunces, Plus Jakarta Sans fonts & 0.4.x & MIT and OFL-1.1 & Typography \\
+\multicolumn{4}{@{}l}{\textbf{Frontend, development only}} \\
+TypeScript & 6.0.3 & Apache-2.0 & Types \\
+Jest, jest-expo, React Native Testing Library & 30.5.2, 57.0.5, 14.1.0 & MIT & Tests \\
+ESLint, Prettier, openapi-typescript & 9.39.5, 3.9.10, 7.13.0 & MIT & Lint, format, client generation \\
+Playwright & 1.64.0 & Apache-2.0 & Browser tests (planned) \\
+\multicolumn{4}{@{}l}{\textbf{Services}} \\
+PostgreSQL & 16 & PostgreSQL Licence & Database (Neon in deployment) \\
+GitHub Actions, Render, Neon & -- & Free tiers & CI, hosting, database \\
+\end{longtable}
+\endgroup
+\section{Risks and Mitigation}\label{sec:risks-mitigation}
+\begingroup
+\begin{longtable}{@{}L{124pt}L{38pt}L{209pt}@{}}
+\caption{Risk register}\label{tab:risk-register}\\
+\toprule
+Risk & Level & Mitigation \\
+\midrule
+\endfirsthead
+\toprule
+Risk & Level & Mitigation \\
+\midrule
+\endhead
+\bottomrule
+\endlastfoot
+Parameters (thresholds, half-life, weights) are wrong for real neighbourhoods & High & Kept in versioned configuration with sensitivity ranges; FYP-2 sensitivity study and time-ordered hold-out; results reported with \code{config_version} \\
+False suspicion of legitimate dense groups & High & Corroboration rule (ADR-0007), C3 guard test, neutral wording, human decision before any restriction \\
+Synthetic data differs from real behaviour & Medium & Shape statistics from public trust networks; separate pilot data in FYP-2, never mixed with simulation results \\
+Members cannot explain AI-assisted code at the viva & Medium & Line-by-line review, plain-language notes in the code, each member presents their own modules in the demo \\
+Free hosting sleeps or changes terms & Medium & Local run as a demo fallback; deployment configuration kept in the repository \\
+Location privacy breach & High & No location in requests, responses or logs; tested on every build (suite 14) \\
+Scope creep into stretch modules & Medium & Frozen scope; changes only through a change request (Form 12) \\
+Flaky frontend tests on slow machines & Low & Raised first-render timeout; tests run alone in CI (DF-09) \\
+\end{longtable}
+\endgroup
+\section{Security and Privacy Considerations}\label{sec:security-privacy-considerations}
+\begin{itemize}
+\item Passwords are stored as argon2 hashes; tokens are JWTs with a secret held in environment settings, never in the repository; HTTPS is terminated by Render.
+\item Every transition checks the actor's role; refused commands are recorded in a hash-chained audit log; moderators act only in their own community.
+\item Request bodies refuse unknown fields and NUL characters; fuzzing checks that bad input gives 422, never a server error or database message.
+\item No exact location, address or CNIC is stored or returned; the privacy suite scans every response model, a whole loan's API traffic, log lines and audit rows.
+\item Synthetic data only; every synthetic file and seed account is labelled synthetic.
+\item bandit, pip-audit, npm audit and Dependabot run on the dependencies.
+\end{itemize}
+
+\section{Current Limitations}\label{sec:current-limitations}
+\begin{itemize}
+\item The engine's parameters are unvalidated hypotheses; no claim is made yet about decision quality against baselines.
+\item The locality method, uploads, scheduler jobs, reviews, three manipulation signals, information requests, appeals, notifications and the audit-log screen are not built.
+\item Two of the thirteen scenarios (ES-09, ES-10) cannot run until the locality method exists.
+\item Transition latency under load and the deployed-instance system tests have not been run.
+\end{itemize}

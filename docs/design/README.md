@@ -43,7 +43,7 @@ Digital Mohalla is a neighbourhood borrowing platform whose computing core is an
 | 6 | SSDs | `02_use_case_model/ssd_diagrams.drawio` (4 pages) | S3 | v1.0, A14 review |
 | 7 | ADRs 0001–0008 | `03_architecture/DigitalMohalla_ADRs_Ver1.md` | S1 (lead) | 0001–0005 accepted; 0006 proposed; 0007–0008 accepted for integration |
 | 8 | Component and layer (UML package) diagrams, REST table | `03_architecture/` | S1 | v1.2 |
-| 9 | Deployment diagram | `04_deployment/deployment_diagram.drawio`, `Deployment_Design.md` | S3 | v0.9 provisional (target by D-14) |
+| 9 | Deployment diagram | `04_deployment/deployment_diagram.drawio`, `Deployment_Design.md` | S3 | v1.0 as built (Render + Neon, 14 Oct); Part A v0.9 in `04_deployment/archive_v1/` |
 | 10 | Domain model; class diagrams S1, S2, S3 | `05_class_model/` | All / each | Domain model v1.0 (D18); class diagrams v1.0 |
 | 11 | ER diagram and schema | `06_data_model/er_diagram.drawio`, `schema.sql` | S1 | v2.3, 44/44 tests |
 | 12 | Data dictionary (A4) and assurance data dictionary | `06_data_model/Data_Dictionary.md`, `Assurance_Data_Dictionary.md` | S1, S2 | To be signed by all three, tag `schema-v1` |

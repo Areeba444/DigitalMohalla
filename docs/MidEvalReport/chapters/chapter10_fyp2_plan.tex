@@ -1,0 +1,68 @@
+\chapter{Remaining FYP Plan}\label{ch:remaining-fyp-plan}
+\section{Remaining Scope}\label{sec:remaining-scope}
+The committed core is partly built (Chapter~\ref{ch:iteration-1-design}). What remains is to complete the core and enabling modules (1, 3, 5, 7, 9 and 10), to add the supporting search module, and to evaluate the engine. Stretch modules (events, forum and chatbot, vendors) are considered only if the core is integrated and the evaluation is on track, at most one in Iteration 3 and none in Iteration 4.
+
+\section{Remaining Modules and Features}\label{sec:remaining-modules-features}
+\begingroup
+\begin{longtable}{@{}L{115pt}L{81pt}L{81pt}L{86pt}@{}}
+\caption{Module roadmap, Iterations 2 to 4}\label{tab:module-roadmap-iterations-2}\\
+\toprule
+Module & Core part finished & Whole module & Evaluated \\
+\midrule
+\endfirsthead
+\toprule
+Module & Core part finished & Whole module & Evaluated \\
+\midrule
+\endhead
+\bottomrule
+\endlastfoot
+1 User \& Community & It. 2: membership, locality (A3, A4) & It. 3: accounts, profile, blocking & It. 4: locality test cases, pilot privacy \\
+3 Resource Sharing & It. 2: scheduler, no-show, extensions, overdue, counter-offer & It. 3: listings, calendar & It. 4: load and regression \\
+4 Search & -- & It. 3 & It. 4: precision@k \\
+5 Trust & It. 2: all roles and metrics, reviews, remaining signals, ES-07 to ES-12 & It. 3: trust profile, reporting & It. 3 preliminary, It. 4 full \\
+7 Communication & It. 2: in-app notifications & It. 3: chat, e-mail, push & It. 4 \\
+9 Administration & It. 2: information requests, appeal, reversal, audit screen & It. 3: user, community and report management & It. 4: pilot moderators \\
+10 Analytics & It. 2: simulator, baselines, evaluation plan & It. 3: held-out attack generator & Runs the evaluation in It. 4 \\
+\end{longtable}
+\endgroup
+\section{Remaining Iterations}\label{sec:remaining-iterations}
+\begin{itemize}
+\item \textbf{Iteration 2 (FYP-1 final):} the Iteration 2 plan in Section~\ref{sec:iteration-2-plan}; target about 45\% of committed scope, all thirteen scenarios in CI, the first baseline comparison and the written FYP-2 evaluation plan.
+\item \textbf{Iteration 3 (FYP-2 mid):} all major modules connected; search; the held-out attack generator, written by S3 so that it is independent of the detector's author (S2); a preliminary comparison with the Iteration 2 baseline.
+\item \textbf{Iteration 4 (FYP-2 final):} the full evaluation, the pilot, no new scope.
+\end{itemize}
+
+\section{Implementation Plan}\label{sec:implementation-plan}
+The method that worked in Iteration 1 continues: design first (each new use case dressed, each algorithm worked by hand), then vertical slices with a release pull request each, every change behind CI. Event types or schema fields needed by new features (for example reviews and notifications) go through the frozen-schema sign-off by all three members before code is written.
+
+\section{Testing and Validation Plan}\label{sec:testing-validation-plan}
+The FYP-2 evaluation asks whether the engine's uncertainty and safeguards actually improve decisions.
+
+\begin{itemize}
+\item \textbf{Baselines:} global average, role-specific average, recency-weighted average, Beta posterior without indirect evidence, direct evidence only, direct evidence with uncertainty, direct with $k$-hop, and the full system.
+\item \textbf{Ablations:} without uncertainty, without indirect trust, without manipulation detection, without the context policy. A component with no measurable benefit is reported as such.
+\item \textbf{Metrics:} Brier score, log loss, interval coverage and calibration; false-positive and false-negative rates of the manipulation signals; escalation precision and recall; coverage and latency at $k=1$ to 4; fairness between new and established users.
+\item \textbf{Data:} a time-ordered hold-out on simulated neighbourhoods; public trust networks (Epinions, Bitcoin OTC) for propagation only; a pilot with real residents for acceptance (task completion, SUS, understanding of the explanation), reported separately and collected with consent. The three sources are never mixed.
+\item \textbf{Targets:} the proposal stated $\geq$70\% accuracy and $<$5\% false positives; FR/NFR v1.3 leaves the numeric targets for decision quality open until a baseline exists. The targets will be fixed in the written evaluation plan at the end of Iteration 2, before any evaluation run.
+\end{itemize}
+
+\section{Deployment Plan}\label{sec:deployment-plan}
+Render (API and web) with Neon (PostgreSQL) remains the target. The deployment diagram has been redrawn for this target (Figure~\ref{fig:deployment-diagram}). Before FYP-1 final: rehearse a rollback to the previous deploy, add the post-deploy smoke test (TC-91), and produce an Android build for device testing (TC-73). For the pilot: a paid tier or a small dedicated host if free-tier sleep affects users, decided with the supervisor.
+
+\section{Tentative Timeline}\label{sec:tentative-timeline}
+\begin{table}[H]
+\centering
+\caption{Timeline}\label{tab:timeline}
+\begin{tabular}{@{}L{81pt}L{90pt}L{204pt}@{}}
+\toprule
+Iteration & Period & Focus \\
+\midrule
+1 & Aug--Oct 2026 & Design and analysis; live core (done) \\
+2 & Nov 2026--Jan 2027 & Core modules completed; simulator, baselines, evaluation plan \\
+3 & Feb--Apr 2027 & Integration, search, attack generator, preliminary evaluation \\
+4 & May--Jun 2027 & Evaluation, pilot, final report \\
+\bottomrule
+\end{tabular}
+\end{table}
+\section{Expected Final Deliverables}\label{sec:expected-final-deliverables}
+A deployed platform with the committed core; the assurance engine with its evaluation against baselines and ablations; the scenario suite and simulator in CI; the pilot results; the design baseline kept in step with the code; the final report, poster and demo; and the AI usage log and dependency register kept current.

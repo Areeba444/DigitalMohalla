@@ -1,0 +1,38 @@
+\chapter{Detailed Test Cases}\label{app:detailed-test-cases}
+Test case texts (input, expected result, traceability) are in Test Plan v1.3 \S{}6. Table~\ref{tab:automated-test-cases-suite} lists the test cases that are automated and passing on 14 October 2026, with the test file that implements each.
+
+\begingroup\small
+\begin{longtable}{@{}L{68pt}L{166pt}L{141pt}@{}}
+\caption{Automated test cases by suite}\label{tab:automated-test-cases-suite}\\
+\toprule
+Test cases & Suite & Test files \\
+\midrule
+\endfirsthead
+\toprule
+Test cases & Suite & Test files \\
+\midrule
+\endhead
+\bottomrule
+\endlastfoot
+TC-01, 02, 05 & 1 Transition matrix & \code{test_transition_table}, \code{test_borrowing_service} \\
+TC-03, 06 & 1 Hold exits; stale command & \code{test_moderation}, \code{test_event_store} \\
+TC-07 & 2 Replay & \code{test_borrowing_service}, \code{test_event_store}, \code{test_aggregate} \\
+TC-08, 09, 15 & 3 Double booking, soft hold & \code{test_borrowing_service} \\
+TC-10, 11, 12 & 4 Authorisation & \code{test_borrowing_service}, \code{test_moderation}, \code{test_api} \\
+TC-13, 14 & 5 Append-only, tamper & \code{test_event_store} \\
+TC-20 to 24 & 6 Beta posterior & \code{test_beta_posterior}, \code{test_posterior_properties}, \code{test_outcome_extraction} \\
+TC-25 to 28 & 7 $k$-hop & \code{test_khop}, \code{test_trust_edges}, \code{test_khop_on_dataset} \\
+-- & 8 $k$ sweep (reported) & \code{scripts/khop_sweep.py} \\
+TC-29 to 35, 39 & 9 Decision policy & \code{test_decision_policy}, \code{test_assessment_rules} \\
+TC-36, 37 & 10 Engine failure & \code{test_borrowing_service} \\
+TC-40 to 47 & 11 Scenarios & \code{test_fixture_scenarios}, \code{test_dataset_scenarios} \\
+TC-30, 38, 43, 44 & 12 Dense group, manipulation & \code{test_manipulation}, \code{test_assurance_engine} \\
+TC-50 to 57 & 13 Disputes and holds & \code{test_disputes}, \code{test_api_disputes}, \code{test_moderation}, \code{test_moderation_rules}, \code{test_api_moderation} \\
+TC-58, 60 & 14 Privacy & \code{test_privacy}, \code{test_api} \\
+TC-64, 66, 67, 68 & 16 Handover, return, outcome feed & \code{test_borrowing_service}, \code{test_outcome_feed}, \code{test_outcome_rules} \\
+TC-71, 74 to 77 & Unit and contract & \code{test_assurance_engine}, \code{test_explanation}, \code{test_outcome_rules}, \code{test_similarity}, \code{test_engine_config} \\
+TC-80, 81, 84 & 17 API security & \code{test_api}, \code{test_privacy}, \code{test_fuzz} \\
+TC-100, 105 to 107 & 19 Screens W1, W5, W6, W7 & \code{lender-evidence-test}, \code{moderation-screens-test}, \code{moderation-lib-test}, \code{test_lender_evidence_api} \\
+\end{longtable}
+\endgroup
+\textbf{Not yet automated.} TC-16 (replay property test), TC-61 (transition latency under load), TC-63 and TC-90 to TC-92 (deployed-instance demo and smoke tests), TC-70 (duplicate request), TC-73 (Android device), TC-82, TC-83, TC-86 to TC-88 (further API and host security checks), TC-101 to TC-104 (screens W2 to W4). \textbf{Deferred to Iteration 2:} TC-59 and TC-85 (uploads, decision D20).
