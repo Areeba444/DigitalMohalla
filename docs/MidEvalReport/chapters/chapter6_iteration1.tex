@@ -1,7 +1,5 @@
-\chapter{Iteration 1: Design and Implementation}
-\label{ch:iteration1}
-
-\section{Iteration Objectives}
+\chapter{Iteration 1: Design and Implementation}\label{ch:iteration-1-design}
+\section{Iteration Objectives}\label{sec:iteration-objectives}
 \begin{enumerate}
 \item A live borrowing lifecycle in which invalid transitions and double bookings cannot be stored, and every state can be rebuilt from events.
 \item The assurance engine on real evidence: outcomes from closed loans, the recency-weighted posterior, indirect evidence, manipulation signals and the decision policy, with an explanation on every result.
@@ -10,35 +8,40 @@
 \item A pipeline in which every change is checked before merge and \code{main} is deployed automatically.
 \end{enumerate}
 
-\section{Selected Use Cases / Features}
-UC-B5 (request), B6 (respond), B7 (handover), B8 (return and complete), B12 (dispute), D3/4/5 (assess), D6 (escalate), I4 (resolve) and the log part of I6; minimal login (part of A2). These are the use cases on the path from a request to evidence and back, which is the shortest path that exercises the whole computing problem. Membership and locality (A3, A4) were designed but left for Iteration~2, because the lifecycle only needs the stored locality result.
+\section{Selected Use Cases / Features}\label{sec:selected-use-cases-features}
+UC-B5 (request), B6 (respond), B7 (handover), B8 (return and complete), B12 (dispute), D3/4/5 (assess), D6 (escalate), I4 (resolve) and the log part of I6; minimal login (part of A2). These are the use cases on the path from a request to evidence and back, which is the shortest path that exercises the whole computing problem. Membership and locality (A3, A4) were designed but left for Iteration 2, because the lifecycle only needs the stored locality result.
 
-\section{Design}
-The iteration followed the Part~A baseline in Chapter~\ref{ch:design}: the transition table from the state machine, the schema from the ER design, the four algorithms from the algorithm and data-structure design, and the screens from wireframes W1--W7 (Appendix~\ref{app:diagrams}). Design questions that came up while building were settled as team decisions D10--D20 (Table~\ref{tab:decisions}) before code was merged.
+\section{Design}\label{sec:design}
+The iteration followed the Part A baseline in Chapter~\ref{ch:system-design}: the transition table from the state machine, the schema from the ER design, the four algorithms from the algorithm and data-structure design, and the screens from wireframes W1--W7 (Appendix~\ref{app:additional-design-diagrams}). Design questions that came up while building were settled as team decisions D10--D20 (Table~\ref{tab:team-decisions-d10-d20}) before code was merged.
 
-\section{Implementation}
+\section{Implementation}\label{sec:implementation}
 Work was organised as three vertical slices; each ended with a release pull request from \code{develop} to \code{main}, which triggered a deployment.
 
-\begingroup\small
-\begin{longtable}{L{0.12\textwidth}L{0.55\textwidth}L{0.25\textwidth}}
-\caption{Slices and their pull requests}\label{tab:slices}\\
-\toprule Slice & Content & Pull requests \\ \midrule \endfirsthead
-\toprule Slice & Content & Pull requests \\ \midrule \endhead
+\begin{table}[!htbp]
+\centering
+\small
+\caption{Slices and their pull requests}\label{tab:slices-their-pull-requests}
+\begin{tabular}{@{}L{47pt}L{230pt}L{98pt}@{}}
+\toprule
+Slice & Content & Pull requests \\
+\midrule
 B0 & Design baseline in the repository; synthetic dataset, validator and loader; CI & \#1, \#6, \#7 \\
 A & Event store, transition table, migration; engine configuration and stub engine; login and REST API; resident web app & \#2, \#3, \#4, \#5; release \#8 \\
 CD & API on Render with Neon PostgreSQL; web app as a Render static site & \#17, \#20; releases \#18, \#24 \\
 B & Decisions D10--D16 and test plan v1.3; outcome extraction (B1); Beta posterior and similarity (B2); trust edges (B2); $k$-hop and $k$ sweep (B3); decision policy, explanation and real engine (B4); scenario suite (B5); lender evidence screen (B6); two-theme mobile UI & \#15, \#16, \#19, \#21, \#22, \#23, \#25, \#28, \#27; releases \#29, \#30 \\
 C & Manipulation checks with retaliation handling (C1); disputes (C1); moderator decisions (C2); privacy checks and fuzzing (C2); moderator app and dispute screens (C3) & \#31--\#35; release \#36 \\
 \bottomrule
-\end{longtable}
-\endgroup
-
-\section{Completed Features / Module}
-\begingroup\small
-\begin{longtable}{L{0.24\textwidth}L{0.5\textwidth}L{0.18\textwidth}}
-\caption{Completed features}\label{tab:features}\\
-\toprule Feature & What works & Module, owner \\ \midrule \endfirsthead
-\toprule Feature & What works & Module, owner \\ \midrule \endhead
+\end{tabular}
+\end{table}
+\section{Completed Features / Module}\label{sec:completed-features-module}
+\begin{table}[H]
+\centering
+\small
+\caption{Completed features}\label{tab:completed-features}
+\begin{tabular}{@{}L{98pt}L{209pt}L{68pt}@{}}
+\toprule
+Feature & What works & Module, owner \\
+\midrule
 Event store and lifecycle & 14 states, 21 event types; append-only, hash-chained events; replay in Python and SQL; invalid transitions refused twice and audited & 3, S1 \\
 Request to completion & Request, locality read, assessment, accept (overlapping requests declined), decline, cancel, handover checklist and confirmation with deposit record, return, on-time or late close & 3, S1 \\
 Double-booking guard & Exclusion constraint; exactly one of N simultaneous acceptances commits & 3, S1 \\
@@ -54,139 +57,159 @@ Apps & Resident app (browse, request, lender evidence, handover, return, dispute
 Synthetic data and scenarios & Seeded generator (mini, standard, scale tiers), validator, loader; scenario suite in CI & 10, S3 \\
 CI/CD & Three CI jobs on every push and pull request; automatic deploy of \code{main} after CI & S1 (CI), Render deploys \\
 \bottomrule
-\end{longtable}
-\endgroup
-
-\section{Technical Implementation Details}
-\subsection{Code organisation}
-The backend follows the layout in the tech-stack document: \code{app/\allowbreak{}api} (routes, schemas, dependencies), \code{app/\allowbreak{}domain} (\code{lifecycle}, \code{assurance/\allowbreak{}\{estimation, indirect, detection, policy\}}, \code{moderation}, \code{accounts}), \code{app/\allowbreak{}infra} (\code{db}, \code{eventstore}) and \code{app/\allowbreak{}config}. The domain packages contain no input/output. The backend application is 4{,}383 lines of Python in 33 files, and its tests are 5{,}092 lines; the frontend is about 4{,}200 lines of TypeScript excluding the generated client.
+\end{tabular}
+\end{table}
+\section{Technical Implementation Details}\label{sec:technical-implementation-details}
+\subsection{Code organisation}\label{sec:code-organisation}
+The backend follows the layout in the tech-stack document: \code{app/api} (routes, schemas, dependencies), \code{app/domain} (\code{lifecycle}, \code|assurance/{estimation, indirect, detection,| \code|policy}|, \code{moderation}, \code{accounts}), \code{app/infra} (\code{db}, \code{eventstore}) and \code{app/config}. The domain packages contain no input/output. The backend application is 4,383 lines of Python in 33 files, and its tests are 5,092 lines; the frontend is about 4,200 lines of TypeScript excluding the generated client.
 
 \begingroup\small
-\begin{longtable}{L{0.36\textwidth}L{0.56\textwidth}}
-\caption{Key files, classes and functions}\label{tab:files}\\
-\toprule File & Main elements \\ \midrule \endfirsthead
-\toprule File & Main elements \\ \midrule \endhead
-\code{domain/\allowbreak{}lifecycle/\allowbreak{}service.\allowbreak{}py} & \code{BorrowingService}: \code{create\_request}, \code{accept}, \code{decline\_overlapping}, \code{confirm\_handover}, \code{confirm\_return}, \code{raise\_dispute}, \code{withdraw\_dispute}, \code{decide}, \code{moderation\_queue}; engine call with timeout \\
-\code{domain/\allowbreak{}lifecycle/\allowbreak{}transition\_table.\allowbreak{}py} & \code{TransitionTable.\allowbreak{}load}, \code{lookup}, \code{is\_valid}, \code{next\_state} (from \code{transition\_table.\allowbreak{}csv}) \\
-\code{domain/\allowbreak{}lifecycle/\allowbreak{}aggregate.\allowbreak{}py} & \code{BorrowingTransaction.\allowbreak{}apply}, \code{replay} (gap, order and previous-state checks) \\
-\code{domain/\allowbreak{}lifecycle/\allowbreak{}ports.\allowbreak{}py} & \code{IAssess}, \code{LifecycleStore}, \code{AuditLog}; \code{AssessmentRequest}, \code{AssessmentResult} \\
-\code{infra/\allowbreak{}eventstore/\allowbreak{}store.\allowbreak{}py}, \code{postgres.\allowbreak{}py} & \code{create\_request}, \code{append}, \code{load\_stream}, \code{replay\_state}, \code{verify\_chain}; database error mapping; \code{PostgresAuditLog} \\
-\code{domain/\allowbreak{}assurance/\allowbreak{}engine.\allowbreak{}py} & \code{AssuranceEngine.\allowbreak{}assess}; \code{EvidenceSource} protocol \\
-\code{assurance/\allowbreak{}estimation/\allowbreak{}posterior.\allowbreak{}py}, \code{similarity.\allowbreak{}py}, \code{outcomes.\allowbreak{}py} & \code{recency\_weight}, \code{credible\_interval}, \code{estimate}; similarity (D17); outcome rules (D11) \\
-\code{assurance/\allowbreak{}indirect/\allowbreak{}khop.\allowbreak{}py}, \code{edges.\allowbreak{}py} & \code{find\_paths}, \code{path\_strength}, \code{indirect\_trust}; \code{edge\_weight}, \code{build\_edges} \\
-\code{assurance/\allowbreak{}detection/\allowbreak{}manipulation.\allowbreak{}py} & \code{partner\_clustering}, \code{review\_similarity}, \code{max\_cosine}, retaliation flags, \code{combine} \\
-\code{assurance/\allowbreak{}policy/\allowbreak{}decision.\allowbreak{}py}, \code{explanation.\allowbreak{}py} & \code{RULES}, \code{decide}, \code{safeguards\_for}; \code{build\_explanation} \\
-\code{domain/\allowbreak{}moderation/\allowbreak{}decisions.\allowbreak{}py} & \code{plan} (which event a decision produces), \code{InvalidDecision} \\
-\code{api/\allowbreak{}routes.\allowbreak{}py}, \code{schemas.\allowbreak{}py} & 21 API endpoints (plus \code{/health} in \code{main.\allowbreak{}py}); \code{StrictIn} request base (unknown fields and NUL characters refused) \\
-\code{config/\allowbreak{}engine.\allowbreak{}json} & Versioned parameters (\code{\ConfigVersion}), one section per algorithm \\
-\code{frontend/\allowbreak{}src/\allowbreak{}app/\allowbreak{}(resident)}, \code{(moderator)} & Expo Router screens; \code{src/\allowbreak{}api} generated typed client; \code{AssurancePanel} \\
+\begin{longtable}{@{}L{149pt}L{230pt}@{}}
+\caption{Key files, classes and functions}\label{tab:key-files-classes-functions}\\
+\toprule
+File & Main elements \\
+\midrule
+\endfirsthead
+\toprule
+File & Main elements \\
+\midrule
+\endhead
 \bottomrule
+\endlastfoot
+\code{domain/lifecycle/service.py} & \code{BorrowingService}: \code{create_request}, \code{accept}, \code{decline_overlapping}, \code{confirm_handover}, \code{confirm_return}, \code{raise_dispute}, \code{withdraw_dispute}, \code{decide}, \code{moderation_queue}; engine call with timeout \\
+\code{domain/lifecycle/transition_table.py} & \code{TransitionTable.load}, \code{lookup}, \code{is_valid}, \code{next_state} (from \code{transition_table.csv}) \\
+\code{domain/lifecycle/aggregate.py} & \code{BorrowingTransaction.apply}, \code{replay} (gap, order and previous-state checks) \\
+\code{domain/lifecycle/ports.py} & \code{IAssess}, \code{LifecycleStore}, \code{AuditLog}; \code{AssessmentRequest}, \code{AssessmentResult} \\
+\code{infra/eventstore/store.py}, \code{postgres.py} & \code{create_request}, \code{append}, \code{load_stream}, \code{replay_state}, \code{verify_chain}; database error mapping; \code{PostgresAuditLog} \\
+\code{domain/assurance/engine.py} & \code{AssuranceEngine.assess}; \code{EvidenceSource} protocol \\
+\code{assurance/estimation/posterior.py}, \code{similarity.py}, \code{outcomes.py} & \code{recency_weight}, \code{credible_interval}, \code{estimate}; similarity (D17); outcome rules (D11) \\
+\code{assurance/indirect/khop.py}, \code{edges.py} & \code{find_paths}, \code{path_strength}, \code{indirect_trust}; \code{edge_weight}, \code{build_edges} \\
+\code{assurance/detection/manipulation.py} & \code{partner_clustering}, \code{review_similarity}, \code{max_cosine}, retaliation flags, \code{combine} \\
+\code{assurance/policy/decision.py}, \code{explanation.py} & \code{RULES}, \code{decide}, \code{safeguards_for}; \code{build_explanation} \\
+\code{domain/moderation/decisions.py} & \code{plan} (which event a decision produces), \code{InvalidDecision} \\
+\code{api/routes.py}, \code{schemas.py} & 21 API endpoints (plus \code{/health} in \code{main.py}); \code{StrictIn} request base (unknown fields and NUL characters refused) \\
+\code{config/engine.json} & Versioned parameters (\code{1.3.0-iteration1-draft}), one section per algorithm \\
+\code{frontend/src/app/(resident)}, \code{(moderator)} & Expo Router screens; \code{src/api} generated typed client; \code{AssurancePanel} \\
 \end{longtable}
 \endgroup
+\subsection{Configuration}\label{sec:configuration}
+Every tunable value lives in \code{backend/config/engine.json}, marked \code{initial_hypothesis_unvalidated}, with a sensitivity range for the FYP-2 study. The loader refuses a file with a missing or out-of-range parameter (TC-74), and every stored assessment records the version it used. The version has moved from \code{1.0.0} (initial parameter set) and \code{1.1.0} (integration: S4 active, R6\_SPARSE, ADR-0007 and ADR-0008), both in Part A, to \code{1.2.0} (similarity, D17) and \code{1.3.0} (manipulation checks, D18, D19), each change recorded in the file's changelog.
 
-\subsection{Configuration}
-Every tunable value lives in \code{backend/\allowbreak{}config/\allowbreak{}engine.\allowbreak{}json}, marked \code{initial\_hypothesis\_unvalidated}, with a sensitivity range for the FYP-2 study. The loader refuses a file with a missing or out-of-range parameter (TC-74), and every stored assessment records the version it used. The version has moved from \code{1.0.0} (initial parameter set) and \code{1.1.0} (integration: S4 active, R6\_SPARSE, ADR-0007 and ADR-0008), both in Part~A, to \code{1.2.0} (similarity, D17) and \code{1.3.0} (manipulation checks, D18, D19), each change recorded in the file's changelog.
-
-\subsection{Coding conventions and static analysis}
+\subsection{Coding conventions and static analysis}\label{sec:coding-conventions-static-analysis}
 Python follows ruff's lint rules and formatter (line length 100); the domain packages pass \code{mypy}; \code{bandit} scans for insecure patterns and \code{pip-audit} for vulnerable dependencies. TypeScript is checked with \code{tsc} and ESLint, and formatted with Prettier. Every module that contains maths or a non-obvious rule starts with a plain-language note explaining what it does and why it was chosen over the alternative, so that any member can explain it.
 
-\section{Algorithms and Technical Decisions}
-\label{sec:algorithms}
-The four algorithms below are implemented as specified in the Part~A algorithm and data-structure design. All parameter values quoted are those of the current configuration, version \code{\ConfigVersion}.
+\section{Algorithms and Technical Decisions}\label{sec:algorithms-technical-decisions}
+The four algorithms below are implemented as specified in the Part A algorithm and data-structure design. All parameter values quoted are those of the current configuration, version \code{1.3.0-iteration1-draft}.
 
-\subsection{Algorithm 1: recency-weighted Beta posterior (S2)}
-Each confirmed outcome $i$ of the borrower in the borrower role is a success ($y_i=1$) or a failure ($y_i=0$) for one metric. An outcome $d_i$ days old with similarity $\sigma_i$ to the request has weight
-\[ w_i = 2^{-d_i/h}\,\max(\sigma_{\min}, \sigma_i), \qquad h = 180 \text{ days},\ \sigma_{\min}=0.5, \]
-where $\sigma_i = 0.4\,c_{\text{band}} + 0.4\,[\text{same category}] + 0.2\,\frac{\text{shorter duration}}{\text{longer duration}}$ and $c_\text{band}$ is 1, 0.5 or 0 for the same, an adjacent or a distant value band (D17). With $s=\sum w_i y_i$ and $f=\sum w_i(1-y_i)$ the posterior is $\mathrm{Beta}(1+s,\,1+f)$; the engine reports its mean, the 5\% and 95\% quantiles (the 90\% credible interval) and the effective evidence $n_\mathrm{eff}=s+f$. With no history this is $\mathrm{Beta}(1,1)$: mean 0.5, interval $[0.05, 0.95]$, which the policy reports as INSUFFICIENT\_EVIDENCE, not as a low value. \emph{Check values tested}: weights 0.962 and 0.25 at 10 and 360 days; 18 successes and 2 failures give $\mathrm{Beta}(19,3)$. \emph{Complexity}: $O(n)$ time for $n$ outcomes, $O(1)$ extra space. \emph{Why}: a conjugate posterior gives an honest interval from very few observations \cite{josang2002beta}, and the half-life lets old behaviour fade without being forgotten.
+\subsection{Algorithm 1: recency-weighted Beta posterior (S2)}\label{sec:algorithm-1-recency-weighted-beta}
+Each confirmed outcome $i$ of the borrower in the borrower role is a success ($y_i = 1$) or a failure ($y_i = 0$) for one metric. An outcome $d_i$ days old with similarity $\sigma_i$ to the request has weight
+\[
+w_i = 2^{-d_i/h}\,\max(\sigma_{\min}, \sigma_i), \qquad h = 180 \text{ days},\ \sigma_{\min} = 0.5,
+\]
+where $\sigma_i = 0.4\,c_{\mathrm{band}} + 0.4\,[\text{same category}] + 0.2\,\frac{\text{shorter duration}}{\text{longer duration}}$ and $c_{\mathrm{band}}$ is 1, 0.5 or 0 for the same, an adjacent or a distant value band (D17). With $s = \sum w_i y_i$ and $f = \sum w_i (1 - y_i)$ the posterior is $\mathrm{Beta}(1+s,\,1+f)$; the engine reports its mean, the 5\% and 95\% quantiles (the 90\% credible interval) and the effective evidence $n_{\mathrm{eff}} = s + f$. With no history this is $\mathrm{Beta}(1,1)$: mean 0.5, interval $[0.05, 0.95]$, which the policy reports as INSUFFICIENT\_EVIDENCE, not as a low value. \textit{Check values tested}: weights 0.962 and 0.25 at 10 and 360 days; 18 successes and 2 failures give $\mathrm{Beta}(19,3)$. \textit{Complexity}: $O(n)$ time for $n$ outcomes, $O(1)$ extra space. \textit{Why}: a conjugate posterior gives an honest interval from very few observations \cite{josang2002beta}, and the half-life lets old behaviour fade without being forgotten.
 
-\subsection{Algorithm 2: bounded $k$-hop indirect evidence (S1)}
+\subsection{Algorithm 2: bounded $k$-hop indirect evidence (S1)}\label{sec:algorithm-2-bounded-hop-indirect}
 Trust edges are derived only from verified outcomes (ADR-0006): the weight of edge $(a,b)$ is the posterior mean of $a$'s verified outcomes with $b$. For a lender $u$ and borrower $v$:
 
-\begin{enumerate}[label=\arabic*.]
-\item Find simple paths from $u$ to $v$ of at most $k=3$ edges (depth-first, no repeated node, so cycles are safe).
-\item Score a path $P$ with $h$ edges as $q(P)=\gamma^{\,h-1}\prod_{e\in P} w_e$, with $\gamma=0.7$ (the first hop is not penalised).
+\begin{enumerate}
+\item Find simple paths from $u$ to $v$ of at most $k = 3$ edges (depth-first, no repeated node, so cycles are safe).
+\item Score a path $P$ with $h$ edges as $q(P) = \gamma^{h-1} \prod_{e \in P} w_e$, with $\gamma = 0.7$ (the first hop is not penalised).
 \item Keep only the strongest path per first-hop neighbour; paths through the same neighbour are not independent evidence.
-\item Combine with noisy-OR: $I = 1-\prod_{P}(1-q(P))$.
-\item Reliability $\rho=\min\!\big(0.6,\ \min(1,|P|/3)\cdot\min(1,|F|/2)\cdot I\big)$, where $|F|$ is the number of distinct first hops.
-\item Indirect estimate $t_\text{ind}=b+\rho\,(t_v-b)$, with population baseline $b=0.5$.
+\item Combine with noisy-OR: $I = 1 - \prod_{P} (1 - q(P))$.
+\item Reliability $\rho = \min\bigl(0.6,\ \min(1, |P|/3) \cdot \min(1, |F|/2) \cdot I\bigr)$, where $|F|$ is the number of distinct first hops.
+\item Indirect estimate $t_{\mathrm{ind}} = b + \rho\,(t_v - b)$, with population baseline $b = 0.5$.
 \end{enumerate}
-The cap $\rho\leq 0.6$ keeps indirect evidence below direct evidence, and the policy never lets $\rho$ alone produce SUFFICIENT\_EVIDENCE. \emph{Complexity}: $O\big(\sum_{i=1}^{k}\Delta^i\big)$ for maximum out-degree $\Delta$. On the hand-worked 8-node graph the code reproduces the designed values ($I=0.7164$, $\rho=0.6$ capped; $\rho=0, 0.424, 0.600, 0.600$ for $k=1..4$). \emph{Why}: trust that weakens with distance follows Golbeck \cite{golbeck2005computing}; the cap, the path-diversity rule and the bounded $k$ are the project's adaptations for small, dense neighbourhood graphs.
 
-\paragraph{$k$ sweep.}\label{sec:khop-results} Table~\ref{tab:ksweep} reports latency and coverage for $k=1$ to 4 on the synthetic \emph{scale} tier (2{,}026 users, 5{,}987 edges, seed 20261001), one search per (lender, borrower) pair of 2{,}000 loans. $k=3$ finds a path for 93.2\% of pairs at 4.5~ms (P95); $k=4$ adds one percentage point of coverage at 3.5 times the P95 latency and 7 times the maximum, so $k=3$ is kept. The sweep was measured with configuration 1.2.0; version 1.3.0 changed only manipulation-detection parameters, so the $k$-hop results still apply. \emph{Caveat:} the pairs are existing loans, so a direct edge between lender and borrower usually exists already, and the $k=1$ coverage (80.3\%) includes the assessed loan's own edge. This overstates coverage for genuinely new pairs; the FYP-2 evaluation uses time-ordered held-out pairs instead.
+The cap $\rho \leq 0.6$ keeps indirect evidence below direct evidence, and the policy never lets $\rho$ alone produce SUFFICIENT\_EVIDENCE. \textit{Complexity}: $O\bigl(\sum_{i=1}^{k} \Delta^{i}\bigr)$ for maximum out-degree $\Delta$. On the hand-worked 8-node graph the code reproduces the designed values ($I = 0.7164$, $\rho = 0.6$ capped; $\rho = 0, 0.424, 0.600, 0.600$ for $k = 1..4$). \textit{Why}: trust that weakens with distance follows Golbeck \cite{golbeck2005}; the cap, the path-diversity rule and the bounded $k$ are the project's adaptations for small, dense neighbourhood graphs.
 
-\begin{table}[H]
+\textbf{$k$ sweep.} Table~\ref{tab:sweep-scale-tier-synthetic} reports latency and coverage for $k = 1$ to 4 on the synthetic \textit{scale} tier (2,026 users, 5,987 edges, seed 20261001), one search per (lender, borrower) pair of 2,000 loans. $k = 3$ finds a path for 93.2\% of pairs at 4.5 ms (P95); $k = 4$ adds one percentage point of coverage at 3.5 times the P95 latency and 7 times the maximum, so $k = 3$ is kept. The sweep was measured with configuration 1.2.0; version 1.3.0 changed only manipulation-detection parameters, so the $k$-hop results still apply. \textit{Caveat:} the pairs are existing loans, so a direct edge between lender and borrower usually exists already, and the $k = 1$ coverage (80.3\%) includes the assessed loan's own edge. This overstates coverage for genuinely new pairs; the FYP-2 evaluation uses time-ordered held-out pairs instead.
+
+\begin{table}[!htbp]
 \centering
-\caption{$k$ sweep on the scale tier (SYNTHETIC data, config 1.2.0)}\label{tab:ksweep}
-\small
-\begin{tabular}{rrrrrr}
-\toprule $k$ & P50 (ms) & P95 (ms) & max (ms) & coverage & pairs, $\rho\geq\rho_\mathrm{sup}$ \\ \midrule
+\caption{$k$ sweep on the scale tier (SYNTHETIC data, config 1.2.0)}\label{tab:sweep-scale-tier-synthetic}
+\begin{tabular}{@{}crrrrr@{}}
+\toprule
+$k$ & P50 (ms) & P95 (ms) & max (ms) & coverage & pairs, $\rho \geq \rho_{\mathrm{sup}}$ \\
+\midrule
 1 & 0.025 & 0.080 & 3.871 & 80.3\% & 0 \\
 2 & 0.087 & 0.709 & 15.543 & 88.9\% & 946 \\
-3 & 0.439 & 4.519 & 28.488 & 93.2\% & 1{,}346 \\
-4 & 2.279 & 15.915 & 207.045 & 94.2\% & 1{,}435 \\
+3 & 0.439 & 4.519 & 28.488 & 93.2\% & 1,346 \\
+4 & 2.279 & 15.915 & 207.045 & 94.2\% & 1,435 \\
 \bottomrule
 \end{tabular}
-\par\smallskip\footnotesize Windows AMD64, Python 3.12.11, commit \code{f7afd92}; raw output in \code{docs/\allowbreak{}design/\allowbreak{}14\_testing/\allowbreak{}results/\allowbreak{}}.
+\par\vspace{0.3em}{\small Windows AMD64, Python 3.12.11, commit \code{f7afd92}; raw output in \code{docs/design/14_testing/results/}.\par}
 \end{table}
 
-\subsection{Algorithm 3: manipulation-risk scoring (S2)}
-Manipulation risk is a separate 0--100 dimension, never averaged with trust. Iteration~1 computes two signals and one check over a 90-day window:
+\subsection{Algorithm 3: manipulation-risk scoring (S2)}\label{sec:algorithm-3-manipulation-risk-scoring}
+Manipulation risk is a separate 0--100 dimension, never averaged with trust. Iteration 1 computes two signals and one check over a 90-day window:
+
 \begin{itemize}
-\item \textbf{S1, partner clustering (D18).} Take the borrower's review partners (at least 3). Let $r$ be the share of pairs of partners who reviewed each other in both directions; $S_1=\mathrm{clip}\big((r-0.3)/0.6\big)$. A ring of accounts fills almost every pair; an ordinary borrower's lenders rarely review one another. The simpler ``A rated B and B rated A'' rule was rejected because every loan produces two reviews: on the standard tier it flagged 6 of 8 ordinary members; partner clustering flags 0 of 9.
-\item \textbf{S4, similar review texts.} The reviews the borrower received, as character 3-grams weighted by TF-IDF; the highest cosine similarity $c$ between two of them gives $S_4=\mathrm{clip}\big((c-0.7)/0.25\big)$.
+\item \textbf{S1, partner clustering (D18).} Take the borrower's review partners (at least 3). Let $r$ be the share of pairs of partners who reviewed each other in both directions; $S_1 = \mathrm{clip}\bigl((r - 0.3)/0.6\bigr)$. A ring of accounts fills almost every pair; an ordinary borrower's lenders rarely review one another. The simpler ``A rated B and B rated A'' rule was rejected because every loan produces two reviews: on the standard tier it flagged 6 of 8 ordinary members; partner clustering flags 0 of 9.
+\item \textbf{S4, similar review texts.} The reviews the borrower received, as character 3-grams weighted by TF-IDF; the highest cosine similarity $c$ between two of them gives $S_4 = \mathrm{clip}\bigl((c - 0.7)/0.25\bigr)$.
 \item \textbf{Retaliation check (D19).} A low review (lowest rating $\leq 2$) posted within 14 days after the subject complained about its author, about a loan whose return was confirmed, is set aside: left out of S1 and S4, reported, and explained to the lender in neutral words.
 \end{itemize}
-The score is the weighted mean over the available signals, $\text{score} = 100\cdot\sum_i w_i s_i \big/ \sum_i w_i$ (with $w_{S1}=0.3$, $w_{S4}=0.2$; a signal without enough data is left out of both sums), banded into levels 1 to 4 at 20, 40 and 60. Level~4 additionally requires two signals $\geq 0.5$ (ADR-0007); otherwise the result is level~3. A legitimate family group therefore stays at level~3 (TC-38): extra verification, no hold. \emph{Complexity}: S1 $O(p^2)$ for $p$ partners; S4 $O(m^2L)$ for $m$ reviews of length $L$. \emph{Why}: collusion shows as groups that rate one another \cite{mukherjee2012spotting,hooi2016fraudar}, while two-sided reviews are reciprocal by nature \cite{bolton2013engineering,fradkin2021reciprocity}. \emph{Known limit}: a ring that also trades with outsiders lowers its own density (camouflage).
 
-\subsection{Algorithm 4: decision policy (S2)}
-The first rule whose condition holds decides (Table~\ref{tab:rules}). Thresholds (D12): $\tau_\mu=0.75$, $\tau_L=0.60$, $n_{\min}=3$, $\rho_\mathrm{sup}=0.3$.
+The score is the weighted mean over the available signals, $\text{score} = 100 \cdot \sum_i w_i s_i \big/ \sum_i w_i$ (with $w_{S1} = 0.3$, $w_{S4} = 0.2$; a signal without enough data is left out of both sums), banded into levels 1 to 4 at 20, 40 and 60. Level 4 additionally requires two signals $\geq 0.5$ (ADR-0007); otherwise the result is level 3. A legitimate family group therefore stays at level 3 (TC-38): extra verification, no hold. \textit{Complexity}: S1 $O(p^2)$ for $p$ partners; S4 $O(m^2 L)$ for $m$ reviews of length $L$. \textit{Why}: collusion shows as groups that rate one another \cite{mukherjee2012,hooi2016}, while two-sided reviews are reciprocal by nature \cite{bolton2013,fradkin2021}. \textit{Known limit}: a ring that also trades with outsiders lowers its own density (camouflage).
 
-\begin{longtable}{L{0.1\textwidth}L{0.38\textwidth}L{0.24\textwidth}L{0.18\textwidth}}
-\caption{Decision rules in order (Algorithm 4)}\label{tab:rules}\\
-\toprule Rule & Condition & State & Lifecycle \\ \midrule \endfirsthead
-\toprule Rule & Condition & State & Lifecycle \\ \midrule \endhead
+\subsection{Algorithm 4: decision policy (S2)}\label{sec:algorithm-4-decision-policy-s2}
+The first rule whose condition holds decides (Table~\ref{tab:decision-rules-order-algorithm}). Thresholds (D12): $\tau_\mu = 0.75$, $\tau_L = 0.60$, $n_{\min} = 3$, $\rho_{\mathrm{sup}} = 0.3$.
+
+\begin{longtable}{@{}L{39pt}L{150pt}L{98pt}L{76pt}@{}}
+\caption{Decision rules in order (Algorithm 4)}\label{tab:decision-rules-order-algorithm}\\
+\toprule
+Rule & Condition & State & Lifecycle \\
+\midrule
+\endfirsthead
+\toprule
+Rule & Condition & State & Lifecycle \\
+\midrule
+\endhead
+\bottomrule
+\endlastfoot
 R1 & An open dispute involves the borrower & ACTIVE\_DISPUTE & ASSESSED \\
-R2 & Manipulation level 4 (corroborated) & REVIEW\_RECOMMENDED & HELD (\code{manipulation\_risk}) \\
-R3 & No verified history and $\rho<\rho_\mathrm{sup}$ & INSUFFICIENT\_EVIDENCE & ASSESSED \\
-R4 & High value and (similarity $<0.5$ or lower bound $<\tau_L$) & REVIEW\_RECOMMENDED & HELD (\code{high\_value\_low\_confidence}) \\
+R2 & Manipulation level 4 (corroborated) & REVIEW\_RECOMMENDED & HELD (\code{manipulation_risk}) \\
+R3 & No verified history and $\rho < \rho_{\mathrm{sup}}$ & INSUFFICIENT\_EVIDENCE & ASSESSED \\
+R4 & High value and (similarity $< 0.5$ or lower bound $< \tau_L$) & REVIEW\_RECOMMENDED & HELD (\code{high_value_low_confidence}) \\
 R5 & Manipulation level 3 & REVIEW\_RECOMMENDED & ASSESSED \\
 R6\_DISPUTE & A resolved dispute in the last 12 months & REVIEW\_RECOMMENDED & ASSESSED \\
-R6\_SPARSE & $n_\mathrm{eff}<n_{\min}$ and $\rho<\rho_\mathrm{sup}$ & INSUFFICIENT\_EVIDENCE & ASSESSED \\
-R7 & Mean $\geq\tau_\mu$, lower bound $\geq\tau_L$, $n_\mathrm{eff}\geq n_{\min}$, level 1, standard value, verified & SUFFICIENT\_EVIDENCE & ASSESSED \\
+R6\_SPARSE & $n_{\mathrm{eff}} < n_{\min}$ and $\rho < \rho_{\mathrm{sup}}$ & INSUFFICIENT\_EVIDENCE & ASSESSED \\
+R7 & Mean $\geq \tau_\mu$, lower bound $\geq \tau_L$, $n_{\mathrm{eff}} \geq n_{\min}$, level 1, standard value, verified & SUFFICIENT\_EVIDENCE & ASSESSED \\
 R8 & As R7 but level 2, or medium or high value & SUFFICIENT\_EVIDENCE with safeguards & ASSESSED \\
-R9 & Anything else (e.g.\ sparse but supported by community paths) & REVIEW\_RECOMMENDED & ASSESSED \\
-\bottomrule
+R9 & Anything else (e.g. sparse but supported by community paths) & REVIEW\_RECOMMENDED & ASSESSED \\
 \end{longtable}
-Because R7 and R8 need $n_\mathrm{eff}\geq 3$ from the borrower's own outcomes, indirect evidence alone can never yield SUFFICIENT\_EVIDENCE (property-tested, TC-34). Each rule maps to a policy decision and a set of safeguards (deposit record, handover photos and checklist, fixed return date, verification), and the explanation names the rule, the interval, the effective evidence, the community paths and the signals. The database refuses an assessment row whose rule, state, decision and hold reason disagree (\code{assessment\_rule\_ck}). \emph{Complexity}: $O(1)$ given the inputs; a whole assessment is $O(n)+O(\Delta^k)+O(p^2+m^2L)$.
+Because R7 and R8 need $n_{\mathrm{eff}} \geq 3$ from the borrower's own outcomes, indirect evidence alone can never yield SUFFICIENT\_EVIDENCE (property-tested, TC-34). Each rule maps to a policy decision and a set of safeguards (deposit record, handover photos and checklist, fixed return date, verification), and the explanation names the rule, the interval, the effective evidence, the community paths and the signals. The database refuses an assessment row whose rule, state, decision and hold reason disagree (\code{assessment_rule_ck}). \textit{Complexity}: $O(1)$ given the inputs; a whole assessment is $O(n) + O(\Delta^k) + O(p^2 + m^2 L)$.
 
-\subsection{Other technical decisions}
+\subsection{Other technical decisions}\label{sec:other-technical-decisions}
 \begin{itemize}
-\item \textbf{Engine timeout.} The lifecycle calls the engine in a worker with a 2{,}000~ms timeout from the configuration; a timeout or exception holds the request with \code{engine\_failure} and stores no assurance state.
-\item \textbf{Moderator decisions.} \code{plan()} turns a decision into exactly one lifecycle event (\code{dispute\_resolved}, \code{hold\_cleared} or \code{request\_declined}) according to the hold reason, and refuses invalid combinations, such as safeguards on an engine-failure hold.
-\item \textbf{Strict request bodies.} Every request schema refuses unknown fields and NUL characters, so a client cannot inject \code{actor\_id}, \code{authorisation} or \code{new\_state}.
+\item \textbf{Engine timeout.} The lifecycle calls the engine in a worker with a 2,000 ms timeout from the configuration; a timeout or exception holds the request with \code{engine_failure} and stores no assurance state.
+\item \textbf{Moderator decisions.} \code{plan()} turns a decision into exactly one lifecycle event (\code{dispute_resolved}, \code{hold_cleared} or \code{request_declined}) according to the hold reason, and refuses invalid combinations, such as safeguards on an engine-failure hold.
+\item \textbf{Strict request bodies.} Every request schema refuses unknown fields and NUL characters, so a client cannot inject \code{actor_id}, \code{authorisation} or \code{new_state}.
 \end{itemize}
 
-\section{Tools, Frameworks and Technologies}
-\begin{longtable}{L{0.22\textwidth}L{0.7\textwidth}}
-\caption{Technology stack}\label{tab:stack}\\
-\toprule Layer & Choice \\ \midrule \endfirsthead
-\toprule Layer & Choice \\ \midrule \endhead
-Backend & Python 3.12, FastAPI, Pydantic, SQLAlchemy~2 (synchronous) with psycopg~3, Alembic, NumPy and SciPy (Beta quantiles), argon2 password hashing, JWT tokens, managed with uv \\
-Database & PostgreSQL~16 with \code{btree\_gist}; triggers and constraints for the event store \\
-Frontend & React Native with Expo SDK~57, Expo Router, React Native Paper, TanStack Query, \code{openapi-fetch} with a client generated by \code{openapi-typescript}; Android and web \\
+\section{Tools, Frameworks and Technologies}\label{sec:tools-frameworks-technologies}
+\begin{table}[H]
+\centering
+\caption{Technology stack}\label{tab:technology-stack}
+\begin{tabular}{@{}L{90pt}L{289pt}@{}}
+\toprule
+Layer & Choice \\
+\midrule
+Backend & Python 3.12, FastAPI, Pydantic, SQLAlchemy 2 (synchronous) with psycopg 3, Alembic, NumPy and SciPy (Beta quantiles), argon2 password hashing, JWT tokens, managed with uv \\
+Database & PostgreSQL 16 with \code{btree_gist}; triggers and constraints for the event store \\
+Frontend & React Native with Expo SDK 57, Expo Router, React Native Paper, TanStack Query, \code{openapi-fetch} with a client generated by \code{openapi-typescript}; Android and web \\
 Testing & pytest, Hypothesis (property-based tests and fuzzing), Jest with React Native Testing Library \\
 Quality & ruff, mypy, bandit, pip-audit, ESLint, tsc, Prettier, npm audit, Dependabot \\
 CI/CD & GitHub Actions; Render (Docker web service and static site); Neon PostgreSQL \\
 \bottomrule
-\end{longtable}
-
-\section{Demonstration Evidence}
+\end{tabular}
+\end{table}
+\section{Demonstration Evidence}\label{sec:demonstration-evidence}
 \begin{itemize}
-\item \textbf{Live system.} API: \url{https://digitalmohalla-api.onrender.com} (\code{/\allowbreak{}health} returns 200); web app: \url{https://digitalmohalla-web.onrender.com}. Both returned HTTP 200 on 14 October 2026. Demo accounts and data are synthetic.
-\item \textbf{Repository.} \url{https://github.com/Areeba444/DigitalMohalla}: 36 pull requests (30 merged), CI history, release pull requests to \code{main}.
-\item \textbf{Screens.} The built screens follow wireframes W1--W7 (Appendix~\ref{app:diagrams}): the lender's request view with the assurance panel (W1), decision (W2), handover (W3), return (W4), dispute form (W5), moderator queue (W6) and case adjudication (W7).
+\item \textbf{Live system.} API: \code{https://digitalmohalla-api.onrender.com} (\code{/health} returns 200); web app: \code{https://digitalmohalla-web.onrender.com}. Both returned HTTP 200 on 14 October 2026. Demo accounts and data are synthetic.
+\item \textbf{Repository.} \code{https://github.com/Areeba444/DigitalMohalla}: 36 pull requests (30 merged), CI history, release pull requests to \code{main}.
+\item \textbf{Screens.} The built screens follow wireframes W1--W7 (Appendix~\ref{app:additional-design-diagrams}): the lender's request view with the assurance panel (W1), decision (W2), handover (W3), return (W4), dispute form (W5), moderator queue (W6) and case adjudication (W7).
 \item \textbf{Demo script.} (1) A newcomer's request gives INSUFFICIENT\_EVIDENCE with a wide interval and safeguards; (2) a borrower known only through neighbours (ES-13) shows the community paths; (3) an established borrower gives SUFFICIENT\_EVIDENCE; (4) accept, hand over, return with damage, dispute; (5) the next request shows ACTIVE\_DISPUTE; (6) the moderator decides with a reason and the loan completes; plus an invalid transition rejected, two simultaneous acceptances, the colluding scenario held for review, and the CI pipeline.
 \end{itemize}
 
-\section{Iteration Outcome}
-Iteration~1 met its objectives: all three slices are merged and deployed, the mid-term scenario target is met (7 of 7), and \NBackendTests{} backend and \NFrontendTests{} frontend tests pass. What is left from the plan is listed in Section~\ref{sec:deviations}; none of it blocks the demo story.
+\section{Iteration Outcome}\label{sec:iteration-outcome}
+Iteration 1 met its objectives: all three slices are merged and deployed, the mid-term scenario target is met (7 of 7), and 623 backend and 29 frontend tests pass. What is left from the plan is listed in Section~\ref{sec:delays-deviations-recovery-plan}; none of it blocks the demo story.

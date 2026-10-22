@@ -346,7 +346,7 @@ The complete rules are in `CLAUDE.md` and section 2 of the project context.
 | `docs/design/Digital-MohallaUI/` | UI prototypes (static HTML), design system, HCI analysis |
 | `data/README.md` | The data rules, folder map and workflow: what data the project needs, dataset cards, how derived datasets are built |
 | `docs/ai-usage-log.md` | Record of AI-assisted changes, with the team member who reviewed each |
-| `docs/MidEvalReport/` | FYP-1 mid report: LaTeX sources and the compiled PDF |
+| `docs/MidEvalReport/` | FYP-1 mid report: LaTeX sources and the submitted PDF (`F26_188_i230746_i230570_i230554.pdf`); diagrams come from the draw.io sources in `docs/design/` |
 
 ## 10. Team workflow
 

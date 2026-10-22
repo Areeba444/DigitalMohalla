@@ -1,15 +1,23 @@
-\chapter{Repository and Contribution Evidence}
-\label{app:repository}
+\chapter{Repository and Contribution Evidence}\label{app:repository-contribution-evidence}
 \begin{itemize}
-\item Repository: \url{https://github.com/Areeba444/DigitalMohalla}
-\item Live API: \url{https://digitalmohalla-api.onrender.com/health}
-\item Live web app: \url{https://digitalmohalla-web.onrender.com}
+\item Repository: \code{https://github.com/Areeba444/DigitalMohalla}
+\item Live API: \code{https://digitalmohalla-api.onrender.com/health}
+\item Live web app: \code{https://digitalmohalla-web.onrender.com}
 \end{itemize}
 
-\begin{longtable}{L{0.05\textwidth}L{0.47\textwidth}L{0.2\textwidth}L{0.18\textwidth}}
-\caption{Merged pull requests (commit owners from the pull request's commits)}\label{tab:prs}\\
-\toprule PR & Title & Commit owner(s) & Reviewer \\ \midrule \endfirsthead
-\toprule PR & Title & Commit owner(s) & Reviewer \\ \midrule \endhead
+\begingroup
+\begin{longtable}{@{}L{20pt}L{195pt}L{81pt}L{69pt}@{}}
+\caption{Merged pull requests (commit owners from the pull request's commits)}\label{tab:merged-pull-requests-commit}\\
+\toprule
+PR & Title & Commit owner(s) & Reviewer \\
+\midrule
+\endfirsthead
+\toprule
+PR & Title & Commit owner(s) & Reviewer \\
+\midrule
+\endhead
+\bottomrule
+\endlastfoot
 1 & Design baseline & All three & Fatima \\
 2 & Borrowing lifecycle core (event store, transition table, migration) & Fatima & Areeba \\
 3 & Versioned engine configuration and Slice A stub engine & Areeba & Minahil \\
@@ -40,6 +48,6 @@
 34 & Privacy checks, strict request bodies, fuzzing (C2) & Fatima & Areeba \\
 35 & Moderator app and dispute screens (C3) & Minahil & Areeba \\
 36 & Release: Slice C, feature freeze & -- & -- \\
-\bottomrule
 \end{longtable}
+\endgroup
 Pull requests 9 to 14 are open Dependabot updates. Where a branch also contains a small number of commits by another member (for example a shared fix), only the main owner is listed.

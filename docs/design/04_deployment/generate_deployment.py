@@ -1,7 +1,11 @@
-"""Generates deployment_diagram.drawio (design step A13, provisional deployment diagram).
+"""Generates deployment_diagram.drawio: the deployment diagram as built in iteration 1 (v1.0).
 
-Sources: Iteration 1 plan (CI/CD section, B0, demo fallback), NFR-D-02 to D-05, NFR-S-01, NFR-PR-01,
-Architecture_Design.md (modular monolith, REST /api/v1, /health), decision D17.
+The provisional Part A design (one AWS EC2 host with Docker Compose and GHCR, design step A13, v0.9/0.10)
+is kept in archive_v1/ (deployment_diagram_v0.9_partA_provisional.drawio and its generator).
+
+Sources (as built, 14 October 2026): render.yaml, backend/Dockerfile, .github/workflows/ci.yml,
+infra/deploy/README.md, backend/app/infra/db/session.py, backend/app/main.py, backend/config/engine.json,
+backend/alembic/versions/0001_schema_v2_3.py. Requirements: NFR-S-01, NFR-D-03, NFR-D-04, NFR-PR-01, NFR-S-07.
 Run: python 04_deployment/generate_deployment.py
 """
 import os
@@ -11,25 +15,27 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.join(HERE, "..", "_tools"))
 from drawio import Diagram, EDGE_BASE  # noqa: E402
 
-INK = "#1F2D3A"
-NODE = ("shape=cube;whiteSpace=wrap;html=1;size=12;darkOpacity=0.04;darkOpacity2=0.08;align=left;verticalAlign=top;"
-        "spacingLeft=10;spacingTop=14;fontSize=12;strokeColor=#46535F;fontColor=#1F2D3A;")
-ENV = ("rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;fontSize=11.5;"
+NODE = ("shape=cube;whiteSpace=wrap;html=1;size=14;darkOpacity=0.04;darkOpacity2=0.08;align=left;verticalAlign=top;"
+        "spacingLeft=10;spacingTop=16;fontSize=15;strokeColor=#46535F;fontColor=#1F2D3A;")
+ENV = ("rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;fontSize=14;"
        "strokeColor=#5B6B7A;fontColor=#1F2D3A;")
-ART = ("rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=22;"
-       "fontSize=10.5;fillColor=#FFFFFF;strokeColor=#6A7A8A;fontColor=#1F2D3A;")
+ART = ("rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=24;"
+       "fontSize=13;fillColor=#FFFFFF;strokeColor=#6A7A8A;fontColor=#1F2D3A;")
 DOC_ICON = "shape=note;size=5;html=1;fillColor=#FFFFFF;strokeColor=#6A7A8A;"
-COMMENT = ("shape=note;size=12;whiteSpace=wrap;html=1;align=left;verticalAlign=top;fontSize=10.5;spacingLeft=6;"
-           "spacingTop=2;")
-# communication paths are associations (no arrowheads); internal-network paths dashed
-LINK = EDGE_BASE + "endArrow=none;strokeColor=#2F4F6F;strokeWidth=1.4;"
-INTERNAL = EDGE_BASE + "endArrow=none;strokeColor=#2E5E1E;strokeWidth=1.4;dashed=1;"
+COMMENT = ("shape=note;size=14;whiteSpace=wrap;html=1;align=left;verticalAlign=top;fontSize=13;spacingLeft=8;"
+           "spacingTop=4;spacingRight=10;")
+PLANNED = ("shape=note;size=14;whiteSpace=wrap;html=1;align=left;verticalAlign=top;fontSize=13;spacingLeft=8;"
+           "spacingTop=4;spacingRight=10;dashed=1;fillColor=#F4F4F4;strokeColor=#7A7A7A;fontColor=#3A3A3A;")
+# communication paths are associations (no arrowheads), labelled with protocol and port
+LINK = EDGE_BASE + "endArrow=none;strokeColor=#2F4F6F;strokeWidth=1.6;fontSize=13;"
+# deployment by Render from GitHub: a dependency (dashed, open arrow) labelled with the trigger
+DEPLOY = EDGE_BASE + "endArrow=open;endSize=12;dashed=1;strokeColor=#5B3E86;strokeWidth=1.6;fontSize=13;"
 
 
 def artifact(d, label, x, y, w, h):
     """UML artifact: rectangle with the keyword and a document icon in the top-right corner."""
     a = d.node(label, x, y, w, h, ART)
-    d.node("", x + w - 18, y + 6, 11, 14, DOC_ICON, check=False)
+    d.node("", x + w - 19, y + 7, 12, 15, DOC_ICON, check=False)
     return a
 
 
@@ -38,116 +44,106 @@ def st(fill):
 
 
 def build():
-    d = Diagram("Deployment diagram (A13)", 1840, 1160)
-    d.text("<b>Digital Mohalla &#8212; deployment diagram, iteration 1 (provisional)</b> (design step A13; "
-           "decision D17; target confirmed by Student 3 by D-14)", 30, 14, 1500, 24, size=16, check=False)
-    d.text("UML 2.5 deployment notation: 3-D box = node (&#171;device&#187; or &#171;cloud service&#187;); "
-           "plain box = &#171;executionEnvironment&#187; / &#171;container&#187;; box with document icon = "
-           "&#171;artifact&#187;; folded note = comment; line = communication path (association) with protocol and "
-           "port, dashed inside the Docker network. Items marked TBC are confirmed at the D-14 / D-15 gates.",
-           30, 42, 1700, 20, size=11, color="#4A5560", check=False)
+    d = Diagram("Deployment diagram (as built)", 1240, 1290)
+    d.text("<b>Digital Mohalla &#8212; deployment diagram, iteration 1, as built</b> (v1.0, 14 October 2026; "
+           "replaces the provisional Part A design A13)", 30, 12, 1180, 26, size=18, check=False)
+    d.text("UML 2.5 deployment notation: 3-D box = node (&#171;device&#187; or &#171;cloud service&#187;); plain box = "
+           "&#171;executionEnvironment&#187;; box with document icon = &#171;artifact&#187;; folded note = comment; "
+           "solid line = communication path with protocol and port; dashed arrow = deployment trigger; "
+           "grey dashed note = planned, not built.", 30, 44, 1180, 40, size=13, color="#4A5560", check=False)
 
     # ---------------------------------------------------------------- clients
-    phone = d.node("&#171;device&#187;<br><b>Resident's phone</b> (Android / iOS)", 30, 110, 350, 240,
+    phone = d.node("&#171;device&#187;<br><b>Android phone</b> [*]: residents, lenders, moderators", 30, 100, 380, 250,
                    NODE + st("#EAF2FB"))
     d.mark_container(phone, pass_through=True)
-    rn = d.node("&#171;executionEnvironment&#187;<br><b>React Native / Expo runtime</b> (NFR-D-05, TBC at D-15)",
-                50, 170, 310, 160, ENV + st("#F7FAFE"))
+    rn = d.node("&#171;executionEnvironment&#187;<br><b>Expo runtime</b> (Expo Go / development build)",
+                50, 168, 340, 166, ENV + st("#F7FAFE"))
     d.mark_container(rn, pass_through=True)
-    artifact(d, "&#171;artifact&#187; <b>resident-app</b><br>request with evidence summary, lender decision, handover and "
-           "return checklists, dispute form (13_wireframes)", 66, 222, 278, 92)
+    artifact(d, "&#171;artifact&#187; <b>digital-mohalla-app</b><br>one app, screens by role (W1&#8211;W7); "
+                "API address set at build time", 66, 226, 308, 92)
 
-    pc = d.node("&#171;device&#187;<br><b>Moderator / admin computer</b>", 30, 400, 350, 240, NODE + st("#EAF2FB"))
-    d.mark_container(pc, pass_through=True)
-    br = d.node("&#171;executionEnvironment&#187;<br><b>Web browser</b>", 50, 460, 310, 160, ENV + st("#F7FAFE"))
-    d.mark_container(br, pass_through=True)
-    artifact(d, "&#171;artifact&#187; <b>moderator-console</b> (static web build)<br>case queue, case view and decision, "
-           "audit log (UC-I4, UC-I6)", 66, 512, 278, 92)
-
-    lap = d.node("&#171;device&#187;<br><b>Team laptop: demo fallback</b>", 30, 690, 350, 210, NODE + st("#F1F1F1"))
-    d.mark_container(lap, pass_through=True)
-    d.node("&#171;executionEnvironment&#187; <b>Docker Compose (local)</b><br>same <i>docker-compose.yml</i> and images as "
-           "production, seed-reset script, synthetic users labelled synthetic. Used if the network fails during the "
-           "demo; a local run is still live (plan, demo script).", 50, 748, 310, 132, ENV + st("#FAFAFA"))
-
-    # ---------------------------------------------------------------- AWS
-    aws = d.node("<b>AWS</b> &#8212; one region (nearest to the pilot, TBC)", 560, 70, 700, 1060,
-                 "rounded=1;arcSize=2;dashed=1;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=10;"
-                 "spacingTop=6;fontSize=12;fillColor=#FFF9F0;strokeColor=#C77700;fontColor=#8A4B12;")
-    d.mark_container(aws, pass_through=True)
-    ec2 = d.node("&#171;device&#187;<br><b>EC2 instance</b>, Ubuntu 24.04 LTS (size TBC, e.g. 2 vCPU / 2 GB)",
-                 585, 110, 650, 830, NODE + st("#FFFFFF"))
-    d.mark_container(ec2, pass_through=True)
-    dock = d.node("&#171;executionEnvironment&#187;<br><b>Docker Engine + Docker Compose</b> "
-                  "(<i>infra/docker-compose.yml</i>; one internal network)", 605, 170, 610, 620, ENV + st("#F4F8FB"))
-    d.mark_container(dock, pass_through=True)
-    proxy = d.node("&#171;container&#187; <b>proxy</b>: TLS reverse proxy (Caddy or Nginx)<br>"
-                   "terminates HTTPS :443 (NFR-S-01); serves <i>moderator-console</i>; routes <i>/api/v1</i> to "
-                   "<i>api</i>; adds no logging of request bodies", 625, 225, 570, 92, ENV + st("#FFFFFF"))
-    api = d.node("&#171;container&#187; <b>api</b>: Python 3.12, FastAPI + Uvicorn (modular monolith, A8)<br>"
-                 "&#171;artifact&#187; <i>ghcr.io/&lt;org&gt;/dm-api:&lt;commit-sha&gt;</i><br>"
-                 "&#8226; Module 1 accounts and locality, Module 3 borrowing lifecycle, Module 5 assurance engine "
-                 "(S2 estimation and policy, S1 indirect trust), Module 9 moderation and audit, Module 7 notify() stub<br>"
-                 "&#8226; &#171;artifact&#187; <i>Assurance_Engine_Config_Draft.json</i> (config_version stored on every "
-                 "assessment, NFR-D-01)<br>"
-                 "&#8226; &#171;artifact&#187; migrations from <i>schema.sql</i> v2.3, run by CD before start-up<br>"
-                 "&#8226; privacy filter on every response and log line (NFR-PR-01, NFR-S-07)<br>"
-                 "&#8226; <i>GET /health</i> for the CD smoke test (NFR-D-04)", 625, 375, 570, 220, ENV + st("#FFFFFF"))
-    db = d.node("&#171;container&#187; <b>db</b>: PostgreSQL 16 with <i>btree_gist</i> (ADR-0002)<br>"
-                "&#171;artifact&#187; schema <i>dm</i>: event store, projections, bookings (EXCLUDE), assessments, cases, "
-                "audit log<br>volume <i>pgdata</i>; port 5432 on the internal network only; nightly <i>pg_dump</i> "
-                "(target TBC)", 625, 655, 570, 115, ENV + st("#FFFFFF"))
-    d.node("&#171;volume&#187; <b>attachments</b>: photos and documents, EXIF location stripped before storage "
-           "(NFR-PR-01); a host volume in iteration 1, an S3 bucket TBC", 605, 806, 610, 50, ENV + st("#FFFFFF"))
-    d.node("<b>Security group</b>: inbound 443 from anywhere; 22 only from the GitHub Actions deploy key and the "
-           "team; 5432 never public. Secrets come from GitHub Environments into an <i>.env</i> file, never the repo.",
-           605, 868, 610, 56, COMMENT + "fillColor=#FFF3E0;strokeColor=#C77700;")
-    d.text("No coordinates, addresses or CNIC fields exist in any container or volume (schema privacy scan, test "
-           "suite 14). Notifications are an in-process stub in iteration 1 (no e-mail or push service).",
-           585, 958, 660, 50, size=10.5, color="#8A4B12", check=False)
+    browser = d.node("&#171;device&#187;<br><b>Computer or phone with a web browser</b> [*]", 440, 100, 370, 250,
+                     NODE + st("#EAF2FB"))
+    d.mark_container(browser, pass_through=True)
+    benv = d.node("&#171;executionEnvironment&#187;<br><b>Web browser</b>", 460, 168, 330, 166, ENV + st("#F7FAFE"))
+    d.mark_container(benv, pass_through=True)
+    artifact(d, "&#171;artifact&#187; <b>web app</b><br>the same Expo app, exported for the web and loaded from "
+                "the static site", 476, 226, 298, 92)
 
     # ---------------------------------------------------------------- GitHub
-    gh = d.node("&#171;cloud service&#187;<br><b>GitHub</b>", 1420, 100, 380, 440, NODE + st("#F3EEF9"))
+    gh = d.node("&#171;cloud service&#187;<br><b>GitHub</b>", 850, 100, 360, 430, NODE + st("#F3EEF9"))
     d.mark_container(gh, pass_through=True)
-    act = d.node("&#171;executionEnvironment&#187; <b>GitHub Actions runner</b><br>"
-                 "&#171;artifact&#187; <i>ci.yml</i> (every PR and push): ruff, eslint, mypy, bandit, pip-audit, "
-                 "pytest with coverage, integration tests on a Postgres service container, scenario suite, frontend "
-                 "build, JUnit and coverage reports<br>"
-                 "&#171;artifact&#187; <i>cd.yml</i> (push to main): build and push images, deploy over SSH, smoke "
-                 "test, roll back to the previous tag on failure", 1440, 152, 340, 210, ENV + st("#FFFFFF"))
+    artifact(d, "&#171;artifact&#187; <b>repository</b> Areeba444/DigitalMohalla<br><i>main</i> = deployed, "
+                "<i>develop</i> = integration; <i>render.yaml</i>", 870, 162, 320, 100)
+    act = d.node("&#171;executionEnvironment&#187; <b>GitHub Actions runner</b><br>&#171;artifact&#187; <i>ci.yml</i> "
+                 "on every push and pull request: Backend (ruff, mypy, bandit, pytest on a PostgreSQL 16 service "
+                 "container), Frontend (tsc, ESLint, Jest), API client in sync", 870, 280, 320, 230, ENV + st("#FFFFFF"))
     d.mark_container(act, pass_through=True)
-    artifact(d, "&#171;artifact&#187; <b>repository</b><br>backend/, frontend/, infra/, docs/ (this design folder)<br>"
-           "protected main and develop; tags v0.1.0-mid1, design-v1.0, schema-v1", 1440, 384, 250, 140)
-    ghcr = d.node("&#171;cloud service&#187;<br><b>GitHub Container Registry (GHCR)</b><br>"
-                  "&#171;artifact&#187; dm-api:&lt;sha&gt;, dm-proxy:&lt;sha&gt;<br>previous tag kept for rollback",
-                  1420, 620, 380, 160, NODE + st("#F3EEF9"))
-    d.node("<b>GitHub Environments</b>: SSH deploy key, database password, any API keys. The handbook forbids "
-           "committing keys; Dependabot and pre-commit hooks guard the repo.", 1420, 820, 380, 80,
-           COMMENT + "fillColor=#F7F3FB;strokeColor=#7A5C99;")
+
+    # ---------------------------------------------------------------- Render
+    render = d.node("&#171;cloud service&#187;<br><b>Render</b>", 30, 430, 780, 500, NODE + st("#FFF9F0"))
+    d.mark_container(render, pass_through=True)
+    d.text("free plan, region Singapore;<br>HTTPS :443 ends at Render's edge<br>(NFR-S-01)", 232, 438, 226, 58,
+           size=13, color="#8A4B12", check=False)
+    web = d.node("&#171;executionEnvironment&#187;<br><b>Web service</b> <i>digitalmohalla-api</i>: Docker "
+                 "container (sleeps after about 15 min idle)", 50, 500, 360, 410, ENV + st("#FFFFFF"))
+    d.mark_container(web, pass_through=True)
+    artifact(d, "&#171;artifact&#187; <b>API image</b> (<i>backend/Dockerfile</i>)<br>Python 3.12, FastAPI + "
+                "Uvicorn, modular monolith (Modules 1, 3, 5, 9)<br>start-up: <i>alembic upgrade head</i>, then "
+                "Uvicorn<br>REST <i>/api/v1</i>; <i>GET /health</i>", 66, 578, 328, 162)
+    artifact(d, "&#171;artifact&#187; <i>config/engine.json</i><br>config_version 1.3.0-iteration1-draft",
+             66, 752, 328, 62)
+    d.node("Secrets in Render settings: <i>DATABASE_URL</i>, <i>JWT_SECRET</i> (generated); "
+           "<i>CORS_ORIGINS</i> = the web app only", 66, 826, 328, 72, COMMENT + "fillColor=#FFF3E0;strokeColor=#C77700;")
+
+    static = d.node("&#171;executionEnvironment&#187;<br><b>Static site</b> <i>digitalmohalla-web</i> on "
+                    "Render's CDN (does not sleep)", 480, 500, 310, 230, ENV + st("#FFFFFF"))
+    d.mark_container(static, pass_through=True)
+    artifact(d, "&#171;artifact&#187; <b>Expo web export</b> (<i>frontend/dist</i>)<br>every path rewritten to "
+                "<i>index.html</i>; API address built in", 496, 578, 278, 136)
+    d.node("Render builds <i>main</i> only after the CI checks pass, and only when <i>backend/</i> or "
+           "<i>frontend/</i> changed. A new API version goes live only if <i>/health</i> answers; otherwise the "
+           "previous one stays. Rollback: redeploy an earlier deploy (NFR-D-03, NFR-D-04).",
+           480, 746, 310, 164, COMMENT + "fillColor=#FFF3E0;strokeColor=#C77700;")
+
+    # ---------------------------------------------------------------- Neon
+    neon = d.node("&#171;cloud service&#187;<br><b>Neon</b>", 30, 1010, 780, 250, NODE + st("#EEF7EE"))
+    d.mark_container(neon, pass_through=True)
+    d.text("free plan, AWS ap-southeast-1 (Singapore), the same region as the API", 250, 1030, 540, 24,
+           size=13, color="#2E5E1E", check=False)
+    pg = d.node("&#171;executionEnvironment&#187; <b>PostgreSQL 16</b> with <i>btree_gist</i>; direct endpoint "
+                "(not the pooler); suspends when idle, wakes on connect", 50, 1074, 740, 170, ENV + st("#FFFFFF"))
+    d.mark_container(pg, pass_through=True)
+    artifact(d, "&#171;artifact&#187; <b>schema <i>dm</i></b> v2.3 (Alembic migration 0001): event store "
+                "(append-only, hash-chained), projections, bookings (EXCLUDE), assessments, cases, moderator "
+                "decisions, audit log. No coordinates, addresses or CNIC (suite 14).", 66, 1132, 708, 96)
+
+    # ---------------------------------------------------------------- right column
+    lap = d.node("&#171;device&#187;<br><b>Team laptop</b>: development and demo fallback", 850, 620, 360, 230,
+                 NODE + st("#F1F1F1"))
+    d.mark_container(lap, pass_through=True)
+    d.node("&#171;executionEnvironment&#187; <b>local run</b><br>PostgreSQL 16, Uvicorn API, Expo dev server; "
+           "synthetic seed data. Used if the hosted service is unavailable during the demo.",
+           870, 688, 320, 144, ENV + st("#FAFAFA"))
+    d.node("<b>Planned, not built yet</b> (Iteration 2): Android release build with the API address (EAS, "
+           "TC-73); post-deploy smoke test (TC-91); rehearsed rollback; a paid tier or small host for the pilot "
+           "if free-tier sleep affects users.", 850, 878, 360, 160, PLANNED)
+    d.node("<b>Why</b>: managed services give HTTPS, TLS to the database, health-gated deploys and rollback "
+           "without server administration. Serves NFR-S-01, NFR-D-03, NFR-D-04, NFR-PR-01, NFR-S-07. "
+           "The Part A design (one AWS host) is kept for reference.", 850, 1062, 360, 198,
+           COMMENT + "fillColor=#FFFFFF;strokeColor=#B0BAC4;")
 
     # ---------------------------------------------------------------- communication paths
-    d.edge(phone, proxy, "HTTPS :443<br>REST /api/v1 (JSON)", style=LINK, exit=(1, 0.5), entry=(0, 0.25),
-           points=[(470, 225), (470, 248)], label_x=-0.45)
-    d.edge(pc, proxy, "HTTPS :443<br>console + API", style=LINK, exit=(1, 0.3), entry=(0, 0.75),
-           points=[(510, 472), (510, 294)], label_x=0.05, label_dx=-1)
-    d.edge(proxy, api, "HTTP :8000 (internal network)", style=INTERNAL, exit=(0.5, 1), entry=(0.5, 0), label_dx=0)
-    d.edge(api, db, "SQL / TCP :5432 (internal only)", style=INTERNAL, exit=(0.5, 1), entry=(0.5, 0))
-    d.edge(act, ec2, "SSH :22<br>pull, migrate, up -d", style=LINK, exit=(0, 0.05), entry=(1, 0.0633))
-    d.edge(act, proxy, "HTTPS smoke test<br>/health + one request", style=LINK, exit=(0, 0.6), entry=(1, 0.5761),
+    d.edge(phone, web, "HTTPS :443<br>REST /api/v1 (JSON)", style=LINK, exit=(0.5, 1), entry=(0.4722, 0),
            label_x=-0.55)
-    d.edge(act, ghcr, "docker push", style=LINK, exit=(1, 0.8), entry=(0.9868, 0), points=[(1795, 320), (1795, 620)])
-    d.edge(ec2, ghcr, "docker pull<br>(HTTPS)", style=LINK, exit=(1, 0.7), entry=(0, 0.4438))
-
-    # ---------------------------------------------------------------- notes
-    d.node("", 30, 940, 520, 200, "rounded=0;html=1;fillColor=#FFFFFF;strokeColor=#B0BAC4;", check=False)
-    d.text("<b>Why this deployment</b><br>&#8226; One environment and one host are enough to show real CD for Mid-1 "
-           "(plan, CI/CD); a staging environment can be added later.<br>&#8226; The backend is one FastAPI process "
-           "(modular monolith, A8), so one api container serves every module; module boundaries stay code "
-           "interfaces.<br>&#8226; PostgreSQL is required, not optional: the overlap constraint needs "
-           "<i>btree_gist</i> (ADR-0002).<br>&#8226; Rollback = redeploy the previous image tag after a failed smoke "
-           "test (NFR-D-03).<br>&#8226; Traceability: NFR-D-02 (clean install from the compose file), NFR-D-03, "
-           "NFR-D-04, NFR-D-05, NFR-S-01, NFR-PR-01, NFR-S-07.<br>Rationale and open items: "
-           "<i>Deployment_Design.md</i>.", 40, 948, 500, 185, size=10.5, check=False)
+    d.edge(browser, static, "HTTPS :443<br>static files", style=LINK, exit=(0.6, 1), entry=(0.5871, 0),
+           label_x=-0.55)
+    d.edge(browser, web, "HTTPS :443<br>REST /api/v1<br>(CORS)", style=LINK, exit=(0.0784, 1), entry=(1, 0.1463),
+           points=[(469, 560)], label_x=-0.62)
+    d.edge(web, pg, "PostgreSQL protocol over TLS :5432<br>(sslmode=require)", style=LINK, exit=(0.5, 1),
+           entry=(0.2432, 0), label_x=0.05)
+    d.edge(gh, render, "push to main, CI passed:<br>build and deploy", style=DEPLOY, exit=(0.5, 1),
+           entry=(1, 0.26), points=[(1030, 560)], label_x=0.35)
     return d
 
 
