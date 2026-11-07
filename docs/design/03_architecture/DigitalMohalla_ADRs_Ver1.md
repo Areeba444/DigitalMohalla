@@ -155,6 +155,52 @@ A request that is held again after clearance (for example, the re-run assessment
 
 ---
 
+## ADR-0009: A resolved dispute closes according to where the item is
+
+**Status:** Proposed, 2026-11-07 (Student 3 drafts with Student 1; review DM14). Needs sign-off from all three students because it adds lifecycle transitions; the `dispute_resolved` event type and the frozen event fields are unchanged.
+
+**Context.** ADR-0004 sends every resolved dispute to COMPLETED (T25). A dispute can be raised in ACCEPTED, ACTIVE or RETURN_INITIATED, so the item may never have been handed over, may still be with the borrower, may be back with the lender, or may be lost. COMPLETED releases the booking (ADR-0002) and records a return outcome, so today a dispute raised before handover, or about a loan whose item is still out, records a return that never happened and frees dates for an item that is not available. The mid-evaluation review found this in `domain/moderation/decisions.py` (DM14).
+
+**Decision.** The moderator's decision records the item's possession, and `dispute_resolved` leads to the state that matches it:
+
+| Possession recorded | Allowed when the dispute was raised in | `dispute_resolved` leads to | Booking | Outcome evidence |
+| :--- | :--- | :--- | :--- | :--- |
+| `NOT_HANDED_OVER` | ACCEPTED | NO_SHOW | released | the at-fault finding only (D11); no return outcome |
+| `WITH_BORROWER` | ACTIVE, RETURN_INITIATED | ACTIVE (the loan continues; due date unchanged) | stays held | the at-fault finding only; the return is judged when it happens |
+| `RETURNED` | ACTIVE, RETURN_INITIATED | COMPLETED | released | at-fault finding and the return outcome, as today |
+| `LOST` | ACTIVE, RETURN_INITIATED | COMPLETED | released | at-fault finding; the borrower fails ON_TIME_RETURN and CONDITION_AGREED; the item is set to PAUSED for the lender to review |
+
+- The possession goes in the `dispute_resolved` payload (ADR-0005) and in `moderator_decision.resolved_outcome`; the decision rules refuse a possession that the stored `previous_state` does not allow.
+- T25 splits into T25a (to NO_SHOW), T25b (to ACTIVE) and T25c (to COMPLETED) in the lifecycle model (`_tools/lifecycle_model.py`, DA-06), and the 294-pair matrix grows by the new valid pairs.
+- The escalation case still closes as DECIDED; appeal and reversal (C08 to C11) work as before, because a reversal flags evidence and never rewinds the loan.
+
+**Consequences.**
+- No phantom return and no release of an occupied item (test suite 25, from ACCEPTED, ACTIVE and RETURN_INITIATED).
+- The moderator screen (W19) asks one extra question, "where is the item now?", with only the answers that fit the loan's state.
+- Changed: lifecycle model and transition table (Student 1), `allowed_transition` rows (migration 0002), `decisions.py` and outcome extraction (Student 3, build M1), UC-B12 and UC-I4 post-conditions (Use Cases v1.4), FR-T-11 and its acceptance criterion (FR/NFR v1.4), the escalation-case state machine and the dispute-resolution activity diagram.
+
+---
+
+## ADR-0014: Photos and documents are stored through a storage port, outside the database and the API's disk
+
+**Status:** Proposed, 2026-11-07 (Student 3). Closes the iteration 1 deferral D20 when built (M4).
+
+**Context.** Handover, return and dispute evidence needs photos (FR-B-11, FR-B-16; TC-59, TC-85). The schema already holds only metadata (`attachment`: storage key, SHA-256, MIME type, `metadata_stripped`, which must be true). The API runs on Render's free web service, whose local disk does not survive a redeploy, so files cannot live there. Photos taken on a phone carry EXIF metadata, often including GPS coordinates, which NFR-PR-01 forbids storing.
+
+**Decision.**
+- A `StoragePort` interface (`put(key, bytes, mime)`, `signed_url(key, ttl)`, `delete(key)`) with two adapters: local disk in development and tests, and an S3-compatible object store when deployed. The provider is chosen by its free tier and terms at build time and recorded on Form 13.
+- Every upload is checked before anything is stored: type by content, not by file name (JPEG, PNG, WebP, PDF only, matching the schema), and size against a configured limit; otherwise 422 (TC-85).
+- Images are re-encoded with all metadata removed before storage, so no EXIF GPS can survive (TC-59); `metadata_stripped` is set only after that step. PDFs are accepted only for dispute statements.
+- The storage key is random (never the original file name); the SHA-256 of the stored bytes is kept for tamper evidence. Files are never public: the app receives a short-lived signed URL, and only the two parties and the case's moderator may ask for one.
+- If storage is unavailable, the handover or return still proceeds as checklist-only with a "reduced evidence" mark, as FR-B-11 allows.
+
+**Consequences.**
+- New dependencies (an image library for re-encoding and an S3 client) go on the dependency register and Form 13 with their licences.
+- One new secret (the storage credentials) lives in the hosting provider's environment settings, never in the repository.
+- Changed: component diagram (StoragePort), deployment diagram (object store node), class diagram S3, test plan suite 27, FR/NFR v1.4 (upload size limit as a configured value).
+
+---
+
 ## Sign-off
 
 Agreed in team discussion on 2026-10-11 (recorded by Student 1). Each member should add their initials.
@@ -169,3 +215,5 @@ Agreed in team discussion on 2026-10-11 (recorded by Student 1). Each member sho
 | ADR-0006 (experimental) | agreed | agreed | agreed | 2026-10-13 |
 | ADR-0007 | accepted (integration lead) | pending | pending | 2026-10-11 (for integration) |
 | ADR-0008 | accepted (integration lead) | pending | pending | 2026-10-11 (for integration) |
+| ADR-0009 (proposed) | pending | pending | proposed | — |
+| ADR-0014 (proposed) | pending | pending | proposed | — |
