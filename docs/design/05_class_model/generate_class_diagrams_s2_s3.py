@@ -1,6 +1,7 @@
 """Generates the A7 class diagrams of Student 2's and Student 3's packages.
 
-    python generate_class_diagrams_s2_s3.py  ->  class_diagram_s2.drawio, class_diagram_s3.drawio
+    python generate_class_diagrams_s2_s3.py  ->  class_diagram_s2.drawio
+    (class_diagram_s3.drawio: generate_class_diagram_s3.py since iteration 2, DA-11)
 
 Plan step A7: "each owner draws their module ... Done when each class names the FRs it realises."
 Student 2: Module 5 estimation, manipulation detection, decision policy and explanation (Algorithm doc §2-§6,
@@ -206,138 +207,9 @@ def class_diagram_s2() -> Diagram:
 
 
 # =============================================================================== Student 3
-def class_diagram_s3() -> Diagram:
-    d = Diagram("Class diagram, Student 3 (A7)", 2040, 1500)
-    d.text("<b>Digital Mohalla &#8212; Class diagram, Student 3 packages</b> (design step A7, v1.0): Module 9 cases, "
-           "decisions and audit; Module 10 scenario suite", 40, 12, 1900, 24, size=16, check=False)
-    d.text("Python design classes (iteration 1), from UC-D6, UC-I4, UC-I6, the escalation-case state machine and "
-           "schema.sql. Each class lists the FRs it realises. Other students' classes appear only as boundary "
-           "interfaces (blue S1, orange S2, grey shared).", 40, 36, 1900, 20, size=11, color="#4A5560", check=False)
-    pkg(d, "p_mod", "moderation  (Module 9)", 30, 70, 1340, 1380, "#FBF8FE")
-    pkg(d, "p_eval", "evaluation  (Module 10)", 1400, 70, 610, 620, "#FBF8FE")
-    pkg(d, "p_bnd", "boundary: other modules", 1400, 720, 610, 730, "#F7F7F7")
-    X = [60, 390, 720, 1050]
-    w = 290
-    K = lambda *a, **k: klass(d, *a, owner=k.pop("owner", "S3"), **k)  # noqa: E731
-
-    y1 = 110
-    K("IMod", "IModeration", X[0], y1, w, [], ["queue(community_id, filters): list[CaseSummary]",
-                                              "case_detail(case_id): CaseDetail", "request_information(case_id, "
-                                              "request, deadline)", "record_decision(case_id, kind, reason, ...)",
-                                              "audit_log(filters): list[AuditEntry]"],
-      frs="FR-T-10, FR-T-11, FR-M-05 (REST: /cases, /audit-log)", stereo="interface")
-    K("IIntake", "ICaseIntake", X[1], y1, w, [], ["open_or_attach(transaction_id, trigger, reason): EscalationCase",
-                                                 "withdraw(transaction_id)"],
-      frs="FR-T-10, UC-D6 1b (one live case per transaction)", stereo="interface")
-    K("Audit", "AuditLogService", X[2], y1, w, [], ["record(actor, action, target, outcome, reason?)",
-                                                   "query(filters): list[AuditEntry]  {the view is logged}",
-                                                   "verify_chain(): bool", "mask(entry): AuditEntry"],
-      frs="FR-M-05, NFR-S-05, UC-I6")
-    K("Entry", "AuditEntry", X[3], y1, w, ["occurred_at, actor_id, authorisation", "action, target_type, target_id",
-                                          "previous_value, new_value (masked)", "outcome: SUCCESS | REJECTED, reason",
-                                          "prev_hash, row_hash"], frs="FR-M-05 (audit_log row)", stereo="value")
-    y2 = bottom(d, "IMod", "IIntake", "Audit", "Entry") + GAP
-    K("CaseSvc", "CaseService", X[0], y2, w, ["- cases: CaseRepository", "- notifier: INotify"],
-      ["open_or_attach(transaction_id, trigger, reason)", "queue(community_id, filters)", "case_detail(case_id)",
-       "request_information(case_id, request,", "&#160;&#160;deadline)", "add_statement(case_id, party, text,", "&#160;&#160;attachments)",
-       "withdraw(transaction_id)", "route_to_admin(case_id)"],
-      frs="FR-T-10, FR-T-11 (step 2), FR-B-17, UC-D6 2a")
-    K("Trail", "EvidenceTrailBuilder", X[1], y2, w, ["- events: IEventQuery"], ["build(case): EvidenceTrail",
-                                                                              "gaps(trail): list[str]"],
-      frs="FR-T-10, UC-D6 1, 1a (trail derived from the event log)")
-    K("DecSvc", "DecisionService", X[2], y2, w, ["- lifecycle: ILifecycleCommands", "- audit: AuditLogService"],
-      ["record_decision(case_id, moderator, kind,", "&#160;&#160;reason, safeguards?, resolved_outcome?)",
-       "&#160;&#160;: ModeratorDecision", "allowed_kinds(case): set[DecisionKind]", "&#160;&#160;{ADR-0003}"],
-      frs="FR-T-11, ADR-0003, ADR-0004, UC-I4 3c, 4a")
-    K("Enums", "CaseTrigger, CaseStatus, DecisionKind", X[3], y2, w,
-      ["CaseTrigger: DISPUTE | MANIPULATION_FLAG |", "&#160;&#160;HIGH_VALUE_LOW_CONFIDENCE |", "&#160;&#160;LOCALITY_HOLD | ENGINE_FAILURE",
-       "CaseStatus: OPEN | AWAITING_INFORMATION |", "&#160;&#160;DECIDED | APPEALED | REVERSED | WITHDRAWN",
-       "DecisionKind: CLEARED | SAFEGUARDS_IMPOSED |", "&#160;&#160;RESTRICTED | DISPUTE_RESOLVED", "&#160;&#160;(appeal, reversal kinds: iteration 2)"],
-      stereo="enumeration", owner="ENUM")
-    y3 = bottom(d, "CaseSvc", "Trail", "DecSvc", "Enums") + GAP
-    K("Case", "EscalationCase", X[0], y3, w, ["id, transaction_id: UUID", "opened_event_id: int",
-                                             "trigger_type: CaseTrigger", "hold_reason | dispute_reason",
-                                             "raised_by: UUID | None", "status: CaseStatus", "priority: int {1..3}",
-                                             "reason: str", "assigned_to: UUID | None", "info_deadline, opened_at, "
-                                             "closed_at"], ["assign(moderator)", "await_information(deadline)",
-                                                            "mark_no_response()", "close(decision | withdrawn)"],
-      frs="FR-T-10; state machine C01&#8211;C11")
-    K("TrailV", "EvidenceTrail", X[1], y3, w, ["events: list[LifecycleEvent]", "assessment: AssessmentResult | None",
-                                              "condition_reports, statements", "attachments (metadata stripped)",
-                                              "gaps: list[str]"], frs="FR-T-10, NFR-PR-03 (chat only if disputed)",
-      stereo="value")
-    K("Dec", "ModeratorDecision", X[2], y3, w, ["id, case_id: UUID", "decided_by: UUID, decider_role",
-                                               "kind: DecisionKind", "reason: str  {mandatory}", "safeguards: list",
-                                               "resolved_outcome: dict | None", "reverses_decision_id: UUID | None",
-                                               "decided_at: datetime"],
-      frs="FR-T-11, FR-B-15 (resolved outcome is evidence), ES-11")
-    y4 = bottom(d, "Case", "TrailV", "Dec") + GAP + 30
-    K("Stmt", "CaseStatement", X[0], y4, w, ["author_id, author_role", "statement: str", "created_at"],
-      frs="FR-B-17, UC-B12 5, UC-I4 2")
-
-    # evaluation (Module 10)
-    K("Suite", "ScenarioSuite", 1430, 110, 270, ["- fixtures: list[ScenarioFixture]"],
-      ["run(engine: IAssess): list[ScenarioResult]", "load(path): list[ScenarioFixture]"],
-      frs="NFR-Q-01 (7 of 13 at Mid-1), test suite 11")
-    K("Fixture", "ScenarioFixture", 1430, 330, 270, ["scenario_id: str", "transaction_context", "direct_evidence, "
-                                                    "indirect_evidence", "manipulation_risk", "expected: ExpectedResult"],
-      frs="scenario_fixtures_iteration1.json", stereo="value")
-    K("Expected", "ExpectedResult", 1730, 330, 250, ["rule_fired, decision, state", "lifecycle_state, hold_reason",
-                                                    "explanation facts"], frs="NFR-Q-01", stereo="value")
-    K("SResult", "ScenarioResult", 1730, 110, 250, ["scenario_id: str", "state_ok, rule_ok: bool",
-                                                   "lifecycle_ok, explanation_ok: bool", "passed: bool  {all four}"],
-      frs="NFR-Q-01", stereo="value")
-    # boundary interfaces
-    K("ILife", "ILifecycleCommands", 1430, 770, 270, [], ["apply_decision(transaction_id, decision): event"],
-      frs="Student 1, Module 3", stereo="interface", owner="S1")
-    K("IEvt", "IEventQuery", 1730, 770, 250, [], ["load_stream(id)", "replay(id)", "verify_chain(id)"],
-      frs="Student 1, Module 3", stereo="interface", owner="S1")
-    K("INotify", "INotify", 1430, 1000, 270, [], ["notify(user, type, payload)"], frs="Module 7 stub",
-      stereo="interface", owner="ENUM")
-    K("IAssessB", "IAssess", 1730, 1000, 250, [], ["assess(request): AssessmentResult"], frs="Student 2, Module 5",
-      stereo="interface", owner="S2")
-
-    # ---------------- relationships
-    gap1 = y2 - 30
-    link(d, "CaseSvc", "IMod", "", style=REALISE, exit=(0.3, 0), entry=(0.3, 1))
-    link(d, "CaseSvc", "IIntake", "", style=REALISE, exit=(0.7, 0), entry=(0.5, 1),
-         points=[(60 + w * 0.7, gap1), (X[1] + w * 0.5, gap1)])
-    link(d, "DecSvc", "IMod", "", style=REALISE, exit=(0.15, 0), entry=(0.75, 1),
-         points=[(X[2] + w * 0.15, gap1 - 12), (60 + w * 0.75, gap1 - 12)])
-    link(d, "DecSvc", "Audit", "&#171;use&#187;", style=DEPEND, exit=(0.6, 0), entry=(0.6, 1), label_dx=36, label_dy=0)
-    link(d, "Audit", "Entry", "", style=DEPEND, exit=(1, 0.5), entry=(0, 0.5))
-    link(d, "CaseSvc", "Trail", "&#171;use&#187;", style=DEPEND, exit=(1, 0.3), entry=(0, 0.3), label_dy=-10)
-    link(d, "Trail", "TrailV", "&#171;creates&#187;", style=DEPEND, exit=(0.5, 1), entry=(0.5, 0), label_dx=40, label_dy=0)
-    link(d, "CaseSvc", "Case", "manages", "1", "0..*", exit=(0.5, 1), entry=(0.5, 0), label_dx=36, label_dy=0)
-    link(d, "DecSvc", "Dec", "&#171;creates&#187;", style=DEPEND, exit=(0.5, 1), entry=(0.5, 0), label_dx=40, label_dy=0)
-    cb = bottom(d, "Case", "TrailV", "Dec") + 22
-    link(d, "Case", "Dec", "decided by", "1", "0..*", exit=(0.8, 1), entry=(0.5, 1),
-         points=[(60 + w * 0.8, cb), (X[2] + w * 0.5, cb)], label_x=0.0, label_dy=-10, mb_off=(0, 1))
-    link(d, "Case", "Stmt", "", "1", "0..*", style=COMPOSE, exit=(0.3, 1), entry=(0.3, 0))
-    link(d, "DecSvc", "ILife", "&#171;use&#187;", style=DEPEND, exit=(1, 0.9), entry=(0, 0.5),
-         points=[(1030, Y(d, "DecSvc", 0.9)), (1030, Y(d, "ILife", 0.5))], label_x=0.4, label_dx=-28, label_dy=0)
-    link(d, "Trail", "IEvt", "&#171;use&#187;", style=DEPEND, exit=(1, 0.6), entry=(0.5, 1),
-         points=[(X[1] + w + 15, Y(d, "Trail", 0.6)), (X[1] + w + 15, cb + 26), (1855, cb + 26)], label_x=0.1,
-         label_dy=-10)
-    link(d, "CaseSvc", "INotify", "&#171;use&#187;", style=DEPEND, exit=(0, 0.5), entry=(0, 0.5),
-         points=[(45, Y(d, "CaseSvc", 0.5)), (45, 1430), (1415, 1430), (1415, Y(d, "INotify", 0.5))], label_x=0.0,
-         label_dy=-10)
-    link(d, "Suite", "Fixture", "", "1", "7..*", style=AGGREG, exit=(0.5, 1), entry=(0.5, 0))
-    link(d, "Fixture", "Expected", "", "1", "1", style=COMPOSE, exit=(1, 0.5), entry=(0, 0.5))
-    link(d, "Suite", "SResult", "", style=DEPEND, exit=(1, 0.5), entry=(0, 0.5))
-    link(d, "Suite", "IAssessB", "&#171;use&#187;", style=DEPEND, exit=(0, 0.5), entry=(0.5, 0),
-         points=[(1415, Y(d, "Suite", 0.5)), (1415, 700), (1715, 700), (1715, 980), (1855, 980)], label_x=0.4,
-         label_dy=-10)
-    notes(d, "<b>Notes</b><br>&#8226; Module 9 changes a lifecycle state only through ILifecycleCommands.apply_decision() "
-          "(one writer of lifecycle events, A8); the allowed decision kinds depend on the case type and hold reason "
-          "(ADR-0003).<br>&#8226; The evidence trail is derived from the event log, never stored separately (UC-D6).<br>"
-          "&#8226; ICaseIntake is realised inside the same database transaction as the hold or dispute event in iteration 1 "
-          "(AR-3).<br>&#8226; The scenario suite tests the engine only through IAssess; the held-out attack generator "
-          "(iteration 3) is a separate package.<br>&#8226; Relationship ends as in the Student 1 class diagram.",
-          X[1], y4, 700, 130)
-    return d
+# class_diagram_s3 moved to generate_class_diagram_s3.py in iteration 2 (DA-11, v2.0), so Student 2's and
+# Student 3's diagrams can change independently.
 
 
 if __name__ == "__main__":
     class_diagram_s2().save(os.path.join(HERE, "class_diagram_s2.drawio"))
-    class_diagram_s3().save(os.path.join(HERE, "class_diagram_s3.drawio"))
