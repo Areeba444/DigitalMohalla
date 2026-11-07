@@ -2,7 +2,7 @@
 
 | Field | Value |
 | :--- | :--- |
-| Version | 1.3 (v1.2 plus the integration decisions of 2026-10-11) |
+| Version | 1.4 draft, 2026-11-07: Student 3 sections done (UC-D1, UC-D2 dressed; UC-B12, UC-I4, UC-I6 extended; DA-02); Student 1 sections (A1, B6, B8, B13, G3) to follow. v1.3: v1.2 plus the integration decisions of 2026-10-11 |
 | Date | 2026-10-11 (v1.1: 2026-10-10; v1.2 and v1.3: 2026-10-11) |
 | Authors | Team Digital Mohalla (v1.1 edits drafted with Claude; reviewed by: Fatima Khursheed, Areeba Javed, Minahil Kashif) |
 | Status | Baseline: ADR-0001 to ADR-0005 accepted on 2026-10-11; ADR-0007 and ADR-0008 accepted for integration (Students 2 and 3 to initial) |
@@ -65,7 +65,9 @@ Extension requests and reminders are events inside ACTIVE and do not change stat
 | D3/4/5 Assess transaction assurance | CORE | M | FR-T-01 to T-07 | Computing core |
 | D6 Escalate case | CORE | M | FR-T-10 | |
 | I4 Resolve escalated case or dispute | CORE | M | FR-T-11 | Generalised from "Resolve disputes" |
-| I6 View audit logs | CORE | M | FR-M-05 | |
+| I6 View audit logs | CORE | M | FR-M-05 | Extended in v1.4 (filters, masking, tamper warning) |
+| D1 Submit review and rating | CORE (iteration 2) | M | FR-T-09, FR-B-15 | Dressed in v1.4 |
+| D2 View my evidence (trust profile) | CORE (iteration 2) | M | FR-T-08 | Dressed in v1.4 |
 | A3 Select neighbourhood, request membership | CORE (iteration 2) | M | FR-A-06 to A-09 | |
 | A4 Approve or reject membership | CORE (iteration 2) | M | FR-A-10, A-11 | |
 
@@ -185,15 +187,17 @@ Extension requests and reminders are events inside ACTIVE and do not change stat
 | Primary actor | Lender or Borrower (raising party). Secondary: Moderator (I4) |
 | Stakeholders | **Raising party:** fair resolution. **Other party:** can respond with evidence. **Moderator:** complete evidence trail. **Trust Engine:** receives the resolved outcome. |
 | Pre-conditions | Actor is a party to the booking. State is ACCEPTED, ACTIVE or RETURN_INITIATED and inside the dispute window. (RETURNED is closed at once by B8 step 4; a disagreement at return is raised in RETURN_INITIATED, B8 ext 3a.) |
-| Post-conditions | Booking is DISPUTED (previous state stored in the `dispute_opened` event); deposit record and further transitions frozen; case in the moderator queue; both parties notified; events logged. |
+| Post-conditions | Booking is DISPUTED (previous state stored in the `dispute_opened` event); deposit record and further transitions frozen; case in the moderator queue; both parties notified; events logged. When a moderator resolves it (UC-I4), the loan ends in the state that the item's possession allows (ADR-0009, proposed). |
 
 | # | Actor | System |
 | :-: | :--- | :--- |
 | 1 | Party selects "Raise a dispute" | Checks state and time window |
 | 2 | Chooses a reason (damage, non-return, condition mismatch, no-show, other) and describes it | Offers evidence upload |
-| 3 | Attaches photos or documents and submits | Sets DISPUTED, freezes the deposit record and transitions, appends `dispute_opened` |
+| 3 | Attaches photos or documents and submits | Checks each file's type and size, strips its metadata and stores it through the storage port (ADR-0014); sets DISPUTED, freezes the deposit record and transitions, appends `dispute_opened` |
 | 4 | | Triggers D6 to compile the evidence trail and queue the case |
 | 5 | | Notifies the other party (who can respond with evidence) and the moderator (G3) |
+| 6 | Other party submits a response with evidence | Appends a `case_statement` to the case (append-only) and notifies the moderator (escalation case C03 when information was requested) |
+| 7 | | The case is decided in UC-I4, with the item's possession recorded (ADR-0009) |
 
 **Extensions**
 - *a. Party withdraws before submitting: draft discarded.
@@ -201,6 +205,56 @@ Extension requests and reminders are events inside ACTIVE and do not change stat
 - 1b. Window closed: explain, suggest reporting the user (D7).
 - 5a. Other party does not respond within the period: mark "no response" and pass to the moderator anyway.
 - 5b. Parties settle: the raising party withdraws; `dispute_withdrawn` restores the previous state and the outcome is logged (ADR-0004).
+- 3a. A file has a disallowed type or is too large: refused with a reason; the party may submit without it (TC-85).
+- 3b. Storage is unavailable: the dispute is still raised, marked "reduced evidence"; files can be added later as a statement (ADR-0014).
+- 6a. The other party tries to withdraw: refused; only the raising party may withdraw (FR-B-17).
+
+### UC-D1: Submit review and rating (core, iteration 2)
+| | |
+| :--- | :--- |
+| Module / Scope / Level | Trust, reputation & safety / CORE (iteration 2), M / User goal |
+| Primary actor | Member who was a party to a completed loan (borrower or lender). Secondary: manipulation checks (D3/4/5), moderator |
+| Stakeholders | **Reviewer:** records their experience. **Reviewee:** is not reviewed in retaliation. **Community:** reviews are honest signals. **Moderator:** flagged reviews can be checked. |
+| Pre-conditions | The loan is COMPLETED (database `review_guard`); the actor is its borrower or lender; the actor has not reviewed this loan yet (`review_once_uq`); the review window is open. |
+| Post-conditions | One review is stored with a rating per dimension and an optional comment; the reviewee is notified. Reviews feed only the manipulation signals; they never enter the trust estimate, which uses verified loan outcomes (decision D19). |
+
+| # | Member | System |
+| :-: | :--- | :--- |
+| 1 | Opens a completed loan and chooses "Review" | Checks eligibility; shows the dimensions for the reviewee's role (reviewing a borrower: return punctuality, item condition, communication; reviewing a lender: item as described, handover, communication) |
+| 2 | Rates each dimension (1 to 5) and may write a comment | Validates the ratings and screens the comment for contact details and addresses |
+| 3 | Submits | Stores the review (flags false). When the engine next assesses a request involving the reviewee, its retaliation check sets the review aside if it is negative (lowest rating at most 2) and follows, within the retaliation window, the reviewee's complaint about this reviewer on a loan whose return was confirmed; S4 sets aside near-identical text. A set-aside review is excluded from S1 and S4 and listed for a moderator; the engine does not write to `review` (D19). The reviewer is not told |
+| 4 | | Notifies the reviewee; the review appears on the reviewee's evidence screen (D2), a flagged review marked "under review" |
+
+**Extensions**
+- 1a. Not a party, loan not completed, or already reviewed: the option is not offered.
+- 1b. Review window closed: explain; nothing is stored.
+- 2a. A dimension is unrated: submission blocked.
+- 2b. The comment contains contact details or an address: asked to remove them (NFR-PR-01).
+- 3a. Editing within the edit window: the review is updated and the flags are recomputed; after the window it is read-only.
+- 4a. A moderator confirms a set-aside review with a reason, which sets `retaliation_flag` or `similarity_flag`, or clears it. Nobody is restricted by a flag alone.
+
+Window lengths (review window, edit window, retaliation window of 14 days in engine config 1.3.0) are configuration values settled in FR/NFR v1.4. The rating dimensions follow the overview's reputation dimensions and are confirmed in build A3.
+
+### UC-D2: View my evidence (trust profile) (core, iteration 2)
+| | |
+| :--- | :--- |
+| Module / Scope / Level | Trust, reputation & safety / CORE (iteration 2), M / User goal |
+| Primary actor | Member (their own profile only in iteration 2) |
+| Stakeholders | **Member:** understands what the platform knows about them and how to build evidence. **Platform:** never shows a single trust number or labels a person. |
+| Pre-conditions | The member is logged in. |
+| Post-conditions | The member's evidence is shown factor by factor, with confidence; nothing is changed. |
+
+| # | Member | System |
+| :-: | :--- | :--- |
+| 1 | Opens "My evidence" | Shows the evidence as a borrower and as a lender, separately |
+| 2 | Chooses a role | For each metric (on-time return, condition agreed, dispute-free): the verified loans counted, how recent they are, and the confidence in words with the 90% interval as a band; resolved disputes; the number of community members with paths to them. Never one combined score (FR-T-08, NFR-U-01) |
+| 3 | Opens a factor | Lists the member's own loans that contributed, with dates and outcomes |
+
+**Extensions**
+- 1a. No verified history: "Not enough verified history yet", explained as an absence of evidence, not a negative finding, with how evidence is built.
+- 2a. Fewer than the minimum effective observations for a metric (n_min, config): the detail is suppressed and shown as "too few loans to show".
+- 3a. An outcome is FLAGGED_FOR_REEVALUATION after a reversal: shown as "under review" and excluded from the counts.
+- *a. Manipulation signals about the member are not shown here; they are evidence for moderators, never accusations (FR-T-05).
 
 ### UC-D3/4/5: Assess transaction assurance
 | | |
@@ -265,8 +319,8 @@ Extension requests and reminders are events inside ACTIVE and do not change stat
 | # | Moderator | System |
 | :-: | :--- | :--- |
 | 1 | Opens the case | Shows the type-specific evidence trail (claims, photos, messages, timestamps, trust analysis, manipulation signals) and, for a hold, the hold reason |
-| 2 | Reviews; requests more information if needed | Notifies the parties and sets a response deadline |
-| 3 | Enters a decision and a reason | Validates that a reason exists, the moderator is authorised, and the decision is allowed for this hold reason |
+| 2 | Reviews; requests more information if needed, with a reason and the question | Stores the question, sets the case AWAITING_INFORMATION with a response deadline from the configuration, and notifies the party (C02; sequence g). An answer before the deadline, or the deadline passing (found by the scheduler), returns the case to OPEN (C03, C04) |
+| 3 | Enters a decision and a reason; for a dispute, also records where the item is (not handed over, with the borrower, returned, or lost) | Validates that a reason exists, the moderator is authorised, the decision is allowed for this hold reason, and the possession is allowed by the state in which the dispute was raised (ADR-0009) |
 | 4 | Confirms | Applies the state change, records the decision event, updates the evidence, notifies both parties |
 
 **Extensions**
@@ -275,8 +329,9 @@ Extension requests and reminders are events inside ACTIVE and do not change stat
 - 3b. Case involves a moderator: escalate to Admin.
 - 3c. Moderator chooses "safeguards imposed" for an engine-failure hold: not allowed, since no assessment exists; the options are retry (cleared) or restricted.
 - 4a. Another moderator decided first: show the current state, apply nothing.
-- 4b. A party appeals: a second moderator reviews.
-- 4c. Decision is reversed later: both decisions stay in the log and the affected evidence is flagged until re-evaluated (ES-11).
+- 4b. A party appeals within the appeal window (once per case): the case becomes APPEALED and a moderator other than the first decider (Admin if none) reviews it; the appeal is upheld (`APPEAL_UPHELD`, case DECIDED) or overturned (`APPEAL_OVERTURNED`, case REVERSED). The first decision is never edited (C08 to C10; sequence h).
+- 4c. Decision is reversed later by an authorised moderator or admin with a reason (`REVERSAL`): both decisions stay in the log, the loan is not rewound, and the outcomes that came from the reversed decision are flagged FLAGGED_FOR_REEVALUATION, so the next assessment of either party no longer counts them; trust edges are refreshed (C11; ES-11).
+- 3d. Dispute: a possession that the stored previous state does not allow (for example "returned" for a dispute raised in ACCEPTED) is not offered (ADR-0009).
 - 4d. A cleared request is held again by the re-run assessment (for example, manipulation risk): it re-enters HELD_FOR_REVIEW with the new hold reason.
 
 ### UC-I6: View audit logs
@@ -291,14 +346,17 @@ Extension requests and reminders are events inside ACTIVE and do not change stat
 | # | Admin | System |
 | :-: | :--- | :--- |
 | 1 | Opens the audit log | Shows recent events: actor, timestamp, previous and new state, evidence, authorisation |
-| 2 | Filters by actor, user, transaction, date or event type | Returns matching events |
-| 3 | Opens an event | Shows full details and related events |
+| 2 | Filters by actor, user, transaction, case, date range, action or event type, and result (accepted or rejected) | Returns matching events, newest first, with sensitive fields masked |
+| 3 | Opens an event | Shows full details and related events, and the result of the integrity check for its hash chain |
+| 4 | | Writes the view itself to the audit log (who looked, at what filter, when) |
 
 **Extensions**
 - 1a. No matching results: empty state.
 - 3a. Event contains sensitive data: mask it per privacy rules.
 - 3b. Pattern detected (e.g. one moderator's decisions concentrated on the same users): highlight it (supports the moderator-misuse case).
-- 3c. Integrity check fails for an entry: show a tamper warning.
+- 3c. Integrity check fails for an entry: show a tamper warning (the hash chain of `audit_log` or of the transaction's events does not verify) and keep showing the entry.
+- 3d. Masking: e-mail, phone, free-text statements and reasons are masked by default; unmasking one entry needs a stated purpose and is itself logged.
+- *a. A moderator opens the log: only entries for their own community's cases are shown (NFR-S-03).
 
 ### UC-A3: Select neighbourhood and request community membership (core, iteration 2)
 | | |
@@ -394,6 +452,17 @@ Extension requests and reminders are events inside ACTIVE and do not change stat
 | D11, ADR-0008 | Sparse history without community support is INSUFFICIENT_EVIDENCE; community paths lift it to REVIEW_RECOMMENDED: D3 ext 1a, 3b |
 | N-7 | Resolved by A5 rule R4: B5 ext 5c, D3 ext 5b |
 | D12 | An open dispute gives ACTIVE_DISPUTE and the request still reaches the lender: D3 ext 5a |
+
+**v1.4 draft (iteration 2, DA-02; Student 3 sections, 2026-11-07, drafted with Claude Code, review pending)**
+
+| # | Change |
+| :-: | :--- |
+| DA-02 | D1 (submit review) and D2 (view my evidence) promoted to core and dressed; Appendix B rows kept for reference |
+| ADR-0009 (proposed) | B12 post-condition and steps 6 to 7; I4 step 3 and ext 3d: the dispute closes by the item's possession (T25a/b/c) |
+| ADR-0014 (proposed) | B12 step 3 and ext 3a, 3b: uploads checked, metadata stripped, stored through the storage port |
+| DA-07 | I4 step 2 (C02 to C04), ext 4b (appeal, C08 to C10) and 4c (reversal, C11) in build detail |
+| DA-02 | I6 steps 2 to 4 and ext 3c, 3d, *a: filters, masking, integrity check, views logged, community scope |
+| Open | Review, edit and appeal window values are settled in FR/NFR v1.4 (DA-03); Student 1 sections (A1, B6, B8, B13, G3) follow in the same version |
 
 ## Appendix B: Remaining use cases (brief)
 
