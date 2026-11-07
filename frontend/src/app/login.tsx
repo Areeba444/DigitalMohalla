@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Text, View } from 'react-native';
+import { useRouter } from 'expo-router';
 
 import { ApiError } from '@/api/client';
 import { useAuth } from '@/auth/AuthProvider';
@@ -39,6 +40,7 @@ function Pledge({ icon, text }: { icon: 'verified_user' | 'lock' | 'groups'; tex
 
 export default function Login() {
   const { theme } = useTheme();
+  const router = useRouter();
   const { signIn } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -127,6 +129,11 @@ export default function Login() {
           disabled={!email || !password}
           onPress={() => submit(email, password)}
         />
+        <View style={{ flexDirection: 'row', justifyContent: 'center', marginTop: 4 }}>
+          <Caption onPress={() => router.push('/register')} style={{ color: theme.colors.primary, fontWeight: '600' }}>
+            New neighbour? Create an account
+          </Caption>
+        </View>
       </Card>
 
       {DEMO_PASSWORD ? (
