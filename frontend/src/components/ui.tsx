@@ -116,14 +116,17 @@ export function Body({
   children,
   muted,
   style,
+  numberOfLines,
 }: {
   children: React.ReactNode;
   muted?: boolean;
   style?: StyleProp<TextStyle>;
+  numberOfLines?: number;
 }) {
   const theme = useT();
   return (
     <Text
+      numberOfLines={numberOfLines}
       style={[
         {
           fontFamily: theme.fonts.regular,
@@ -138,10 +141,19 @@ export function Body({
   );
 }
 
-export function Caption({ children, style }: { children: React.ReactNode; style?: StyleProp<TextStyle> }) {
+export function Caption({
+  children,
+  style,
+  onPress,
+}: {
+  children: React.ReactNode;
+  style?: StyleProp<TextStyle>;
+  onPress?: () => void;
+}) {
   const theme = useT();
   return (
     <Text
+      onPress={onPress}
       style={[
         { fontFamily: theme.fonts.medium, fontSize: 12.5, lineHeight: 17, color: theme.colors.textMuted },
         style,
@@ -151,7 +163,7 @@ export function Caption({ children, style }: { children: React.ReactNode; style?
   );
 }
 
-export function SectionLabel({ children, color }: { children: string; color?: string }) {
+export function SectionLabel({ children, color }: { children: React.ReactNode; color?: string }) {
   const theme = useT();
   return (
     <Text
@@ -404,6 +416,7 @@ export function Button({
   loading,
   disabled,
   compact,
+  style,
 }: {
   label: string;
   onPress: () => void;
@@ -412,6 +425,7 @@ export function Button({
   loading?: boolean;
   disabled?: boolean;
   compact?: boolean;
+  style?: StyleProp<ViewStyle>;
 }) {
   const theme = useT();
   const off = disabled || loading;
@@ -444,6 +458,7 @@ export function Button({
         },
         surface,
         pressed && !off ? { transform: [{ scale: 0.98 }], opacity: 0.92 } : null,
+        style,
       ]}>
       {loading ? <ActivityIndicator color={fg} /> : icon ? <Icon name={icon} size={20} color={fg} /> : null}
       <Text style={{ fontFamily: theme.fonts.bold, fontSize: compact ? 14 : 15.5, color: fg }}>{label}</Text>
@@ -458,6 +473,7 @@ export function Field({
   placeholder,
   multiline,
   secure,
+  secureTextEntry,
   keyboardType,
   icon,
   autoComplete,
@@ -468,6 +484,7 @@ export function Field({
   placeholder?: string;
   multiline?: boolean;
   secure?: boolean;
+  secureTextEntry?: boolean;
   keyboardType?: 'default' | 'email-address' | 'numeric';
   icon?: IconName;
   autoComplete?: 'email' | 'password' | 'off';
@@ -501,7 +518,7 @@ export function Field({
           placeholder={placeholder}
           placeholderTextColor={theme.colors.textMuted}
           multiline={multiline}
-          secureTextEntry={secure}
+          secureTextEntry={secure ?? secureTextEntry}
           keyboardType={keyboardType}
           autoComplete={autoComplete}
           autoCapitalize="none"
@@ -527,17 +544,20 @@ export function Check({
   label,
   checked,
   onToggle,
+  onPress,
 }: {
   label: string;
   checked: boolean;
-  onToggle: () => void;
+  onToggle?: () => void;
+  onPress?: () => void;
 }) {
   const theme = useT();
+  const handler = onToggle ?? onPress;
   return (
     <Pressable
       accessibilityRole="checkbox"
       accessibilityState={{ checked }}
-      onPress={onToggle}
+      onPress={handler}
       style={{
         flexDirection: 'row',
         alignItems: 'center',
@@ -577,7 +597,7 @@ export function Chip({
 }: {
   label: string;
   selected?: boolean;
-  onPress: () => void;
+  onPress?: () => void;
   icon?: IconName;
   sublabel?: string;
 }) {
@@ -587,6 +607,7 @@ export function Chip({
       accessibilityRole="button"
       accessibilityState={{ selected: !!selected }}
       onPress={onPress}
+      disabled={!onPress}
       style={({ pressed }) => ({
         minHeight: 44,
         paddingHorizontal: 14,
@@ -628,17 +649,20 @@ export function Chip({
 
 export function Collapsible({
   title,
+  label,
   icon,
   defaultOpen = false,
   children,
 }: {
-  title: string;
+  title?: string;
+  label?: string;
   icon?: IconName;
   defaultOpen?: boolean;
   children: React.ReactNode;
 }) {
   const theme = useT();
   const [open, setOpen] = useState(defaultOpen);
+  const heading = title ?? label ?? '';
   return (
     <View style={{ gap: 10 }}>
       <Pressable
@@ -648,14 +672,9 @@ export function Collapsible({
         style={{ flexDirection: 'row', alignItems: 'center', gap: 8, minHeight: 44 }}>
         {icon ? <Icon name={icon} size={20} color={theme.colors.primary} /> : null}
         <Text style={{ flex: 1, fontFamily: theme.fonts.bold, fontSize: 14.5, color: theme.colors.primary }}>
-          {title}
+          {heading}
         </Text>
-        <Icon
-          name="expand_more"
-          size={22}
-          color={theme.colors.primary}
-          style={{ transform: [{ rotate: open ? '180deg' : '0deg' }] }}
-        />
+        <Icon name={open ? 'expand_less' : 'expand_more'} size={20} color={theme.colors.primary} />
       </Pressable>
       {open ? children : null}
     </View>
@@ -1075,4 +1094,393 @@ export function ErrorText({ message }: { message?: string | null }) {
 export function Loading() {
   const theme = useT();
   return <ActivityIndicator style={{ marginTop: 40 }} size="large" color={theme.colors.primary} />;
+}
+
+/* ================================================================ ITERATION 2 COMPONENTS
+ * UX-03 additions — all theme-aware, NFR-U-01 compliant.
+ * HCI rules: 48dp touch targets, text+icon (never colour alone), one primary CTA per screen.
+ * ================================================================ */
+
+/**
+ * InboxRow — notification / message list item (W12 Notification Center).
+ * Shows avatar initial, bold title, truncated body, timestamp, and an optional unread dot.
+ */
+export function InboxRow({
+  icon,
+  title,
+  body,
+  timestamp,
+  unread = false,
+  onPress,
+}: {
+  icon: IconName;
+  title: string;
+  body: string;
+  timestamp: string;
+  unread?: boolean;
+  onPress?: () => void;
+}) {
+  const theme = useT();
+  return (
+    <Pressable
+      onPress={onPress}
+      accessibilityRole="button"
+      style={({ pressed }) => ({
+        flexDirection: 'row',
+        gap: 12,
+        paddingVertical: 14,
+        paddingHorizontal: 16,
+        backgroundColor: pressed ? theme.colors.surface2 : unread ? theme.colors.primarySoft : theme.colors.surface,
+        borderBottomWidth: StyleSheet.hairlineWidth,
+        borderBottomColor: theme.colors.hairline,
+        alignItems: 'flex-start',
+        minHeight: 72,
+      })}>
+      {/* icon bubble */}
+      <View
+        style={{
+          width: 42,
+          height: 42,
+          borderRadius: 21,
+          alignItems: 'center',
+          justifyContent: 'center',
+          backgroundColor: unread ? theme.colors.primarySoft : theme.colors.surface2,
+          borderWidth: 1,
+          borderColor: unread ? theme.colors.primary + '44' : theme.colors.border,
+        }}>
+        <Icon name={icon} size={20} color={unread ? theme.colors.primary : theme.colors.textSecondary} />
+      </View>
+      {/* text */}
+      <View style={{ flex: 1, gap: 2 }}>
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+          <Text
+            style={{
+              fontFamily: unread ? theme.fonts.bold : theme.fonts.medium,
+              fontSize: 15,
+              color: theme.colors.text,
+              flex: 1,
+            }}
+            numberOfLines={1}>
+            {title}
+          </Text>
+          <Caption style={{ marginLeft: 8 }}>{timestamp}</Caption>
+        </View>
+        <Body muted style={{ fontSize: 13 }} numberOfLines={2}>
+          {body}
+        </Body>
+      </View>
+      {/* unread dot */}
+      {unread ? (
+        <View
+          style={{
+            width: 8,
+            height: 8,
+            borderRadius: 4,
+            backgroundColor: theme.colors.primary,
+            alignSelf: 'center',
+            marginLeft: 4,
+          }}
+        />
+      ) : null}
+    </Pressable>
+  );
+}
+
+/**
+ * PhotoEvidenceSlot — camera-capture slot for handover / return evidence (W17).
+ * Shows a placeholder until a photo is attached. EXIF-strip badge reassures on privacy.
+ */
+export function PhotoEvidenceSlot({
+  label,
+  hasPhoto = false,
+  onPress,
+}: {
+  label: string;
+  hasPhoto?: boolean;
+  onPress?: () => void;
+}) {
+  const theme = useT();
+  return (
+    <Pressable
+      onPress={onPress}
+      accessibilityRole="button"
+      accessibilityLabel={`${label} — ${hasPhoto ? 'photo attached' : 'tap to add photo'}`}
+      style={({ pressed }) => [
+        {
+          flex: 1,
+          borderRadius: theme.radius.md,
+          borderWidth: 1.5,
+          borderStyle: hasPhoto ? 'solid' : 'dashed',
+          borderColor: hasPhoto ? theme.colors.primary : theme.colors.border,
+          backgroundColor: pressed ? theme.colors.surface2 : hasPhoto ? theme.colors.primarySoft : theme.colors.surface,
+          alignItems: 'center',
+          justifyContent: 'center',
+          gap: 6,
+          paddingVertical: 20,
+          minHeight: 100,
+        },
+      ]}>
+      <Icon
+        name={hasPhoto ? 'check_circle' : 'add_a_photo'}
+        size={28}
+        color={hasPhoto ? theme.colors.primary : theme.colors.textMuted}
+      />
+      <Caption style={{ textAlign: 'center', color: hasPhoto ? theme.colors.primary : theme.colors.textMuted }}>
+        {label}
+      </Caption>
+      {/* Privacy assurance — GPS/EXIF stripped on upload */}
+      <View
+        style={{
+          flexDirection: 'row',
+          gap: 3,
+          alignItems: 'center',
+          backgroundColor: theme.colors.surface2,
+          paddingHorizontal: 6,
+          paddingVertical: 2,
+          borderRadius: 9999,
+        }}>
+        <Icon name="shield" size={10} color={theme.colors.textMuted} />
+        <Caption style={{ fontSize: 10, color: theme.colors.textMuted }}>GPS stripped</Caption>
+      </View>
+    </Pressable>
+  );
+}
+
+/**
+ * CountdownTimer — displays an SLA deadline countdown (W18 Info Request Response).
+ * Turns amber under 24 h and red under 1 h (colour + text, never colour alone).
+ */
+export function CountdownTimer({ hoursLeft }: { hoursLeft: number }) {
+  const theme = useT();
+  const urgent = hoursLeft < 1;
+  const warn = hoursLeft < 24;
+  const tone: Tone = urgent ? theme.colors.danger : warn ? theme.colors.warning : theme.colors.info;
+
+  const h = Math.floor(Math.abs(hoursLeft));
+  const m = Math.round((Math.abs(hoursLeft) - h) * 60);
+  const label = hoursLeft <= 0 ? 'Expired' : `${h}h ${m}m remaining`;
+  const icon: IconName = urgent ? 'warning' : 'schedule';
+
+  return (
+    <View
+      style={{
+        flexDirection: 'row',
+        gap: 8,
+        alignItems: 'center',
+        borderRadius: theme.radius.md,
+        borderWidth: 1,
+        borderColor: tone.border,
+        backgroundColor: tone.bg,
+        paddingHorizontal: 14,
+        paddingVertical: 10,
+      }}>
+      <Icon name={icon} size={20} color={tone.fg} />
+      <View style={{ flex: 1 }}>
+        <Text style={{ fontFamily: theme.fonts.bold, fontSize: 15, color: tone.fg }}>{label}</Text>
+        {urgent && (
+          <Caption style={{ color: tone.fg, opacity: 0.8 }}>
+            Respond immediately to avoid automatic case closure.
+          </Caption>
+        )}
+      </View>
+    </View>
+  );
+}
+
+/**
+ * ReasonLine — compact explanatory pill shown below a search result card (W23).
+ * Tells the user *why* this item was surfaced (NFR-Q-05 transparency).
+ */
+export function ReasonLine({ reasons }: { reasons: string[] }) {
+  const theme = useT();
+  return (
+    <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 4, marginTop: 2 }}>
+      {reasons.map((r) => (
+        <View
+          key={r}
+          style={{
+            flexDirection: 'row',
+            gap: 3,
+            alignItems: 'center',
+            backgroundColor: theme.colors.accentSoft,
+            borderRadius: 9999,
+            paddingHorizontal: 7,
+            paddingVertical: 2,
+          }}>
+          <Icon name="check_small" size={12} color={theme.colors.accent} />
+          <Caption style={{ fontSize: 11, color: theme.colors.accent }}>{r}</Caption>
+        </View>
+      ))}
+    </View>
+  );
+}
+
+/**
+ * DateRangePill — compact read-only display of a chosen start-end date range.
+ * Used in the Request / Extension / Counter-offer screens to confirm selected dates.
+ */
+export function DateRangePill({ start, end }: { start: string; end: string }) {
+  const theme = useT();
+  return (
+    <View
+      style={{
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 8,
+        borderRadius: 9999,
+        backgroundColor: theme.colors.primarySoft,
+        borderWidth: 1,
+        borderColor: theme.colors.primary + '55',
+        paddingHorizontal: 14,
+        paddingVertical: 8,
+        alignSelf: 'flex-start',
+      }}>
+      <Icon name="calendar_today" size={16} color={theme.colors.primary} />
+      <Text style={{ fontFamily: theme.fonts.semibold, fontSize: 14, color: theme.colors.primaryDeep }}>
+        {start}
+      </Text>
+      <Icon name="arrow_forward" size={14} color={theme.colors.primary} />
+      <Text style={{ fontFamily: theme.fonts.semibold, fontSize: 14, color: theme.colors.primaryDeep }}>
+        {end}
+      </Text>
+    </View>
+  );
+}
+
+/**
+ * MultiDimRow — one dimension of a multi-axis review or evidence breakdown (W15, W16).
+ * Shows a label, an icon, and a right-aligned value chip. NEVER a 1–5 star rating.
+ */
+export function MultiDimRow({
+  icon,
+  label,
+  value,
+  tone,
+}: {
+  icon: IconName;
+  label: string;
+  value: string;
+  tone?: Tone;
+}) {
+  const theme = useT();
+  const t = tone ?? theme.colors.neutral;
+  return (
+    <View
+      style={{
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 10,
+        paddingVertical: 10,
+        borderBottomWidth: StyleSheet.hairlineWidth,
+        borderBottomColor: theme.colors.hairline,
+        minHeight: 48,
+      }}>
+      <View
+        style={{
+          width: 34,
+          height: 34,
+          borderRadius: 10,
+          alignItems: 'center',
+          justifyContent: 'center',
+          backgroundColor: t.bg,
+          borderWidth: 1,
+          borderColor: t.border,
+        }}>
+        <Icon name={icon} size={18} color={t.fg} />
+      </View>
+      <Body style={{ flex: 1, fontSize: 14 }}>{label}</Body>
+      <View
+        style={{
+          backgroundColor: t.bg,
+          borderRadius: 9999,
+          paddingHorizontal: 10,
+          paddingVertical: 4,
+          borderWidth: 1,
+          borderColor: t.border,
+        }}>
+        <Text style={{ fontFamily: theme.fonts.bold, fontSize: 13, color: t.fg }}>{value}</Text>
+      </View>
+    </View>
+  );
+}
+
+/**
+ * PossessionRadio — single option in the moderator's item-possession selector (W19 DM14 fix).
+ * Shows icon + label + sub-text. Selected state is shown with text AND border, not colour alone.
+ */
+export function PossessionRadio({
+  icon,
+  label,
+  description,
+  selected,
+  onPress,
+}: {
+  icon: IconName;
+  label: string;
+  description: string;
+  selected: boolean;
+  onPress: () => void;
+}) {
+  const theme = useT();
+  return (
+    <Pressable
+      onPress={onPress}
+      accessibilityRole="radio"
+      accessibilityState={{ checked: selected }}
+      accessibilityLabel={label}
+      style={({ pressed }) => ({
+        flexDirection: 'row',
+        gap: 12,
+        alignItems: 'flex-start',
+        borderRadius: theme.radius.md,
+        borderWidth: selected ? 2 : 1,
+        borderColor: selected ? theme.colors.primary : theme.colors.border,
+        backgroundColor: selected ? theme.colors.primarySoft : pressed ? theme.colors.surface2 : theme.colors.surface,
+        padding: 14,
+        minHeight: 72,
+      })}>
+      <View
+        style={{
+          width: 38,
+          height: 38,
+          borderRadius: 12,
+          alignItems: 'center',
+          justifyContent: 'center',
+          backgroundColor: selected ? theme.colors.primary : theme.colors.surface2,
+        }}>
+        <Icon name={icon} size={20} color={selected ? theme.colors.onPrimary : theme.colors.textSecondary} />
+      </View>
+      <View style={{ flex: 1, gap: 3 }}>
+        <Text style={{ fontFamily: theme.fonts.bold, fontSize: 15, color: selected ? theme.colors.primaryDeep : theme.colors.text }}>
+          {label}
+        </Text>
+        <Caption style={{ color: selected ? theme.colors.primaryDeep : theme.colors.textMuted, opacity: 0.85 }}>
+          {description}
+        </Caption>
+      </View>
+      {/* Radio indicator */}
+      <View
+        style={{
+          width: 20,
+          height: 20,
+          borderRadius: 10,
+          borderWidth: 2,
+          borderColor: selected ? theme.colors.primary : theme.colors.border,
+          alignItems: 'center',
+          justifyContent: 'center',
+          marginTop: 2,
+        }}>
+        {selected ? (
+          <View
+            style={{
+              width: 10,
+              height: 10,
+              borderRadius: 5,
+              backgroundColor: theme.colors.primary,
+            }}
+          />
+        ) : null}
+      </View>
+    </Pressable>
+  );
 }

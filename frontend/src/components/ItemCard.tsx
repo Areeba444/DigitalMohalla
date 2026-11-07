@@ -2,7 +2,7 @@ import { router } from 'expo-router';
 import { Text, View } from 'react-native';
 
 import type { BrowseItem } from '@/api/hooks';
-import { Badge, Caption, Card, Icon, ItemThumb } from '@/components/ui';
+import { Badge, Caption, Card, Icon, ItemThumb, ReasonLine } from '@/components/ui';
 import { useTheme } from '@/theme/ThemeProvider';
 
 export const BAND_LABEL: Record<string, string> = {
@@ -14,7 +14,7 @@ export const BAND_LABEL: Record<string, string> = {
 const open = (id: string) => router.push({ pathname: '/item/[id]', params: { id } });
 
 /** Photo-left row (HCI analysis C5: the listing pattern residents know from OLX). */
-export function ItemRow({ item }: { item: BrowseItem }) {
+export function ItemRow({ item, reasons }: { item: BrowseItem; reasons?: string[] }) {
   const { theme } = useTheme();
   return (
     <Card accessibilityLabel={`${item.title}, shared by ${item.owner_name}`} onPress={() => open(item.id)}>
@@ -34,6 +34,7 @@ export function ItemRow({ item }: { item: BrowseItem }) {
               <Badge label="Deposit at handover" tone={theme.colors.info} icon="payments" />
             ) : null}
           </View>
+          {reasons && reasons.length > 0 ? <ReasonLine reasons={reasons} /> : null}
         </View>
         <Icon name="chevron_right" size={22} color={theme.colors.textMuted} />
       </View>

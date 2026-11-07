@@ -22,9 +22,11 @@ function Routes() {
       <Stack.Protected guard={signedIn}>
         <Stack.Screen name="(resident)" />
         <Stack.Screen name="(moderator)" />
+        <Stack.Screen name="(admin)" />
       </Stack.Protected>
       <Stack.Protected guard={!signedIn}>
         <Stack.Screen name="login" />
+        <Stack.Screen name="register" />
       </Stack.Protected>
     </Stack>
   );
