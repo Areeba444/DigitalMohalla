@@ -1,10 +1,9 @@
-"""Generates the A3 state-machine diagrams and the transition table (Student 1).
+"""Generates the A3 state-machine diagram and the transition table (Student 1).
 
     python generate_state_machines.py
 
 Outputs (next to this file):
     borrowing_lifecycle_state_machine.drawio   UML state machine, BorrowingTransaction (14 states)
-    escalation_case_state_machine.drawio       UML state machine, EscalationCase
     transition_table.csv                       leaf-level (state x event -> next state) table = test matrix
 
 States, events and transitions come from ../_tools/lifecycle_model.py (single source of truth).
@@ -181,66 +180,8 @@ def lifecycle() -> Diagram:
     return d
 
 
-# =============================================================================== escalation case
-def escalation_case() -> Diagram:
-    d = Diagram("Escalation case (A3)", 1420, 820)
-    d.text("<b>Digital Mohalla &#8212; Escalation case state machine</b> (EscalationCase, design step A3, v2.0)",
-           40, 12, 1000, 24, size=16, check=False)
-    d.text("Case types: dispute (booking DISPUTED) and non-dispute hold (request HELD_FOR_REVIEW). Sources: UC-D6, "
-           "UC-I4, FR-T-10, FR-T-11, ADR-0003, ADR-0004.", 40, 36, 1100, 20, size=11, color="#4A5560", check=False)
-
-    U = d.node("UNDECIDED", 60, 120, 420, 520, COMPOSITE, id="UNDECIDED")
-    d.mark_container(U)
-    d.node("", 260, 152, 20, 20, INIT, id="c_init", parent=U)
-    state(d, "OPEN", 110, 240, w=320, h=130, parent=U,
-          body="entry / assemble evidence trail from the event log;<br>set trigger type, priority, reason;<br>"
-               "assign community moderator (Admin if none, D6 2a); notify<br>"
-               "trigger_attached / no duplicate case (D6 1b)<br>"
-               "escalated_to_admin [unresolvable | moderator<br>involved] / assignee := Admin (I4 3a, 3b)")
-    state(d, "AWAITING_INFORMATION", 110, 520, w=320, h=80, parent=U,
-          body="entry / notify parties; set response deadline<br>(I4 step 2; D6 1a missing evidence)")
-    state(d, "DECIDED", 700, 244, w=250, h=90,
-          body="entry / issue lifecycle command:<br>dispute_resolved | hold_cleared |<br>request_declined; "
-               "notify parties")
-    state(d, "WITHDRAWN", 700, 525, w=250, h=70, style=ST_TERM,
-          body="entry / close without a decision")
-    state(d, "APPEALED", 1110, 244, w=240, h=70, body="second moderator reviews (I4 4b)")
-    state(d, "REVERSED", 1110, 515, w=240, h=90, style=ST_TERM,
-          body="entry / keep both decisions; flag<br>affected outcomes for re-evaluation<br>(I4 4c, ES-11)")
-    d.node("", 813, 650, 24, 24, FINAL, id="fin1")
-    d.node("", 1218, 650, 24, 24, FINAL, id="fin2")
-
-    E = d.edge
-    E("c_init", "OPEN", "case_opened [no open case for this transaction] <b>C01</b><br>trigger &#8712; {dispute, manipulation_flag,"
-      "<br>high_value_low_confidence, locality_hold, engine_failure}", style=tr_style("S"), exit=(0.5, 1),
-      entry=(0.5, 0), label_dx=0, label_dy=-2, label_w=330)
-    E("OPEN", "AWAITING_INFORMATION", "info_requested [assigned<br>moderator] / deadline &nbsp;<b>C02</b>",
-      style=tr_style("M"), exit=(0.3, 1), entry=(0.3, 0), label_dx=-50)
-    E("AWAITING_INFORMATION", "OPEN", "info_received [party]<br>| deadline_passed / note<br>non-response "
-      "(I4 2a) <b>C03, C04</b>", style=tr_style("P"), exit=(0.75, 0), entry=(0.75, 1), label_dx=45)
-    E("OPEN", "DECIDED", "decision_recorded [authorised,<br>not a party, reason, allowed<br>for hold reason (I4 3c),"
-      "<br>case still undecided (I4 4a)] <b>C06</b>", style=tr_style("M"), exit=(1, 0.38), entry=(0, 0.5),
-      label_dy=-48)
-    E("UNDECIDED", "WITHDRAWN", "lifecycle left the trigger state<br>without a decision: dispute_withdrawn,"
-      "<br>request_cancelled, request_declined<br>(dates taken) / case_withdrawn <b>C07</b>",
-      style=tr_style("S"), exit=(1, (560 - 120) / 520), entry=(0, 0.5), label_dy=-44)
-    E("DECIDED", "APPEALED", "appeal_filed [party, in window]<br><b>C08</b> it.2", style=tr_style("P", True),
-      exit=(1, 0.3), entry=(0, 27 / 70), label_dy=-20)
-    E("APPEALED", "DECIDED", "appeal_decided [upheld; second<br>moderator &#8800; first] <b>C09</b> it.2",
-      style=tr_style("M", True), exit=(0, 0.75), entry=(1, 52.5 / 90), label_dy=20)
-    E("APPEALED", "REVERSED", "appeal_decided<br>[overturned]<br><b>C10</b> it.2", style=tr_style("M", True),
-      exit=(0.5, 1), entry=(0.5, 0), label_dx=50)
-    E("DECIDED", "REVERSED", "decision_reversed<br>[authorised, reason]<br><b>C11</b> it.2",
-      style=tr_style("M", True), exit=(0.6, 1), entry=(0, 0.5), points=[(850, 470), (1030, 470), (1030, 560)], label_x=-0.12, label_dy=-26)
-    E("WITHDRAWN", "fin1", "", style=tr_style("S"), exit=(0.5, 1), entry=(0.5, 0))
-    E("REVERSED", "fin2", "", style=tr_style("S"), exit=(0.5, 1), entry=(0.5, 0))
-
-    d.text("Case actions are not lifecycle event types: each is written to the hash-chained audit_log (FR-M-05) and "
-           "the case row keeps the current status. The decision itself becomes a lifecycle event (C06 &#8594; "
-           "dispute_resolved T25, hold_cleared T09&#8211;T11 or request_declined T12). <b>it.2</b>: appeal and "
-           "reversal are designed here but built in iteration 2 (Iteration 1 plan, Module 9).",
-           60, 700, 1260, 40, size=10.5, color="#33404D", check=False)
-    return d
+# The escalation-case state machine moved to generate_escalation_case_state_machine.py (DA-07, v3.0,
+# iteration 2) so that it and the lifecycle model can change independently.
 
 
 # =============================================================================== transition table
@@ -293,6 +234,5 @@ def write_md(path):
 
 if __name__ == "__main__":
     lifecycle().save(os.path.join(HERE, "borrowing_lifecycle_state_machine.drawio"))
-    escalation_case().save(os.path.join(HERE, "escalation_case_state_machine.drawio"))
     write_csv(os.path.join(HERE, "transition_table.csv"))
     write_md(os.path.join(HERE, "transition_table.md"))

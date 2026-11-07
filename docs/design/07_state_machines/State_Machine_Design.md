@@ -14,10 +14,12 @@
 | File | What it is |
 |---|---|
 | `borrowing_lifecycle_state_machine.drawio` | UML state machine of `BorrowingTransaction`: 14 states, T01 to T26 |
-| `escalation_case_state_machine.drawio` | UML state machine of `EscalationCase`: C01 to C11 |
+| `escalation_case_state_machine.drawio` | UML state machine of `EscalationCase`: C01 to C11 (v3.0, DA-07, Student 3) |
 | `transition_table.md` | Transition table: state × event → next state, guard, action, actor, source, FRs |
 | `transition_table.csv` | The same table at leaf level (34 rows): the invalid-transition test matrix (test suite 1) |
-| `generate_state_machines.py` | Regenerates all four from `../_tools/lifecycle_model.py` |
+| `generate_state_machines.py` | Regenerates the lifecycle diagram and both transition tables from `../_tools/lifecycle_model.py` |
+| `generate_escalation_case_state_machine.py` | Regenerates the escalation-case diagram (own generator since iteration 2) |
+| `membership_state_machine.drawio`, `generate_membership_state_machine.py` | Membership state machine, M01 to M08 (DA-08, iteration 2; see `Membership_State_Machine.md`) |
 
 The model file is the single source of truth. `schema.sql` seeds `allowed_transition` from it, and `06_data_model/test_schema.py` fails if the database rules, the CSV and the model differ.
 
@@ -87,21 +89,23 @@ Anything not in the table is invalid: 294 (state, event type) pairs exist and 34
 | Withdraw by the other party, or to a different state | Only the raiser; only the stored previous state | ADR-0004, FR-B-17 |
 | Command based on an old `stream_seq` | Optimistic concurrency | ADR-0002 |
 
-## 4. Escalation case (A3)
+## 4. Escalation case (A3; v3.0 for iteration 2, DA-07)
+
+v3.0 (7 November 2026, Student 3, drafted with Claude Code): build detail for C02 to C05 and C08 to C11, which are built in iteration 2 (build items M2 and M3), and the item's possession on closure (ADR-0009, proposed). A reversal never rewinds the loan; it flags the evidence instead.
 
 | ID | From | Trigger [guard] / action | To | Source |
 |---|---|---|---|---|
 | C01 | initial | `case_opened` by a hold or dispute [no open case for the transaction] / assemble evidence trail; priority, reason; assign community moderator, or Admin if none | OPEN | D6 steps 1–2, 1b, 2a; FR-T-10 |
-| C02 | OPEN | `info_requested` [assigned moderator] / notify parties, set deadline | AWAITING_INFORMATION | I4 step 2; D6 1a |
-| C03 | AWAITING_INFORMATION | `info_received` [party] / attach | OPEN | I4 step 2 |
-| C04 | AWAITING_INFORMATION | `deadline_passed` / note non-response | OPEN | I4 2a; B12 5a |
+| C02 | OPEN | `info_requested` [assigned moderator; reason] / store the question, `info_deadline` := now + response window (config), notify the party | AWAITING_INFORMATION | I4 step 2; D6 1a; sequence (g) |
+| C03 | AWAITING_INFORMATION | `info_received` [party to the loan; before the deadline] / append `case_statement`, notify the moderator | OPEN | I4 step 2; FR-B-17; sequence (g) |
+| C04 | AWAITING_INFORMATION | `deadline_passed` [found by the scheduler's `run_due_jobs`, ADR-0012] / note non-response, notify the moderator; idempotent | OPEN | I4 2a; B12 5a; sequence (g) |
 | C05 | OPEN (internal) | `escalated_to_admin` [unresolvable, or a moderator is involved] / assignee := Admin | OPEN | I4 3a, 3b |
-| C06 | OPEN | `decision_recorded` [authorised, not a party, reason, allowed for the hold reason, case still undecided] / issue `dispute_resolved`, `hold_cleared` or `request_declined` | DECIDED | I4 steps 3–4, 3c, 4a |
+| C06 | OPEN | `decision_recorded` [authorised, not a party, reason, allowed for the hold reason; for a dispute, a possession allowed by the stored `previous_state`; case still undecided] / issue `dispute_resolved` (to NO_SHOW, ACTIVE or COMPLETED by possession, ADR-0009), `hold_cleared` or `request_declined` | DECIDED | I4 steps 3–4, 3c, 4a; ADR-0009 (proposed) |
 | C07 | OPEN, AWAITING_INFORMATION | lifecycle left the trigger state without a decision (`dispute_withdrawn`, `request_cancelled`, `request_declined` dates taken) / close without decision | WITHDRAWN | FR-B-17; B12 5b |
-| C08 | DECIDED | `appeal_filed` [party, within window] (iteration 2) | APPEALED | I4 4b |
-| C09 | APPEALED | `appeal_decided` upheld [second moderator ≠ first] (it. 2) | DECIDED | I4 4b |
-| C10 | APPEALED | `appeal_decided` overturned (it. 2) / keep both, flag outcomes | REVERSED | I4 4b, 4c |
-| C11 | DECIDED | `decision_reversed` [authorised, reason] (it. 2) / keep both, flag outcomes | REVERSED | I4 4c; ES-11 |
+| C08 | DECIDED | `appeal_filed` [party to the loan, within the appeal window, one appeal per case] / assign a moderator other than the first decider (Admin if none), notify the other party | APPEALED | I4 4b; sequence (h) |
+| C09 | APPEALED | `appeal_decided` upheld [second moderator ≠ first; reason] / `APPEAL_UPHELD` decision | DECIDED | I4 4b; sequence (h) |
+| C10 | APPEALED | `appeal_decided` overturned [same guards] / `APPEAL_OVERTURNED` decision reversing the first; flag the affected outcomes; refresh trust edges | REVERSED | I4 4b, 4c; sequence (h) |
+| C11 | DECIDED | `decision_reversed` [moderator or admin of the community; reason] / `REVERSAL` decision; keep both; flag the affected outcomes; refresh trust edges | REVERSED | I4 4c; ES-11; sequence (h) |
 
 Case actions are not lifecycle event types (no change to the frozen schema): each one is an `audit_log` entry and the `escalation_case.status` column. In iteration 1 the schema opens the case inside the same database transaction as `held_for_review` or `dispute_opened`, and moves it to DECIDED or WITHDRAWN when the lifecycle event that settles it is appended.
 
