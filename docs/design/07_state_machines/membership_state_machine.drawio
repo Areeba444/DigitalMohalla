@@ -1,0 +1,104 @@
+<mxfile host="Electron" agent="Digital Mohalla design generator" version="24.7.17" type="device">
+  <diagram id="Membership__DA_08_" name="Membership (DA-08)">
+    <mxGraphModel dx="1400" dy="900" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1500" pageHeight="940" math="0" shadow="0" background="#FFFFFF">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="v1" value="&lt;b&gt;Digital Mohalla &amp;#8212; Membership state machine&lt;/b&gt; (Membership, design artefact DA-08, v1.0, iteration 2)" style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=top;fontSize=16;fontStyle=0;fontColor=#1d1d1d;spacing=2;overflow=visible;" vertex="1" parent="1">
+          <mxGeometry x="40" y="12" width="1100" height="24" as="geometry" />
+        </mxCell>
+        <mxCell id="v2" value="States are the six values of &lt;i&gt;membership_status&lt;/i&gt; (schema v2.3). Sources: UC-A3, UC-A4, FR-A-08 to FR-A-11, FR-M-01, locality design A11. Transition IDs M01&amp;#8211;M08 are rows of the table in Membership_State_Machine.md." style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=top;fontSize=11;fontStyle=0;fontColor=#4A5560;spacing=2;overflow=visible;" vertex="1" parent="1">
+          <mxGeometry x="40" y="36" width="1300" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="UNDECIDED" value="UNDECIDED &amp;nbsp;&lt;span style='font-weight:normal;font-size:11px'&gt;(request open, decided_at is null)&lt;/span&gt;" style="rounded=1;arcSize=2;whiteSpace=wrap;html=1;verticalAlign=top;align=left;spacingLeft=10;spacingTop=3;fontStyle=1;fontSize=13;fillColor=#F7F9FC;strokeColor=#7A8A9A;container=1;collapsible=0;recursiveResize=0;" vertex="1" parent="1">
+          <mxGeometry x="40" y="110" width="470" height="560" as="geometry" />
+        </mxCell>
+        <mxCell id="m_init" value="" style="ellipse;html=1;fillColor=#000000;strokeColor=#000000;" vertex="1" parent="UNDECIDED">
+          <mxGeometry x="215" y="35" width="20" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="PENDING" value="&lt;b&gt;PENDING&lt;/b&gt;&lt;hr style='margin:3px 0'&gt;&lt;span style='font-size:10px'&gt;entry / store the coarse locality result only:&lt;br&gt;VERIFIED, INCONCLUSIVE or CONFLICTING (A11);&lt;br&gt;attach duplicate-account and mismatch flags;&lt;br&gt;notify the community's moderators&lt;br&gt;do / wait in the moderator queue (UC-A4 step 1)&lt;/span&gt;" style="rounded=1;arcSize=24;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#2B3A4A;fontSize=12;fontColor=#1D1D1D;verticalAlign=middle;" vertex="1" parent="UNDECIDED">
+          <mxGeometry x="50" y="145" width="370" height="118" as="geometry" />
+        </mxCell>
+        <mxCell id="AWAITING_INFORMATION" value="&lt;b&gt;AWAITING_INFORMATION&lt;/b&gt;&lt;hr style='margin:3px 0'&gt;&lt;span style='font-size:10px'&gt;entry / notify the applicant; set the response&lt;br&gt;deadline (window in config, DA-03)&lt;br&gt;(UC-A4 2a)&lt;/span&gt;" style="rounded=1;arcSize=24;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#2B3A4A;fontSize=12;fontColor=#1D1D1D;verticalAlign=middle;" vertex="1" parent="UNDECIDED">
+          <mxGeometry x="50" y="430" width="370" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="APPROVED" value="&lt;b&gt;APPROVED&lt;/b&gt;&lt;hr style='margin:3px 0'&gt;&lt;span style='font-size:10px'&gt;entry / role := MEMBER; decided_at := now;&lt;br&gt;audit entry; notify the applicant;&lt;br&gt;MODERATOR_APPROVAL locality result if&lt;br&gt;the outcome was not VERIFIED (A11)&lt;br&gt;The member can now borrow in this&lt;br&gt;community (txn_guard_create, G1)&lt;/span&gt;" style="rounded=1;arcSize=24;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#2B3A4A;fontSize=12;fontColor=#1D1D1D;verticalAlign=middle;fillColor=#EEF6EE;strokeColor=#2E7D32;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="760" y="150" width="300" height="126" as="geometry" />
+        </mxCell>
+        <mxCell id="REJECTED" value="&lt;b&gt;REJECTED&lt;/b&gt;&lt;hr style='margin:3px 0'&gt;&lt;span style='font-size:10px'&gt;entry / reason recorded; audit entry;&lt;br&gt;notify the applicant&lt;/span&gt;" style="rounded=1;arcSize=24;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#2B3A4A;fontSize=12;fontColor=#1D1D1D;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="760" y="430" width="300" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="WITHDRAWN" value="&lt;b&gt;WITHDRAWN&lt;/b&gt;&lt;hr style='margin:3px 0'&gt;&lt;span style='font-size:10px'&gt;entry / close the request&lt;/span&gt;" style="rounded=1;arcSize=24;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#2B3A4A;fontSize=12;fontColor=#1D1D1D;verticalAlign=middle;strokeWidth=3;fillColor=#F4F6F8;" vertex="1" parent="1">
+          <mxGeometry x="760" y="640" width="300" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="REVOKED" value="&lt;b&gt;REVOKED&lt;/b&gt;&lt;hr style='margin:3px 0'&gt;&lt;span style='font-size:10px'&gt;entry / reason recorded; audit entry;&lt;br&gt;open loans are routed to a&lt;br&gt;moderator (FR-M-01)&lt;/span&gt;" style="rounded=1;arcSize=24;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#2B3A4A;fontSize=12;fontColor=#1D1D1D;verticalAlign=middle;strokeWidth=3;fillColor=#F4F6F8;" vertex="1" parent="1">
+          <mxGeometry x="1220" y="150" width="250" height="96" as="geometry" />
+        </mxCell>
+        <mxCell id="fin_w" value="" style="ellipse;html=1;shape=endState;fillColor=#000000;strokeColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="898" y="760" width="24" height="24" as="geometry" />
+        </mxCell>
+        <mxCell id="fin_r" value="" style="ellipse;html=1;shape=endState;fillColor=#000000;strokeColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="1333" y="330" width="24" height="24" as="geometry" />
+        </mxCell>
+        <mxCell id="e3" value="join_requested [contact verified; no live membership&lt;br&gt;in this community; community active; invitation&lt;br&gt;code valid] / one coarse GPS check and the invitation&lt;br&gt;evaluated in memory; coordinates discarded &amp;nbsp;&lt;b&gt;M01&lt;/b&gt;" style="html=1;rounded=0;fontSize=10.5;labelBackgroundColor=#FFFFFF;fontColor=#1d1d1d;endSize=8;strokeColor=#1F5FA8;fontColor=#1F5FA8;endArrow=open;endFill=0;strokeWidth=1.6;;exitX=0.5;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0" edge="1" parent="1" source="m_init" target="PENDING">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="0" y="-4" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e4" value="info_requested [moderator of&lt;br&gt;this community; reason]&lt;br&gt;/ deadline &amp;nbsp;&lt;b&gt;M02&lt;/b&gt;" style="html=1;rounded=0;fontSize=10.5;labelBackgroundColor=#FFFFFF;fontColor=#1d1d1d;endSize=8;strokeColor=#7B3FA0;fontColor=#7B3FA0;endArrow=open;endFill=0;strokeWidth=1.6;;exitX=0.25;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.25;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0" edge="1" parent="1" source="PENDING" target="AWAITING_INFORMATION">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="-52" y="0" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e5" value="info_provided [applicant]&lt;br&gt;| deadline_passed / note&lt;br&gt;no response &amp;nbsp;&lt;b&gt;M03&lt;/b&gt;" style="html=1;rounded=0;fontSize=10.5;labelBackgroundColor=#FFFFFF;fontColor=#1d1d1d;endSize=8;strokeColor=#1F5FA8;fontColor=#1F5FA8;endArrow=open;endFill=0;strokeWidth=1.6;;exitX=0.75;exitY=0;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.75;entryY=1;entryDx=0;entryDy=0;entryPerimeter=0" edge="1" parent="1" source="AWAITING_INFORMATION" target="PENDING">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="62" y="0" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e6" value="approved [moderator of this community, not the&lt;br&gt;applicant; reason; applicant active (A4 4c);&lt;br&gt;still undecided (A4 4a)] &amp;nbsp;&lt;b&gt;M04&lt;/b&gt;" style="html=1;rounded=0;fontSize=10.5;labelBackgroundColor=#FFFFFF;fontColor=#1d1d1d;endSize=8;strokeColor=#7B3FA0;fontColor=#7B3FA0;endArrow=open;endFill=0;strokeWidth=1.6;;exitX=1;exitY=0.16964285714285715;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;entryPerimeter=0" edge="1" parent="1" source="UNDECIDED" target="APPROVED">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="0" y="-34" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e7" value="rejected [same guards; reason].&lt;br&gt;An INCONCLUSIVE or CONFLICTING&lt;br&gt;result never rejects by itself&lt;br&gt;(FR-A-08) &amp;nbsp;&lt;b&gt;M05&lt;/b&gt;" style="html=1;rounded=0;fontSize=10.5;labelBackgroundColor=#FFFFFF;fontColor=#1d1d1d;endSize=8;strokeColor=#7B3FA0;fontColor=#7B3FA0;endArrow=open;endFill=0;strokeWidth=1.6;;exitX=1;exitY=0.6428571428571429;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;entryPerimeter=0" edge="1" parent="1" source="UNDECIDED" target="REJECTED">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="0" y="-38" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e8" value="withdrawn [applicant]&lt;br&gt;/ decided_at := now &amp;nbsp;&lt;b&gt;M06&lt;/b&gt;" style="html=1;rounded=0;fontSize=10.5;labelBackgroundColor=#FFFFFF;fontColor=#1d1d1d;endSize=8;strokeColor=#1F5FA8;fontColor=#1F5FA8;endArrow=open;endFill=0;strokeWidth=1.6;;exitX=1;exitY=1.0;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;entryPerimeter=0" edge="1" parent="1" source="UNDECIDED" target="WITHDRAWN">
+          <mxGeometry relative="1" as="geometry" x="0.40">
+            <Array as="points">
+              <mxPoint x="640" y="670" />
+            </Array>
+            <mxPoint x="0" y="-20" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e9" value="revoked [moderator&lt;br&gt;of this community&lt;br&gt;or admin; reason] &lt;b&gt;M07&lt;/b&gt;" style="html=1;rounded=0;fontSize=10.5;labelBackgroundColor=#FFFFFF;fontColor=#1d1d1d;endSize=8;strokeColor=#7B3FA0;fontColor=#7B3FA0;endArrow=open;endFill=0;strokeWidth=1.6;;exitX=1;exitY=0.36;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0;entryY=0.4166666666666667;entryDx=0;entryDy=0;entryPerimeter=0" edge="1" parent="1" source="APPROVED" target="REVOKED">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="0" y="-30" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e10" value="decision_reversed [another moderator&lt;br&gt;or admin; reason] / both decisions&lt;br&gt;kept in the log (FR-A-11) &amp;nbsp;&lt;b&gt;M08&lt;/b&gt;" style="html=1;rounded=0;fontSize=10.5;labelBackgroundColor=#FFFFFF;fontColor=#1d1d1d;endSize=8;strokeColor=#7B3FA0;fontColor=#7B3FA0;endArrow=open;endFill=0;strokeWidth=1.6;;exitX=0.5;exitY=0;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;entryPerimeter=0" edge="1" parent="1" source="REJECTED" target="APPROVED">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="128" y="0" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e11" value="" style="html=1;rounded=0;fontSize=10.5;labelBackgroundColor=#FFFFFF;fontColor=#1d1d1d;endSize=8;strokeColor=#5F6B76;fontColor=#5F6B76;endArrow=open;endFill=0;strokeWidth=1.6;dashed=1;dashPattern=6 3;;exitX=0.5;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0" edge="1" parent="1" source="WITHDRAWN" target="fin_w">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e12" value="" style="html=1;rounded=0;fontSize=10.5;labelBackgroundColor=#FFFFFF;fontColor=#1d1d1d;endSize=8;strokeColor=#5F6B76;fontColor=#5F6B76;endArrow=open;endFill=0;strokeWidth=1.6;dashed=1;dashPattern=6 3;;exitX=0.5;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0" edge="1" parent="1" source="REVOKED" target="fin_r">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="note_db" value="&lt;b&gt;Database rules this machine relies on&lt;/b&gt;&lt;br&gt;&amp;#8226; &lt;i&gt;membership_decided_ck&lt;/i&gt;: decided_at is null exactly while the status is PENDING or&lt;br&gt;&amp;nbsp;&amp;nbsp;AWAITING_INFORMATION, so every exit from UNDECIDED sets it.&lt;br&gt;&amp;#8226; &lt;i&gt;membership_one_live_uq&lt;/i&gt;: at most one PENDING, AWAITING_INFORMATION or APPROVED&lt;br&gt;&amp;nbsp;&amp;nbsp;row per user and community (UC-A3 4b). A rejected, withdrawn or revoked applicant&lt;br&gt;&amp;nbsp;&amp;nbsp;may apply again: that is a new row and a new M01 (UC-A4 4d).&lt;br&gt;&amp;#8226; No column stores coordinates or an address (NFR-PR-01); locality_verification keeps&lt;br&gt;&amp;nbsp;&amp;nbsp;only the coarse outcome and signal." style="shape=note;whiteSpace=wrap;html=1;size=14;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;fillColor=#FFFDF2;strokeColor=#B8A660;fontSize=10.5;fontColor=#33404D;" vertex="1" parent="1">
+          <mxGeometry x="1100" y="430" width="380" height="200" as="geometry" />
+        </mxCell>
+        <mxCell id="note_open" value="&lt;b&gt;Open points (to settle in DA-03 / decision record)&lt;/b&gt;&lt;br&gt;&amp;#8226; Open-join communities (UC-A3 4a, issue I-10): schema v2.3 has no open-join&lt;br&gt;&amp;nbsp;&amp;nbsp;flag, so in iteration 2 a moderator decides every request.&lt;br&gt;&amp;#8226; Response deadline value for M02/M03 (DA-03).&lt;br&gt;&amp;#8226; Granting the MODERATOR role is an admin action (FR-M-01), not part of this machine." style="shape=note;whiteSpace=wrap;html=1;size=14;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;fillColor=#FFFDF2;strokeColor=#B8A660;fontSize=10.5;fontColor=#33404D;" vertex="1" parent="1">
+          <mxGeometry x="1100" y="650" width="380" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="legend" value="&lt;b&gt;Legend&lt;/b&gt;&lt;br&gt;&lt;span style='color:#1F5FA8'&gt;&amp;#9472;&amp;#9472;&amp;#9658;&lt;/span&gt; applicant (member) &amp;nbsp; &lt;span style='color:#7B3FA0'&gt;&amp;#9472;&amp;#9472;&amp;#9658;&lt;/span&gt; moderator or admin &amp;nbsp; &lt;span style='color:#5F6B76'&gt;- - &amp;#9658;&lt;/span&gt; completion&lt;br&gt;event [guard] / effect; green border = live membership; bold border = final state.&lt;br&gt;Membership changes are not lifecycle events: each one is an audit_log entry (FR-M-05)." style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;fillColor=#FFFFFF;strokeColor=#9AA5B1;fontSize=10.5;fontColor=#33404D;" vertex="1" parent="1">
+          <mxGeometry x="40" y="820" width="700" height="72" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
