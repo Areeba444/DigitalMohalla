@@ -2,7 +2,7 @@
 
 | Field | Value |
 | :--- | :--- |
-| Version | 1.4 draft, 2026-11-07: Student 3 sections done (UC-D1, UC-D2 dressed; UC-B12, UC-I4, UC-I6 extended; DA-02); Student 1 sections (A1, B6, B8, B13, G3) to follow. v1.3: v1.2 plus the integration decisions of 2026-10-11 |
+| Version | 1.4 draft, 2026-11-07: Student 3 sections done (UC-D1, UC-D2 dressed; UC-B12, UC-I4, UC-I6 extended; DA-02; UC-B3, UC-B4 dressed, DA-20); Student 1 sections (A1, B6, B8, B13, G3) to follow. v1.3: v1.2 plus the integration decisions of 2026-10-11 |
 | Date | 2026-10-11 (v1.1: 2026-10-10; v1.2 and v1.3: 2026-10-11) |
 | Authors | Team Digital Mohalla (v1.1 edits drafted with Claude; reviewed by: Fatima Khursheed, Areeba Javed, Minahil Kashif) |
 | Status | Baseline: ADR-0001 to ADR-0005 accepted on 2026-10-11; ADR-0007 and ADR-0008 accepted for integration (Students 2 and 3 to initial) |
@@ -70,10 +70,58 @@ Extension requests and reminders are events inside ACTIVE and do not change stat
 | D2 View my evidence (trust profile) | CORE (iteration 2) | M | FR-T-08 | Dressed in v1.4 |
 | A3 Select neighbourhood, request membership | CORE (iteration 2) | M | FR-A-06 to A-09 | |
 | A4 Approve or reject membership | CORE (iteration 2) | M | FR-A-10, A-11 | |
+| B3 Search for items | Module 4 (iteration 2) | S | FR-S-01 to S-03, S-05 | Dressed in v1.4 (DA-20) |
+| B4 View item details and lender evidence | Module 4 (iteration 2) | S | FR-S-04 | Dressed in v1.4 (DA-20) |
 
 ---
 
 ## 4. Fully dressed use cases
+
+### UC-B3: Search for items (Module 4, iteration 2)
+| | |
+| :--- | :--- |
+| Module / Scope / Level | Search and discovery / SUPP, in committed scope for iteration 2 (S) / User goal |
+| Primary actor | Borrower (a member of an approved community). Secondary: embedding model, assurance engine |
+| Stakeholders | **Borrower:** finds a suitable item quickly. **Lender:** new lenders are not buried for having no history. **Community:** only its own items are shown. **Team:** search quality can be measured. |
+| Pre-conditions | The borrower is logged in with an APPROVED membership. |
+| Post-conditions | A ranked list of eligible items is shown, each with a reason line; the query, shown results, clicks and ignored results are logged without location (FR-S-05). Nothing else changes. |
+
+| # | Borrower | System |
+| :-: | :--- | :--- |
+| 1 | Types a query (English or common Roman Urdu item names) | Embeds the query |
+| 2 | | Retrieves candidates by meaning and by keyword in one query that already applies eligibility: the borrower's community, PUBLISHED items, not their own, not blocked (ADR-0016, proposed) |
+| 3 | | Re-ranks by similarity, the lender's evidence, availability for the borrower's dates and recency (weights: DA-22, not set here); a lender with no history gets the same default as the prior, never a penalty |
+| 4 | | Shows the results with a reason line each (for example "matches: drill; free on your dates; lender has verified loans"), and logs the query, the shown results and their ranks |
+| 5 | Optionally sets filters (category, dates, maximum deposit, condition) or a sort (relevance, evidence, newest) | Re-runs steps 2 to 4 with the filters inside the query |
+| 6 | Opens a result | Logs the click; continues in UC-B4 |
+
+**Extensions**
+- 2a. Embedding model or vector index unavailable: keyword search only, with a "keyword results only" notice (FR-S-02, NFR-R-04).
+- 3a. Assurance engine unavailable: every lender gets the same default prior; results still return (FR-S-02).
+- 4a. No results: suggest removing filters; posting an item request (UC-B9) comes in iteration 3.
+- 5a. A filter on distance or price is not offered: no coordinates are stored (NFR-PR-01) and lending has no price (FR/NFR v1.4 changes S1, S2).
+- *a. The borrower leaves without opening a result: the shown results are logged as ignored impressions (FR-S-05).
+
+### UC-B4: View item details and lender evidence (Module 4, iteration 2)
+| | |
+| :--- | :--- |
+| Module / Scope / Level | Search and discovery / SUPP, in committed scope for iteration 2 (S) / User goal |
+| Primary actor | Borrower. Secondary: assurance engine |
+| Stakeholders | **Borrower:** judges the item and the lender before asking. **Lender:** is described by evidence, never labelled. |
+| Pre-conditions | The item is PUBLISHED in the borrower's community. |
+| Post-conditions | Item and lender evidence are shown; nothing changes. The borrower may start UC-B5. |
+
+| # | Borrower | System |
+| :-: | :--- | :--- |
+| 1 | Opens an item | Shows title, description, category, condition, deposit, terms, photos, availability and the community (no exact location) |
+| 2 | | Shows the lender's evidence as a lender: each metric with its verified loans and confidence in words, never one number (FR-S-04, NFR-U-01) |
+| 3 | Chooses "Request to borrow" | Continues in UC-B5 with the item and dates |
+
+**Extensions**
+- 2a. Lender has no verified loans as a lender: "Not enough history yet", explained as an absence of evidence, not a negative finding.
+- 2b. Too few loans for a metric (below n_min): the detail is suppressed (FR-T-08).
+- 2c. Engine unavailable: the evidence panel says "evidence not available right now"; the item is still shown.
+- 3a. Item no longer PUBLISHED, or the borrower is blocked by the lender: the request is not offered (without revealing a block).
 
 ### UC-B5: Send borrowing request
 | | |
@@ -462,7 +510,8 @@ Window lengths (review window, edit window, retaliation window of 14 days in eng
 | ADR-0014 (proposed) | B12 step 3 and ext 3a, 3b: uploads checked, metadata stripped, stored through the storage port |
 | DA-07 | I4 step 2 (C02 to C04), ext 4b (appeal, C08 to C10) and 4c (reversal, C11) in build detail |
 | DA-02 | I6 steps 2 to 4 and ext 3c, 3d, *a: filters, masking, integrity check, views logged, community scope |
-| Open | Review, edit and appeal window values are settled in FR/NFR v1.4 (DA-03); Student 1 sections (A1, B6, B8, B13, G3) follow in the same version |
+| DA-20 | B3 (search) and B4 (item details and lender evidence) dressed for Module 4 in iteration 2 |
+| Open | Review, edit and appeal window values are proposed in FR/NFR v1.4 Part D (DA-03); Student 1 sections (A1, B6, B8, B13, G3) follow in the same version |
 
 ## Appendix B: Remaining use cases (brief)
 
