@@ -1,10 +1,10 @@
-# Digital Mohalla: Test Plan, Iteration 1 (design step A13)
+# Digital Mohalla: Test Plan, Iterations 1 and 2 (design step A13; DA-16)
 
 | Field | Value |
 |---|---|
 | Document | Design step A13: test plan for iteration 1 (FYP-1 Mid), with test cases in input / expected / actual form |
 | Owner | Student 3 (A13, plan work division); suites are owned as in §4. Drafted during integration by Student 1; **Student 3 to review** (A14). Report chapter 7 lead: Student 1 |
-| Version | 1.3, 13 October 2026. v1.3: Android only, no iOS device (team decision 13 October, D15); gap UI-1 resolved (the borrower's new-request and request-status screens were built in Slice A); the tools in §3 are a guide, each added only when a test first needs it. v1.2: aligned with the team's wireframes W1–W7 (`13_wireframes/`): one mobile app for every role, so no web console; new suite 19 (mobile UI, TC-100 to TC-107); wireframe gaps and deviations listed in §6.9. v1.1, 12 October 2026: test types named and scoped (§2.1); regression policy (§11); alpha in scope and beta out of scope (§12); new suites 16 (handover, return, outcome feed), 17 (API security) and 18 (smoke, split out of suite 15); traceability gaps for FR-B-06, B-10, B-11, B-13, B-15, T-01, N-03 and NFR-D-01 closed; mobile tooling (Jest, React Native Testing Library, Maestro) replaces Playwright; device check for NFR-D-05. v1.0, 11 October 2026: first baseline |
+| Version | 2.0 draft, 7 November 2026 (DA-16, Student 3, drafted with Claude Code; review by Student 1 pending): iteration 2 suites 20 to 31 (§4.1) and test cases TC-110 to TC-169 (§6.10), in input / expected / actual form; the plan's suites 19 to 30 are numbered 20 to 31 here because suite 19 is already Mobile UI; entry and exit criteria for the iteration 2 gates (§5.1). v1.3, 13 October 2026. v1.3: Android only, no iOS device (team decision 13 October, D15); gap UI-1 resolved (the borrower's new-request and request-status screens were built in Slice A); the tools in §3 are a guide, each added only when a test first needs it. v1.2: aligned with the team's wireframes W1–W7 (`13_wireframes/`): one mobile app for every role, so no web console; new suite 19 (mobile UI, TC-100 to TC-107); wireframe gaps and deviations listed in §6.9. v1.1, 12 October 2026: test types named and scoped (§2.1); regression policy (§11); alpha in scope and beta out of scope (§12); new suites 16 (handover, return, outcome feed), 17 (API security) and 18 (smoke, split out of suite 15); traceability gaps for FR-B-06, B-10, B-11, B-13, B-15, T-01, N-03 and NFR-D-01 closed; mobile tooling (Jest, React Native Testing Library, Maestro) replaces Playwright; device check for NFR-D-05. v1.0, 11 October 2026: first baseline |
 | Status | Baseline for Part B. Design-time checks have run (§8); implementation tests run from Slice A onwards |
 | Baseline | Iteration 1 plan ("Test plan for iteration 1", CI/CD), FR/NFR v1.3 (Part B verification column, Part E acceptance criteria), Use Cases v1.3, A3 transition table, ADR-0001 to ADR-0008, fixtures v1.1, `04_deployment/Deployment_Design.md`, the D-15 stack (Expo / React Native app, FastAPI, PostgreSQL 16) |
 | Files | this plan; `transition_test_matrix.csv` (suite 1 oracle, generated); `scenario_fixtures_iteration1.json` (suites 6, 7, 9, 11, 12); `verify_fixtures.py` and `fixture_verification_results.md` (oracle and its results); `verify_design.py` (design consistency and notation checks) |
@@ -102,6 +102,30 @@ The plan's "Test plan for iteration 1" table, extended with owners, gates and su
 | **18** | **Smoke** | Build, deploy, demo | Shallow end-to-end checks | TC-90 to TC-92 pass at their level | NFR-D-03, NFR-D-04 | S3 (CI part S1) | A onward |
 | **19** | **Mobile UI (W1–W7)** | Unit (components) + system (Maestro) | Screen-by-screen checks against the wireframe annotations, with real or mocked API responses | Each screen shows its annotated elements from API data, offers only the actions its role and state allow, and never shows a single trust number | FR-B-10, B-11, B-13, B-16, B-17, FR-T-08, T-10, T-11, NFR-U-01, NFR-S-03 | S3 | A (W2–W4), B (W1), C (W5–W7) |
 
+### 4.1 Iteration 2 suites (v2.0)
+
+The iteration 2 plan lists new suites 19 to 30. Suite 19 already exists (Mobile UI, v1.2), so they are numbered **20 to 31** here; the plan's number is given in brackets. Suites 1, 11 and 14 are extended. All 19 existing suites stay green in CI.
+
+| # | Suite | Level | Technique | Pass condition | Traces to | Owner | Slice |
+|---|---|---|---|---|---|---|---|
+| 1 (regenerated) | Transition matrix | Unit + integration | State-transition testing over the regenerated matrix | Every new valid pair (T25a, T25b, T25c; reminders and extensions) passes; every other pair is rejected and logged | FR-B-08, ADR-0009 | S1 | 2 |
+| 11 (extended) | Scenarios ES-01 to ES-13 | Acceptance | Synthetic fixtures (iteration 1 and 2 files) | 13 of 13: state, rule, lifecycle state and explanation facts match | NFR-Q-01 | S3 (S2 reviews fixtures) | 2, 3 |
+| 14 (extended) | Privacy on every new endpoint | Integration | Negative tests over responses, logs and audit rows | No coordinates, address or CNIC anywhere, search and its log included; the locality request body is never logged | NFR-PR-01, NFR-PR-02, NFR-S-07 | S1 | 2, 3 |
+| 20 (plan 19) | Scheduler | Integration | Rerun and parallel-run tests | A rerun or an overlapping run changes no state and sends no duplicate notice | FR-B-18, NFR-R-05 | S1 | 2 |
+| 21 (plan 20) | Locality at runtime | Integration | The six A11 cases through the real service | The six cases and 18 checks pass; no outcome is ever a rejection | FR-A-07, FR-A-08, NFR-Q-04 | S1 | 2 |
+| 22 (plan 21) | Membership | Integration | Use-case paths UC-A3, UC-A4; concurrency | Duplicates blocked; wrong-community moderator refused; concurrent decisions not reapplied | FR-A-09, FR-A-10, FR-A-11 | S1 | 2 |
+| 23 (plan 22) | Notifications | Integration | Dedupe and access tests | Dedupe holds; a member sees only their own | FR-C-02 | S2 | 2 |
+| 24 (plan 23) | Reviews | Integration | Use-case paths UC-D1; boundaries of the windows | Only parties to a completed loan, once each; flags set by the moderator path; edit window enforced | FR-T-09 | S2 | 2 |
+| 25 (plan 24) | Detection | Unit | Hand-made cases defined by the owner | S2, S3 and S5 fire on their cases; the C3 family group stays below a hold | FR-T-05, ADR-0007 | S2 | 3 |
+| 26 (plan 25) | Dispute closure | Integration | From each dispute stage and each possession | No phantom return; an occupied item's dates are never released | FR-B-16, FR-T-11, ADR-0009 | S3 | 2 |
+| 27 (plan 26) | Appeal and reversal | Integration | Use-case paths UC-I4 4b, 4c | The second moderator differs from the first; both decisions kept; outcomes flagged and excluded | FR-T-11, ES-11 | S3 | 2 |
+| 28 (plan 27) | Uploads | Integration | Negative tests and metadata checks | EXIF stripped; wrong type or size gives 422 (TC-59, TC-85) | NFR-S-06, NFR-PR-01 | S3 | 2 |
+| 29 (plan 28) | Audit | Integration | Filter, masking and tamper tests | Filters, masking, tamper warning; each view is itself logged | FR-M-05, NFR-S-05, NFR-S-03 | S3 | 3 |
+| 30 (plan 29) | Search behaviour | Integration | Eligibility, fallback and fairness checks | No result from another community, an unpublished item or a blocking lender; keyword results when the model is down; a new lender is never ranked below an otherwise equal lender for lack of history; every result has a reason line | FR-S-01 to S-04, NFR-R-04 | S2, S1 | 2, 3 |
+| 31 (plan 30) | Search quality and logging | Evaluation + integration | Frozen labelled query set (DA-25) | Precision@5, recall@10 and NDCG@10 recorded for keyword and hybrid; the log holds queries, impressions and clicks and no location | FR-S-05, NFR-Q-05, NFR-P-01, NFR-P-02 | S3 | 3 |
+
+**Owed from iteration 1** (kept with their IDs): TC-70 duplicate request, TC-61 transition P95 (NFR-P-04), full assessment P95 (NFR-P-03, suite 8), TC-73 Android device test, TC-91 post-deploy smoke test, TC-59 and TC-85 (now in suite 28).
+
 ## 5. Entry, exit and suspension criteria
 
 | Gate | Entry | Exit (pass) |
@@ -111,6 +135,15 @@ The plan's "Test plan for iteration 1" table, extended with owners, gates and su
 | D-8 (Slice B) | Engine integrated | Suites 6, 7, 9, 10 green; outcome feed TC-69 and TC-71 green; lender evidence screen TC-100 green; ES-01, ES-02, ES-03, ES-06 and ES-13 pass with state and explanation |
 | D-5 (feature freeze) | Human loop integrated | Suites 12 to 14 and 17 green (TC-59 and TC-85 deferred, D20); UI TC-105 to TC-107 green; ES-04 and ES-05 pass; alpha session held (§12); tag `v0.1.0-rc1` |
 | Freeze (D-5 to D-0) | rc1 deployed | Full regression run saved (§11); suite 15 run on the deployed instance; TC-92 before each rehearsal and the demo; no open severity-1 or severity-2 defect; tag `v0.1.0-mid1` |
+
+### 5.1 Iteration 2 gates (v2.0)
+
+| Gate | Entry | Exit (pass) |
+|---|---|---|
+| Design gate (10 November) | Design artefacts drafted | Every new suite has its cases in §6.10; the schema change (migration 0002) signed by all three students |
+| Slice 2 | Scheduler, locality, membership, disputes, appeals, uploads, reviews and keyword search built | Suites 1 (regenerated), 20 to 24, 26 to 28 and 30 (keyword part) green; ES-07, ES-08, ES-09, ES-10 and ES-11 pass; no open severity-1 or severity-2 defect; TC-91 on the deployed instance |
+| Slice 3 | Detection, audit screen, meaning-based search and evaluation built | Suites 25, 29, 30 and 31 green; 13 of 13 scenarios (NFR-Q-01); suite 14 over every new endpoint |
+| Final release | Release candidate deployed | Criteria of `14_testing/Test_Deployment_Rollback_Handover_Plan.md` §3, including the rollback rehearsal |
 
 Testing of a slice is suspended when the deployed smoke test (TC-91) fails. It resumes after the rollback (`04_deployment/Deployment_Design.md` §4) and a smoke rerun.
 
@@ -273,10 +306,91 @@ The screens are the team's wireframes in `13_wireframes/` (PNG files and `Wirefr
 | UI-4 | W1's example interval [0.10, 0.90] differs from the prior Beta(1,1) bounds [0.05, 0.95] | TC-100 checks the API's bounds, so the example values do not affect the test | Correct the example or mark it illustrative |
 | UI-5 | W5 states a 7-day dispute window and W6 an "SLA" auto-route to the admin; both timer values are TBD and the scheduler is iteration 2 | Not tested in iteration 1; TC-106 tests the iteration-1 rule (no moderator → admin) | Keep the values configurable and mark them as iteration 2 in the annotations |
 
+### 6.10 Iteration 2 test cases (v2.0; suites 1, 11, 14 and 20 to 31)
+
+"Actual" is "Not run" for every case below: the code is built in slices 2 and 3. Cases in suites owned by Students 1 and 2 are drafted here so every suite has concrete inputs at the design gate; their owners confirm or change them. All data is SYNTHETIC. Timer values are the proposed ones of FR/NFR v1.4 Part D and come from configuration, so a test sets them rather than waiting.
+
+**Scenario suite, ES-07 to ES-12 (suite 11).** Fixtures: `14_testing/scenario_fixtures_iteration2.json` (computed by the real engine); hand-worked in `14_testing/Scenario_Specifications_ES07_ES12.md`.
+
+| ID | Scenario | Expected state / lifecycle | Rule | Explanation must show | Actual |
+|---|---|---|---|---|---|
+| TC-110 | ES-07 conflicting condition reports, dispute open | ACTIVE_DISPUTE / ASSESSED | R1 | "A dispute involving a party is still open"; estimate 0.88, interval 0.66 to 0.99 | Not run (engine values computed) |
+| TC-111 | ES-07 after resolution (possession RETURNED) | REVIEW_RECOMMENDED / ASSESSED | R6_DISPUTE | "Resolved disputes in the last 12 months: 1."; 9 loans | Not run (engine values computed) |
+| TC-112 | ES-08 failure to return: open, then resolved LOST | ACTIVE_DISPUTE, then REVIEW_RECOMMENDED / ASSESSED | R1, then R6_DISPUTE | estimate falls from 0.84 to 0.72 | Not run (engine values computed) |
+| TC-113 | ES-09 stored locality CONFLICTING | none, then REVIEW_RECOMMENDED after clearing / HELD_FOR_REVIEW (`locality_conflict`), then ASSESSED | none, then R9 | no assessment while held; no coordinates anywhere | Not run |
+| TC-114 | ES-10 permission refused, no history | none, then INSUFFICIENT_EVIDENCE / HELD_FOR_REVIEW (`locality_inconclusive`), then ASSESSED | none, then R3 | "This is not a negative finding about the borrower." | Not run |
+| TC-115 | ES-11 reversal flags the failure | REVIEW_RECOMMENDED before and after / ASSESSED | R6_DISPUTE (Q2 of the spec may change it to R9) | 6 loans before, 5 after; estimate 0.73 then 0.83 | Not run (engine values computed) |
+| TC-116 | ES-12 old history and ES-12b sparse history | INSUFFICIENT_EVIDENCE / ASSESSED | R6_SPARSE | effective outcomes 0.5 and 1.9 | Not run (engine values computed) |
+
+**Other suites.**
+
+| ID | Suite | Input / precondition | Expected | Actual | Traces |
+|---|---|---|---|---|---|
+| TC-117 | 1 | The regenerated matrix, including `dispute_resolved` from DISPUTED to NO_SHOW, ACTIVE and COMPLETED | Each passes only with its possession and stored previous state; every other new pair is rejected with 409 and audited | Not run | FR-B-08, ADR-0009 |
+| TC-118 | 14 | Every response and log line of search, uploads, reviews, membership and the audit screen in a full synthetic run | No coordinates, address or CNIC; the search log has no location column | Not run | NFR-PR-01, NFR-S-07 |
+| TC-119 | 14 | A join request with a location fix | The fix is not in any log line, response or audit row; only the coarse outcome is stored | Not run | NFR-PR-02, FR-A-07 |
+| TC-120 | 20 | A request past its response window; `run_due_jobs` called twice in a row | EXPIRED once; one `request_expired` event; one notification | Not run | FR-B-18, NFR-R-05 |
+| TC-121 | 20 | Two overlapping `run_due_jobs` calls on the same due work | The advisory lock lets one run do the work; the other does nothing and returns | Not run | NFR-R-05 |
+| TC-122 | 20 | An ACCEPTED booking past start date + 24 h grace | NO_SHOW (T19); dates released; outcome not attributed | Not run | FR-B-12 |
+| TC-123 | 20 | An ACTIVE loan 72 h past due with no approved extension | `dispute_opened` with reason NON_RETURN (T24); a case opened once | Not run | FR-B-14 |
+| TC-124 | 21 | Geofence INSIDE with a valid unused invitation | VERIFIED, method GEOFENCE_INVITATION; no coordinates stored | Not run | FR-A-07 |
+| TC-125 | 21 | NEAR_BOUNDARY; UNAVAILABLE (permission refused) | INCONCLUSIVE, moderator review; never rejected | Not run | FR-A-08, NFR-Q-04 |
+| TC-126 | 21 | OUTSIDE; mock-location flag | CONFLICTING with a flag, moderator review; never rejected | Not run | FR-A-08, NFR-Q-04 |
+| TC-127 | 22 | A second request to a community where the member has a PENDING one | Refused; existing status shown | Not run | FR-A-09 |
+| TC-128 | 22 | A moderator of community B decides a request for community A | 403; audit entry REJECTED | Not run | FR-A-10, NFR-S-03 |
+| TC-129 | 22 | A decision without a reason | Refused until a reason is given | Not run | FR-A-10 |
+| TC-130 | 22 | Two moderators approve the same request at the same moment | One decision applied; the other sees the current state; nothing applied twice | Not run | FR-A-11 |
+| TC-131 | 23 | The same notification produced twice with the same dedupe key | One notification stored and shown | Not run | FR-C-02 |
+| TC-132 | 23 | Member A asks for member B's notifications | 403 or empty; never B's data | Not run | FR-C-02, NFR-S-03 |
+| TC-133 | 24 | A party reviews a COMPLETED loan; then tries again | First stored; second refused (one review per party) | Not run | FR-T-09 |
+| TC-134 | 24 | A non-party reviews; a party reviews an ACTIVE loan | Both refused by the database guard | Not run | FR-T-09 |
+| TC-135 | 24 | Edit at 23 h and at 25 h after submission (edit window 24 h, proposed) | First accepted; second refused | Not run | FR-T-09 |
+| TC-136 | 24 | A low review 3 days after the reviewee's complaint on a loan with confirmed return | Set aside by the next assessment; not counted in S1 and S4; flag written only when a moderator confirms | Not run | FR-T-09, ES-05 |
+| TC-137 | 25 | Owner's hand-made cases for S2 (velocity), S3 (new-account activity), S5 (linkage) | Each signal fires on its case with its evidence | Not run (cases defined by the owner) | FR-T-05 |
+| TC-138 | 25 | The C3 family group | Stays below a hold (level 4 not reached) | Not run | FR-T-05, ADR-0007 |
+| TC-139 | 25 | One strong signal alone | Level 3, not held (corroboration rule) | Not run | ADR-0007 |
+| TC-140 | 26 | Dispute raised from ACCEPTED, resolved with NOT_HANDED_OVER | NO_SHOW (T25a); booking released; no return outcome | Not run | FR-T-11, ADR-0009 |
+| TC-141 | 26 | Dispute raised from ACTIVE, resolved WITH_BORROWER | ACTIVE (T25b); booking stays held; due date unchanged | Not run | FR-T-11, ADR-0009 |
+| TC-142 | 26 | Dispute raised from RETURN_INITIATED, resolved RETURNED | COMPLETED (T25c); booking released; return outcome recorded | Not run | FR-T-11, FR-B-15 |
+| TC-143 | 26 | Dispute raised from ACTIVE, resolved LOST | COMPLETED; item PAUSED; borrower fails ON_TIME_RETURN | Not run | ADR-0009 |
+| TC-144 | 26 | Dispute raised from ACCEPTED, the moderator sends RETURNED | Refused: possession not allowed for the stored previous state | Not run | ADR-0009 |
+| TC-145 | 27 | A party appeals a decision within 7 days | Case APPEALED; assigned to a moderator other than the first decider (Admin if none) | Not run | FR-T-11 |
+| TC-146 | 27 | A second appeal on the same case; an appeal on day 8 | Both refused | Not run | FR-T-11 |
+| TC-147 | 27 | The first decider tries to decide the appeal | Refused (second moderator ≠ first) | Not run | FR-T-11 |
+| TC-148 | 27 | The appeal is overturned | APPEAL_OVERTURNED references the first decision; case REVERSED; both kept; the outcomes from the first decision FLAGGED_FOR_REEVALUATION | Not run | FR-T-11, ES-11 |
+| TC-149 | 27 | A reversal without a reason; a reversal by a member | Both refused; a reversal never changes the loan's lifecycle state | Not run | FR-T-11 |
+| TC-150 | 28 | A JPEG with EXIF GPS | Stored without EXIF; the stored file has no location tags (replaces TC-59) | Not run | NFR-PR-01 |
+| TC-151 | 28 | A `.exe` renamed `.jpg`; a file over the size limit | 422 for both, judged on content, not the name (replaces TC-85) | Not run | NFR-S-06 |
+| TC-152 | 28 | A signed URL used by the other party, by a non-party, and after it expires | First allowed; second and third refused | Not run | NFR-S-03 |
+| TC-153 | 28 | Storage unavailable while raising a dispute | The dispute is raised, marked reduced evidence; files can be added later | Not run | FR-B-16 |
+| TC-154 | 29 | Filter by case, by date range, by result REJECTED | Only matching entries, newest first | Not run | FR-M-05 |
+| TC-155 | 29 | Any listing | E-mail, phone and free text masked; unmasking needs a purpose and is itself logged | Not run | FR-M-05 |
+| TC-156 | 29 | An entry altered with triggers disabled (test database only) | Tamper warning on that entry; the entry is still shown | Not run | NFR-S-05 |
+| TC-157 | 29 | A moderator opens the log | Only their community's entries; the view is logged | Not run | NFR-S-03 |
+| TC-158 | 29 | Ten decisions by one moderator about the same two users | The concentration highlight shows the pattern | Not run | FR-M-05 |
+| TC-159 | 30 | Items in another community, a DRAFT item, and an item of a lender who blocked the borrower, all matching the query | None appears | Not run | FR-S-01 |
+| TC-160 | 30 | The embedding model disabled | Keyword results returned; mode KEYWORD_ONLY; notice shown | Not run | FR-S-02, NFR-R-04 |
+| TC-161 | 30 | Two items equal in every ranking input except the lender: one lender has no history, the other has evidence whose estimate equals the prior mean (0.5) | The new lender is not ranked below the other; lack of history is never a penalty | Not run | FR-S-01, FR-S-04 |
+| TC-162 | 30 | Any result list | Every result has a reason line; no single trust number | Not run | FR-S-01, NFR-U-01 |
+| TC-163 | 30 | Filters: category, maximum deposit, condition, dates | Only items matching all filters and free on the dates | Not run | FR-S-03 |
+| TC-164 | 31 | The frozen query set (DA-25) in keyword-only and hybrid mode | Precision@5, recall@10 and NDCG@10 recorded per mode with the model and config versions | Not run | NFR-Q-05 |
+| TC-165 | 31 | One search showing ten results; the third is opened | The log holds the query, the ten ranks, the click and no location | Not run | FR-S-05 |
+| TC-166 | 31 | 100 searches on the seeded catalogue | Latency of retrieval and of the whole search recorded (no target yet) | Not run | NFR-P-01, NFR-P-02 |
+| TC-167 | 11 | The scenario suite run on both fixture files | 13 of 13 scenarios pass with state and explanation | Not run | NFR-Q-01 |
+| TC-168 | 18 | The extended smoke after a deploy (one search, one upload, one run-due-jobs call twice) | All pass; the second jobs call changes nothing | Not run | NFR-D-03, NFR-R-05 |
+| TC-169 | 18 | The rollback rehearsal (`14_testing/Test_Deployment_Rollback_Handover_Plan.md` §5.3) | Previous version live; TC-91 and suites 1 to 5 green on it; time recorded | Not run | NFR-D-03 |
+
 ## 7. Traceability summary
 
 | Requirement | Test cases |
 |---|---|
+| FR-A-07, FR-A-08, NFR-Q-04 | TC-119, TC-124 to TC-126 |
+| FR-A-09 to FR-A-11 | TC-127 to TC-130 |
+| FR-B-18, NFR-R-05 | TC-120, TC-121, TC-168 |
+| FR-T-09 | TC-133 to TC-136 |
+| FR-T-11 (iteration 2) | TC-140 to TC-149 |
+| FR-S-01 to FR-S-05 | TC-159 to TC-163, TC-165 |
+| NFR-Q-05, NFR-P-01, NFR-P-02 | TC-164, TC-166 |
 | FR-B-05, NFR-R-01 | TC-08, TC-09 |
 | FR-B-06 | TC-70 |
 | FR-B-07 | TC-03, TC-60 |
