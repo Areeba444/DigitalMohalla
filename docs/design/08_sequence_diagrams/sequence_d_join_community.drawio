@@ -1,0 +1,337 @@
+<mxfile host="Electron" agent="Digital Mohalla design generator" version="24.7.17" type="device">
+  <diagram id="Sequence__d__A3___A4__DA_12_" name="Sequence (d) A3 + A4 (DA-12)">
+    <mxGraphModel dx="1400" dy="900" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1720" pageHeight="1720" math="0" shadow="0" background="#FFFFFF">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="v1" value="&lt;b&gt;Digital Mohalla &amp;#8212; Sequence diagram (d): join a community with the locality check (UC-A3) and the moderator's decision (UC-A4)&lt;/b&gt; &amp;#8212; iteration 2, DA-12, Student 1, v1.0" style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=top;fontSize=15;fontStyle=0;fontColor=#1d1d1d;spacing=2;overflow=visible;" vertex="1" parent="1">
+          <mxGeometry x="30" y="12" width="1600" height="24" as="geometry" />
+        </mxCell>
+        <mxCell id="v2" value="Locality method A11: one coarse fix evaluated in memory plus a single-use invitation; inconclusive or conflicting goes to a moderator, never an automatic rejection (FR-A-08). The request body with the fix is never logged." style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=top;fontSize=11;fontStyle=0;fontColor=#4A5560;spacing=2;overflow=visible;" vertex="1" parent="1">
+          <mxGeometry x="30" y="36" width="1640" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="ll_M" value="Member" style="shape=umlLifeline;participant=umlActor;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=0;verticalAlign=top;spacingTop=36;size=42;fontSize=11;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="30" y="80" width="80" height="1610" as="geometry" />
+        </mxCell>
+        <mxCell id="ll_MOD" value="Moderator" style="shape=umlLifeline;participant=umlActor;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=0;verticalAlign=top;spacingTop=36;size=42;fontSize=11;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="150" y="80" width="80" height="1610" as="geometry" />
+        </mxCell>
+        <mxCell id="ll_API" value=":REST API" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=0;collapsible=0;size=56;fontSize=11;fillColor=#F2F2F2;strokeColor=#46535F;" vertex="1" parent="1">
+          <mxGeometry x="260" y="80" width="160" height="1610" as="geometry" />
+        </mxCell>
+        <mxCell id="ll_MEM" value=":MembershipService&lt;br&gt;(M1)" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=0;collapsible=0;size=56;fontSize=11;fillColor=#E3EEF9;strokeColor=#46535F;" vertex="1" parent="1">
+          <mxGeometry x="460" y="80" width="160" height="1610" as="geometry" />
+        </mxCell>
+        <mxCell id="ll_INV" value=":InvitationService&lt;br&gt;(M1)" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=0;collapsible=0;size=56;fontSize=11;fillColor=#E3EEF9;strokeColor=#46535F;" vertex="1" parent="1">
+          <mxGeometry x="660" y="80" width="160" height="1610" as="geometry" />
+        </mxCell>
+        <mxCell id="ll_VER" value=":GeofenceInvitation-&lt;br&gt;Verifier (M1)" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=0;collapsible=0;size=56;fontSize=11;fillColor=#E3EEF9;strokeColor=#46535F;" vertex="1" parent="1">
+          <mxGeometry x="860" y="80" width="160" height="1610" as="geometry" />
+        </mxCell>
+        <mxCell id="ll_DB" value=":Database&lt;br&gt;(PostgreSQL, triggers)" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=0;collapsible=0;size=56;fontSize=11;fillColor=#E3EEF9;strokeColor=#46535F;" vertex="1" parent="1">
+          <mxGeometry x="1060" y="80" width="160" height="1610" as="geometry" />
+        </mxCell>
+        <mxCell id="ll_NOT" value=":NotificationService&lt;br&gt;(M7)" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=0;collapsible=0;size=56;fontSize=11;fillColor=#FDEBDD;strokeColor=#46535F;" vertex="1" parent="1">
+          <mxGeometry x="1260" y="80" width="160" height="1610" as="geometry" />
+        </mxCell>
+        <mxCell id="v3" value="&lt;b&gt;UC-A3 Select neighbourhood and request membership&lt;/b&gt; (FR-A-06 to FR-A-09)" style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=top;fontSize=12;fontStyle=0;fontColor=#1F4E79;spacing=2;overflow=visible;" vertex="1" parent="1">
+          <mxGeometry x="30" y="152" width="900" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="e4" value="&lt;b&gt;1&lt;/b&gt; GET /communities?query=" style="html=1;rounded=0;fontSize=10.5;labelBackgroundColor=#FFFFFF;fontColor=#1d1d1d;endSize=8;endArrow=block;endFill=1;strokeColor=#1D1D1D;fontSize=10.5" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="75" y="200" as="sourcePoint" />
+            <mxPoint x="335" y="200" as="targetPoint" />
+            <mxPoint x="20" y="-9" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e5" value="&lt;b&gt;2&lt;/b&gt; communities(query)" style="html=1;rounded=0;fontSize=10.5;labelBackgroundColor=#FFFFFF;fontColor=#1d1d1d;endSize=8;endArrow=block;endFill=1;strokeColor=#1D1D1D;fontSize=10.5" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="345" y="230" as="sourcePoint" />
+            <mxPoint x="535" y="230" as="targetPoint" />
+            <mxPoint x="0" y="-9" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e6" value="&lt;b&gt;3&lt;/b&gt; SELECT community (name, rules, join_policy)" style="html=1;rounded=0;fontSize=10.5;labelBackgroundColor=#FFFFFF;fontColor=#1d1d1d;endSize=8;endArrow=block;endFill=1;strokeColor=#1D1D1D;fontSize=10.5" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="545" y="260" as="sourcePoint" />
+            <mxPoint x="1135" y="260" as="targetPoint" />
+            <mxPoint x="0" y="-9" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e7" value="&lt;b&gt;4&lt;/b&gt; 200 [communities with rules and methods]" style="html=1;rounded=0;fontSize=10.5;labelBackgroundColor=#FFFFFF;fontColor=#1d1d1d;endSize=8;endArrow=open;endFill=0;dashed=1;strokeColor=#46535F;fontColor=#33404D;fontSize=10.5" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="335" y="290" as="sourcePoint" />
+            <mxPoint x="75" y="290" as="targetPoint" />
+            <mxPoint x="0" y="-9" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e8" value="&lt;b&gt;5&lt;/b&gt; POST /communities/{id}/join {fix | permission_refused, mock_flag, invitation_code}" style="html=1;rounded=0;fontSize=10.5;labelBackgroundColor=#FFFFFF;fontColor=#1d1d1d;endSize=8;endArrow=block;endFill=1;strokeColor=#1D1D1D;fontSize=10.5" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="75" y="320" as="sourcePoint" />
+            <mxPoint x="335" y="320" as="targetPoint" />
+            <mxPoint x="230" y="-9" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e9" value="&lt;b&gt;6&lt;/b&gt; request_join(member, community, LocalityInput, code)  [body not logged]" style="html=1;rounded=0;fontSize=10.5;labelBackgroundColor=#FFFFFF;fontColor=#1d1d1d;endSize=8;endArrow=block;endFill=1;strokeColor=#1D1D1D;fontSize=10.5" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="345" y="350" as="sourcePoint" />
+            <mxPoint x="535" y="350" as="targetPoint" />
+            <mxPoint x="60" y="-9" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e10" value="&lt;b&gt;7&lt;/b&gt; redeem(code, community)" style="html=1;rounded=0;fontSize=10.5;labelBackgroundColor=#FFFFFF;fontColor=#1d1d1d;endSize=8;endArrow=block;endFill=1;strokeColor=#1D1D1D;fontSize=10.5" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="545" y="430" as="sourcePoint" />
+            <mxPoint x="735" y="430" as="targetPoint" />
+            <mxPoint x="0" y="-9" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e11" value="&lt;b&gt;8&lt;/b&gt; SELECT invitation by SHA-256(code): unexpired, same community, inviter approved" style="html=1;rounded=0;fontSize=10.5;labelBackgroundColor=#FFFFFF;fontColor=#1d1d1d;endSize=8;endArrow=block;endFill=1;strokeColor=#1D1D1D;fontSize=10.5" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="745" y="460" as="sourcePoint" />
+            <mxPoint x="1135" y="460" as="targetPoint" />
+            <mxPoint x="0" y="-9" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e12" value="&lt;b&gt;9&lt;/b&gt; Invitation" style="html=1;rounded=0;fontSize=10.5;labelBackgroundColor=#FFFFFF;fontColor=#1d1d1d;endSize=8;endArrow=open;endFill=0;dashed=1;strokeColor=#46535F;fontColor=#33404D;fontSize=10.5" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="735" y="490" as="sourcePoint" />
+            <mxPoint x="545" y="490" as="targetPoint" />
+            <mxPoint x="0" y="-9" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e13" value="&lt;b&gt;10&lt;/b&gt; InvalidInvitation (expired, used, other community, self)" style="html=1;rounded=0;fontSize=10.5;labelBackgroundColor=#FFFFFF;fontColor=#1d1d1d;endSize=8;endArrow=open;endFill=0;dashed=1;strokeColor=#B00020;fontColor=#B00020;fontSize=10.5" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="735" y="554" as="sourcePoint" />
+            <mxPoint x="545" y="554" as="targetPoint" />
+            <mxPoint x="0" y="-9" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e14" value="&lt;b&gt;11&lt;/b&gt; 422 code not valid: retry or continue without (UC-A3 3d)" style="html=1;rounded=0;fontSize=10.5;labelBackgroundColor=#FFFFFF;fontColor=#1d1d1d;endSize=8;endArrow=open;endFill=0;dashed=1;strokeColor=#B00020;fontColor=#B00020;fontSize=10.5" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="335" y="584" as="sourcePoint" />
+            <mxPoint x="75" y="584" as="targetPoint" />
+            <mxPoint x="0" y="-9" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="v15" value="alt" style="shape=umlFrame;whiteSpace=wrap;html=1;width=52;height=22;boundedLbl=1;verticalAlign=middle;align=left;spacingLeft=4;fontStyle=1;fontSize=11;fillColor=none;strokeColor=#5F6B76;" vertex="1" parent="1">
+          <mxGeometry x="20" y="372" width="1660" height="242" as="geometry" />
+        </mxCell>
+        <mxCell id="v16" value="&lt;b&gt;[invitation code given]&lt;/b&gt;" style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=top;fontSize=10.5;fontStyle=0;fontColor=#33404D;spacing=2;overflow=visible;" vertex="1" parent="1">
+          <mxGeometry x="78" y="386" width="900" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="e17" value="" style="endArrow=none;dashed=1;html=1;strokeColor=#5F6B76" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="20" y="518" as="sourcePoint" />
+            <mxPoint x="1680" y="518" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="v18" value="&lt;b&gt;[code invalid]&lt;/b&gt;" style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=top;fontSize=10.5;fontStyle=0;fontColor=#33404D;spacing=2;overflow=visible;" vertex="1" parent="1">
+          <mxGeometry x="28" y="520" width="900" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="e19" value="&lt;b&gt;12&lt;/b&gt; evaluate(fix, accuracy, mock_flag, permission_refused, invitation, duplicate_suspected)" style="html=1;rounded=0;fontSize=10.5;labelBackgroundColor=#FFFFFF;fontColor=#1d1d1d;endSize=8;endArrow=block;endFill=1;strokeColor=#1D1D1D;fontSize=10.5" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="545" y="644" as="sourcePoint" />
+            <mxPoint x="935" y="644" as="targetPoint" />
+            <mxPoint x="40" y="-9" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e20" value="&lt;b&gt;13&lt;/b&gt; point-in-polygon on community.boundary_polygon, margin and accuracy -&gt; geofence signal; fix dropped" style="html=1;rounded=0;fontSize=10.5;labelBackgroundColor=#FFFFFF;fontColor=#1d1d1d;endSize=8;endArrow=block;endFill=1;strokeColor=#1D1D1D;fontSize=10.5" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="945" y="674" as="sourcePoint" />
+            <mxPoint x="945" y="692" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="975" y="674" />
+              <mxPoint x="975" y="692" />
+            </Array>
+            <mxPoint x="269.40" y="0" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e21" value="&lt;b&gt;14&lt;/b&gt; LocalityResult {outcome: VERIFIED | INCONCLUSIVE | CONFLICTING, signal}  [no coordinates]" style="html=1;rounded=0;fontSize=10.5;labelBackgroundColor=#FFFFFF;fontColor=#1d1d1d;endSize=8;endArrow=open;endFill=0;dashed=1;strokeColor=#46535F;fontColor=#33404D;fontSize=10.5" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="935" y="714" as="sourcePoint" />
+            <mxPoint x="545" y="714" as="targetPoint" />
+            <mxPoint x="40" y="-9" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e22" value="&lt;b&gt;15&lt;/b&gt; INSERT membership (PENDING); INSERT locality_verification (coarse only)" style="html=1;rounded=0;fontSize=10.5;labelBackgroundColor=#FFFFFF;fontColor=#1d1d1d;endSize=8;endArrow=block;endFill=1;strokeColor=#1D1D1D;fontSize=10.5" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="545" y="744" as="sourcePoint" />
+            <mxPoint x="1135" y="744" as="targetPoint" />
+            <mxPoint x="60" y="-9" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e23" value="&lt;b&gt;16&lt;/b&gt; locality_rule_ck: outcome follows its signals; locality_guard: invitation single-use, same community" style="html=1;rounded=0;fontSize=10.5;labelBackgroundColor=#FFFFFF;fontColor=#1d1d1d;endSize=8;endArrow=block;endFill=1;strokeColor=#1D1D1D;fontSize=10.5" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1145" y="774" as="sourcePoint" />
+            <mxPoint x="1145" y="792" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="1175" y="774" />
+              <mxPoint x="1175" y="792" />
+            </Array>
+            <mxPoint x="272" y="0" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e24" value="&lt;b&gt;17&lt;/b&gt; UPDATE membership APPROVED (open-join community, UC-A3 4a)" style="html=1;rounded=0;fontSize=10.5;labelBackgroundColor=#FFFFFF;fontColor=#1d1d1d;endSize=8;endArrow=block;endFill=1;strokeColor=#1D1D1D;fontSize=10.5" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="545" y="864" as="sourcePoint" />
+            <mxPoint x="1135" y="864" as="targetPoint" />
+            <mxPoint x="0" y="-9" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e25" value="&lt;b&gt;18&lt;/b&gt; notify(moderators, member_joined)" style="html=1;rounded=0;fontSize=10.5;labelBackgroundColor=#FFFFFF;fontColor=#1d1d1d;endSize=8;endArrow=open;endFill=0;strokeColor=#1D1D1D;fontSize=10.5" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="545" y="894" as="sourcePoint" />
+            <mxPoint x="1335" y="894" as="targetPoint" />
+            <mxPoint x="0" y="-9" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e26" value="&lt;b&gt;19&lt;/b&gt; notify(moderators, membership_request, dedupe_key = membership id)" style="html=1;rounded=0;fontSize=10.5;labelBackgroundColor=#FFFFFF;fontColor=#1d1d1d;endSize=8;endArrow=open;endFill=0;strokeColor=#1D1D1D;fontSize=10.5" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="545" y="958" as="sourcePoint" />
+            <mxPoint x="1335" y="958" as="targetPoint" />
+            <mxPoint x="0" y="-9" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="v27" value="alt" style="shape=umlFrame;whiteSpace=wrap;html=1;width=52;height=22;boundedLbl=1;verticalAlign=middle;align=left;spacingLeft=4;fontStyle=1;fontSize=11;fillColor=none;strokeColor=#5F6B76;" vertex="1" parent="1">
+          <mxGeometry x="20" y="806" width="1660" height="182" as="geometry" />
+        </mxCell>
+        <mxCell id="v28" value="&lt;b&gt;[outcome = VERIFIED and join_policy = OPEN]&lt;/b&gt;" style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=top;fontSize=10.5;fontStyle=0;fontColor=#33404D;spacing=2;overflow=visible;" vertex="1" parent="1">
+          <mxGeometry x="78" y="820" width="900" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="e29" value="" style="endArrow=none;dashed=1;html=1;strokeColor=#5F6B76" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="20" y="922" as="sourcePoint" />
+            <mxPoint x="1680" y="922" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="v30" value="&lt;b&gt;[otherwise: moderator decides; INCONCLUSIVE and CONFLICTING are never rejected automatically]&lt;/b&gt;" style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=top;fontSize=10.5;fontStyle=0;fontColor=#33404D;spacing=2;overflow=visible;" vertex="1" parent="1">
+          <mxGeometry x="28" y="924" width="900" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="e31" value="&lt;b&gt;20&lt;/b&gt; 201 {membership: PENDING | APPROVED, locality: outcome in neutral words}" style="html=1;rounded=0;fontSize=10.5;labelBackgroundColor=#FFFFFF;fontColor=#1d1d1d;endSize=8;endArrow=open;endFill=0;dashed=1;strokeColor=#46535F;fontColor=#33404D;fontSize=10.5" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="335" y="1014" as="sourcePoint" />
+            <mxPoint x="75" y="1014" as="targetPoint" />
+            <mxPoint x="40" y="-9" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="v32" value="&lt;b&gt;UC-A4 Approve or reject the membership request&lt;/b&gt; (FR-A-10, FR-A-11)" style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=top;fontSize=12;fontStyle=0;fontColor=#1F4E79;spacing=2;overflow=visible;" vertex="1" parent="1">
+          <mxGeometry x="30" y="1050" width="900" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="e33" value="&lt;b&gt;21&lt;/b&gt; GET /moderation/memberships" style="html=1;rounded=0;fontSize=10.5;labelBackgroundColor=#FFFFFF;fontColor=#1d1d1d;endSize=8;endArrow=block;endFill=1;strokeColor=#1D1D1D;fontSize=10.5" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="195" y="1098" as="sourcePoint" />
+            <mxPoint x="335" y="1098" as="targetPoint" />
+            <mxPoint x="10" y="-9" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e34" value="&lt;b&gt;22&lt;/b&gt; queue(moderator)" style="html=1;rounded=0;fontSize=10.5;labelBackgroundColor=#FFFFFF;fontColor=#1d1d1d;endSize=8;endArrow=block;endFill=1;strokeColor=#1D1D1D;fontSize=10.5" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="345" y="1128" as="sourcePoint" />
+            <mxPoint x="535" y="1128" as="targetPoint" />
+            <mxPoint x="0" y="-9" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e35" value="&lt;b&gt;23&lt;/b&gt; SELECT pending requests of the moderator's communities + coarse evidence + flags" style="html=1;rounded=0;fontSize=10.5;labelBackgroundColor=#FFFFFF;fontColor=#1d1d1d;endSize=8;endArrow=block;endFill=1;strokeColor=#1D1D1D;fontSize=10.5" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="545" y="1158" as="sourcePoint" />
+            <mxPoint x="1135" y="1158" as="targetPoint" />
+            <mxPoint x="40" y="-9" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e36" value="&lt;b&gt;24&lt;/b&gt; 200 [requests with locality outcome, duplicate / mock flags]" style="html=1;rounded=0;fontSize=10.5;labelBackgroundColor=#FFFFFF;fontColor=#1d1d1d;endSize=8;endArrow=open;endFill=0;dashed=1;strokeColor=#46535F;fontColor=#33404D;fontSize=10.5" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="335" y="1188" as="sourcePoint" />
+            <mxPoint x="195" y="1188" as="targetPoint" />
+            <mxPoint x="0" y="-9" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e37" value="&lt;b&gt;25&lt;/b&gt; POST /moderation/memberships/{id}/decision {kind: APPROVED | REJECTED | INFO_REQUESTED, reason}" style="html=1;rounded=0;fontSize=10.5;labelBackgroundColor=#FFFFFF;fontColor=#1d1d1d;endSize=8;endArrow=block;endFill=1;strokeColor=#1D1D1D;fontSize=10.5" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="195" y="1218" as="sourcePoint" />
+            <mxPoint x="335" y="1218" as="targetPoint" />
+            <mxPoint x="230" y="-9" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e38" value="&lt;b&gt;26&lt;/b&gt; decide(moderator, membership, kind, reason)" style="html=1;rounded=0;fontSize=10.5;labelBackgroundColor=#FFFFFF;fontColor=#1d1d1d;endSize=8;endArrow=block;endFill=1;strokeColor=#1D1D1D;fontSize=10.5" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="345" y="1248" as="sourcePoint" />
+            <mxPoint x="535" y="1248" as="targetPoint" />
+            <mxPoint x="0" y="-9" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e39" value="&lt;b&gt;27&lt;/b&gt; INSERT membership_decision; UPDATE membership status (one DB transaction)" style="html=1;rounded=0;fontSize=10.5;labelBackgroundColor=#FFFFFF;fontColor=#1d1d1d;endSize=8;endArrow=block;endFill=1;strokeColor=#1D1D1D;fontSize=10.5" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="545" y="1328" as="sourcePoint" />
+            <mxPoint x="1135" y="1328" as="targetPoint" />
+            <mxPoint x="40" y="-9" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e40" value="&lt;b&gt;28&lt;/b&gt; membership_decision_guard: moderator of this community or admin; not the applicant; still undecided" style="html=1;rounded=0;fontSize=10.5;labelBackgroundColor=#FFFFFF;fontColor=#1d1d1d;endSize=8;endArrow=block;endFill=1;strokeColor=#1D1D1D;fontSize=10.5" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1145" y="1358" as="sourcePoint" />
+            <mxPoint x="1145" y="1376" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="1175" y="1358" />
+              <mxPoint x="1175" y="1376" />
+            </Array>
+            <mxPoint x="269.40" y="0" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e41" value="&lt;b&gt;29&lt;/b&gt; approving an INCONCLUSIVE check: INSERT locality_verification (MODERATOR_APPROVAL, approved_by)" style="html=1;rounded=0;fontSize=10.5;labelBackgroundColor=#FFFFFF;fontColor=#1d1d1d;endSize=8;endArrow=block;endFill=1;strokeColor=#1D1D1D;fontSize=10.5" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="545" y="1398" as="sourcePoint" />
+            <mxPoint x="1135" y="1398" as="targetPoint" />
+            <mxPoint x="60" y="-9" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e42" value="&lt;b&gt;30&lt;/b&gt; notify(applicant, membership_decided, reason)" style="html=1;rounded=0;fontSize=10.5;labelBackgroundColor=#FFFFFF;fontColor=#1d1d1d;endSize=8;endArrow=open;endFill=0;strokeColor=#1D1D1D;fontSize=10.5" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="545" y="1428" as="sourcePoint" />
+            <mxPoint x="1335" y="1428" as="targetPoint" />
+            <mxPoint x="0" y="-9" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e43" value="&lt;b&gt;31&lt;/b&gt; 200 {status}" style="html=1;rounded=0;fontSize=10.5;labelBackgroundColor=#FFFFFF;fontColor=#1d1d1d;endSize=8;endArrow=open;endFill=0;dashed=1;strokeColor=#46535F;fontColor=#33404D;fontSize=10.5" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="335" y="1458" as="sourcePoint" />
+            <mxPoint x="195" y="1458" as="targetPoint" />
+            <mxPoint x="0" y="-9" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e44" value="&lt;b&gt;32&lt;/b&gt; 40001 already decided by another moderator: nothing applied (UC-A4 4a)" style="html=1;rounded=0;fontSize=10.5;labelBackgroundColor=#FFFFFF;fontColor=#1d1d1d;endSize=8;endArrow=open;endFill=0;dashed=1;strokeColor=#B00020;fontColor=#B00020;fontSize=10.5" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1135" y="1522" as="sourcePoint" />
+            <mxPoint x="545" y="1522" as="targetPoint" />
+            <mxPoint x="40" y="-9" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e45" value="&lt;b&gt;33&lt;/b&gt; 409 show the current status" style="html=1;rounded=0;fontSize=10.5;labelBackgroundColor=#FFFFFF;fontColor=#1d1d1d;endSize=8;endArrow=open;endFill=0;dashed=1;strokeColor=#B00020;fontColor=#B00020;fontSize=10.5" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="335" y="1552" as="sourcePoint" />
+            <mxPoint x="195" y="1552" as="targetPoint" />
+            <mxPoint x="0" y="-9" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="v46" value="alt" style="shape=umlFrame;whiteSpace=wrap;html=1;width=52;height=22;boundedLbl=1;verticalAlign=middle;align=left;spacingLeft=4;fontStyle=1;fontSize=11;fillColor=none;strokeColor=#5F6B76;" vertex="1" parent="1">
+          <mxGeometry x="20" y="1270" width="1660" height="312" as="geometry" />
+        </mxCell>
+        <mxCell id="v47" value="&lt;b&gt;[authorised and the request is still undecided]&lt;/b&gt;" style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=top;fontSize=10.5;fontStyle=0;fontColor=#33404D;spacing=2;overflow=visible;" vertex="1" parent="1">
+          <mxGeometry x="78" y="1284" width="900" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="e48" value="" style="endArrow=none;dashed=1;html=1;strokeColor=#5F6B76" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="20" y="1486" as="sourcePoint" />
+            <mxPoint x="1680" y="1486" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="v49" value="&lt;b&gt;[another moderator decided first]&lt;/b&gt;" style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=top;fontSize=10.5;fontStyle=0;fontColor=#33404D;spacing=2;overflow=visible;" vertex="1" parent="1">
+          <mxGeometry x="28" y="1488" width="900" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="v50" value="Reversal (FR-A-11) is the same call with kind REVERSED and reverses_decision_id: a new row, the old decision stays. Privacy: the fix exists only in the request and in the verifier's memory; storage holds the coarse signal and outcome (NFR-PR-01, NFR-PR-02); suite 14 checks logs and responses." style="shape=note;size=10;whiteSpace=wrap;html=1;fontSize=10;align=left;spacingLeft=6;fillColor=#F4F6F8;strokeColor=#B26A00;" vertex="1" parent="1">
+          <mxGeometry x="40" y="1602" width="1640" height="46" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
