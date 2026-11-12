@@ -843,11 +843,11 @@ export function IntervalBar({ low, high, mean }: { low: number; high: number; me
         />
       </View>
       <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-        <Caption>Less reliable</Caption>
+        <Caption>Uncertain</Caption>
         <Caption style={{ fontFamily: theme.fonts.semibold, color: theme.colors.textSecondary }}>
-          {wide ? 'Wide range: little evidence' : 'Narrow range: steady evidence'}
+          {wide ? '↔ Wide — building history' : '↔ Narrow — steady history'}
         </Caption>
-        <Caption>More reliable</Caption>
+        <Caption>Confident</Caption>
       </View>
     </View>
   );
@@ -855,16 +855,19 @@ export function IntervalBar({ low, high, mean }: { low: number; high: number; me
 
 const RISK: Record<number, [string, ToneKey]> = {
   1: ['Low', 'success'],
-  2: ['Monitor', 'info'],
-  3: ['Verification advised', 'warning'],
-  4: ['Moderator review', 'warning'],
+  2: ['Worth a look', 'info'],
+  3: ['Check needed', 'warning'],
+  4: ['Needs review', 'warning'],
 };
 
-/** The manipulation band only: a number next to the evidence could be read as a rating (NFR-U-01). */
+/** The manipulation band only: colour + label + icon. Never a number next to the evidence (NFR-U-01).
+ *  Levels: 1 = Low (green shield), 2 = Worth a look (blue eye), 3 = Check needed (amber warning),
+ *          4 = Needs review (amber flag — moderator escalation likely). */
 export function RiskPill({ level }: { level: number }) {
   const theme = useT();
   const [label, tone] = RISK[level] ?? ['Unknown', 'neutral'];
-  return <Badge label={label} tone={theme.colors[tone]} icon={level <= 1 ? 'shield' : 'flag'} />;
+  const icon: IconName = level <= 1 ? 'shield' : level === 2 ? 'visibility' : 'flag';
+  return <Badge label={label} tone={theme.colors[tone]} icon={icon} />;
 }
 
 /** Initials in a tinted circle. */

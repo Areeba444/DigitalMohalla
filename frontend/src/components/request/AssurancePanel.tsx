@@ -1,3 +1,4 @@
+import React from 'react';
 import { Text, View } from 'react-native';
 
 import type { Assessment } from '@/api/hooks';
@@ -11,7 +12,6 @@ import {
   Collapsible,
   Icon,
   IntervalBar,
-  Row,
   RiskPill,
   SectionLabel,
 } from '@/components/ui';
@@ -34,39 +34,87 @@ function safeguardLabel(s: unknown): string {
 
 type Community = components['schemas']['CommunityOut'];
 
-/** What the evidence says, in plain language and about this request only (HCI analysis, W1). */
-function stateSentence(state: string, name: string): string {
+/** Bullet-point state summary — scannable, no wall of text. */
+function stateSentence(state: string, name: string): React.ReactNode {
+  const firstName = name.replace(/\s*\(.*?\)\s*/g, '').split(' ')[0];
   switch (state) {
     case 'SUFFICIENT_EVIDENCE':
-      return `${name} has enough verified history for this item. You still decide.`;
+      return (
+        <View style={{ gap: 4 }}>
+          <Body style={{ fontSize: 14 }}>✅ {firstName} has verified borrowing history</Body>
+          <Body style={{ fontSize: 14 }}>✅ Enough evidence for this type of item</Body>
+          <Body style={{ fontSize: 14, color: undefined }} muted>You still decide — this is guidance, not a guarantee</Body>
+        </View>
+      );
     case 'REVIEW_RECOMMENDED':
-      return `${name}'s evidence is mixed, dated or unusual for this item. Look at the details before deciding.`;
+      return (
+        <View style={{ gap: 4 }}>
+          <Body style={{ fontSize: 14 }}>⚠️ {firstName}'s history is limited or unusual for this item</Body>
+          <Body style={{ fontSize: 14 }}>👁 Worth checking the details below before deciding</Body>
+          <Body style={{ fontSize: 14 }} muted>You still decide</Body>
+        </View>
+      );
     case 'ACTIVE_DISPUTE':
-      return `${name} has an unresolved dispute that affects this request. A moderator is handling it.`;
+      return (
+        <View style={{ gap: 4 }}>
+          <Body style={{ fontSize: 14 }}>🚩 {firstName} has an unresolved dispute</Body>
+          <Body style={{ fontSize: 14 }}>⏳ A moderator is handling it</Body>
+        </View>
+      );
     default:
-      return `${name} has no verified transaction history yet. This is normal for new members and does not mean they are risky. You decide.`;
+      return (
+        <View style={{ gap: 4 }}>
+          <Body style={{ fontSize: 14 }}>🆕 {firstName} is new to Digital Mohalla</Body>
+          <Body style={{ fontSize: 14 }}>✓ This is normal — not a risk signal</Body>
+          <Body style={{ fontSize: 14 }}>✓ Suggested safeguards are listed below</Body>
+        </View>
+      );
   }
 }
 
-function evidenceCount(a: Assessment): string {
-  const weighted = (a.effective_evidence ?? 0).toFixed(1);
-  if (a.verified_loans == null) return `${weighted} verified transactions (weighted)`;
-  const loans = `${a.verified_loans} verified loan${a.verified_loans === 1 ? '' : 's'}`;
-  return `${loans} · ${weighted} after weighting for recency and similarity`;
+/** Human-friendly borrowing history tier — no raw numbers exposed to users (NFR-U-01). */
+function evidenceTier(a: Assessment): string {
+  const loans = a.verified_loans ?? 0;
+  const weighted = a.effective_evidence ?? 0;
+  if (loans === 0) return '🆕 New member — no borrowing history yet';
+  if (weighted < 1.5) return '📋 A few verified loans — just getting started';
+  if (weighted < 4.0) return '✅ Some verified history';
+  return '⭐ Established borrower with verified history';
 }
 
-/** Indirect evidence (FR-T-04): people the lender trusts who lent to this borrower. */
+/** Indirect evidence (FR-T-04): visual connection path between lender and borrower. */
 function CommunityPaths({ community, name }: { community: Community; name: string }) {
   const { theme } = useTheme();
+  const firstName = name.replace(/\s*\(.*?\)\s*/g, '').split(' ')[0];
+  const hasPaths = community.paths.length > 0;
   return (
     <View style={{ gap: 8 }}>
-      <Text style={{ fontFamily: theme.fonts.bold, fontSize: 15, color: theme.colors.text }}>
-        Community paths
-      </Text>
-      {community.paths.length === 0 ? (
-        <Body muted style={{ fontSize: 14 }}>
-          No community paths found between you and {name}.
-        </Body>
+      <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+        <Text style={{ fontFamily: theme.fonts.bold, fontSize: 15, color: theme.colors.text }}>
+          Community connection
+        </Text>
+        {hasPaths ? (
+          <Icon name="hub" size={18} color={theme.colors.accent} />
+        ) : (
+          <Icon name="hub" size={18} color={theme.colors.textMuted} />
+        )}
+      </View>
+      {!hasPaths ? (
+        <View
+          style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            gap: 8,
+            padding: 10,
+            borderRadius: theme.radius.sm,
+            backgroundColor: theme.colors.surface2,
+          }}>
+          <Caption style={{ color: theme.colors.textMuted }}>You</Caption>
+          <View style={{ flex: 1, borderBottomWidth: 1.5, borderColor: theme.colors.border, borderStyle: 'dashed' }} />
+          <Caption style={{ color: theme.colors.textMuted }}>?</Caption>
+          <View style={{ flex: 1, borderBottomWidth: 1.5, borderColor: theme.colors.border, borderStyle: 'dashed' }} />
+          <Caption style={{ color: theme.colors.textMuted }}>{firstName}</Caption>
+        </View>
       ) : (
         <>
           {community.paths.map((p, i) => (
@@ -82,14 +130,12 @@ function CommunityPaths({ community, name }: { community: Community; name: strin
               }}>
               <Icon name="hub" size={18} color={theme.colors.accent} />
               <Body style={{ flex: 1, fontSize: 14 }}>
-                • {p.via.length > 0 ? `Through ${p.via.join(' → ')}` : `${name} borrowed from you before`} (path
-                strength {p.strength.toFixed(2)})
+                {p.via.length > 0 ? `You → ${p.via.join(' → ')} → ${firstName}` : `${firstName} borrowed from you before`}
               </Body>
             </View>
           ))}
           <Caption>
-            Community support {community.reliability.toFixed(2)}. It can support a request but is never enough
-            on its own.
+            You share {community.paths.length} community link{community.paths.length > 1 ? 's' : ''} with {firstName}.
           </Caption>
         </>
       )}
@@ -135,7 +181,7 @@ export function AssurancePanel({ assessment, name }: { assessment: Assessment; n
             <Text style={{ fontFamily: theme.fonts.display, fontSize: 21, color: tone.fg }}>{a.label}</Text>
           </View>
         </View>
-        <Body style={{ fontSize: 15 }}>{stateSentence(state, name)}</Body>
+        {stateSentence(state, name)}
         {assessment.safeguards.length > 0 ? (
           <View style={{ gap: 8 }}>
             <SectionLabel color={tone.fg}>Suggested safeguards</SectionLabel>
@@ -162,10 +208,12 @@ export function AssurancePanel({ assessment, name }: { assessment: Assessment; n
         <Collapsible title="The evidence" icon="visibility" defaultOpen>
           <View style={{ gap: 18 }}>
             <View style={{ gap: 8 }}>
-              <Text style={{ fontFamily: theme.fonts.bold, fontSize: 15, color: theme.colors.text }}>
-                Direct reliability
-              </Text>
-              <Caption>{evidenceCount(assessment)}</Caption>
+              <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+                <Text style={{ fontFamily: theme.fonts.bold, fontSize: 15, color: theme.colors.text }}>
+                  Borrowing track record
+                </Text>
+              </View>
+              <Caption>{evidenceTier(assessment)}</Caption>
               {hasInterval ? (
                 <IntervalBar
                   low={assessment.ci90_low as number}
@@ -173,12 +221,9 @@ export function AssurancePanel({ assessment, name }: { assessment: Assessment; n
                   mean={assessment.posterior_mean as number}
                 />
               ) : (
-                <Body muted>No direct evidence yet.</Body>
+                <Body muted>No borrowing history yet.</Body>
               )}
-              <Caption>
-                The bar shows a range, wide when there is little evidence and narrower as verified loans add up.
-                Recent loans and loans of similar items count more.
-              </Caption>
+              {/* Bar explanation removed — labels on the bar itself are sufficient */}
             </View>
 
             {assessment.community ? <CommunityPaths community={assessment.community} name={name} /> : null}
@@ -186,42 +231,19 @@ export function AssurancePanel({ assessment, name }: { assessment: Assessment; n
             <View style={{ gap: 8 }}>
               <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
                 <Text style={{ fontFamily: theme.fonts.bold, fontSize: 15, color: theme.colors.text }}>
-                  Manipulation risk
+                  Unusual patterns
                 </Text>
                 <RiskPill level={assessment.manipulation_level ?? 1} />
               </View>
-              <Caption>
-                Shown separately from reliability and never averaged with it. A flag is a reason to look, not an
-                accusation.
-              </Caption>
+              {/* Caption removed — pill badge (Low/Monitor/Check needed/Needs review) is self-explanatory.
+                  An ⓘ tooltip can be added here in a future iteration for curious users. */}
             </View>
           </View>
         </Collapsible>
       </Card>
 
-      <Card>
-        <Collapsible title="Technical details" icon="tune">
-          <View style={{ gap: 12 }}>
-            <View style={{ gap: 8 }}>
-              <Row label="Rule" value={assessment.rule_fired} />
-              <Row label="Policy decision" value={assessment.policy_decision} />
-              <Row label="Configuration" value={assessment.config_version} />
-            </View>
-            <View
-              style={{
-                padding: 12,
-                gap: 6,
-                borderRadius: theme.radius.sm,
-                backgroundColor: theme.colors.surface2,
-              }}>
-              <SectionLabel>In the engine&apos;s words</SectionLabel>
-              <Body muted style={{ fontSize: 14 }}>
-                {assessment.explanation}
-              </Body>
-            </View>
-          </View>
-        </Collapsible>
-      </Card>
+      {/* Technical details card removed from resident view — engine internals (rule IDs, policy enums,
+          config versions) are not meaningful to end users. Visible in moderator/admin views only. */}
     </View>
   );
 }

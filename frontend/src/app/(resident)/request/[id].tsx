@@ -186,14 +186,9 @@ export default function RequestScreen() {
 
       {lender && r.assessment ? <AssurancePanel assessment={r.assessment} name={r.borrower_name} /> : null}
 
-      {!lender && state === 'ASSESSED' ? (
-        <Banner tone={theme.colors.info} title="Request sent" icon="send">
-          <Body muted style={{ fontSize: 14 }}>
-            {r.lender_name} has been asked and sees an evidence summary, never a score about you. Their decision
-            appears here.
-          </Body>
-        </Banner>
-      ) : null}
+      {/* Borrower-side "Request sent" banner removed — the LoanProgress stepper already shows
+          the state visually, and the button label "Send request" already sets the expectation
+          that this is a request (not a booking). No redundant explanation needed. */}
 
       <ActionPanel key={`${r.state}-${r.available_actions.join()}`} request={r} id={id} />
 

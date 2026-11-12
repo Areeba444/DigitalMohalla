@@ -99,10 +99,6 @@ export function ActionPanel({ request, id }: { request: RequestDetail; id: strin
       {has('accept') ? (
         <Card>
           <SectionLabel>Your decision</SectionLabel>
-          <Body muted style={{ fontSize: 14 }}>
-            Accepting reserves these dates and automatically declines other pending requests for
-            them.
-          </Body>
           <Button label="Accept request" icon="check_circle" loading={act.isPending} onPress={() => run({ name: 'accept' })} />
           <Button
             label="Decline request"
@@ -111,8 +107,7 @@ export function ActionPanel({ request, id }: { request: RequestDetail; id: strin
             loading={act.isPending}
             onPress={() => run({ name: 'decline' })}
           />
-          {/* UC-B6 counter-offer is planned for iteration 2 (TC-100) */}
-          <Button label="Counter-offer (coming in iteration 2)" variant="ghost" disabled onPress={() => {}} />
+          {/* UC-B6 counter-offer planned for iteration 2 (TC-100) — hidden until implemented */}
         </Card>
       ) : null}
 
