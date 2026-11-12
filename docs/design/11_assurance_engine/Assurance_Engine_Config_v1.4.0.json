@@ -1,0 +1,369 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "config_metadata": {
+    "config_name": "digital_mohalla_assurance_engine_config",
+    "config_version": "1.4.0-iteration2-draft",
+    "status": "initial_hypothesis_unvalidated",
+    "created_at": "2026-10-11T15:20:00Z",
+    "module": "Module 5: Trust, Safety and Assurance Engine",
+    "author": "Student 2 (Trust & Assurance Lead) owns Module 5 values; draft for iteration 2 by Student 1 (DA-15, DA-22)",
+    "description": "Baseline operational and algorithmic parameters for Digital Mohalla's assurance pipeline. Every threshold and weight represents an initial experimental hypothesis to be evaluated via time-ordered holdout testing (Overview §5, NFR-D-01, FR-B-09).",
+    "updated_at": "2026-11-03T12:00:00Z",
+    "changelog": [
+      "1.0.0-iteration1-draft (2026-10-11, Student 2): initial parameter set.",
+      "1.2.0-iteration1-draft (2026-10-13, Student 2): similarity weighting defined (team decision D17): value band 0.4, category 0.4, duration 0.2; band closeness 1.0 same, 0.5 adjacent, 0.0 two apart; duration closeness shorter / longer; the 0.5 floor applies to each outcome's weight. No other value changed.",
+      "1.1.0-iteration1-draft (2026-10-11, integration): s4_review_similarity active in iteration 1 (ADR-0007); rule R6_SPARSE uses rho_sup (ADR-0008); locality_a11 parameters added so one versioned file holds every parameter (NFR-D-01). No numeric value changed.",
+      "1.3.0-iteration1-draft (2026-10-13, Student 2, decisions D18 and D19): S1 measures mutual reviews among the subject's rating partners (s1_min_out_degree replaced by s1_min_partners, same value 3); S4 uses character 3-gram TF-IDF over the subject's received reviews (s4_char_ngram, s4_min_reviews); retaliation check: a review counts as negative when its lowest rating is at most retaliation_negative_rating_max. No other value changed.",
+      "1.4.0-iteration2-draft (2026-11-03, draft by Student 1 for Student 2's sign-off; DA-15, DA-22, ADR-0010, ADR-0012, ADR-0016): S2, S3 and S5 active (S5 from invitation links only); pair-repeat discount against trivial exchanges; lender role and all three metrics; population baselines per role and metric; rule R4 moved before R3 (ADR-0010, proposed); new sections ranking_alg5 (Module 4 hybrid ranking) and scheduler_b13 (timers). No iteration 1 value changed."
+    ]
+  },
+  "trust_estimation_alg1": {
+    "status": "initial_hypothesis_unvalidated",
+    "prior": {
+      "alpha_0": 1.0,
+      "beta_0": 1.0,
+      "distribution": "Beta(1,1)",
+      "source": "Overview §5.2",
+      "sensitivity_range": [
+        0.5,
+        2.0
+      ],
+      "rationale": "Uniform prior representing complete absence of evidence without bias."
+    },
+    "recency_decay": {
+      "half_life_days": 180.0,
+      "formula": "w_i = 2^(-d_i / half_life_days) * similarity_i",
+      "source": "Overview §5.2",
+      "sensitivity_range": [
+        90.0,
+        365.0
+      ],
+      "rationale": "Balances recent performance with seasonal borrowing behavior."
+    },
+    "credible_interval": {
+      "confidence_level": 0.9,
+      "lower_quantile": 0.05,
+      "upper_quantile": 0.95,
+      "type": "equal_tailed_beta_interval",
+      "source": "Overview §5.2, FR-T-02",
+      "sensitivity_range": [
+        0.8,
+        0.95
+      ],
+      "rationale": "Quantifies uncertainty to distinguish sparse from rich evidence."
+    },
+    "similarity_weighting": {
+      "similarity_floor": 0.5,
+      "component_weights": {
+        "value_band": 0.4,
+        "category": 0.4,
+        "duration": 0.2
+      },
+      "band_closeness": {
+        "same": 1.0,
+        "adjacent": 0.5,
+        "two_apart": 0.0
+      },
+      "formula": "sigma_raw = 0.4 * band_closeness + 0.4 * (same category) + 0.2 * (shorter / longer duration); outcome weight uses max(similarity_floor, sigma_raw); request_similarity (rule R4) is the recency-weighted mean of sigma_raw",
+      "decision": "Team decision D17, 2026-10-13",
+      "source": "Overview §5.12",
+      "sensitivity_range": [
+        0.3,
+        0.7
+      ],
+      "rationale": "Weights past evidence by category, value band, and duration relevance."
+    },
+    "roles_and_metrics": {
+      "status": "initial_hypothesis_unvalidated",
+      "borrower_metrics": [
+        "ON_TIME_RETURN",
+        "CONDITION_AGREED",
+        "DISPUTE_FREE"
+      ],
+      "lender_metrics": [
+        "CONDITION_AGREED",
+        "DISPUTE_FREE"
+      ],
+      "decision_metric": {
+        "BORROWER": "ON_TIME_RETURN",
+        "LENDER": "CONDITION_AGREED"
+      },
+      "secondary_metrics_shown_as_factors": true,
+      "source": "Overview §5.2 (per role and metric, never mixed); outcome mapping decision D11; FR-T-02",
+      "rationale": "The borrower's request is decided on the metric that protects the lender (on-time return); the lender's evidence for search and item details (FR-S-04) uses condition as described. Other metrics are shown as separate factors, never averaged into one number."
+    },
+    "pair_repeat_discount": {
+      "status": "initial_hypothesis_unvalidated",
+      "window_days": 30,
+      "factor": 0.5,
+      "formula": "w_i := w_i * factor^m_i, where m_i = earlier VALID outcomes of the same subject with the same observer in the window before outcome i",
+      "source": "Overview §5.13 threat 'trivial exchanges used to manufacture reputation'; DA-15",
+      "sensitivity_range": [
+        0.3,
+        1.0
+      ],
+      "rationale": "Many short loans between the same two accounts add little independent evidence. Halving each repeat inside 30 days bounds a pair's contribution to under two outcomes without discarding honest repeat loans."
+    }
+  },
+  "indirect_trust_alg2": {
+    "status": "initial_hypothesis_unvalidated",
+    "graph_traversal": {
+      "max_hops_k": 3,
+      "source": "Overview §5.5, FR-T-04",
+      "sensitivity_range": [
+        1,
+        4
+      ],
+      "rationale": "Limits search horizon to prevent computational explosion and noise propagation."
+    },
+    "attenuation_decay": {
+      "hop_decay_gamma": 0.7,
+      "formula": "q(P) = prod(edge_weights) * gamma^(hops - 1)",
+      "source": "Overview §5.5",
+      "sensitivity_range": [
+        0.5,
+        0.9
+      ],
+      "rationale": "Progressively discounts trust confidence as path length increases."
+    },
+    "aggregation": {
+      "reliability_cap_rho_max": 0.6,
+      "path_count_divisor": 3.0,
+      "diversity_divisor": 2.0,
+      "aggregation_method": "noisy_or",
+      "source": "Overview §5.5",
+      "sensitivity_range": [
+        0.4,
+        0.8
+      ],
+      "rationale": "Strictly caps indirect evidence below direct evidence to prevent false trust."
+    },
+    "baseline": {
+      "default_population_baseline": 0.5,
+      "source": "Overview §5.5",
+      "rationale": "Fallback prior mean when target user has zero verified direct events.",
+      "population_baseline": {
+        "status": "initial_hypothesis_unvalidated",
+        "method": "recency-weighted mean of VALID outcomes per (role, metric) over the community's history",
+        "min_weighted_outcomes": 30.0,
+        "fallback": 0.5,
+        "refresh": "nightly scheduler job population_baseline (ADR-0012)",
+        "source": "Overview §5.5 baseline b; DA-15",
+        "rationale": "Replaces the fixed 0.5 once enough evidence exists; below 30 weighted outcomes the fixed fallback is kept so a small community is not pulled to a noisy mean."
+      }
+    }
+  },
+  "manipulation_detection_alg3": {
+    "status": "initial_hypothesis_unvalidated",
+    "observation_windows": {
+      "evaluation_window_days_W": 90,
+      "retaliation_window_days": 14,
+      "new_account_age_threshold_days": 30,
+      "velocity_recent_window_days": 7,
+      "velocity_baseline_window_days": 83,
+      "source": "Overview §5.6, FR-T-05, FR-T-09",
+      "sensitivity_range": [
+        30,
+        90
+      ],
+      "new_account_recent_window_days": 14
+    },
+    "signal_weights": {
+      "iteration_1_active": [
+        "s1_reciprocal_clustering",
+        "s4_review_similarity",
+        "retaliation_check"
+      ],
+      "iteration_2_scheduled": [],
+      "weights": {
+        "s1_reciprocal_clustering": 0.3,
+        "s2_rating_velocity": 0.2,
+        "s3_new_account_activity": 0.2,
+        "s4_review_similarity": 0.2,
+        "s5_account_linkage": 0.1
+      },
+      "source": "Overview §5.6, §5.13; ADR-0007; DA-15 (all five signals active in iteration 2)",
+      "iteration_2_active": [
+        "s1_reciprocal_clustering",
+        "s2_rating_velocity",
+        "s3_new_account_activity",
+        "s4_review_similarity",
+        "s5_account_linkage",
+        "retaliation_check"
+      ]
+    },
+    "signal_scaling_bounds": {
+      "s1_min_ratio": 0.3,
+      "s1_range": 0.6,
+      "s1_min_partners": 3,
+      "s2_base_ratio": 2.0,
+      "s2_range": 3.0,
+      "s2_min_recent": 3,
+      "s3_base_count": 3,
+      "s3_range": 7.0,
+      "s4_min_cosine": 0.7,
+      "s4_range": 0.25,
+      "s4_char_ngram": 3,
+      "s4_min_reviews": 2,
+      "s5_base_links": 2,
+      "s5_range": 8.0
+    },
+    "risk_bands": {
+      "level_1_proceed_max": 19.99,
+      "level_2_monitor_max": 39.99,
+      "level_3_verify_max": 59.99,
+      "level_4_flag_review_max": 100.0,
+      "source": "Overview §5.6"
+    },
+    "corroboration_guard": {
+      "min_signal_threshold": 0.5,
+      "required_corroborating_signals": 2,
+      "source": "Algorithm doc §5; ADR-0007",
+      "rationale": "Prevents single-signal false alarms (e.g. friend groups) from reaching Level 4."
+    },
+    "retaliation_check": {
+      "negative_rating_max": 2,
+      "source": "Algorithm doc §5 (Suspected Retaliation Check), FR-T-09, decision D19",
+      "rationale": "A review whose lowest rating is at most this value, posted within retaliation_window_days after the subject's complaint against the reviewer, about a loan whose return was confirmed, is set aside as suspected retaliation pending moderator review."
+    },
+    "s5_linkage": {
+      "status": "initial_hypothesis_unvalidated",
+      "linkage_source": "invitation_tree",
+      "definition": "m = other accounts invited by the same inviter as the subject within window_days, plus accounts the subject invited, that also rated the subject; device and IP are not collected (FR-A-03 is iteration 3)",
+      "window_days": 90,
+      "source": "Algorithm doc §5 S5 'linkage where legitimately available'; A11 invitation table; DA-15"
+    }
+  },
+  "decision_policy_alg4": {
+    "status": "initial_hypothesis_unvalidated",
+    "thresholds": {
+      "tau_mu_mean_threshold": 0.75,
+      "tau_L_lower_bound_threshold": 0.6,
+      "n_min_effective_observations": 3.0,
+      "rho_sup_indirect_support_threshold": 0.3,
+      "source": "Overview §5.8, §5.11; rho_sup used by R3 and R6_SPARSE (ADR-0008)",
+      "sensitivity_range": {
+        "tau_mu": [
+          0.65,
+          0.85
+        ],
+        "tau_L": [
+          0.5,
+          0.7
+        ],
+        "n_min": [
+          2.0,
+          5.0
+        ],
+        "rho_sup": [
+          0.2,
+          0.5
+        ]
+      }
+    },
+    "context_windows": {
+      "resolved_disputes_lookback_months": 12,
+      "engine_timeout_ms": 2000,
+      "source": "Overview §5.11, FR-T-07, ES-03"
+    },
+    "value_bands_pkr": {
+      "low_value_max": 5000,
+      "medium_value_max": 15000,
+      "high_value_min": 15001,
+      "source": "Community configuration default hypothesis"
+    },
+    "rule_order": [
+      "R1",
+      "R2",
+      "R4",
+      "R3",
+      "R5",
+      "R6_DISPUTE",
+      "R6_SPARSE",
+      "R7",
+      "R8",
+      "R9"
+    ],
+    "hold_rules": {
+      "R2": "manipulation_risk",
+      "R4": "high_value_low_confidence"
+    },
+    "rule_order_note": "ADR-0010 (proposed, owner Student 2): R4 is tested before R3 so a HIGH-value request with no history is held for a moderator, as FR-B-07 states. R4 fires only for HIGH value, so every other newcomer still meets R3 (INSUFFICIENT_EVIDENCE, not a negative finding). Iteration 1 order was R1, R2, R3, R4, ..."
+  },
+  "locality_a11": {
+    "status": "initial_hypothesis_unvalidated",
+    "owner": "Student 1 (Module 1, locality)",
+    "max_accuracy_m": 100,
+    "min_margin_m": 50,
+    "invite_ttl_days": 7,
+    "max_open_invites": 3,
+    "validity_days": 365,
+    "source": "12_locality/Locality_Design_A11.md §3.3"
+  },
+  "ranking_alg5": {
+    "status": "initial_hypothesis_unvalidated",
+    "owner": "Student 2 (Module 4 meaning-based search and ranking); keyword retrieval Student 1",
+    "retrieval": {
+      "candidate_pool": 100,
+      "keyword_config": "simple",
+      "embedding_model": "to be chosen in ADR-0016 after the memory test; 384 dimensions provisional",
+      "relevance_mix": {
+        "semantic": 0.7,
+        "keyword": 0.3
+      },
+      "keyword_only_relevance": "normalised keyword score alone (FR-S-02 fallback)",
+      "min_relevance": 0.25,
+      "source": "Overview §4 Tier 1; FR-S-01, FR-S-02; ADR-0016"
+    },
+    "weights": {
+      "relevance": 0.4,
+      "lender_evidence": 0.3,
+      "availability": 0.15,
+      "same_community": 0.1,
+      "freshness": 0.05,
+      "source": "Overview §4 Tier 1 formula (0.40 similarity, 0.30 trust, 0.15 availability, 0.10 distance, 0.05 recency); distance replaced by same community because no coordinates are stored (NFR-PR-01)"
+    },
+    "lender_evidence": {
+      "metric": "LENDER / CONDITION_AGREED",
+      "value": "posterior mean when n_eff >= n_min, otherwise the population baseline (never a penalty for new lenders)",
+      "shown_to_users": "as factors with confidence, never as this number (FR-S-04, NFR-U-01)"
+    },
+    "availability": {
+      "full_overlap_free": 1.0,
+      "no_dates_given": 0.5,
+      "any_held_booking_overlaps": 0.0
+    },
+    "freshness": {
+      "half_life_days": 30.0,
+      "formula": "2^(-age_days / half_life_days)"
+    },
+    "sensitivity_range": {
+      "lender_evidence": [
+        0.1,
+        0.4
+      ],
+      "relevance": [
+        0.3,
+        0.6
+      ]
+    },
+    "rationale": "A transparent hand-weighted formula with no training data (Overview §4 Tier 1); learning-to-rank needs pilot click logs and stays in FYP-2."
+  },
+  "scheduler_b13": {
+    "status": "initial_hypothesis_unvalidated",
+    "owner": "Student 1 (Module 3, ADR-0012)",
+    "run_interval_minutes": 15,
+    "request_response_window_hours": 72,
+    "handover_grace_hours": 24,
+    "return_reminder_before_due_hours": 24,
+    "overdue_limit_hours": 72,
+    "min_reminders_before_escalation": 2,
+    "confirmation_reminder_hours": 24,
+    "dispute_window_days": 7,
+    "party_response_deadline_hours": 72,
+    "listing_default_expiry_days": 60,
+    "max_attempts": 3,
+    "source": "FR-B-10, B-12, B-14, B-16, B-17, B-18; Test Plan gap UI-5; State_Machine_Design_v3.md §4",
+    "rationale": "Starting values for a neighbourhood loan of a few days; they are timers, not trust parameters, but live in the same versioned file so every value is traceable (NFR-D-01)."
+  }
+}
