@@ -49,7 +49,7 @@ function stateSentence(state: string, name: string): React.ReactNode {
     case 'REVIEW_RECOMMENDED':
       return (
         <View style={{ gap: 4 }}>
-          <Body style={{ fontSize: 14 }}>⚠️ {firstName}'s history is limited or unusual for this item</Body>
+          <Body style={{ fontSize: 14 }}>⚠️ {firstName}&apos;s history is limited or unusual for this item</Body>
           <Body style={{ fontSize: 14 }}>👁 Worth checking the details below before deciding</Body>
           <Body style={{ fontSize: 14 }} muted>You still decide</Body>
         </View>
