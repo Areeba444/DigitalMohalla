@@ -1,0 +1,169 @@
+<mxfile host="Electron" agent="Digital Mohalla design generator" version="24.7.17" type="device">
+  <diagram id="Layer_diagram__iteration_2__DA_10_" name="Layer diagram, iteration 2 (DA-10)">
+    <mxGraphModel dx="1400" dy="900" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1700" pageHeight="1030" math="0" shadow="0" background="#FFFFFF">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="v1" value="&lt;b&gt;Digital Mohalla &amp;#8212; Layer diagram, iteration 2&lt;/b&gt; (UML package diagram; DA-10, v2.0)" style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=top;fontSize=16;fontStyle=0;fontColor=#1d1d1d;spacing=2;overflow=visible;" vertex="1" parent="1">
+          <mxGeometry x="40" y="12" width="1300" height="24" as="geometry" />
+        </mxCell>
+        <mxCell id="v2" value="Same layer rules as iteration 1: each upper layer uses only the layer below it; the domain layer has no I/O; infrastructure implements the ports declared in the application layer. Iteration 2 adds, in green, the search, membership, notification and scheduler parts." style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=top;fontSize=11;fontStyle=0;fontColor=#4A5560;spacing=2;overflow=visible;" vertex="1" parent="1">
+          <mxGeometry x="40" y="36" width="1600" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="L0" value="&amp;#171;layer&amp;#187; &lt;b&gt;Presentation&lt;/b&gt;" style="shape=folder;tabWidth=290;tabHeight=22;tabPosition=left;html=1;whiteSpace=wrap;verticalAlign=top;align=left;spacingLeft=10;spacingTop=2;fontSize=12;fillColor=#EEE5F6;strokeColor=#5B2C83;container=1;collapsible=0;" vertex="1" parent="1">
+          <mxGeometry x="40" y="70" width="1240" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="v3" value="&lt;b&gt;Resident and lender screens&lt;/b&gt;&lt;br&gt;&lt;span style='font-size:10px'&gt;W1&amp;#8211;W5 plus &lt;span style='color:#0A7A36'&gt;&lt;b&gt;+&lt;/b&gt;&lt;/span&gt; W8&amp;#8211;W10, W12&amp;#8211;W17, W22&amp;#8211;W24 (join, notifications, extension, counter-offer, review, my evidence, photos, listing, search, item details)&lt;/span&gt;" style="rounded=0;whiteSpace=wrap;html=1;fontSize=11;fillColor=#FFFFFF;strokeColor=#8A4B12;" vertex="1" parent="L0">
+          <mxGeometry x="15" y="32" width="599" height="64" as="geometry" />
+        </mxCell>
+        <mxCell id="v4" value="&lt;b&gt;Moderator and admin screens&lt;/b&gt;&lt;br&gt;&lt;span style='font-size:10px'&gt;W6, W7 plus &lt;span style='color:#0A7A36'&gt;&lt;b&gt;+&lt;/b&gt;&lt;/span&gt; W11 membership queue, W18&amp;#8211;W21 responses, possession, appeal, audit log&lt;/span&gt;" style="rounded=0;whiteSpace=wrap;html=1;fontSize=11;fillColor=#FFFFFF;strokeColor=#5B2C83;" vertex="1" parent="L0">
+          <mxGeometry x="626" y="32" width="599" height="64" as="geometry" />
+        </mxCell>
+        <mxCell id="v5" value="One Expo app for every role (Areeba leads the app in iteration 2)." style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=top;fontSize=10;fontStyle=0;fontColor=#5B2C83;spacing=2;overflow=visible;" vertex="1" parent="L0">
+          <mxGeometry x="15" y="98" width="900" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="L1" value="&amp;#171;layer&amp;#187; &lt;b&gt;API / interface&lt;/b&gt;" style="shape=folder;tabWidth=290;tabHeight=22;tabPosition=left;html=1;whiteSpace=wrap;verticalAlign=top;align=left;spacingLeft=10;spacingTop=2;fontSize=12;fillColor=#F2F2F2;strokeColor=#4D4D4D;container=1;collapsible=0;" vertex="1" parent="1">
+          <mxGeometry x="40" y="216" width="1240" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="v6" value="&lt;b&gt;REST endpoints /api/v1&lt;/b&gt;&lt;br&gt;&lt;span style='font-size:10px'&gt;Architecture_Design_v2.md section 4; &lt;span style='color:#0A7A36'&gt;&lt;b&gt;+&lt;/b&gt;&lt;/span&gt; membership, listings, search, notifications, reviews, jobs&lt;/span&gt;" style="rounded=0;whiteSpace=wrap;html=1;fontSize=11;fillColor=#FFFFFF;strokeColor=#4D4D4D;" vertex="1" parent="L1">
+          <mxGeometry x="15" y="32" width="293.50" height="64" as="geometry" />
+        </mxCell>
+        <mxCell id="v7" value="&lt;b&gt;Auth &amp;amp; authorisation&lt;/b&gt;&lt;br&gt;&lt;span style='font-size:10px'&gt;role and community scope; &lt;span style='color:#0A7A36'&gt;&lt;b&gt;+&lt;/b&gt;&lt;/span&gt; job-trigger token&lt;/span&gt;" style="rounded=0;whiteSpace=wrap;html=1;fontSize=11;fillColor=#FFFFFF;strokeColor=#1F4E79;" vertex="1" parent="L1">
+          <mxGeometry x="320.50" y="32" width="293.50" height="64" as="geometry" />
+        </mxCell>
+        <mxCell id="v8" value="&lt;b&gt;Validation &amp;amp; error mapping&lt;/b&gt;&lt;br&gt;&lt;span style='font-size:10px'&gt;422, 403, 409 (invalid transition, dates taken, counter-offer open)&lt;/span&gt;" style="rounded=0;whiteSpace=wrap;html=1;fontSize=11;fillColor=#FFFFFF;strokeColor=#1F4E79;" vertex="1" parent="L1">
+          <mxGeometry x="626" y="32" width="293.50" height="64" as="geometry" />
+        </mxCell>
+        <mxCell id="v9" value="&lt;b&gt;Privacy filter&lt;/b&gt;&lt;br&gt;&lt;span style='font-size:10px'&gt;no address, coordinates or CNIC; &lt;span style='color:#0A7A36'&gt;&lt;b&gt;+&lt;/b&gt;&lt;/span&gt; locality fix never logged&lt;/span&gt;" style="rounded=0;whiteSpace=wrap;html=1;fontSize=11;fillColor=#FFFFFF;strokeColor=#1F4E79;" vertex="1" parent="L1">
+          <mxGeometry x="931.50" y="32" width="293.50" height="64" as="geometry" />
+        </mxCell>
+        <mxCell id="L2" value="&amp;#171;layer&amp;#187; &lt;b&gt;Application (use-case services)&lt;/b&gt;" style="shape=folder;tabWidth=290;tabHeight=22;tabPosition=left;html=1;whiteSpace=wrap;verticalAlign=top;align=left;spacingLeft=10;spacingTop=2;fontSize=12;fillColor=#E3EEF9;strokeColor=#1F4E79;container=1;collapsible=0;" vertex="1" parent="1">
+          <mxGeometry x="40" y="362" width="1240" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="v10" value="&lt;b&gt;BorrowingService, ListingService, JobRunner (M3)&lt;/b&gt;&lt;br&gt;&lt;span style='font-size:10px'&gt;B1, B5&amp;#8211;B8, B12, B13&lt;/span&gt;" style="rounded=0;whiteSpace=wrap;html=1;fontSize=11;fillColor=#FFFFFF;strokeColor=#1F4E79;" vertex="1" parent="L2">
+          <mxGeometry x="15" y="32" width="232.40" height="64" as="geometry" />
+        </mxCell>
+        <mxCell id="v11" value="&lt;b&gt;&lt;span style='color:#0A7A36'&gt;&lt;b&gt;+&lt;/b&gt;&lt;/span&gt; MembershipService, LocalityVerifier (M1)&lt;/b&gt;&lt;br&gt;&lt;span style='font-size:10px'&gt;A1, A3, A4&lt;/span&gt;" style="rounded=0;whiteSpace=wrap;html=1;fontSize=11;fillColor=#FFFFFF;strokeColor=#1F4E79;" vertex="1" parent="L2">
+          <mxGeometry x="259.40" y="32" width="232.40" height="64" as="geometry" />
+        </mxCell>
+        <mxCell id="v12" value="&lt;b&gt;&lt;span style='color:#0A7A36'&gt;&lt;b&gt;+&lt;/b&gt;&lt;/span&gt; SearchService (M4)&lt;/b&gt;&lt;br&gt;&lt;span style='font-size:10px'&gt;keyword + semantic retrieval, ranking, logging&lt;/span&gt;" style="rounded=0;whiteSpace=wrap;html=1;fontSize=11;fillColor=#FFFFFF;strokeColor=#8A4B12;" vertex="1" parent="L2">
+          <mxGeometry x="503.80" y="32" width="232.40" height="64" as="geometry" />
+        </mxCell>
+        <mxCell id="v13" value="&lt;b&gt;CaseService, DecisionService, AppealService (M9)&lt;/b&gt;&lt;br&gt;&lt;span style='font-size:10px'&gt;D6, I4, I6&lt;/span&gt;" style="rounded=0;whiteSpace=wrap;html=1;fontSize=11;fillColor=#FFFFFF;strokeColor=#5B2C83;" vertex="1" parent="L2">
+          <mxGeometry x="748.20" y="32" width="232.40" height="64" as="geometry" />
+        </mxCell>
+        <mxCell id="v14" value="&lt;b&gt;&lt;span style='color:#0A7A36'&gt;&lt;b&gt;+&lt;/b&gt;&lt;/span&gt; NotificationService (M7), ReviewService (M5)&lt;/b&gt;&lt;br&gt;&lt;span style='font-size:10px'&gt;G3, D1&lt;/span&gt;" style="rounded=0;whiteSpace=wrap;html=1;fontSize=11;fillColor=#FFFFFF;strokeColor=#8A4B12;" vertex="1" parent="L2">
+          <mxGeometry x="992.60" y="32" width="232.40" height="64" as="geometry" />
+        </mxCell>
+        <mxCell id="L3" value="&amp;#171;layer&amp;#187; &lt;b&gt;Domain (pure logic, no I/O)&lt;/b&gt;" style="shape=folder;tabWidth=290;tabHeight=22;tabPosition=left;html=1;whiteSpace=wrap;verticalAlign=top;align=left;spacingLeft=10;spacingTop=2;fontSize=12;fillColor=#E2F0D9;strokeColor=#2E5E1E;container=1;collapsible=0;" vertex="1" parent="1">
+          <mxGeometry x="40" y="508" width="1240" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="v15" value="&lt;b&gt;Lifecycle model v3&lt;/b&gt;&lt;br&gt;&lt;span style='font-size:10px'&gt;14 states, T01&amp;#8211;T29, I01&amp;#8211;I08; possession exits T25a&amp;#8211;c (ADR-0009)&lt;/span&gt;" style="rounded=0;whiteSpace=wrap;html=1;fontSize=11;fillColor=#FFFFFF;strokeColor=#1F4E79;" vertex="1" parent="L3">
+          <mxGeometry x="15" y="32" width="232.40" height="64" as="geometry" />
+        </mxCell>
+        <mxCell id="v16" value="&lt;b&gt;Assurance engine (M5)&lt;/b&gt;&lt;br&gt;&lt;span style='font-size:10px'&gt;posterior per role and metric, policy, S1&amp;#8211;S5&lt;/span&gt;" style="rounded=0;whiteSpace=wrap;html=1;fontSize=11;fillColor=#FFFFFF;strokeColor=#8A4B12;" vertex="1" parent="L3">
+          <mxGeometry x="259.40" y="32" width="232.40" height="64" as="geometry" />
+        </mxCell>
+        <mxCell id="v17" value="&lt;b&gt;Indirect trust (M5)&lt;/b&gt;&lt;br&gt;&lt;span style='font-size:10px'&gt;bounded k-hop, noisy-OR, cap&lt;/span&gt;" style="rounded=0;whiteSpace=wrap;html=1;fontSize=11;fillColor=#FFFFFF;strokeColor=#1F4E79;" vertex="1" parent="L3">
+          <mxGeometry x="503.80" y="32" width="232.40" height="64" as="geometry" />
+        </mxCell>
+        <mxCell id="v18" value="&lt;b&gt;&lt;span style='color:#0A7A36'&gt;&lt;b&gt;+&lt;/b&gt;&lt;/span&gt; Locality rule, hybrid ranking&lt;/b&gt;&lt;br&gt;&lt;span style='font-size:10px'&gt;A11 decision table; Algorithm 5&lt;/span&gt;" style="rounded=0;whiteSpace=wrap;html=1;fontSize=11;fillColor=#FFFFFF;strokeColor=#1F4E79;" vertex="1" parent="L3">
+          <mxGeometry x="748.20" y="32" width="232.40" height="64" as="geometry" />
+        </mxCell>
+        <mxCell id="v19" value="&lt;b&gt;EscalationCase model&lt;/b&gt;&lt;br&gt;&lt;span style='font-size:10px'&gt;C01&amp;#8211;C11&lt;/span&gt;" style="rounded=0;whiteSpace=wrap;html=1;fontSize=11;fillColor=#FFFFFF;strokeColor=#5B2C83;" vertex="1" parent="L3">
+          <mxGeometry x="992.60" y="32" width="232.40" height="64" as="geometry" />
+        </mxCell>
+        <mxCell id="L4" value="&amp;#171;layer&amp;#187; &lt;b&gt;Infrastructure&lt;/b&gt;" style="shape=folder;tabWidth=290;tabHeight=22;tabPosition=left;html=1;whiteSpace=wrap;verticalAlign=top;align=left;spacingLeft=10;spacingTop=2;fontSize=12;fillColor=#FDEBDD;strokeColor=#8A4B12;container=1;collapsible=0;" vertex="1" parent="1">
+          <mxGeometry x="40" y="654" width="1240" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="v20" value="&lt;b&gt;EventStore &amp;amp; projections&lt;/b&gt;&lt;br&gt;&lt;span style='font-size:10px'&gt;lifecycle_event, replay; &lt;span style='color:#0A7A36'&gt;&lt;b&gt;+&lt;/b&gt;&lt;/span&gt; v3 triggers&lt;/span&gt;" style="rounded=0;whiteSpace=wrap;html=1;fontSize=11;fillColor=#FFFFFF;strokeColor=#1F4E79;" vertex="1" parent="L4">
+          <mxGeometry x="15" y="32" width="232.40" height="64" as="geometry" />
+        </mxCell>
+        <mxCell id="v21" value="&lt;b&gt;&lt;span style='color:#0A7A36'&gt;&lt;b&gt;+&lt;/b&gt;&lt;/span&gt; Search store&lt;/b&gt;&lt;br&gt;&lt;span style='font-size:10px'&gt;search_tsv, item_embedding (pgvector), search logs&lt;/span&gt;" style="rounded=0;whiteSpace=wrap;html=1;fontSize=11;fillColor=#FFFFFF;strokeColor=#1F4E79;" vertex="1" parent="L4">
+          <mxGeometry x="259.40" y="32" width="232.40" height="64" as="geometry" />
+        </mxCell>
+        <mxCell id="v22" value="&lt;b&gt;&lt;span style='color:#0A7A36'&gt;&lt;b&gt;+&lt;/b&gt;&lt;/span&gt; Notification and job tables&lt;/b&gt;&lt;br&gt;&lt;span style='font-size:10px'&gt;notification, job_run&lt;/span&gt;" style="rounded=0;whiteSpace=wrap;html=1;fontSize=11;fillColor=#FFFFFF;strokeColor=#1F4E79;" vertex="1" parent="L4">
+          <mxGeometry x="503.80" y="32" width="232.40" height="64" as="geometry" />
+        </mxCell>
+        <mxCell id="v23" value="&lt;b&gt;ConfigLoader&lt;/b&gt;&lt;br&gt;&lt;span style='font-size:10px'&gt;config 1.4.0, config_version&lt;/span&gt;" style="rounded=0;whiteSpace=wrap;html=1;fontSize=11;fillColor=#FFFFFF;strokeColor=#8A4B12;" vertex="1" parent="L4">
+          <mxGeometry x="748.20" y="32" width="232.40" height="64" as="geometry" />
+        </mxCell>
+        <mxCell id="v24" value="&lt;b&gt;&lt;span style='color:#0A7A36'&gt;&lt;b&gt;+&lt;/b&gt;&lt;/span&gt; Storage adapter&lt;/b&gt;&lt;br&gt;&lt;span style='font-size:10px'&gt;object storage for photos (ADR-0014)&lt;/span&gt;" style="rounded=0;whiteSpace=wrap;html=1;fontSize=11;fillColor=#FFFFFF;strokeColor=#5B2C83;" vertex="1" parent="L4">
+          <mxGeometry x="992.60" y="32" width="232.40" height="64" as="geometry" />
+        </mxCell>
+        <mxCell id="L5" value="&amp;#171;layer&amp;#187; &lt;b&gt;Platform (as built)&lt;/b&gt;" style="shape=folder;tabWidth=290;tabHeight=22;tabPosition=left;html=1;whiteSpace=wrap;verticalAlign=top;align=left;spacingLeft=10;spacingTop=2;fontSize=12;fillColor=#F4F6F8;strokeColor=#46535F;container=1;collapsible=0;" vertex="1" parent="1">
+          <mxGeometry x="40" y="800" width="1240" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="v25" value="&lt;b&gt;PostgreSQL 16 on Neon&lt;/b&gt;&lt;br&gt;&lt;span style='font-size:10px'&gt;btree_gist, &lt;span style='color:#0A7A36'&gt;&lt;b&gt;+&lt;/b&gt;&lt;/span&gt; vector, pg_trgm; migrations 0001, 0002&lt;/span&gt;" style="rounded=0;whiteSpace=wrap;html=1;fontSize=11;fillColor=#FFFFFF;strokeColor=#1F4E79;" vertex="1" parent="L5">
+          <mxGeometry x="15" y="32" width="293.50" height="64" as="geometry" />
+        </mxCell>
+        <mxCell id="v26" value="&lt;b&gt;Render&lt;/b&gt;&lt;br&gt;&lt;span style='font-size:10px'&gt;API Docker web service, web app static site (ADR-0011)&lt;/span&gt;" style="rounded=0;whiteSpace=wrap;html=1;fontSize=11;fillColor=#FFFFFF;strokeColor=#1F4E79;" vertex="1" parent="L5">
+          <mxGeometry x="320.50" y="32" width="293.50" height="64" as="geometry" />
+        </mxCell>
+        <mxCell id="v27" value="&lt;b&gt;GitHub Actions&lt;/b&gt;&lt;br&gt;&lt;span style='font-size:10px'&gt;ci.yml; &lt;span style='color:#0A7A36'&gt;&lt;b&gt;+&lt;/b&gt;&lt;/span&gt; scheduled job trigger every 15 min (ADR-0012)&lt;/span&gt;" style="rounded=0;whiteSpace=wrap;html=1;fontSize=11;fillColor=#FFFFFF;strokeColor=#1F4E79;" vertex="1" parent="L5">
+          <mxGeometry x="626" y="32" width="293.50" height="64" as="geometry" />
+        </mxCell>
+        <mxCell id="v28" value="&lt;b&gt;&lt;span style='color:#0A7A36'&gt;&lt;b&gt;+&lt;/b&gt;&lt;/span&gt; Embedding model runtime&lt;/b&gt;&lt;br&gt;&lt;span style='font-size:10px'&gt;small sentence-embedding model in the API (ADR-0016)&lt;/span&gt;" style="rounded=0;whiteSpace=wrap;html=1;fontSize=11;fillColor=#FFFFFF;strokeColor=#8A4B12;" vertex="1" parent="L5">
+          <mxGeometry x="931.50" y="32" width="293.50" height="64" as="geometry" />
+        </mxCell>
+        <mxCell id="e29" value="&amp;#171;use&amp;#187;" style="html=1;rounded=0;fontSize=10.5;labelBackgroundColor=#FFFFFF;fontColor=#1d1d1d;endSize=8;endArrow=open;endFill=0;dashed=1;strokeColor=#46535F;strokeWidth=1.5;fontSize=10" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1300" y="140" as="sourcePoint" />
+            <mxPoint x="1300" y="266" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e30" value="&amp;#171;use&amp;#187;" style="html=1;rounded=0;fontSize=10.5;labelBackgroundColor=#FFFFFF;fontColor=#1d1d1d;endSize=8;endArrow=open;endFill=0;dashed=1;strokeColor=#46535F;strokeWidth=1.5;fontSize=10" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1300" y="286" as="sourcePoint" />
+            <mxPoint x="1300" y="412" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e31" value="&amp;#171;use&amp;#187;" style="html=1;rounded=0;fontSize=10.5;labelBackgroundColor=#FFFFFF;fontColor=#1d1d1d;endSize=8;endArrow=open;endFill=0;dashed=1;strokeColor=#46535F;strokeWidth=1.5;fontSize=10" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1300" y="432" as="sourcePoint" />
+            <mxPoint x="1300" y="558" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e32" value="&amp;#171;use&amp;#187;" style="html=1;rounded=0;fontSize=10.5;labelBackgroundColor=#FFFFFF;fontColor=#1d1d1d;endSize=8;endArrow=open;endFill=0;dashed=1;strokeColor=#46535F;strokeWidth=1.5;fontSize=10" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1300" y="724" as="sourcePoint" />
+            <mxPoint x="1300" y="850" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e33" value="&amp;#171;realize&amp;#187;&lt;br&gt;ports" style="html=1;rounded=0;fontSize=10.5;labelBackgroundColor=#FFFFFF;fontColor=#1d1d1d;endSize=8;endArrow=open;endFill=0;dashed=1;strokeColor=#8A4B12;strokeWidth=1.5;fontSize=10" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1345" y="704" as="sourcePoint" />
+            <mxPoint x="1345" y="452" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="cc" value="&amp;#171;crosscutting&amp;#187; &lt;b&gt;Policies&lt;/b&gt;" style="shape=folder;tabWidth=170;tabHeight=22;tabPosition=left;html=1;whiteSpace=wrap;verticalAlign=top;align=left;spacingLeft=8;spacingTop=2;fontSize=12;fillColor=#FFF8E1;strokeColor=#B26A00;container=1;collapsible=0;" vertex="1" parent="1">
+          <mxGeometry x="1400" y="70" width="260" height="866" as="geometry" />
+        </mxCell>
+        <mxCell id="v34" value="&lt;b&gt;Authorisation on every transition&lt;/b&gt;&lt;br&gt;&lt;span style='font-size:10px'&gt;NFR-S-02; recorded in the event&lt;/span&gt;" style="rounded=0;whiteSpace=wrap;html=1;fontSize=11;fillColor=#FFFFFF;strokeColor=#B26A00;" vertex="1" parent="cc">
+          <mxGeometry x="15" y="42" width="230" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="v35" value="&lt;b&gt;Audit logging&lt;/b&gt;&lt;br&gt;&lt;span style='font-size:10px'&gt;append-only, hash-chained (FR-M-05)&lt;/span&gt;" style="rounded=0;whiteSpace=wrap;html=1;fontSize=11;fillColor=#FFFFFF;strokeColor=#B26A00;" vertex="1" parent="cc">
+          <mxGeometry x="15" y="157" width="230" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="v36" value="&lt;b&gt;Event schema&lt;/b&gt;&lt;br&gt;&lt;span style='font-size:10px'&gt;frozen fields; v3 adds three event types (signed)&lt;/span&gt;" style="rounded=0;whiteSpace=wrap;html=1;fontSize=11;fillColor=#FFFFFF;strokeColor=#B26A00;" vertex="1" parent="cc">
+          <mxGeometry x="15" y="272" width="230" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="v37" value="&lt;b&gt;Configuration&lt;/b&gt;&lt;br&gt;&lt;span style='font-size:10px'&gt;config_version on every assessment and search&lt;/span&gt;" style="rounded=0;whiteSpace=wrap;html=1;fontSize=11;fillColor=#FFFFFF;strokeColor=#B26A00;" vertex="1" parent="cc">
+          <mxGeometry x="15" y="387" width="230" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="v38" value="&lt;b&gt;Location privacy&lt;/b&gt;&lt;br&gt;&lt;span style='font-size:10px'&gt;coarse outcome only; no location in logs or payloads&lt;/span&gt;" style="rounded=0;whiteSpace=wrap;html=1;fontSize=11;fillColor=#FFFFFF;strokeColor=#B26A00;" vertex="1" parent="cc">
+          <mxGeometry x="15" y="502" width="230" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="v39" value="&lt;b&gt;Idempotent jobs&lt;/b&gt;&lt;br&gt;&lt;span style='font-size:10px'&gt;job_run once per (job, due key) (NFR-R-05)&lt;/span&gt;" style="rounded=0;whiteSpace=wrap;html=1;fontSize=11;fillColor=#FFFFFF;strokeColor=#B26A00;" vertex="1" parent="cc">
+          <mxGeometry x="15" y="617" width="230" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="v40" value="&lt;b&gt;Synthetic data labels&lt;/b&gt;&lt;br&gt;&lt;span style='font-size:10px'&gt;seed data and search catalogue marked synthetic&lt;/span&gt;" style="rounded=0;whiteSpace=wrap;html=1;fontSize=11;fillColor=#FFFFFF;strokeColor=#B26A00;" vertex="1" parent="cc">
+          <mxGeometry x="15" y="732" width="230" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="v41" value="UML package diagram: folder = package with stereotype &amp;#171;layer&amp;#187;; dashed open arrow = dependency (&amp;#171;use&amp;#187; downward; &amp;#171;realize&amp;#187; from infrastructure up to the ports it implements). Border colour = owner (purple S3, blue S1, orange S2, grey shared). Green + = new in iteration 2." style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=top;fontSize=10.5;fontStyle=0;fontColor=#4A5560;spacing=2;overflow=visible;" vertex="1" parent="1">
+          <mxGeometry x="40" y="960" width="1300" height="20" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
