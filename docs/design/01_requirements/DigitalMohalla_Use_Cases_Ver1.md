@@ -2,7 +2,7 @@
 
 | Field | Value |
 | :--- | :--- |
-| Version | 1.4 draft, 2026-11-07: Student 3 sections done (UC-D1, UC-D2 dressed; UC-B12, UC-I4, UC-I6 extended; DA-02; UC-B3, UC-B4 dressed, DA-20); Student 1 sections (A1, B6, B8, B13, G3) to follow. v1.3: v1.2 plus the integration decisions of 2026-10-11 |
+| Version | 1.4 draft, 2026-11-07: Student 3 sections done (UC-D1, UC-D2 dressed; UC-B12, UC-I4, UC-I6 extended; DA-02; UC-B3, UC-B4 dressed, DA-20); Student 1 sections done 2026-11-12 (UC-A1, UC-B13, UC-G3 dressed; UC-B6 ext 3b and UC-B8 ext 1a and *a expanded; §2 event types; DA-02). v1.3: v1.2 plus the integration decisions of 2026-10-11 |
 | Date | 2026-10-11 (v1.1: 2026-10-10; v1.2 and v1.3: 2026-10-11) |
 | Authors | Team Digital Mohalla (v1.1 edits drafted with Claude; reviewed by: Fatima Khursheed, Areeba Javed, Minahil Kashif) |
 | Status | Baseline: ADR-0001 to ADR-0005 accepted on 2026-10-11; ADR-0007 and ADR-0008 accepted for integration (Students 2 and 3 to initial) |
@@ -41,6 +41,8 @@ Event-sourced, as in Overview §3. Module label for B5 to B8 and B12: **Borrowin
 
 Extension requests and reminders are events inside ACTIVE and do not change state (event types `reminder_sent`, `extension_requested`, `extension_approved`, `extension_declined`; built in iteration 2). `reminder_sent` is also used in ACCEPTED and RETURN_INITIATED.
 
+**v1.4 (ADR-0015, proposed): counter-offer.** Three event types are added: `counter_offered` and `counter_declined` are events inside ASSESSED, and `counter_accepted` moves the request to LOCALITY_CHECKED with the new dates, so the assessment runs again (B6 ext 3b). The 14 states are unchanged. Lifecycle v3: `07_state_machines/State_Machine_Design_v3.md`.
+
 **Exits from HELD_FOR_REVIEW (ADR-0003).** Hold reasons: `locality_inconclusive`, `locality_conflict`, `manipulation_risk`, `high_value_low_confidence`, `engine_failure`.
 
 | Hold reason | Cleared | Safeguards imposed | Restricted |
@@ -49,7 +51,7 @@ Extension requests and reminders are events inside ACTIVE and do not change stat
 | Manipulation risk, high value with low confidence | → ASSESSED (existing assessment plus moderator note) | → ASSESSED with added safeguards | → DECLINED |
 | Engine failure | → LOCALITY_CHECKED, assessment re-run | Not available (no assessment exists) | → DECLINED |
 
-**Exits from DISPUTED (ADR-0004).** `dispute_resolved` → COMPLETED (moderator decision); `dispute_withdrawn` → the state stored as `previous_state` in the `dispute_opened` event. A dispute can be opened from ACCEPTED, ACTIVE or RETURN_INITIATED, not from RETURNED (B12).
+**Exits from DISPUTED (ADR-0004; v1.4: ADR-0009, proposed).** `dispute_resolved` → the state that the recorded item possession allows: NO_SHOW (`NOT_HANDED_OVER`, T25a), ACTIVE (`WITH_BORROWER`, T25b) or COMPLETED (`RETURNED` or `LOST`, T25c); `dispute_withdrawn` → the state stored as `previous_state` in the `dispute_opened` event. A dispute can be opened from ACCEPTED, ACTIVE or RETURN_INITIATED, not from RETURNED (B12).
 
 **Event record (schema frozen):** `event_id, stream_id (transaction), stream_seq, event_type, schema_version, actor_id, occurred_at, previous_state, new_state, evidence_refs, authorisation, payload`. Assessment events also store `config_version`. `payload` is a JSON object holding event-specific data (dates, hold reason, decision, dispute reason, outcome), defined per event type in the event catalogue (ADR-0005). Any addition, including a new event type, needs sign-off from all three students and is reviewed in the class diagram. v1.1 added the event types `hold_cleared`, `dispute_resolved` and `dispute_withdrawn` (ADR-0003, ADR-0004); v1.2 adds `payload` and the four internal event types (ADR-0005).
 
@@ -70,6 +72,9 @@ Extension requests and reminders are events inside ACTIVE and do not change stat
 | D2 View my evidence (trust profile) | CORE (iteration 2) | M | FR-T-08 | Dressed in v1.4 |
 | A3 Select neighbourhood, request membership | CORE (iteration 2) | M | FR-A-06 to A-09 | |
 | A4 Approve or reject membership | CORE (iteration 2) | M | FR-A-10, A-11 | |
+| A1 Register | ENAB (iteration 2) | M | FR-A-01 | Dressed in v1.4; OTP (A9, FR-A-02) in iteration 3 |
+| B13 Run scheduled jobs | CORE (iteration 2) | M | FR-B-18, NFR-R-05 | Dressed in v1.4 |
+| G3 Receive in-app notifications | ENAB (iteration 2) | M | FR-C-02 (in-app part) | Dressed in v1.4 |
 | B3 Search for items | Module 4 (iteration 2) | S | FR-S-01 to S-03, S-05 | Dressed in v1.4 (DA-20) |
 | B4 View item details and lender evidence | Module 4 (iteration 2) | S | FR-S-04 | Dressed in v1.4 (DA-20) |
 
@@ -175,7 +180,12 @@ Extension requests and reminders are events inside ACTIVE and do not change stat
 
 **Extensions**
 - 3a. Lender chooses "Decline": optional reason, DECLINED, requested-date mark removed, borrower notified.
-- 3b. Lender proposes different dates: counter-offer; the borrower accepts or declines.
+- 3b. Lender proposes different dates.
+  1. The lender chooses "Propose other dates" and picks new dates. The system checks that they are in the future, differ from the request and do not overlap a held booking; it appends `counter_offered` (I07), restarts the response window and notifies the borrower.
+  2. The borrower accepts: the system checks the dates are still free, appends `counter_accepted` (T29), changes the request to the new dates and runs the assessment again (sequence (a)), because loan length is part of the evidence weighting. The lender then sees the new assessment and accepts or declines as in steps 2 to 6.
+  3. The borrower declines: `counter_declined` (I08); the original dates stand and the lender may still accept or decline them.
+  4. Only one counter-offer is open at a time. A second one is refused until the borrower answers.
+  5. If the offered dates become taken before the borrower answers, acceptance is refused with "dates now taken" and the borrower may ask for another offer.
 - 3c. Another acceptance for overlapping dates committed first: the database refuses this one and nothing is committed (ADR-0002). The lender is told the dates are taken and the request ends DECLINED with reason "dates taken".
 - 3d. Actor is not the listing owner: deny and log the attempt.
 - 2a. Assurance state is INSUFFICIENT_EVIDENCE: show "Insufficient verified history; lender review required"; the lender decides.
@@ -222,8 +232,14 @@ Extension requests and reminders are events inside ACTIVE and do not change stat
 | 5 | | Sends the outcome to the engine, records the deposit release, frees the calendar, unlocks reviews, notifies both |
 
 **Extensions**
-- 1a. Borrower needs more time: extension request; the lender approves (due date updated) or declines.
-- *a. Item overdue beyond the limit: escalating reminders, then an automatic dispute (B12) (ES-08).
+- 1a. Borrower needs more time.
+  1. While ACTIVE, the borrower requests a new due date (`extension_requested`, I03); one request may be open at a time.
+  2. The lender approves (`extension_approved`, I04): the due date and the held booking move together. If the longer booking overlaps another held booking, the database refuses it and the lender is told the dates are taken.
+  3. The lender declines (`extension_declined`, I05): the due date stands.
+- *a. Item overdue.
+  1. The scheduler (UC-B13) sends a reminder 24 hours before the due date and one at the due date (`reminder_sent`, I02).
+  2. When the due date plus the overdue limit (initially 72 hours) passes and at least two reminders were sent, the scheduler opens a dispute with reason NON_RETURN (`dispute_opened`, T24). The case goes to a moderator (B12, D6) and both parties are notified (ES-08).
+  3. If the borrower starts the return before the limit, the escalation does not happen.
 - 3a. Lender reports damage or missing parts, or the parties disagree on condition: DISPUTED (B12), deposit record held, outcome not counted until resolved (ES-07).
 - 3b. Lender does not confirm within the window: reminder, then flagged for moderator attention.
 - 4a. Return is late: record a "late return" outcome and continue.
@@ -256,6 +272,32 @@ Extension requests and reminders are events inside ACTIVE and do not change stat
 - 3a. A file has a disallowed type or is too large: refused with a reason; the party may submit without it (TC-85).
 - 3b. Storage is unavailable: the dispute is still raised, marked "reduced evidence"; files can be added later as a statement (ADR-0014).
 - 6a. The other party tries to withdraw: refused; only the raising party may withdraw (FR-B-17).
+
+### UC-B13: Run scheduled jobs (core, iteration 2)
+| | |
+| :--- | :--- |
+| Module / Scope / Level | Borrowing lifecycle / CORE, M / Subfunction |
+| Primary actor | Scheduler (an external schedule calling the system, ADR-0012) |
+| Stakeholders | **Lenders and borrowers:** requests do not hang, reminders arrive once, overdue items are escalated. **Moderators:** escalations arrive with evidence. **Platform:** no duplicate state changes or messages. |
+| Pre-conditions | The job token is valid. The timers are set in the versioned configuration (`scheduler_b13`). |
+| Post-conditions | Every due item is handled exactly once: its lifecycle event appended, its notification sent, its run recorded. A rerun changes nothing. |
+
+| # | Scheduler | System |
+| :-: | :--- | :--- |
+| 1 | Calls the job endpoint (every 15 minutes) | Checks the token; takes the job lock |
+| 2 | | For each job (request expiry, no-show, handover and return reminders, overdue escalation, confirmation reminder, listing expiry, embedding backfill, population baseline), finds the items due at the current time |
+| 3 | | Claims each item once in the job-run record (job name and due key) |
+| 4 | | Applies the job's command through the lifecycle service, so the transition table, guards and audit apply as for a user: T15, T19, T24, I01, I02, I06; or the listing, embedding or baseline update |
+| 5 | | Sends each notification once (unique dedupe key) |
+| 6 | | Records the run as succeeded and releases the lock; returns a report of what ran, what was skipped and what failed |
+
+**Extensions**
+- 1a. Token missing or wrong: 401, nothing runs, the attempt is logged.
+- 1b. Another run holds the lock: this run returns at once ("already running").
+- 3a. The item was already claimed by an earlier run: skipped (NFR-R-05).
+- 4a. The command is refused because the state changed (for example the borrower started the return): recorded as failed and retried on the next run, up to three attempts; the refusal itself is audited.
+- 4b. The schedule ran late: jobs act on what is due now, so they are only delayed; events keep the database's own timestamps.
+- *a. Demo or test: the job service accepts a supplied "now" only when a demo flag is set; in normal running it uses the clock.
 
 ### UC-D1: Submit review and rating (core, iteration 2)
 | | |
@@ -406,6 +448,27 @@ Window lengths (review window, edit window, retaliation window of 14 days in eng
 - 3d. Masking: e-mail, phone, free-text statements and reasons are masked by default; unmasking one entry needs a stated purpose and is itself logged.
 - *a. A moderator opens the log: only entries for their own community's cases are shown (NFR-S-03).
 
+### UC-A1: Register (enabling, iteration 2; the OTP part of UC-A9 in iteration 3)
+| | |
+| :--- | :--- |
+| Module / Scope / Level | Accounts & communities / ENAB, M / User goal |
+| Primary actor | Guest |
+| Stakeholders | **Guest:** a quick start without exposing personal data. **Platform:** no duplicate or fake accounts, no identifier leaks. **Residents:** members are accountable. |
+| Pre-conditions | The guest is not logged in. |
+| Post-conditions | **Success:** account in PENDING_VERIFICATION with `terms_accepted_at` recorded; the member can request to join a community (A3). **Failure:** no account; a generic message. |
+
+| # | Guest | System |
+| :-: | :--- | :--- |
+| 1 | Opens "Create account" | Shows the form, the terms and the privacy notice (what is stored, approximate location only, no CNIC) |
+| 2 | Enters display name, e-mail and password; accepts the terms | Validates the fields and the password rules |
+| 3 | Submits | Creates the account (PENDING_VERIFICATION), stores a salted password hash and the acceptance time; signs the member in |
+
+**Extensions**
+- 2a. Terms not accepted: the account is not created.
+- 3a. The e-mail is already registered: the same generic message as a success ("check your e-mail"); nothing reveals which identifier matched (FR-A-01).
+- 3b. Too many attempts from one device or network: temporary refusal (FR-A-03, iteration 3).
+- *a. In iteration 2 the OTP step of A9 is not built. The account can join a community, and the community verification (A3) is what lets it borrow; this is disclosed in the report as a scope note.
+
 ### UC-A3: Select neighbourhood and request community membership (core, iteration 2)
 | | |
 | :--- | :--- |
@@ -453,6 +516,27 @@ Window lengths (review window, edit window, retaliation window of 14 days in eng
 - 3b. Earlier decision reversed: both stay in the log.
 - 4a. Another moderator decided first: show current state. 4b. Not authorised for this community: deny and log. 4c. Applicant withdrew or was suspended: not applied.
 - 4d. Applicant disputes a rejection: resubmits with new evidence (A3).
+
+### UC-G3: Receive in-app notifications (enabling, iteration 2; in-app channel only)
+| | |
+| :--- | :--- |
+| Module / Scope / Level | Communication & notifications / ENAB, M / User goal |
+| Primary actor | Member. Secondary: the modules that notify (M1, M3, M9 and the scheduler) |
+| Stakeholders | **Member:** learns of requests, decisions and deadlines in time. **Modules:** one way to tell people. **Platform:** no duplicates, no location in messages. |
+| Pre-conditions | The member is logged in. |
+| Post-conditions | The member sees each notification once; read ones are marked. |
+
+| # | Member | System |
+| :-: | :--- | :--- |
+| 1 | | A module calls `notify(user, type, payload, dedupe_key)`; the system stores it once per member and key |
+| 2 | Opens the app or returns to it | Polls for unread notifications and shows the count on the bell |
+| 3 | Opens the inbox | Lists notifications newest first, each linking to its request, case or membership |
+| 4 | Opens one | Marks it read and opens the linked screen |
+
+**Extensions**
+- 1a. The same notification arrives twice (for example a retried job): the second is ignored (unique key).
+- 1b. A payload would contain a location or an address: refused by the database (NFR-PR-01).
+- *a. E-mail and push channels, preferences and quiet hours (G4): iteration 3.
 
 ---
 
@@ -511,7 +595,18 @@ Window lengths (review window, edit window, retaliation window of 14 days in eng
 | DA-07 | I4 step 2 (C02 to C04), ext 4b (appeal, C08 to C10) and 4c (reversal, C11) in build detail |
 | DA-02 | I6 steps 2 to 4 and ext 3c, 3d, *a: filters, masking, integrity check, views logged, community scope |
 | DA-20 | B3 (search) and B4 (item details and lender evidence) dressed for Module 4 in iteration 2 |
-| Open | Review, edit and appeal window values are proposed in FR/NFR v1.4 Part D (DA-03); Student 1 sections (A1, B6, B8, B13, G3) follow in the same version |
+| Open | Review, edit and appeal window values are proposed in FR/NFR v1.4 Part D (DA-03) |
+
+**v1.4 draft (iteration 2, DA-02; Student 1 sections, 2026-11-12, drafted with Claude Code, review pending)**
+
+| # | Change |
+| :-: | :--- |
+| DA-02 | A1 dressed for iteration 2; the OTP step of A9 stays in iteration 3 and is disclosed (FR-A-01, FR-A-02) |
+| ADR-0015 (proposed) | §2 event types; B6 extension 3b expanded into the counter-offer flow (I07, I08, T29) |
+| DA-02 | B8 extensions 1a and *a expanded: extensions, reminders, the overdue limit and the automatic dispute (FR-B-14) |
+| DA-02 | B13 dressed (was brief in Appendix B, issue N-3; FR-B-18, NFR-R-05, ADR-0012) |
+| DA-02 | G3 dressed for the in-app channel (FR-C-02 in-app part, ADR-0013); e-mail and push stay in iteration 3 |
+| ADR-0009 (proposed) | §2 exits from DISPUTED by item possession (T25a, T25b, T25c), matching Student 3's B12 and I4 changes |
 
 ## Appendix B: Remaining use cases (brief)
 
