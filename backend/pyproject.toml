@@ -5,18 +5,18 @@ description = "Digital Mohalla backend: FastAPI API, event-sourced lifecycle and
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
-    "alembic>=1.20.0",
+    "alembic>=1.20.1",
     "argon2-cffi>=25.1.0",
-    "fastapi>=0.143.2",
+    "fastapi>=0.162.2",
     "numpy>=2.5.4",
-    "psycopg[binary]>=3.3.6",
+    "psycopg[binary]>=3.3.8",
     "pydantic>=2.14.3",
-    "pydantic-settings>=2.16.0",
+    "pydantic-settings>=2.16.2",
     "pyjwt>=2.15.1",
-    "python-multipart>=0.0.32",
+    "python-multipart>=0.0.33",
     "pyyaml>=6.0.3",
     "scipy>=1.18.1",
-    "sqlalchemy>=2.1.4",
+    "sqlalchemy>=2.1.8",
     "structlog>=26.1.0",
     "uvicorn[standard]>=0.54.0",
 ]
@@ -25,15 +25,15 @@ dependencies = [
 dev = [
     "bandit>=1.9.4",
     "httpx>=0.28.1",
-    "hypothesis>=6.169.0",
-    "locust>=2.46.7",
-    "mypy>=2.4.0",
+    "hypothesis>=6.170.15",
+    "locust>=2.47.0",
+    "mypy>=2.4.1",
     "networkx>=3.7",
     "pip-audit>=2.10.1",
     "pre-commit>=4.7.0",
-    "pytest>=9.1.1",
+    "pytest>=9.2.0",
     "pytest-cov>=7.1.0",
-    "ruff>=0.17.1",
+    "ruff>=0.17.4",
 ]
 
 [tool.pytest.ini_options]
