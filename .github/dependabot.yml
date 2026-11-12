@@ -1,21 +1,46 @@
-# Dependabot opens small pull requests when a dependency has an update or a security fix.
+# Dependabot opens pull requests when a dependency has an update or a security fix.
 # CI then checks each one; merge only if it is green and the change makes sense.
+#
+# Version updates (the settings below):
+#   - go to `develop`, like every other change, and reach `main` with the next develop -> main merge;
+#   - run weekly, on Monday morning Pakistan time;
+#   - come as one grouped pull request per section (backend, frontend, CI actions), not one per package;
+#   - skip major versions: those are upgraded on purpose between iterations (tech stack doc), not mid-iteration.
+# Security updates are not affected by these settings: GitHub always raises them against `main`, the default
+# branch, one per vulnerable package.
+# GitHub reads this file from `main`, so a change here takes effect after develop is merged into main.
 version: 2
 updates:
   - package-ecosystem: uv
     directory: /backend
+    target-branch: develop
     schedule:
       interval: weekly
+      day: monday
+      time: "09:00"
+      timezone: Asia/Karachi
     open-pull-requests-limit: 5
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
+    groups:
+      backend:
+        patterns: ["*"]
 
   - package-ecosystem: npm
     directory: /frontend
+    target-branch: develop
     schedule:
       interval: weekly
+      day: monday
+      time: "09:00"
+      timezone: Asia/Karachi
     open-pull-requests-limit: 5
-    # Expo-managed packages move together with the Expo SDK, which is upgraded only between
-    # iterations (tech stack doc), so Dependabot does not bump them one by one.
     ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
+      # Expo-managed packages move together with the Expo SDK, which is upgraded only between
+      # iterations (tech stack doc), so Dependabot does not bump them one by one.
       - dependency-name: "expo"
       - dependency-name: "expo-*"
       - dependency-name: "@expo/*"
@@ -26,8 +51,21 @@ updates:
       - dependency-name: "@react-native/*"
       - dependency-name: "jest-expo"
       - dependency-name: "eslint-config-expo"
+    groups:
+      frontend:
+        patterns: ["*"]
 
   - package-ecosystem: github-actions
     directory: /
+    target-branch: develop
     schedule:
       interval: weekly
+      day: monday
+      time: "09:00"
+      timezone: Asia/Karachi
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
+    groups:
+      ci-actions:
+        patterns: ["*"]
