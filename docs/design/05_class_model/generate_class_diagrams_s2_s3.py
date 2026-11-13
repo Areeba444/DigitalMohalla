@@ -16,7 +16,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
 sys.path.insert(0, os.path.join(HERE, "..", "_tools"))
 from drawio import Diagram  # noqa: E402
-from generate_class_model import (AGGREG, COMPOSE, DEPEND, REALISE, klass, link)  # noqa: E402
+from generate_class_model import (AGGREG, COMPOSE, DEPEND, REALISE, G, klass, link)  # noqa: E402
 
 COLS = [60, 400, 740, 1080, 1420]
 W = 300
@@ -47,12 +47,14 @@ def notes(d, text, x, y, w, h):
 
 # =============================================================================== Student 2
 def class_diagram_s2() -> Diagram:
-    d = Diagram("Class diagram, Student 2 (A7)", 2140, 1800)
-    d.text("<b>Digital Mohalla &#8212; Class diagram, Student 2 packages</b> (design step A7, v1.0): Module 5 estimation, "
-           "manipulation detection, decision policy and explanation", 40, 12, 1900, 24, size=16, check=False)
+    d = Diagram("S2 (1 of 2): assurance engine", 2140, 1800)
+    d.text("<b>Digital Mohalla &#8212; Class diagram, Student 2 packages (1 of 2)</b> (A7 v1.0; iteration 2 v2.0, DA-11): "
+           "Module 5 estimation, manipulation detection, decision policy and explanation", 40, 12, 1900, 24, size=16,
+           check=False)
     d.text("Python design classes (iteration 1), from the Algorithm doc &#167;2&#8211;&#167;6 and the assurance data "
-           "dictionary. Each class lists the FRs it realises. Student 1 classes appear only as the interfaces Student 2 "
-           "depends on (blue).", 40, 36, 1900, 20, size=11, color="#4A5560", check=False)
+           "dictionary. Each class lists the FRs it realises. <font color='#0A7A36'>Green = added or changed in iteration 2</font>; "
+           "new iteration 2 classes are on page 2. Student 1 classes appear only as the interfaces Student 2 depends on "
+           "(blue).", 40, 36, 1900, 20, size=11, color="#4A5560", check=False)
     pkg(d, "p_s2", "assurance  (Module 5, Student 2)", 30, 70, 1720, 1700, "#FFFCF8")
     pkg(d, "p_s1", "boundary: Student 1 (Module 5 indirect trust)", 1780, 70, 340, 600, "#F7FAFD")
     K = lambda *a, **k: klass(d, *a, owner=k.pop("owner", "S2"), **k)  # noqa: E731
@@ -81,16 +83,19 @@ def class_diagram_s2() -> Diagram:
     K("Extractor", "OutcomeExtractor", COLS[1], y2, W, [], ["extract(closing_event): list[OutcomeEvent]",
                                                            "eligible(subject, role, metric): list[OutcomeEvent]"],
       frs="FR-T-03 (confirmed outcomes only; disputed excluded)")
-    K("Beta", "BetaPosteriorEstimator", COLS[2], y2, W, [], ["estimate(events, profile?): TrustEstimate",
+    K("Beta", "BetaPosteriorEstimator", COLS[2], y2, W, [], [G("estimate(subject, role, metric, events, profile?)"),
+                                                            G("&#160;&#160;: TrustEstimate  # roles never mixed"),
                                                             "posterior_mean(s_w, f_w): float  {shared, ADR-0006}",
-                                                            "weight(age_days, similarity): float"],
+                                                            "weight(age_days, similarity): float",
+                                                            G("repeat_discount(events): weights  # same pair")],
       frs="FR-T-02, FR-T-03")
     K("Explain", "ExplanationBuilder", COLS[3], y2, W, [], ["build(direct, indirect, risk, decision): "
                                                            "list[EvidenceRecord]", "render(records): str"],
       frs="FR-T-08, NFR-U-01 (never one number)")
     K("Policy", "DecisionPolicy", COLS[4], y2, W, ["- thresholds: tau_mu, tau_L, n_min, rho_sup"],
       ["decide(direct, indirect, risk, ctx)", "&#160;&#160;: DecisionPolicyResult", "&#160;&#160;rules R1&#8211;R5, R6_DISPUTE,",
-       "&#160;&#160;R6_SPARSE, R7&#8211;R9"], frs="FR-T-06, ADR-0007, ADR-0008")
+       "&#160;&#160;R6_SPARSE, R7&#8211;R9", G("&#160;&#160;order R1, R2, R4, R3, ... (ADR-0010)")],
+      frs="FR-T-06, ADR-0007, ADR-0008, DM09")
     y3 = bottom(d, "Facade", "Extractor", "Beta", "Explain", "Policy") + GAP
     K("Result", "AssessmentResult", COLS[0], y3, W, ["state: AssuranceState", "direct: TrustEstimate",
                                                     "indirect: IndirectEvidence", "manipulation: ManipulationRiskAssessment",
@@ -113,7 +118,8 @@ def class_diagram_s2() -> Diagram:
     K("Retaliation", "RetaliationCheck", COLS[0], y4, W, ["- window_days: int = 14"],
       ["is_suspected(review, records): bool"], frs="FR-T-09, ES-05")
     K("Detector", "ManipulationDetector", COLS[1], y4, W, ["- signals: list[SignalCheck]", "- weights, bands",
-                                                          "- corroboration: 2 signals &#8805; 0.5"],
+                                                          "- corroboration: 2 signals &#8805; 0.5",
+                                                          G("- S1 to S5 all active (S2, S3, S5 new)")],
       ["assess(subject, window): ManipulationRiskAssessment"], frs="FR-T-05, ADR-0007")
     K("Risk", "ManipulationRiskAssessment", COLS[2], y4, W, ["score: float  {0..100}", "level: int  {1..4}",
                                                             "corroborated: bool"], frs="FR-T-05", stereo="value")
@@ -139,6 +145,11 @@ def class_diagram_s2() -> Diagram:
     K("Recip", "ReciprocalClustering", 230, y6, 250, ["S1, weight 0.30"], ["evaluate(...)"], frs="FR-T-05, ES-04")
     K("Similar", "ReviewSimilarity", 520, y6, 250, ["S4, weight 0.20"], ["evaluate(...)  {char n-gram TF-IDF}"],
       frs="FR-T-05, ES-04, ADR-0007")
+    # iteration 2: the three remaining signals of ADR-0007 (green border = new class)
+    for k, (cid, name, attr) in enumerate((("SigS2", "RatingVelocity", "S2: ratings in 7 d vs 83 d"),
+                                           ("SigS3", "NewAccountActivity", "S3: age &lt; 30 d, 14 d count"),
+                                           ("SigS5", "InvitationLinkage", "S5: invite tree, 90 d"))):
+        K(cid, name, 810 + k * 290, y6, 250, [attr], ["evaluate(...)"], frs="FR-T-05, ADR-0007", new=True)
     # Student 1 boundary
     K("IInd", "IIndirectEvidence", 1810, 110, 290, [], ["indirect_evidence(lender, borrower, role, metric, t_v, b): "
                                                        "IndirectEvidence"], frs="FR-T-04 (Student 1)", stereo="interface",
@@ -193,16 +204,19 @@ def class_diagram_s2() -> Diagram:
          points=[(355, y6 - 30), (445, y6 - 30)])
     link(d, "Similar", "SignalCheck", "", style=REALISE, exit=(0.5, 0), entry=(0.85, 1),
          points=[(645, y6 - 22), (655, y6 - 22)])
+    for k, cid in enumerate(("SigS2", "SigS3", "SigS5")):
+        link(d, cid, "SignalCheck", "", style=REALISE, exit=(0.5, 0), entry=(0.95, 1),
+             points=[(935 + k * 290, y6 - 32), (685, y6 - 32)])
     link(d, "IInd", "IndEv", "&#171;returns&#187;", style=DEPEND, exit=(0.5, 1), entry=(0.5, 0), label_dx=40, label_dy=0)
     notes(d, "<b>Notes</b><br>&#8226; AssuranceFacade is the only entry point: Module 3 calls IAssess.assess() once per "
           "request (A8); a timeout gives an engine_failure hold, never a default state (FR-T-07).<br>&#8226; Trust and "
           "manipulation risk stay separate attributes of AssessmentResult and are never averaged (FR-T-06).<br>&#8226; "
-          "Iteration 2 adds RatingVelocity (S2), NewAccountActivity (S3) and Linkage (S5) as further SignalCheck "
-          "realisations.<br>&#8226; BetaPosteriorEstimator.posterior_mean is also the trust-edge weight (ADR-0006).<br>"
+          "RatingVelocity (S2), NewAccountActivity (S3) and InvitationLinkage (S5) are the iteration 2 SignalCheck "
+          "realisations (green).<br>&#8226; BetaPosteriorEstimator.posterior_mean is also the trust-edge weight (ADR-0006).<br>"
           "&#8226; Relationship ends: &#9670; composition, &#9671; aggregation, dashed open arrow = dependency, dashed "
-          "hollow triangle = realisation.", 1100, y6 - 10, 620, 150)
-    d.by_id["p_s2"]["h"] = y6 + 190 - 70
-    d.height = y6 + 220
+          "hollow triangle = realisation.", 1100, y6 + 130, 620, 150)
+    d.by_id["p_s2"]["h"] = y6 + 320 - 70
+    d.height = y6 + 350
     return d
 
 
@@ -212,4 +226,6 @@ def class_diagram_s2() -> Diagram:
 
 
 if __name__ == "__main__":
-    class_diagram_s2().save(os.path.join(HERE, "class_diagram_s2.drawio"))
+    # class_diagram_s2.drawio (page 1 = class_diagram_s2(), page 2 = iteration 2 packages) is written by
+    # generate_class_diagrams_iteration2.py.
+    pass

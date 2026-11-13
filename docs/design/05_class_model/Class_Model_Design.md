@@ -4,7 +4,7 @@
 |---|---|
 | Owner | Domain model: all three students. Class diagrams: each student their own packages (plan A7). Student 2 and Student 3 diagrams drafted during integration from their own artefacts; **owners to review** (A14) |
 | Version | Domain model 1.0 (baseline; decision D18), class diagrams 1.0 (Student 1, Student 2, Student 3); 11 October 2026. Student 3 class diagram 2.0 (iteration 2, DA-11), 7 November 2026, drafted with Claude Code, review by Student 1 pending |
-| Files | `domain_model.drawio`, `class_diagram_s1.drawio`, `class_diagram_s2.drawio`, `class_diagram_s3.drawio`; generators `generate_class_model.py` (domain model, Student 1), `generate_class_diagrams_s2_s3.py` (Student 2) and `generate_class_diagram_s3.py` (Student 3, own generator since iteration 2), sharing one class-drawing helper and one notation |
+| Files | `domain_model.drawio`; **`class_diagram.drawio`, one class diagram of the whole system** since iteration 2 (13 November 2026), built by `generate_class_diagram.py` from the owners' sections (`generate_class_model.py` Student 1, `generate_class_diagrams_s2_s3.py` Student 2, `generate_class_diagram_s3.py` Student 3, `generate_class_diagrams_iteration2.py` iteration 2 packages of Students 1 and 2). The iteration 1 diagrams, one per student, are in `archive_v1/` |
 | Notation | UML 2.5 class diagrams: three compartments (name with optional «stereotype», attributes, operations) plus the FRs each class realises; ◆ composition, ◇ aggregation, solid line association with multiplicities, dashed open arrow dependency (with keyword), dashed hollow triangle realisation; packages as folders |
 | Author note | Drafted with Claude (GenAI); to be disclosed on Form 13 and in the AI usage log. |
 
@@ -67,7 +67,7 @@ Trust and manipulation risk are separate attributes of AssessmentResult. A timeo
 
 ## 4. Class diagram, Student 3 packages (A7; v2.0 for iteration 2, DA-11)
 
-v2.0 (7 November 2026) adds what iteration 2 builds in Student 3's modules, marked {v2} on the diagram. The diagram now has its own generator, `generate_class_diagram_s3.py`; the A7 version is kept in git history.
+v2.0 (7 November 2026) adds what iteration 2 builds in Student 3's modules. Since 13 November 2026 it is Student 3's section of the whole-system `class_diagram.drawio`, where the iteration 2 additions are drawn green (the shared convention); the A7 version is `archive_v1/class_diagram_s3_iteration1.drawio`.
 
 | Class | Kind | FRs / NFRs it realises |
 |---|---|---|

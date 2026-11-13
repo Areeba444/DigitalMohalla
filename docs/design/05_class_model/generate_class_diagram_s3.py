@@ -1,6 +1,6 @@
 """Generates the class diagram of Student 3's packages, v2.0 (DA-11, iteration 2).
 
-    python generate_class_diagram_s3.py  ->  class_diagram_s3.drawio
+    python generate_class_diagram_s3.py  ->  class_diagram.drawio (Student 3's section of the whole-system diagram)
 
 v1.0 (A7, iteration 1) was drawn by generate_class_diagrams_s2_s3.py. Since iteration 2 this diagram has its own
 generator, so Student 2's and Student 3's diagrams can change independently; it still uses the class-drawing
@@ -23,10 +23,33 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
 sys.path.insert(0, os.path.join(HERE, "..", "_tools"))
 from drawio import Diagram  # noqa: E402
-from generate_class_model import AGGREG, COMPOSE, DEPEND, REALISE, klass, link  # noqa: E402
+from generate_class_model import AGGREG, COMPOSE, DEPEND, REALISE, G, link  # noqa: E402
+from generate_class_model import klass as _klass  # noqa: E402
 
 GAP = 70
 NB = "&#160;&#160;"
+V2 = "{v2}"
+
+
+def klass(d, cid, name, x, y, w, attrs=(), ops=(), **k):
+    """The shared class helper with the shared iteration 2 convention: a member or class written with {v2} here is
+    drawn green (a whole new class gets a green border), the same as on every other cumulative diagram."""
+    def green(lines):
+        out, i = [], 0
+        lines = list(lines)
+        while i < len(lines):
+            j = i + 1
+            while j < len(lines) and lines[j].startswith(NB):      # continuation lines of one member
+                j += 1
+            group = lines[i:j]
+            if any(V2 in t for t in group):
+                group = [G(t.replace("  " + V2, "").replace(" " + V2, "").replace(V2, "")) for t in group]
+            out += group
+            i = j
+        return out
+    new = V2 in name
+    name = name.replace("  " + V2, "").replace(" " + V2, "")
+    return _klass(d, cid, name, x, y, w, green(attrs), green(ops), new=new, **k)
 
 
 def pkg(d, pid, name, x, y, w, h, colour):
@@ -57,8 +80,9 @@ def class_diagram_s3() -> Diagram:
            "cases, decisions and audit; uploads; Module 4 search logging; Module 10 evaluation", 40, 12, 2400, 24,
            size=16, check=False)
     d.text("Python design classes from UC-B12, UC-D6, UC-I4, UC-I6 (Use Cases v1.4), the escalation-case state machine "
-           "v3.0, sequence diagrams (g) and (h) and schema.sql. Each class lists the FRs it realises; new in v2.0 is "
-           "marked {v2}. Other students' classes appear only as boundary interfaces (blue S1, orange S2, grey shared).",
+           "v3.0, sequence diagrams (g) and (h) and schema.sql. Each class lists the FRs it realises; <font color='#0A7A36'>"
+           "green = added or changed in iteration 2</font> (new class: green border). Other students' classes appear only "
+           "as boundary interfaces (blue S1, orange S2).",
            40, 36, 2400, 20, size=11, color="#4A5560", check=False)
     pkg(d, "p_mod", "moderation  (Module 9)", 30, 70, 1340, 1800, "#FBF8FE")
     pkg(d, "p_up", "uploads  (ADR-0014, proposed)", 1400, 70, 620, 660, "#FBF8FE")
@@ -201,12 +225,12 @@ def class_diagram_s3() -> Diagram:
       frs="Student 1, Module 3", stereo="interface", owner="S1")
     K("IEvt", "IEventQuery", bx[1], 1220, 280, [], ["load_stream(id)", "replay(id)", "verify_chain(id)"],
       frs="Student 1, Module 3", stereo="interface", owner="S1")
-    K("IJobs", "JobRunner (run_due_jobs)", bx[2], 1220, 280, [], ["register(job, handler)", "run_due_jobs(now)"],
-      frs="Student 1, ADR-0012 (proposed)", stereo="interface", owner="S1")
-    K("ISearch", "ISearch", bx[3], 1220, 280, [], ["search(query, filters, sort): Results"],
-      frs="Students 1 and 2, ADR-0016 (proposed)", stereo="interface", owner="S1")
-    K("INotify", "INotify", bx[0], 1450, 280, [], ["notify(user, type, payload)"], frs="Module 7 (Student 2)",
-      stereo="interface", owner="ENUM")
+    K("IJobs", "JobRunner", bx[2], 1220, 280, [], ["register(job: Job)", "run_due_jobs(now)"],
+      frs="Student 1, ADR-0012 (proposed)", stereo="application service", owner="S1")
+    K("ISearch", "ISearch", bx[3], 1220, 280, [], ["search(member, query, filters, sort): SearchResults"],
+      frs="Student 1 (SearchService), ADR-0016", stereo="interface", owner="S1")
+    K("INotify", "INotify", bx[0], 1450, 280, [], ["notify(user, type, payload, dedupe_key)"], frs="Module 7 (Student 2)",
+      stereo="interface", owner="S2")
     K("IAssessB", "IAssess", bx[1], 1450, 280, [], ["assess(request): AssessmentResult"], frs="Student 2, Module 5",
       stereo="interface", owner="S2")
     K("IFlags", "IOutcomeFlags", bx[2], 1450, 280, [], ["flag(outcome_ids, decision_id)", "refresh_edges(user_ids)"],
@@ -285,4 +309,6 @@ def class_diagram_s3() -> Diagram:
 
 
 if __name__ == "__main__":
-    class_diagram_s3().save(os.path.join(HERE, "class_diagram_s3.drawio"))
+    # Student 3's section is drawn into the one whole-system class diagram (generate_class_diagram.py)
+    import generate_class_diagram
+    generate_class_diagram.build().save(os.path.join(HERE, "class_diagram.drawio"))
