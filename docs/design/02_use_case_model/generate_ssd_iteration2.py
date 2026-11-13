@@ -1,6 +1,6 @@
 """Generates the iteration 2 system sequence diagrams SSD-A3, SSD-A4 and SSD-D1 (DA-12, Student 3).
 
-    python generate_ssd_iteration2.py   ->  ssd_diagrams_iteration2.drawio  (three pages)
+    python generate_ssd_iteration2.py   ->  ssd_diagrams.drawio  (all seven SSDs: four of iteration 1, these three)
 
 Same convention as ssd_diagrams.drawio (UML 2.5.1 sequence notation, SSD after Larman): the system is one black
 box, ":Digital Mohalla"; system events are solid arrows with numbered operations, results are dashed; alt / opt
@@ -173,5 +173,23 @@ def ssd_d1() -> Diagram:
     return s.finish()
 
 
+def save_all(path):
+    """One SSD file for the system: the four iteration 1 pages (hand-drawn, kept as drawn in
+    archive_v1/ssd_diagrams_iteration1.drawio) followed by the iteration 2 pages generated here."""
+    import xml.etree.ElementTree as ET
+    tmp = path + ".tmp"
+    save_pages(tmp, [ssd_a3(), ssd_a4(), ssd_d1()])
+    new = ET.parse(tmp)
+    os.remove(tmp)
+    root = new.getroot()
+    old = ET.parse(os.path.join(HERE, "archive_v1", "ssd_diagrams_iteration1.drawio")).getroot().findall("diagram")
+    for i, dg in enumerate(old):
+        root.insert(i, dg)
+    root.set("pages", str(len(root.findall("diagram"))))
+    ET.indent(root, space="  ")
+    new.write(path, encoding="utf-8")
+    print(f"{path}: {len(root.findall('diagram'))} pages (4 from iteration 1, 3 from iteration 2)")
+
+
 if __name__ == "__main__":
-    save_pages(os.path.join(HERE, "ssd_diagrams_iteration2.drawio"), [ssd_a3(), ssd_a4(), ssd_d1()])
+    save_all(os.path.join(HERE, "ssd_diagrams.drawio"))

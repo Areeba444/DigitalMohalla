@@ -5,7 +5,7 @@
 | Owner / reviewer | Student 3 (Minahil Kashif) / Student 1 (Fatima Khursheed) |
 | Version | 1.0, 7 November 2026 (draft for review) |
 | Scope | UC-A3 (request membership), UC-A4 (approve or reject membership), UC-D1 (submit review) |
-| Files | `ssd_diagrams_iteration2.drawio` (three pages), `generate_ssd_iteration2.py` |
+| Files | `ssd_diagrams.drawio` pages 5 to 7 (one SSD file for the system since 13 November 2026; pages 1 to 4 are the iteration 1 SSDs), `generate_ssd_iteration2.py` |
 | Author note | Drafted with Claude Code (GenAI); disclosed in the AI usage log. |
 
 Same convention as `ssd_diagrams.drawio` (iteration 1): the system is one black box, numbered system operations are solid arrows, results are dashed, and the use-case extensions appear as `alt` / `opt` fragments. Each page carries its FRs and rationale in its header box.
