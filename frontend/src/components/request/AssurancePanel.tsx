@@ -65,56 +65,32 @@ function stateSentence(state: string, name: string): React.ReactNode {
       return (
         <View style={{ gap: 4 }}>
           <Body style={{ fontSize: 14 }}>🆕 {firstName} is new to Digital Mohalla</Body>
-          <Body style={{ fontSize: 14 }}>✓ This is normal — not a risk signal</Body>
+          <Body style={{ fontSize: 14 }}>✓ This is normal for new members and does not mean they are risky</Body>
           <Body style={{ fontSize: 14 }}>✓ Suggested safeguards are listed below</Body>
         </View>
       );
   }
 }
 
-/** Human-friendly borrowing history tier — no raw numbers exposed to users (NFR-U-01). */
-function evidenceTier(a: Assessment): string {
-  const loans = a.verified_loans ?? 0;
-  const weighted = a.effective_evidence ?? 0;
-  if (loans === 0) return '🆕 New member — no borrowing history yet';
-  if (weighted < 1.5) return '📋 A few verified loans — just getting started';
-  if (weighted < 4.0) return '✅ Some verified history';
-  return '⭐ Established borrower with verified history';
+function evidenceCount(a: Assessment): string {
+  const weighted = (a.effective_evidence ?? 0).toFixed(1);
+  if (a.verified_loans == null) return `${weighted} verified transactions (weighted)`;
+  const loans = `${a.verified_loans} verified loan${a.verified_loans === 1 ? '' : 's'}`;
+  return `${loans} · ${weighted} after weighting for recency and similarity`;
 }
 
-/** Indirect evidence (FR-T-04): visual connection path between lender and borrower. */
+/** Indirect evidence (FR-T-04): people the lender trusts who lent to this borrower. */
 function CommunityPaths({ community, name }: { community: Community; name: string }) {
   const { theme } = useTheme();
-  const firstName = name.replace(/\s*\(.*?\)\s*/g, '').split(' ')[0];
-  const hasPaths = community.paths.length > 0;
   return (
     <View style={{ gap: 8 }}>
-      <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-        <Text style={{ fontFamily: theme.fonts.bold, fontSize: 15, color: theme.colors.text }}>
-          Community connection
-        </Text>
-        {hasPaths ? (
-          <Icon name="hub" size={18} color={theme.colors.accent} />
-        ) : (
-          <Icon name="hub" size={18} color={theme.colors.textMuted} />
-        )}
-      </View>
-      {!hasPaths ? (
-        <View
-          style={{
-            flexDirection: 'row',
-            alignItems: 'center',
-            gap: 8,
-            padding: 10,
-            borderRadius: theme.radius.sm,
-            backgroundColor: theme.colors.surface2,
-          }}>
-          <Caption style={{ color: theme.colors.textMuted }}>You</Caption>
-          <View style={{ flex: 1, borderBottomWidth: 1.5, borderColor: theme.colors.border, borderStyle: 'dashed' }} />
-          <Caption style={{ color: theme.colors.textMuted }}>?</Caption>
-          <View style={{ flex: 1, borderBottomWidth: 1.5, borderColor: theme.colors.border, borderStyle: 'dashed' }} />
-          <Caption style={{ color: theme.colors.textMuted }}>{firstName}</Caption>
-        </View>
+      <Text style={{ fontFamily: theme.fonts.bold, fontSize: 15, color: theme.colors.text }}>
+        Community paths
+      </Text>
+      {community.paths.length === 0 ? (
+        <Body muted style={{ fontSize: 14 }}>
+          No community paths found between you and {name}.
+        </Body>
       ) : (
         <>
           {community.paths.map((p, i) => (
@@ -130,12 +106,12 @@ function CommunityPaths({ community, name }: { community: Community; name: strin
               }}>
               <Icon name="hub" size={18} color={theme.colors.accent} />
               <Body style={{ flex: 1, fontSize: 14 }}>
-                {p.via.length > 0 ? `You → ${p.via.join(' → ')} → ${firstName}` : `${firstName} borrowed from you before`}
+                • {p.via.length > 0 ? `Through ${p.via.join(' → ')}` : `${name} borrowed from you before`} (path strength {p.strength.toFixed(2)})
               </Body>
             </View>
           ))}
           <Caption>
-            You share {community.paths.length} community link{community.paths.length > 1 ? 's' : ''} with {firstName}.
+            Community support {community.reliability.toFixed(2)}. It can support a request but is never enough on its own.
           </Caption>
         </>
       )}
@@ -208,12 +184,10 @@ export function AssurancePanel({ assessment, name }: { assessment: Assessment; n
         <Collapsible title="The evidence" icon="visibility" defaultOpen>
           <View style={{ gap: 18 }}>
             <View style={{ gap: 8 }}>
-              <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-                <Text style={{ fontFamily: theme.fonts.bold, fontSize: 15, color: theme.colors.text }}>
-                  Borrowing track record
-                </Text>
-              </View>
-              <Caption>{evidenceTier(assessment)}</Caption>
+              <Text style={{ fontFamily: theme.fonts.bold, fontSize: 15, color: theme.colors.text }}>
+                Direct reliability
+              </Text>
+              <Caption>{evidenceCount(assessment)}</Caption>
               {hasInterval ? (
                 <IntervalBar
                   low={assessment.ci90_low as number}
@@ -221,9 +195,8 @@ export function AssurancePanel({ assessment, name }: { assessment: Assessment; n
                   mean={assessment.posterior_mean as number}
                 />
               ) : (
-                <Body muted>No borrowing history yet.</Body>
+                <Body muted>No direct evidence yet.</Body>
               )}
-              {/* Bar explanation removed — labels on the bar itself are sufficient */}
             </View>
 
             {assessment.community ? <CommunityPaths community={assessment.community} name={name} /> : null}
@@ -231,12 +204,10 @@ export function AssurancePanel({ assessment, name }: { assessment: Assessment; n
             <View style={{ gap: 8 }}>
               <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
                 <Text style={{ fontFamily: theme.fonts.bold, fontSize: 15, color: theme.colors.text }}>
-                  Unusual patterns
+                  Manipulation risk
                 </Text>
                 <RiskPill level={assessment.manipulation_level ?? 1} />
               </View>
-              {/* Caption removed — pill badge (Low/Monitor/Check needed/Needs review) is self-explanatory.
-                  An ⓘ tooltip can be added here in a future iteration for curious users. */}
             </View>
           </View>
         </Collapsible>
