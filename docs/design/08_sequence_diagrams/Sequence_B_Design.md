@@ -8,7 +8,7 @@
 | Files | `sequence_b_handover_return.drawio`, `generate_sequence_b.py` |
 | Author note | Drafted with Claude (GenAI); to be disclosed on Form 13 and in the AI usage log. |
 
-**What it shows.** Lifelines are the components of the component diagram (REST API, BorrowingService, TransitionValidator, EventStore, AssuranceEngine through `IOutcomeSink`, TrustEdgeProjector, Notifier stub). Messages use the REST endpoints of `Architecture_Design.md` §4 and the event types and transition IDs of the A3 table.
+**What it shows.** Lifelines are the components of the component diagram (REST API, BorrowingService, TransitionValidator, EventStore, AssuranceEngine through `IOutcomeSink`, TrustEdgeProjector, NotificationService; its messages are green because it is built in iteration 2). Messages use the REST endpoints of `Architecture_Design.md` §4 and the event types and transition IDs of the A3 table.
 
 **Design reasoning.**
 - Each party's confirmation is stored first (`condition_report`); the lender's checklist comes first and the borrower's confirmation counts only if made after it; the transition (T18, T21) is appended when the pair is complete, so neither party can move the loan alone.

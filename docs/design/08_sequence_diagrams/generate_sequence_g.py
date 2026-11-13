@@ -9,7 +9,7 @@ import os
 import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from seqlib import ASYNC, F_S1, F_S3, F_SH, FAIL, RET, Diagram, Seq  # noqa: E402
+from seqlib import ASYNC, F_S1, F_S2, F_S3, F_SH, FAIL, RET, Diagram, Seq  # noqa: E402
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 
@@ -17,11 +17,11 @@ LIFE = [  # key, label, x-centre, fill (None = actor)
     ("MOD", "Moderator", 80, None),
     ("P", "Party<br>(borrower or lender)", 210, None),
     ("API", ":REST API", 380, F_SH),
-    ("CS", ":CaseService<br>(M9, new module)", 590, F_S3),
-    ("DB", ":Case store (PostgreSQL)<br>escalation_case, case_statement", 820, F_S3),
-    ("AUD", ":AuditLog<br>(audit_log, hash chain)", 1040, F_S1),
-    ("NOT", ":Notifier (M7)<br>notify(user, type, payload)", 1250, F_SH),
-    ("SCH", ":Scheduler (F4)<br>run_due_jobs(now)", 1450, F_S1),
+    ("CS", ":CaseService<br>(M9)", 590, F_S3),
+    ("DB", ":Database (PostgreSQL)<br>escalation_case, case_statement", 820, F_SH),
+    ("AUD", ":AuditLogService (M9)<br>audit_log, hash chain", 1040, F_S3),
+    ("NOT", ":NotificationService (M7)<br>&#171;INotify&#187;", 1250, F_S2),
+    ("SCH", ":JobRunner (M3)<br>scheduler, ADR-0012", 1450, F_S1),
 ]
 BOTTOM = 1290
 
@@ -29,11 +29,11 @@ BOTTOM = 1290
 def build() -> Diagram:
     d = Diagram("Sequence (g) information request (DA-12)", 1560, BOTTOM + 60)
     d.text("<b>Digital Mohalla &#8212; Sequence diagram (g): information request, party response and deadline</b> "
-           "&#8212; DA-12, Student 3, v1.0 draft (iteration 2)", 30, 12, 1500, 24, size=15, check=False)
+           "&#8212; DA-12, Student 3, v1.1 draft (iteration 2)", 30, 12, 1500, 24, size=15, check=False)
     d.text("Precondition: an escalation case is OPEN (sequence c, transition C01) and assigned to a moderator of the "
            "transaction's community. Case transitions C02&#8211;C04: escalation-case state machine. Endpoints are "
-           "proposals for the DA-10 REST table. The Notifier (ADR-0013) and the Scheduler (ADR-0012) are iteration 2 "
-           "components owned by Areeba and Fatima.", 30, 36, 1500, 34, size=11, color="#4A5560", check=False)
+           "in the DA-10 REST table. NotificationService (Module 7, ADR-0013) and JobRunner (the scheduler, ADR-0012) "
+           "are iteration 2 components owned by Areeba and Fatima.", 30, 36, 1500, 34, size=11, color="#4A5560", check=False)
     s = Seq(d, LIFE, BOTTOM)
 
     # ------------------------------------------------------------ 1. moderator asks
@@ -71,7 +71,7 @@ def build() -> Diagram:
     s.msg("API", "P", "201 statement recorded", style=RET)
     g_dead = s.y + 18
     s.y += 44
-    s.msg("SCH", "CS", "run_due_jobs(now) &#8594; closeExpiredInformationRequests(now)", dx=-40)
+    s.msg("SCH", "CS", "run_due_jobs(now) &#8594; expire_information(now)", dx=-40)
     s.msg("CS", "DB", "SELECT cases WHERE status = AWAITING_INFORMATION AND info_deadline &lt; now "
           "FOR UPDATE SKIP LOCKED", dx=80)
     s.msg("CS", "DB", "UPDATE status = OPEN (deadline kept as evidence of non-response)")

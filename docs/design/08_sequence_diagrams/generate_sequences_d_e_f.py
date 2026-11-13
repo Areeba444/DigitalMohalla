@@ -6,7 +6,7 @@
         -> sequence_f_review_to_signals.drawio   UC-D1: review -> flags -> manipulation signals in the next assessment
 
 Same notation as iteration 1 sequence (b) (../08_sequence_diagrams/generate_sequence_b.py): lifelines are
-components of component_diagram_v2.drawio, messages use the REST table of Architecture_Design_v2.md section 4, and
+components of component_diagram.drawio, messages use the REST table of Architecture_Design_v2.md section 4, and
 event types and transition IDs are those of lifecycle v3. Sequences (g) and (h) are Minahil's.
 """
 import os

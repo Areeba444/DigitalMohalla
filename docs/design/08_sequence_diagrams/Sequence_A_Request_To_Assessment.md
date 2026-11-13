@@ -157,7 +157,7 @@ sequenceDiagram
   by hand). The hand-drawn v1.1 drawing is kept in `archive_v1/`.
 - **Lifelines** (component diagram, A8): Borrower (actor) · `:BorrowingService` (M3, the "Borrowing Controller" above) ·
   `:LocalityChecker «ILocality»` (M1, the "Locality Service") · `:AssuranceFacade «IAssess»` (M5, the "Trust Engine") ·
-  `:EventStore` (M3) · `:Notifier «stub»` (M7, the "Notification Service") · Lender and Moderator (actors).
+  `:EventStore` (M3) · `:NotificationService «INotify»` (M7; a stub in iteration 1, built in iteration 2, ADR-0013) · Lender and Moderator (actors).
 - **UML 2.5 notation:** solid line with filled head = synchronous call; dashed line with open head = reply; solid line
   with open head = asynchronous message; white bar = activation; `alt` frame = alternatives (one guard per operand,
   exactly one runs), nested for the engine outcomes inside the `[else: outcome = VERIFIED]` operand.

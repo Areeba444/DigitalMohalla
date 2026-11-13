@@ -18,31 +18,33 @@ LIFE = [  # key, label, x-centre, fill (None = actor)
     ("M2", "Second<br>moderator", 180, None),
     ("ADM", "Moderator<br>or admin", 290, None),
     ("API", ":REST API", 440, F_SH),
-    ("CS", ":CaseService<br>(M9, new module)", 640, F_S3),
-    ("RUL", ":DecisionRules<br>(moderation/decisions.py)", 850, F_S3),
-    ("DB", ":Case store (PostgreSQL)<br>escalation_case, moderator_decision", 1070, F_S3),
-    ("OUT", ":Evidence<br>outcome, trust_edge", 1290, F_S2),
-    ("AUD", ":AuditLog", 1470, F_S1),
-    ("NOT", ":Notifier (M7)", 1640, F_SH),
+    ("CS", ":AppealService<br>(M9)", 620, F_S3),
+    ("RV", ":ReversalService<br>(M9)", 790, F_S3),
+    ("RUL", ":DecisionService<br>(M9, decision rules)", 970, F_S3),
+    ("DB", ":Database (PostgreSQL)<br>escalation_case, moderator_decision", 1170, F_SH),
+    ("OUT", ":Evidence (M5)<br>outcome, trust_edge", 1380, F_S2),
+    ("AUD", ":AuditLogService<br>(M9)", 1560, F_S3),
+    ("NOT", ":NotificationService<br>(M7)", 1740, F_S2),
 ]
 BOTTOM = 1420
 
 
 def build() -> Diagram:
-    d = Diagram("Sequence (h) appeal and reversal (DA-12)", 1760, BOTTOM + 60)
+    d = Diagram("Sequence (h) appeal and reversal (DA-12)", 1880, BOTTOM + 60)
     d.text("<b>Digital Mohalla &#8212; Sequence diagram (h): appeal, second moderator, reversal and flagged evidence"
-           "</b> &#8212; DA-12, Student 3, v1.0 draft (iteration 2)", 30, 12, 1650, 24, size=15, check=False)
+           "</b> &#8212; DA-12, Student 3, v1.1 draft (iteration 2)", 30, 12, 1800, 24, size=15, check=False)
     d.text("Precondition: the case is DECIDED (C06) and its decision is stored in moderator_decision. A reversal never "
            "rewinds a closed loan: COMPLETED, DECLINED and NO_SHOW are final lifecycle states. It changes the evidence "
            "instead, so the next assessment of either party sees the corrected record (ES-11). Endpoints are proposals "
-           "for the DA-10 REST table; the appeal window is a config value (DA-03).", 30, 36, 1650, 34, size=11,
+           "in the DA-10 REST table (Architecture_Design_v2.md section 4); the appeal window is a config value (DA-03).", 30, 36,
+           1800, 34, size=11,
            color="#4A5560", check=False)
     s = Seq(d, LIFE, BOTTOM)
 
     # ------------------------------------------------------------ 1. appeal
     s.heading("<b>1. A party appeals</b> (UC-I4 4b; C08)")
     s.msg("P", "API", "POST /cases/{id}/appeal {reason} (proposed)", dx=60)
-    s.msg("API", "CS", "appeal(case, party, reason)")
+    s.msg("API", "CS", "file_appeal(case, party, reason)")
     s.msg("CS", "DB", "SELECT case FOR UPDATE: status DECIDED; party to this loan; within the appeal window", dx=30)
     s.msg("CS", "DB", "UPDATE status = APPEALED; assigned_to := a moderator other than the first decider "
           "(admin if none)", dx=60)
@@ -54,7 +56,7 @@ def build() -> Diagram:
     # ------------------------------------------------------------ 2. second moderator
     s.heading("<b>2. The second moderator decides the appeal</b> (UC-I4 4b; C09, C10)")
     s.msg("M2", "API", "POST /moderation/cases/{id}/appeal-decision {upheld | overturned, reason} (proposed)", dx=170)
-    s.msg("API", "CS", "decideAppeal(case, moderator, result, reason)")
+    s.msg("API", "CS", "decide_appeal(case, moderator, upheld, reason)")
     s.msg("CS", "RUL", "plan(APPEALED, result) &#8212; reason present; decider &#8800; first decider; same community",
           dx=40)
     s.msg("RUL", "CS", "Plan(kind, reverses?)", style=RET)
@@ -74,22 +76,23 @@ def build() -> Diagram:
     s.y += 44
     s.msg("API", "M2", "403 same moderator as the first decision, other community, or no reason | 409 already "
           "decided", style=FAIL, dx=250)
-    s.frame("alt", alt, s.y + 4, 40, 1730, guards=[(alt + 22, "[upheld] C09"), (g_over, "[overturned] C10"),
+    s.frame("alt", alt, s.y + 4, 40, 1850, guards=[(alt + 22, "[upheld] C09"), (g_over, "[overturned] C10"),
                                                  (g_bad, "[guard fails]")])
     s.msg("CS", "AUD", "record(appeal_decided | rejected command, case, moderator, authorisation)", dx=0)
     s.y += 30
 
     # ------------------------------------------------------------ 3. later reversal
     s.heading("<b>3. A decision is reversed later</b> (UC-I4 4c; C11; ES-11)")
-    s.msg("ADM", "API", "POST /moderation/cases/{id}/reversal {reason} (proposed)", dx=60)
-    s.msg("API", "CS", "reverse(case, actor, reason)")
-    s.msg("CS", "RUL", "plan(DECIDED, REVERSAL) &#8212; authorised for this community; reason present")
-    s.msg("RUL", "CS", "Plan(REVERSAL, reverses = latest decision)", style=RET)
-    s.msg("CS", "DB", "INSERT moderator_decision(kind = REVERSAL, reverses_decision_id); UPDATE status = REVERSED",
+    s.msg("ADM", "API", "POST /moderation/decisions/{id}/reversal {reason} (proposed)", dx=60)
+    s.msg("API", "RV", "reverse(decision, actor, reason)")
+    s.msg("RV", "RUL", "plan(DECIDED, REVERSAL) &#8212; authorised for this community; reason present")
+    s.msg("RUL", "RV", "Plan(REVERSAL, reverses = latest decision)", style=RET)
+    s.msg("RV", "DB", "INSERT moderator_decision(kind = REVERSAL, reverses_decision_id); UPDATE status = REVERSED",
           dx=40)
-    s.msg("CS", "OUT", "flagOutcomes(decision) and refresh trust edges, as in step 2", dx=0)
-    s.msg("CS", "AUD", "record(decision_reversed, case, actor, authorisation)")
-    s.msg("CS", "NOT", "notify(both parties, decision_reversed, {case, reason})", style=ASYNC)
+    s.msg("RV", "OUT", "flagOutcomes(decision) and refresh trust edges, as in step 2", dx=0)
+    s.msg("RV", "AUD", "record(decision_reversed, case, actor, authorisation)")
+    s.msg("RV", "NOT", "notify(both parties, decision_reversed, {case, reason})", style=ASYNC)
+    s.msg("RV", "API", "ModeratorDecision(REVERSAL), flagged outcomes", style=RET)
     s.msg("API", "ADM", "200 {status: REVERSED, flagged_outcomes: n}", style=RET)
     s.y += 16
     s.note("Both decisions stay in moderator_decision (append-only; decision_reversal_ck requires reverses_decision_id "

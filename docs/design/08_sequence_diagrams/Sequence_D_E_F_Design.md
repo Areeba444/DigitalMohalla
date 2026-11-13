@@ -9,7 +9,7 @@
 | Builds on | Iteration 1 sequences (a), (b), (c) in `../08_sequence_diagrams/`, unchanged |
 | GenAI | Drafted with Claude (Claude Code); reviewed by the owner. Log in `docs/ai-usage-log.md` and on Form 13 |
 
-Lifelines are components of `../03_architecture/component_diagram_v2.drawio`; messages use the endpoints of `Architecture_Design_v2.md` section 4 and the event types and transition IDs of lifecycle v3.
+Lifelines are components of `../03_architecture/component_diagram.drawio`; messages use the endpoints of `Architecture_Design_v2.md` section 4 and the event types and transition IDs of lifecycle v3.
 
 | Diagram | Use cases | What it shows | Design point it makes visible |
 |---|---|---|---|

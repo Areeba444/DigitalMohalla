@@ -3,7 +3,7 @@
 | Field | Value |
 |---|---|
 | Owner / reviewer | Student 3 (Minahil Kashif) / Student 1 (Fatima Khursheed) |
-| Version | 1.0, 7 November 2026 (draft for review) |
+| Version | 1.1, 13 November 2026: lifelines renamed to the component names (NotificationService, JobRunner, AppealService, ReversalService, DecisionService, AuditLogService); reversal endpoint as in the REST table (`POST /moderation/decisions/{id}/reversal`). 1.0 of 7 November |
 | Scope | UC-I4 step 2 and extensions 2a, 4b, 4c; UC-B12 / FR-B-17 (party response); FR-T-11; escalation-case transitions C02 to C04 and C08 to C11 |
 | Files | `sequence_g_information_request.drawio`, `generate_sequence_g.py`; `sequence_h_appeal_reversal.drawio`, `generate_sequence_h.py`; shared helpers `seqlib.py` |
 | Author note | Drafted with Claude Code (GenAI); disclosed in the AI usage log. |

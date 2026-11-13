@@ -19,12 +19,12 @@ LIFE = [  # key, label, x-centre, fill (None = actor)
     ("B", "Borrower", 70, None),
     ("APP", ":App<br>(W23 search screen)", 210, F_SH),
     ("API", ":REST API", 370, F_SH),
-    ("SS", ":SearchService (M4)<br>retrieval: Fatima", 570, F_S1),
-    ("EMB", ":Embedder<br>(sentence model in the API)", 780, F_S2),
-    ("DB", ":PostgreSQL<br>item, full-text column,<br>item_embedding (pgvector)", 990, F_S1),
-    ("RK", ":Ranker (M4)<br>Areeba; weights DA-22", 1190, F_S2),
-    ("EV", ":Lender evidence<br>(M5 engine)", 1380, F_S2),
-    ("LOG", ":SearchLogger (M4)<br>Minahil; search_log (DA-23)", 1570, F_S3),
+    ("SS", ":SearchService (M4)<br>retrieval: Student 1", 570, F_S1),
+    ("EMB", ":EmbeddingProvider (M4)<br>sentence model in the API", 780, F_S2),
+    ("DB", ":Database (PostgreSQL)<br>item, search_tsv,<br>item_embedding (pgvector)", 990, F_SH),
+    ("RK", ":HybridRanker (M4)<br>Student 2; weights DA-22", 1190, F_S2),
+    ("EV", ":LenderEvidence (M5)", 1380, F_S2),
+    ("LOG", ":SearchLogger (M4)<br>Student 3; search logs", 1570, F_S3),
 ]
 BOTTOM = 1500
 
@@ -32,7 +32,7 @@ BOTTOM = 1500
 def build() -> Diagram:
     d = Diagram("Sequence (i) search (DA-24)", 1780, BOTTOM + 60)
     d.text("<b>Digital Mohalla &#8212; Sequence diagram (i): search, ranking, fallbacks and logging</b> "
-           "&#8212; DA-24, Student 3, v1.0 draft (iteration 2)", 30, 12, 1600, 24, size=15, check=False)
+           "&#8212; DA-24, Student 3, v1.1 draft (iteration 2)", 30, 12, 1600, 24, size=15, check=False)
     d.text("Precondition: the borrower is logged in with an APPROVED membership (UC-B3). Retrieval: ADR-0016 "
            "(proposed). Ranking weights: DA-22 (not set here). Endpoints are proposals for the DA-10 REST table. No "
            "location or coordinates are sent, stored or logged at any step (NFR-PR-01).", 30, 36, 1600, 34, size=11,

@@ -19,22 +19,22 @@
         <mxCell id="ll_API" value=":REST API" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=0;collapsible=0;size=56;fontSize=11;fillColor=#F2F2F2;strokeColor=#46535F;" vertex="1" parent="1">
           <mxGeometry x="288" y="80" width="164" height="1420" as="geometry" />
         </mxCell>
-        <mxCell id="ll_SS" value=":SearchService (M4)&lt;br&gt;retrieval: Fatima" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=0;collapsible=0;size=56;fontSize=11;fillColor=#E3EEF9;strokeColor=#46535F;" vertex="1" parent="1">
+        <mxCell id="ll_SS" value=":SearchService (M4)&lt;br&gt;retrieval: Student 1" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=0;collapsible=0;size=56;fontSize=11;fillColor=#E3EEF9;strokeColor=#46535F;" vertex="1" parent="1">
           <mxGeometry x="488" y="80" width="164" height="1420" as="geometry" />
         </mxCell>
-        <mxCell id="ll_EMB" value=":Embedder&lt;br&gt;(sentence model in the API)" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=0;collapsible=0;size=56;fontSize=11;fillColor=#FDEBDD;strokeColor=#46535F;" vertex="1" parent="1">
+        <mxCell id="ll_EMB" value=":EmbeddingProvider (M4)&lt;br&gt;sentence model in the API" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=0;collapsible=0;size=56;fontSize=11;fillColor=#FDEBDD;strokeColor=#46535F;" vertex="1" parent="1">
           <mxGeometry x="698" y="80" width="164" height="1420" as="geometry" />
         </mxCell>
-        <mxCell id="ll_DB" value=":PostgreSQL&lt;br&gt;item, full-text column,&lt;br&gt;item_embedding (pgvector)" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=0;collapsible=0;size=56;fontSize=11;fillColor=#E3EEF9;strokeColor=#46535F;" vertex="1" parent="1">
+        <mxCell id="ll_DB" value=":Database (PostgreSQL)&lt;br&gt;item, search_tsv,&lt;br&gt;item_embedding (pgvector)" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=0;collapsible=0;size=56;fontSize=11;fillColor=#F2F2F2;strokeColor=#46535F;" vertex="1" parent="1">
           <mxGeometry x="908" y="80" width="164" height="1420" as="geometry" />
         </mxCell>
-        <mxCell id="ll_RK" value=":Ranker (M4)&lt;br&gt;Areeba; weights DA-22" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=0;collapsible=0;size=56;fontSize=11;fillColor=#FDEBDD;strokeColor=#46535F;" vertex="1" parent="1">
+        <mxCell id="ll_RK" value=":HybridRanker (M4)&lt;br&gt;Student 2; weights DA-22" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=0;collapsible=0;size=56;fontSize=11;fillColor=#FDEBDD;strokeColor=#46535F;" vertex="1" parent="1">
           <mxGeometry x="1108" y="80" width="164" height="1420" as="geometry" />
         </mxCell>
-        <mxCell id="ll_EV" value=":Lender evidence&lt;br&gt;(M5 engine)" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=0;collapsible=0;size=56;fontSize=11;fillColor=#FDEBDD;strokeColor=#46535F;" vertex="1" parent="1">
+        <mxCell id="ll_EV" value=":LenderEvidence (M5)" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=0;collapsible=0;size=56;fontSize=11;fillColor=#FDEBDD;strokeColor=#46535F;" vertex="1" parent="1">
           <mxGeometry x="1298" y="80" width="164" height="1420" as="geometry" />
         </mxCell>
-        <mxCell id="ll_LOG" value=":SearchLogger (M4)&lt;br&gt;Minahil; search_log (DA-23)" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=0;collapsible=0;size=56;fontSize=11;fillColor=#EFE6F6;strokeColor=#46535F;" vertex="1" parent="1">
+        <mxCell id="ll_LOG" value=":SearchLogger (M4)&lt;br&gt;Student 3; search logs" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=0;collapsible=0;size=56;fontSize=11;fillColor=#EFE6F6;strokeColor=#46535F;" vertex="1" parent="1">
           <mxGeometry x="1488" y="80" width="164" height="1420" as="geometry" />
         </mxCell>
         <mxCell id="v3" value="&lt;b&gt;1. Query and retrieval with eligibility inside the query&lt;/b&gt; (UC-B3 steps 1&amp;#8211;2; FR-S-01, S-02, S-03)" style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=top;fontSize=12;fontStyle=0;fontColor=#1F4E79;spacing=2;overflow=visible;" vertex="1" parent="1">

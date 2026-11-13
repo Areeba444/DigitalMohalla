@@ -34,6 +34,8 @@ Proposed additions to the component and layer diagrams and the REST table. Stude
 | SearchLogger (Module 4) | domain service | Student 3 | `ISearchLog.log_query`, `log_results`, `log_click` | search_log table (DA-23) | No location; pseudonymous session |
 | StoragePort and adapters | infrastructure | Student 3 | `put`, `signed_url`, `delete` | local disk (development), object storage (deployed) | ADR-0014 (proposed); used by AttachmentService (class diagram S3 v2.0) |
 
+*Decided in DA-10 v2.1 (13 November 2026, Student 1): the component diagram, the class diagrams S1 and S2 and this sequence use **SearchService** (Student 1), **EmbeddingProvider** (was Embedder), **HybridRanker** (was Ranker), **LenderEvidence** (Module 5) and **SearchLogger**; the endpoints above are in the REST table of `../03_architecture/Architecture_Design_v2.md` section 4.*
+
 | Endpoint (proposed) | Use-case step | Response |
 | :--- | :--- | :--- |
 | `GET /search?q=&category=&from=&to=&max_deposit=&condition=&sort=` | UC-B3 1 to 5 | 200 `{query_id, mode: HYBRID or KEYWORD_ONLY, results: [item, reason, lender factors]}` |
