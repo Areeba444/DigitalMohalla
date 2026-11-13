@@ -31,9 +31,9 @@ import lifecycle_model_v3 as lm  # noqa: E402
 results = []
 
 # Student 1's iteration 2 artefacts; the other files in docs/design are checked by verify_design.py or their owners
-DIAGRAMS = ["03_architecture/component_diagram_v2.drawio", "03_architecture/layer_diagram_v2.drawio",
-            "05_class_model/class_diagram_s1_iteration2.drawio", "05_class_model/class_diagram_s2_iteration2.drawio",
-            "06_data_model/er_diagram_v2_4.drawio", "07_state_machines/borrowing_lifecycle_state_machine_v3.drawio",
+DIAGRAMS = ["03_architecture/component_diagram.drawio", "03_architecture/layer_diagram.drawio",
+            "05_class_model/class_diagram.drawio", "05_class_model/domain_model.drawio",
+            "06_data_model/er_diagram.drawio", "07_state_machines/borrowing_lifecycle_state_machine.drawio",
             "08_sequence_diagrams/sequence_d_join_community.drawio",
             "08_sequence_diagrams/sequence_e_overdue_escalation.drawio",
             "08_sequence_diagrams/sequence_f_review_to_signals.drawio"]

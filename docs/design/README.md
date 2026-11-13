@@ -88,6 +88,37 @@ Three diagrams remain hand-drawn in draw.io: the SSDs, sequence (c) and the disp
 
 **Notation:** UML 2.5 for every structural and behavioural diagram, Gane &amp; Sarson for the DFD, crow's foot for the ERD. The standards and checks are in `00_management/Design_Review_A14_2026-10-11.md`; `verify_design.py` C12 enforces the main rules.
 
+## Iteration 2 diagrams (FYP-1 Final)
+
+From iteration 2 every diagram is **cumulative**: it shows the whole design at the end of iteration 2, not only the change, and it keeps its file name.
+
+- **Green** (`#0A7A36`) means added or changed in iteration 2: a green border marks a new class, use case, component or state transition; green text marks a new member, value, message or label. Green is not used for anything else.
+- The iteration 1 version of every diagram that changed is kept as `archive_v1/<name>_iteration1.drawio` in its folder (16 diagrams), so the FYP-1 Mid report can still point at what existed then.
+- **One class diagram for the whole system**, `05_class_model/class_diagram.drawio`: every class of all three students once, in its module's package (`05_class_model/Class_Model_Design_Iteration2.md`). The iteration 1 per-student diagrams are in `05_class_model/archive_v1/`.
+- **One SSD file**, `02_use_case_model/ssd_diagrams.drawio`, one page per use case (pages 1 to 4 iteration 1, 5 to 7 iteration 2). Diagrams of different kinds stay separate files, as UML intends: one sequence diagram per scenario, one state machine per class, DFD level 0 and level 1 as two pages of one file.
+- One name per component across the component, class and sequence diagrams (for example NotificationService, JobRunner, AppealService, ReversalService, SearchService, EmbeddingProvider, HybridRanker).
+- Every `.drawio` has a **PNG beside it** for reading large diagrams without draw.io (`<name>.png`, or `<name>_p1.png`, `_p2.png` for pages); a very large page (the whole-system class diagram) also has a **vector PDF**, sharp at any zoom. The `.drawio` stays the source; after re-running a generator, re-export with `python _tools/export_png.py` (needs draw.io desktop).
+- The lifecycle model v2.2 (`_tools/lifecycle_model.py`, `07_state_machines/transition_table.csv`) stays until build F1 because the backend reads it; its diagram is now drawn from lifecycle v3 (`_tools/lifecycle_model_v3.py`).
+
+Iteration 2 generators (run from `docs/design`):
+
+```text
+python 02_use_case_model/generate_use_case_diagram.py
+python 03_architecture/generate_architecture_v2.py
+python 02_use_case_model/generate_ssd_iteration2.py          # all seven SSDs, one file
+python 05_class_model/generate_class_model.py                # domain model
+python 05_class_model/generate_class_diagram.py              # one class diagram of the whole system
+python 07_state_machines/generate_state_machine_v3.py
+python 07_state_machines/generate_escalation_case_state_machine.py
+python 07_state_machines/generate_membership_state_machine.py
+python 08_sequence_diagrams/generate_sequence_a.py   # and _b, _g, _h, _i, generate_sequences_d_e_f.py
+python 09_activity_diagrams/generate_membership_decision_activity.py
+# needs PostgreSQL 16 with schema.sql v2.3 and migration 0002 loaded, DM_TEST_DSN set
+python 06_data_model/generate_erd_v2_4.py
+python 14_testing/verify_iteration2.py
+python _tools/export_png.py
+```
+
 ## Conventions
 
 - One vocabulary: the state, event, table and enum names of `07_state_machines/` and `06_data_model/schema.sql`; the engine contract maps to them in `06_data_model/Assurance_Data_Dictionary.md` §5.
