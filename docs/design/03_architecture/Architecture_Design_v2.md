@@ -3,10 +3,10 @@
 | Field | Value |
 |---|---|
 | Owner | Fatima Khursheed (Student 1) |
-| Version | 2.0 draft, 3 November 2026 |
+| Version | 2.1 draft, 13 November 2026: diagrams kept in place (iteration 1 versions in `archive_v1/`); Module 4 and 9 components and three endpoints aligned with sequences (h), (i) and the class diagrams. 2.0 of 3 November |
 | Status | Draft for the 10 November design gate. Section 4 is the **API contract** that Areeba's screen shells are built against; changes after the gate go through Fatima |
 | Builds on | `../03_architecture/Architecture_Design.md` v1.2 (iteration 1 endpoints unchanged) |
-| Files | `component_diagram_v2.drawio`, `layer_diagram_v2.drawio`, `generate_architecture_v2.py`, `DigitalMohalla_ADRs_Ver1.md` |
+| Files | `component_diagram.drawio`, `layer_diagram.drawio`, `generate_architecture_v2.py`, `DigitalMohalla_ADRs_Ver1.md` |
 | GenAI | Drafted with Claude (Claude Code); reviewed by the owner. Log in `docs/ai-usage-log.md` and on Form 13 |
 
 ## 1. Design reasoning
@@ -31,8 +31,8 @@ Splitting into separate services was rejected again for the same reason as in it
 | 3 | ListingService | Create, edit, draft, publish, expiry (B1) | Fatima | Yes |
 | 3 | JobRunner | `run_due_jobs(now)` for expiry, no-show, reminders, overdue, listing expiry, embedding backfill, population baseline | Fatima | Yes |
 | 3 | TransitionValidator, EventStore, BookingGuard, OutcomePublisher | As iteration 1, on lifecycle v3 | Fatima | Updated |
-| 4 | KeywordRetriever | Full-text and trigram retrieval with eligibility filters in the query | Fatima | Yes |
-| 4 | SemanticRetriever, EmbeddingJob | Item embeddings, pgvector exact search, keyword fallback | Areeba | Yes |
+| 4 | SearchService | One SQL query: full-text rank and vector distance with the eligibility filters inside it; keyword only when no query vector (FR-S-02) | Fatima | Yes |
+| 4 | EmbeddingProvider, EmbeddingJob | Sentence model in the API; query and listing vectors in `item_embedding` | Areeba | Yes |
 | 4 | HybridRanker | Algorithm 5 and the reason line per result | Areeba | Yes |
 | 4 | SearchLogger | Queries, impressions, clicks, with no location | Minahil | Yes |
 | 5 | AssuranceFacade, BetaPosteriorEstimator, ManipulationDetector, DecisionPolicy, ConfigLoader | As iteration 1, plus roles and metrics, S2, S3, S5, R4 before R3 | Areeba | Extended |
@@ -78,7 +78,7 @@ All under `/api/v1`, JSON over HTTPS, the same error codes as iteration 1 (401, 
 | `POST /items`, `PATCH /items/{id}` | Lender | B1 | Draft or publish a listing; publishing needs a description and condition; queues embedding | FR-B-01 | Fatima |
 | `POST /items/{id}/photos` | Lender | B1 | Multipart upload; EXIF stripped; type and size checked | FR-B-01, NFR-S-06 | Minahil |
 | `GET /search?q=&category=&community=&from=&to=&max_deposit=&condition=&sort=` | Member | B3 | Ranked results, each with a reason line and a `mode` (HYBRID or KEYWORD_ONLY); logs query and impressions | FR-S-01 to S-03, S-05 | Fatima (keyword), Areeba (ranking) |
-| `POST /search/{query_id}/click` | Member | B3 | Records the click for evaluation | FR-S-05 | Minahil |
+| `POST /search/{query_id}/clicks` | Member | B3 | Records the click for evaluation | FR-S-05 | Minahil |
 | `GET /items/{id}` (extended) | Borrower | B4, B5 step 1 | Adds condition, terms and the lender's evidence factors with confidence; "not enough history" for new lenders | FR-S-04 | Areeba |
 | `POST /requests/{id}/counter-offer` | Lender | B6 ext 3b | `counter_offered` (I07) | FR-B-10 | Fatima |
 | `POST /requests/{id}/counter-offer/accept`, `/decline` | Borrower | B6 ext 3b | `counter_accepted` then reassessment (T29), or `counter_declined` (I08) | FR-B-10 | Fatima |
@@ -86,10 +86,10 @@ All under `/api/v1`, JSON over HTTPS, the same error codes as iteration 1 (401, 
 | `POST /transactions/{id}/review` | Party | D1 | Once per party after COMPLETED; flags set by ReviewService | FR-T-09, B-15 | Areeba |
 | `GET /me/evidence` | Member | D2 | Own factors per role and metric, suppressed when too few | FR-T-08 | Areeba |
 | `GET /notifications?unread=`, `POST /notifications/read` | Member | G3 | Inbox and read marks | FR-C-02 | Areeba |
-| `POST /moderation/cases/{id}/information-request` | Moderator | I4 step 2 | Case AWAITING_INFORMATION with a deadline; parties notified | FR-B-17, FR-T-11 | Minahil |
+| `POST /moderation/cases/{id}/information-requests` | Moderator | I4 step 2 | Case AWAITING_INFORMATION with a deadline; parties notified | FR-B-17, FR-T-11 | Minahil |
 | `POST /cases/{id}/statements` | Party | I4 step 2, B12 | A response with optional attachments before the deadline | FR-B-17 | Minahil |
 | `POST /moderation/cases/{id}/decision` (extended) | Moderator | I4 steps 3–4 | Dispute decisions now carry `resolved_outcome.possession`: NOT_HANDED_OVER, WITH_BORROWER, RETURNED or LOST (ADR-0009) | FR-T-11 | Minahil |
-| `POST /cases/{id}/appeal`, `POST /moderation/decisions/{id}/reversal` | Party; Moderator | I4 ext 4b, 4c | Second moderator; reversal flags outcomes (ES-11) | FR-T-11 | Minahil |
+| `POST /cases/{id}/appeal`, `POST /moderation/cases/{id}/appeal-decision`, `POST /moderation/decisions/{id}/reversal` | Party; second moderator; moderator or admin | I4 ext 4b, 4c | Appeal decided by a second moderator; a reversal keeps both decisions and flags outcomes (ES-11). Sequence (h) | FR-T-11 | Minahil |
 | `GET /admin/audit?actor=&target=&from=&to=&action=` | Admin | I6 | Filtered, masked entries with tamper warnings; the view is logged | FR-M-05 | Minahil |
 | `POST /internal/jobs/run` | GitHub Actions (token) | B13 | Runs due jobs; returns a report of what ran and what was skipped | FR-B-18 | Fatima |
 

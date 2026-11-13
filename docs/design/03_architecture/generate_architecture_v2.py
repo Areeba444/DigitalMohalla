@@ -1,6 +1,6 @@
 """Generates the iteration 2 architecture diagrams (DA-10, Student 1).
 
-    python generate_architecture_v2.py   ->  component_diagram_v2.drawio, layer_diagram_v2.drawio
+    python generate_architecture_v2.py   ->  component_diagram.drawio, layer_diagram.drawio
 
 Same notation and helpers as iteration 1 (../03_architecture/generate_architecture.py). Iteration 2 adds
 Module 4 Search & Discovery (supervisor's request), builds Module 7 in-app notifications and the scheduler, and shows
@@ -163,10 +163,11 @@ def component_diagram() -> Diagram:
     m4 = component(d, "m4", "Module 4 &#8212; Search &amp; discovery  [S1 + S2 + S3]", 70, 880, 690, 330, owner="S2",
                    parent=sysb)
     new("m4")
-    component(d, "m4_kw", "KeywordRetriever  [S1]<br><span style='font-weight:normal'>full-text + trigram; filters inside "
-              "the query (I-5)</span>", 95, 925, 310, 70, owner="S1", sub=True, parent=m4)
-    component(d, "m4_sem", "SemanticRetriever  [S2]<br><span style='font-weight:normal'>embeddings, pgvector exact search; "
-              "falls back to keywords</span>", 425, 925, 310, 70, owner="S2", sub=True, parent=m4)
+    component(d, "m4_svc", "SearchService  [S1]<br><span style='font-weight:normal'>one SQL query: full-text rank + vector "
+              "distance, filters inside (I-5); keyword only if no vector</span>", 95, 925, 310, 70, owner="S1", sub=True,
+              parent=m4)
+    component(d, "m4_embp", "EmbeddingProvider  [S2]<br><span style='font-weight:normal'>sentence model in the API; query "
+              "and listing vectors (ADR-0016)</span>", 425, 925, 310, 70, owner="S2", sub=True, parent=m4)
     component(d, "m4_rank", "HybridRanker  [S2]<br><span style='font-weight:normal'>Algorithm 5: relevance, lender evidence, "
               "availability, same community, freshness; reason line</span>", 95, 1015, 640, 70, owner="S2", sub=True,
               parent=m4)
@@ -174,13 +175,14 @@ def component_diagram() -> Diagram:
               "</span>", 95, 1105, 310, 70, owner="S3", sub=True, parent=m4)
     component(d, "m4_emb", "EmbeddingJob  [S2]<br><span style='font-weight:normal'>on listing save + backfill job</span>",
               425, 1105, 310, 70, owner="S2", sub=True, parent=m4)
-    for cid in ("m4_kw", "m4_sem", "m4_rank", "m4_log", "m4_emb"):
+    for cid in ("m4_svc", "m4_embp", "m4_rank", "m4_log", "m4_emb"):
         new(cid)
 
     # ---------------- Module 7 (new build, S2)
     m7 = component(d, "m7", "Module 7 &#8212; Notifications  [S2]", 820, 880, 300, 160, owner="S2", parent=sysb)
     new("m7")
-    d.text("NotificationService: notify(user, type, payload); in-app table, dedupe key, polled by the app (ADR-0013). "
+    d.text("NotificationService: notify(user, type, payload, dedupe_key); in-app table, once per key, polled by the app "
+           "(ADR-0013). "
            "Email, push, chat: iteration 3.", 835, 930, 270, 100, size=10.5, parent=m7, check=False)
 
     # ---------------- Module 9 (S3)
@@ -190,8 +192,10 @@ def component_diagram() -> Diagram:
               "routing</span>", 1205, 925, True),
              ("m9_dec", "DecisionService<br><span style='font-weight:normal'>decision + reason; possession (ADR-0009)</span>",
               1500, 925, True),
-             ("m9_app", "AppealService<br><span style='font-weight:normal'>second moderator; reversal flags outcomes</span>",
-              1205, 1015, True),
+             ("m9_app", "AppealService<br><span style='font-weight:normal'>appeal decided by a second moderator "
+              "(C08&#8211;C10)</span>", 1205, 1015, True),
+             ("m9_rev", "ReversalService<br><span style='font-weight:normal'>keeps both decisions; flags outcomes (C11, "
+              "ES-11)</span>", 1500, 1105, True),
              ("m9_audit", "AuditLogService<br><span style='font-weight:normal'>API + screen: filters, masking, tamper "
               "warning</span>", 1500, 1015, True),
              ("m9_att", "AttachmentService<br><span style='font-weight:normal'>photos, EXIF stripped (ADR-0014)</span>",
@@ -308,8 +312,8 @@ def layer_diagram() -> Diagram:
         ("Application (use-case services)", "#E3EEF9", "#1F4E79",
          [("BorrowingService, ListingService, JobRunner (M3)", "B1, B5&#8211;B8, B12, B13", "S1"),
           (G + "MembershipService, LocalityVerifier (M1)", "A1, A3, A4", "S1"),
-          (G + "SearchService (M4)", "keyword + semantic retrieval, ranking, logging", "S2"),
-          ("CaseService, DecisionService, AppealService (M9)", "D6, I4, I6", "S3"),
+          (G + "SearchService (M4)", "B3: retrieval (S1); embedding, ranking (S2); logging (S3)", "S1"),
+          ("CaseService, DecisionService, " + G + "AppealService, ReversalService (M9)", "D6, I4, I6", "S3"),
           (G + "NotificationService (M7), ReviewService (M5)", "G3, D1", "S2")], ""),
         ("Domain (pure logic, no I/O)", "#E2F0D9", "#2E5E1E",
          [("Lifecycle model v3", "14 states, T01&#8211;T29, I01&#8211;I08; possession exits T25a&#8211;c (ADR-0009)", "S1"),
@@ -377,5 +381,5 @@ def layer_diagram() -> Diagram:
 
 
 if __name__ == "__main__":
-    component_diagram().save(os.path.join(HERE, "component_diagram_v2.drawio"))
-    layer_diagram().save(os.path.join(HERE, "layer_diagram_v2.drawio"))
+    component_diagram().save(os.path.join(HERE, "component_diagram.drawio"))
+    layer_diagram().save(os.path.join(HERE, "layer_diagram.drawio"))
