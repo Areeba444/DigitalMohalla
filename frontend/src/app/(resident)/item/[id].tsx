@@ -7,7 +7,6 @@ import { BAND_LABEL } from '@/components/ItemCard';
 import {
   Avatar,
   Badge,
-  Banner,
   Body,
   Button,
   Caption,
@@ -173,12 +172,7 @@ export default function NewRequest() {
         />
       </Card>
 
-      <Banner tone={theme.colors.info} title="Nothing is reserved yet" icon="info">
-        <Body muted style={{ fontSize: 14 }}>
-          Sending a request does not block these dates for anyone else. They are reserved only when the lender
-          accepts.
-        </Body>
-      </Banner>
+      {/* "Nothing is reserved yet" banner removed — self-evident from button label "Send request" */}
       <ErrorText message={error} />
       <Button label="Send request" icon="send" loading={create.isPending} onPress={send} />
     </Screen>

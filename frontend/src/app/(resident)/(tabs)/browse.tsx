@@ -9,7 +9,7 @@
  * - Fairness rule: new lenders receive population baseline and are not penalized in rank
  */
 import { useState } from 'react';
-import { ScrollView, View } from 'react-native';
+import { Pressable, ScrollView, Text, View } from 'react-native';
 
 import { useItems } from '@/api/hooks';
 import { ItemRow } from '@/components/ItemCard';
@@ -18,10 +18,10 @@ import {
   Body,
   Caption,
   Chip,
-  Collapsible,
   EmptyState,
   ErrorText,
   Field,
+  Icon,
   Loading,
   Screen,
 } from '@/components/ui';
@@ -29,20 +29,20 @@ import { mockSearchResults } from '@/api/mocks/iteration2Mocks';
 import { useTheme } from '@/theme/ThemeProvider';
 
 const FILTERS = [
-  { key: 'ALL', label: 'All' },
-  { key: 'LOW', label: 'Low value' },
-  { key: 'MEDIUM', label: 'Medium value' },
-  { key: 'HIGH', label: 'High value' },
-  { key: 'NO_DEPOSIT', label: 'No deposit' },
-  { key: 'SAME_MOHALLA', label: 'Same Mohalla' },
+  { key: 'ALL', label: 'All', icon: 'apps' },
+  { key: 'LOW', label: 'Low value', icon: 'eco' },
+  { key: 'MEDIUM', label: 'Medium value', icon: 'inventory_2' },
+  { key: 'HIGH', label: 'High value', icon: 'diamond' },
+  { key: 'NO_DEPOSIT', label: 'No deposit', icon: 'money_off' },
+  { key: 'SAME_MOHALLA', label: 'Same Mohalla', icon: 'location_on' },
 ] as const;
 
 type FilterKey = (typeof FILTERS)[number]['key'];
 
 const SORTS = [
-  { key: 'RELEVANCE', label: 'Relevance' },
-  { key: 'EVIDENCE', label: 'Lender evidence' },
-  { key: 'NEWEST', label: 'Newest' },
+  { key: 'RELEVANCE', label: 'Best match', icon: 'my_location' },
+  { key: 'EVIDENCE', label: 'Most trusted', icon: 'verified' },
+  { key: 'NEWEST', label: 'Newest', icon: 'schedule' },
 ] as const;
 
 type SortKey = (typeof SORTS)[number]['key'];
@@ -54,6 +54,7 @@ export default function Browse() {
   const [filter, setFilter] = useState<FilterKey>('ALL');
   const [sort, setSort] = useState<SortKey>('RELEVANCE');
   const [modelOffline, setModelOffline] = useState(false);
+  const [showFilters, setShowFilters] = useState(false);
 
   const q = query.trim().toLowerCase();
 
@@ -66,6 +67,8 @@ export default function Browse() {
     return true;
   });
 
+  const activeFilterCount = filter !== 'ALL' ? 1 : 0;
+
   // Map reasons for items
   function getReasons(title: string, ownerName: string): string[] {
     const mock = mockSearchResults.find((m) => m.title.toLowerCase().includes(title.toLowerCase()));
@@ -75,6 +78,7 @@ export default function Browse() {
 
   return (
     <Screen title="Browse & Search" subtitle="Find tools and household goods nearby" tabs>
+      {/* Row 1: Search bar */}
       <Field
         icon="search"
         value={query}
@@ -82,48 +86,143 @@ export default function Browse() {
         placeholder="Search by item name (e.g. Drill, Silai machine)"
       />
 
+      {/* Row 2: Sort pills + Filter button */}
+      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          style={{ flex: 1 }}
+          contentContainerStyle={{ gap: 6, paddingRight: 4 }}>
+          {SORTS.map((s) => (
+            <Chip
+              key={s.key}
+              label={s.label}
+              icon={s.icon as any}
+              selected={sort === s.key}
+              onPress={() => setSort(s.key)}
+            />
+          ))}
+        </ScrollView>
+
+        {/* Filter button with active badge */}
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel={activeFilterCount > 0 ? `Filters, ${activeFilterCount} active` : 'Filters'}
+          onPress={() => setShowFilters((v) => !v)}
+          style={({ pressed }) => ({
+            flexDirection: 'row',
+            alignItems: 'center',
+            gap: 6,
+            paddingHorizontal: 14,
+            minHeight: 44,
+            borderRadius: theme.radius.pill,
+            backgroundColor: activeFilterCount > 0 ? theme.colors.primary : theme.colors.surface,
+            borderWidth: 1,
+            borderColor: activeFilterCount > 0 ? theme.colors.primary : theme.colors.border,
+            opacity: pressed ? 0.8 : 1,
+          })}>
+          <Icon
+            name="tune"
+            size={18}
+            color={activeFilterCount > 0 ? theme.colors.onPrimary : theme.colors.textSecondary}
+          />
+          <Text
+            style={{
+              fontFamily: theme.fonts.bold,
+              fontSize: 14,
+              color: activeFilterCount > 0 ? theme.colors.onPrimary : theme.colors.text,
+            }}>
+            Filter
+          </Text>
+          {activeFilterCount > 0 ? (
+            <View
+              style={{
+                width: 18,
+                height: 18,
+                borderRadius: 9,
+                backgroundColor: theme.colors.onPrimary,
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}>
+              <Text
+                style={{
+                  fontFamily: theme.fonts.bold,
+                  fontSize: 11,
+                  color: theme.colors.primary,
+                }}>
+                {activeFilterCount}
+              </Text>
+            </View>
+          ) : null}
+        </Pressable>
+      </View>
+
+      {/* Filter panel — slides in below when open */}
+      {showFilters ? (
+        <View
+          style={{
+            backgroundColor: theme.colors.surface,
+            borderRadius: theme.radius.md,
+            padding: 14,
+            gap: 10,
+            borderWidth: 1,
+            borderColor: theme.colors.border,
+          }}>
+          <Text style={{ fontFamily: theme.fonts.semibold, fontSize: 13, color: theme.colors.textMuted }}>
+            FILTER BY
+          </Text>
+          <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
+            {FILTERS.map((f) => (
+              <Chip
+                key={f.key}
+                label={f.label}
+                icon={f.icon as any}
+                selected={filter === f.key}
+                onPress={() => {
+                  setFilter(f.key);
+                  if (f.key !== 'ALL') setShowFilters(false);
+                }}
+              />
+            ))}
+          </View>
+        </View>
+      ) : null}
+
       {/* Model offline / keyword fallback banner (FR-S-02) */}
       {modelOffline ? (
         <Banner tone={theme.colors.info} title="Keyword search active" icon="info">
           <Body muted style={{ fontSize: 13 }}>
-            Semantic search model is temporarily offline. Results are matched by keywords on title and description.
+            Semantic search is temporarily offline. Matching by keywords only.
           </Body>
         </Banner>
       ) : null}
 
-      {/* Filters carousel */}
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        style={{ marginHorizontal: -16 }}
-        contentContainerStyle={{ paddingHorizontal: 16, gap: 8 }}>
-        {FILTERS.map((f) => (
-          <Chip key={f.key} label={f.label} selected={filter === f.key} onPress={() => setFilter(f.key)} />
-        ))}
-      </ScrollView>
-
-      {/* Sort options */}
-      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: 4 }}>
-        <Caption>Sort by:</Caption>
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={{ gap: 6 }}>
-          {SORTS.map((s) => (
-            <Chip key={s.key} label={s.label} selected={sort === s.key} onPress={() => setSort(s.key)} />
-          ))}
-        </ScrollView>
-      </View>
-
       {isLoading ? <Loading /> : null}
       {error ? <ErrorText message={error.message} /> : null}
 
+      {/* Result count */}
       {data ? (
-        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-          <Caption>{shown.length === 1 ? '1 item found' : `${shown.length} items found`}</Caption>
-          <Caption style={{ color: theme.colors.primary }} onPress={() => setModelOffline((v) => !v)}>
-            {modelOffline ? '⚡ Switch to Semantic' : '🔄 Test Keyword Fallback'}
-          </Caption>
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+          <View
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              gap: 5,
+              paddingHorizontal: 10,
+              paddingVertical: 4,
+              borderRadius: 9999,
+              backgroundColor: theme.colors.accentSoft,
+            }}>
+            <Icon name="format_list_bulleted" size={13} color={theme.colors.accent} />
+            <Text style={{ fontFamily: theme.fonts.bold, fontSize: 12, color: theme.colors.accent }}>
+              {shown.length === 1 ? '1 result' : `${shown.length} results`}
+            </Text>
+          </View>
+          {__DEV__ ? (
+            <Caption style={{ color: theme.colors.primary }} onPress={() => setModelOffline((v) => !v)}>
+              {modelOffline ? '⚡ Semantic' : '🔄 Keyword fallback'}
+            </Caption>
+          ) : null}
         </View>
       ) : null}
 
@@ -146,12 +245,6 @@ export default function Browse() {
           }
         />
       ) : null}
-
-      <Collapsible title="How search ranking works">
-        <Body muted style={{ fontSize: 13 }}>
-          Results are ranked using hybrid scoring: title and description similarity, proximity (same mohalla), and verified lender care history. New lenders receive the community baseline so they are never hidden or penalized.
-        </Body>
-      </Collapsible>
     </Screen>
   );
 }

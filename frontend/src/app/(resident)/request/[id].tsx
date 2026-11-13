@@ -24,13 +24,13 @@ import {
 import { formatPeriod, formatTime } from '@/lib/format';
 import { useTheme } from '@/theme/ThemeProvider';
 
-// Why a request is held, who acts next and that nothing was rejected (HCI analysis, principle 2).
+// Short one-line reason per hold type — no paragraph, just the fact (HCI: reduce cognitive load).
 const HOLD_TEXT: Record<string, string> = {
-  locality_inconclusive: 'We could not confirm the neighbourhood yet, so a moderator will check it.',
-  locality_conflict: 'The neighbourhood check needs a human look, so a moderator will check it.',
-  manipulation_risk: 'Some patterns in the evidence need a moderator to look at them before the lender decides.',
-  high_value_low_confidence: 'This is a high-value item with limited similar history, so a moderator reviews it first.',
-  engine_failure: 'The evidence summary could not be prepared in time, so a moderator will review the request.',
+  locality_inconclusive: 'Neighbourhood check pending',
+  locality_conflict: 'Neighbourhood needs manual check',
+  manipulation_risk: 'Evidence patterns under review',
+  high_value_low_confidence: 'High-value item — extra check',
+  engine_failure: 'Evidence summary delayed',
 };
 
 const EVENT_TEXT: Record<string, string> = {
@@ -169,8 +169,7 @@ export default function RequestScreen() {
       {r.hold_reason ? (
         <Banner tone={theme.colors.warning} title="A moderator is reviewing this" icon="policy">
           <Body muted style={{ fontSize: 14 }}>
-            {HOLD_TEXT[r.hold_reason] ?? 'A moderator will review this request.'} Nothing has been rejected; you
-            will see the outcome here.
+            {HOLD_TEXT[r.hold_reason] ?? 'Under review'} · You will see the outcome here.
           </Body>
         </Banner>
       ) : null}

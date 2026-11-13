@@ -180,7 +180,7 @@ describe('Iteration 2 Screens (W8–W24) Render & NFR-U-01 Conformance', () => {
   test('W23 Browse & Search: renders hybrid results with reason lines and fallback notice', async () => {
     await render(<BrowseScreen />);
     expect(screen.getByText('Browse & Search')).toBeOnTheScreen();
-    expect(screen.getByText('Relevance')).toBeOnTheScreen();
+    expect(screen.getByText('Best match')).toBeOnTheScreen();
     assertNoSingleScore();
   });
 
