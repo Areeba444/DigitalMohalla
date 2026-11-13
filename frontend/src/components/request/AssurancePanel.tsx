@@ -1,3 +1,4 @@
+import React from 'react';
 import { Text, View } from 'react-native';
 
 import type { Assessment } from '@/api/hooks';
@@ -11,7 +12,6 @@ import {
   Collapsible,
   Icon,
   IntervalBar,
-  Row,
   RiskPill,
   SectionLabel,
 } from '@/components/ui';
@@ -34,17 +34,41 @@ function safeguardLabel(s: unknown): string {
 
 type Community = components['schemas']['CommunityOut'];
 
-/** What the evidence says, in plain language and about this request only (HCI analysis, W1). */
-function stateSentence(state: string, name: string): string {
+/** Bullet-point state summary — scannable, no wall of text. */
+function stateSentence(state: string, name: string): React.ReactNode {
+  const firstName = name.replace(/\s*\(.*?\)\s*/g, '').split(' ')[0];
   switch (state) {
     case 'SUFFICIENT_EVIDENCE':
-      return `${name} has enough verified history for this item. You still decide.`;
+      return (
+        <View style={{ gap: 4 }}>
+          <Body style={{ fontSize: 14 }}>✅ {firstName} has verified borrowing history</Body>
+          <Body style={{ fontSize: 14 }}>✅ Enough evidence for this type of item</Body>
+          <Body style={{ fontSize: 14, color: undefined }} muted>You still decide — this is guidance, not a guarantee</Body>
+        </View>
+      );
     case 'REVIEW_RECOMMENDED':
-      return `${name}'s evidence is mixed, dated or unusual for this item. Look at the details before deciding.`;
+      return (
+        <View style={{ gap: 4 }}>
+          <Body style={{ fontSize: 14 }}>⚠️ {firstName}&apos;s history is limited or unusual for this item</Body>
+          <Body style={{ fontSize: 14 }}>👁 Worth checking the details below before deciding</Body>
+          <Body style={{ fontSize: 14 }} muted>You still decide</Body>
+        </View>
+      );
     case 'ACTIVE_DISPUTE':
-      return `${name} has an unresolved dispute that affects this request. A moderator is handling it.`;
+      return (
+        <View style={{ gap: 4 }}>
+          <Body style={{ fontSize: 14 }}>🚩 {firstName} has an unresolved dispute</Body>
+          <Body style={{ fontSize: 14 }}>⏳ A moderator is handling it</Body>
+        </View>
+      );
     default:
-      return `${name} has no verified transaction history yet. This is normal for new members and does not mean they are risky. You decide.`;
+      return (
+        <View style={{ gap: 4 }}>
+          <Body style={{ fontSize: 14 }}>🆕 {firstName} is new to Digital Mohalla</Body>
+          <Body style={{ fontSize: 14 }}>✓ This is normal for new members and does not mean they are risky</Body>
+          <Body style={{ fontSize: 14 }}>✓ Suggested safeguards are listed below</Body>
+        </View>
+      );
   }
 }
 
@@ -82,14 +106,12 @@ function CommunityPaths({ community, name }: { community: Community; name: strin
               }}>
               <Icon name="hub" size={18} color={theme.colors.accent} />
               <Body style={{ flex: 1, fontSize: 14 }}>
-                • {p.via.length > 0 ? `Through ${p.via.join(' → ')}` : `${name} borrowed from you before`} (path
-                strength {p.strength.toFixed(2)})
+                • {p.via.length > 0 ? `Through ${p.via.join(' → ')}` : `${name} borrowed from you before`} (path strength {p.strength.toFixed(2)})
               </Body>
             </View>
           ))}
           <Caption>
-            Community support {community.reliability.toFixed(2)}. It can support a request but is never enough
-            on its own.
+            Community support {community.reliability.toFixed(2)}. It can support a request but is never enough on its own.
           </Caption>
         </>
       )}
@@ -135,7 +157,7 @@ export function AssurancePanel({ assessment, name }: { assessment: Assessment; n
             <Text style={{ fontFamily: theme.fonts.display, fontSize: 21, color: tone.fg }}>{a.label}</Text>
           </View>
         </View>
-        <Body style={{ fontSize: 15 }}>{stateSentence(state, name)}</Body>
+        {stateSentence(state, name)}
         {assessment.safeguards.length > 0 ? (
           <View style={{ gap: 8 }}>
             <SectionLabel color={tone.fg}>Suggested safeguards</SectionLabel>
@@ -175,10 +197,6 @@ export function AssurancePanel({ assessment, name }: { assessment: Assessment; n
               ) : (
                 <Body muted>No direct evidence yet.</Body>
               )}
-              <Caption>
-                The bar shows a range, wide when there is little evidence and narrower as verified loans add up.
-                Recent loans and loans of similar items count more.
-              </Caption>
             </View>
 
             {assessment.community ? <CommunityPaths community={assessment.community} name={name} /> : null}
@@ -190,38 +208,13 @@ export function AssurancePanel({ assessment, name }: { assessment: Assessment; n
                 </Text>
                 <RiskPill level={assessment.manipulation_level ?? 1} />
               </View>
-              <Caption>
-                Shown separately from reliability and never averaged with it. A flag is a reason to look, not an
-                accusation.
-              </Caption>
             </View>
           </View>
         </Collapsible>
       </Card>
 
-      <Card>
-        <Collapsible title="Technical details" icon="tune">
-          <View style={{ gap: 12 }}>
-            <View style={{ gap: 8 }}>
-              <Row label="Rule" value={assessment.rule_fired} />
-              <Row label="Policy decision" value={assessment.policy_decision} />
-              <Row label="Configuration" value={assessment.config_version} />
-            </View>
-            <View
-              style={{
-                padding: 12,
-                gap: 6,
-                borderRadius: theme.radius.sm,
-                backgroundColor: theme.colors.surface2,
-              }}>
-              <SectionLabel>In the engine&apos;s words</SectionLabel>
-              <Body muted style={{ fontSize: 14 }}>
-                {assessment.explanation}
-              </Body>
-            </View>
-          </View>
-        </Collapsible>
-      </Card>
+      {/* Technical details card removed from resident view — engine internals (rule IDs, policy enums,
+          config versions) are not meaningful to end users. Visible in moderator/admin views only. */}
     </View>
   );
 }
