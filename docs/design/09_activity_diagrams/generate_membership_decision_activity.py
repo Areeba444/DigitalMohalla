@@ -31,10 +31,10 @@ NOTE = ("shape=note;whiteSpace=wrap;html=1;size=14;align=left;verticalAlign=top;
 def build() -> Diagram:
     d = Diagram("Membership decision activity (DA-13)", 1500, 1720)
     d.text("<b>Digital Mohalla &#8212; Joining a community: locality check and membership decision (UML activity "
-           "diagram)</b> &#8212; DA-13, Student 3, v1.0 draft (iteration 2)", 30, 10, 1400, 24, size=15, check=False)
+           "diagram)</b> &#8212; DA-13, Student 3, v1.1 draft (iteration 2)", 30, 10, 1400, 24, size=15, check=False)
     d.text("Locality rule from Locality_Design_A11.md (geofence + invitation, moderator for anything uncertain). "
-           "Membership states M01&#8211;M05: membership_state_machine.drawio. No outcome is ever an automatic "
-           "rejection (FR-A-08).", 30, 34, 1400, 20, size=11, color="#4A5560", check=False)
+           "Membership states M01&#8211;M05, M09: membership_state_machine.drawio. No outcome is ever an automatic "
+           "rejection (FR-A-08); only a VERIFIED result in an OPEN community is approved without a moderator (UC-A3 4a).", 30, 34, 1400, 20, size=11, color="#4A5560", check=False)
     top, h = 64, 1620
     for x, w, name in ((30, 300, "Applicant (member)"),
                        (330, 640, "System: membership and locality (M1)"),
@@ -69,6 +69,11 @@ def build() -> Diagram:
     n["f_dup"] = d.node("", 417, 890, 26, 26, FINAL)
     A("store", "Store only the coarse outcome and flags; create the request PENDING (M01); notify the community's "
       "moderators", 520, 880, 250, 76)
+
+    D("d_open", 850, 898)
+    A("auto", "APPROVED by the system: role MEMBER, decided_at, audit entry; moderators notified (M09)", 770, 980,
+      190, 76, OUTCOME["VER"])
+    n["f_auto"] = d.node("", 852, 1090, 26, 26, FINAL)
 
     # ---------------------------------------------------------------- moderator
     D("m_queue", 1150, 898)
@@ -116,7 +121,10 @@ def build() -> Diagram:
     E("d_dup", "dup", "[a live request or<br>membership exists]", exit=(0, 0.5), entry=(1, 0.5), label_dy=-24)
     E("dup", "f_dup", exit=(0.5, 1), entry=(0.5, 0))
     E("d_dup", "store", "[none]", exit=(0.5, 1), entry=(0.5, 0), label_dx=24)
-    E("store", "m_queue", "", exit=(1, 0.5), entry=(0, 0.5))
+    E("store", "d_open", "", exit=(1, 0.5), entry=(0, 0.5))
+    E("d_open", "m_queue", "[otherwise]", exit=(1, 0.5), entry=(0, 0.5), label_dy=-12)
+    E("d_open", "auto", "[OPEN community and<br>outcome VERIFIED]", exit=(0.5, 1), entry=(0.5, 0), label_dx=62)
+    E("auto", "f_auto", exit=(0.5, 1), entry=(0.5, 0))
     E("m_queue", "open", exit=(0.5, 1), entry=(0.5, 0))
     E("open", "d_ev", exit=(0.5, 1), entry=(0.5, 0))
     E("d_ev", "ask", "[evidence<br>insufficient (2a)]", exit=(1, 0.5), entry=(0, 0.5), label_dy=-22)
@@ -137,8 +145,8 @@ def build() -> Diagram:
     E("appr", "f_appr", exit=(0.5, 1), entry=(0.5, 0))
     E("rej", "f_rej", exit=(0.5, 1), entry=(0.5, 0))
 
-    d.node("<b>Why this flow</b><br>The locality check produces evidence, never a verdict: all three outcomes "
-           "create a request for a human. Only an unusable invitation code stops the flow, and the applicant can "
+    d.node("<b>Why this flow</b><br>The locality check produces evidence, never a verdict: every outcome creates a "
+           "request for a human, except a VERIFIED result in a community whose join policy is OPEN (schema v2.4). Only an unusable invitation code stops the flow, and the applicant can "
            "retry. The decision is applied only while the request is still undecided, so a second moderator or a "
            "withdrawal cannot be overwritten. The applicant's answer to an information request is drawn in sequence "
            "(g) and SSD-A4.", 40, 1430, 280, 210, NOTE, check=False)
