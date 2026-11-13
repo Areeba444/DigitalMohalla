@@ -98,9 +98,9 @@ def build():
                  "container (sleeps after about 15 min idle)", 50, 500, 360, 410, ENV + st("#FFFFFF"))
     d.mark_container(web, pass_through=True)
     artifact(d, "&#171;artifact&#187; <b>API image</b> (<i>backend/Dockerfile</i>)<br>Python 3.12, FastAPI + "
-                "Uvicorn, modular monolith (Modules 1, 3, 5, 9; planned: 4, 7)<br>start-up: <i>alembic upgrade head</i>, "
+                "Uvicorn, modular monolith (Modules 1, 3, 5, 9; planned: 4, 7 and the job endpoint)<br>start-up: <i>alembic upgrade head</i>, "
                 "then Uvicorn<br>REST <i>/api/v1</i>; <i>GET /health</i>", 66, 578, 328, 162)
-    artifact(d, "&#171;artifact&#187; <i>config/engine.json</i><br>config_version 1.3.0-iteration1-draft",
+    artifact(d, "&#171;artifact&#187; <i>config/engine.json</i><br>config_version 1.3.0-iteration1-draft; planned: 1.4.0 (ranking, timers)",
              66, 752, 328, 62)
     d.node("Secrets in Render settings: <i>DATABASE_URL</i>, <i>JWT_SECRET</i> (generated); "
            "<i>CORS_ORIGINS</i> = the web app only; planned: <i>JOBS_TOKEN</i>, storage keys", 66, 826, 328, 72, COMMENT + "fillColor=#FFF3E0;strokeColor=#C77700;")
@@ -121,7 +121,7 @@ def build():
     d.text("free plan, AWS ap-southeast-1 (Singapore), the same region as the API", 250, 1030, 540, 24,
            size=13, color="#2E5E1E", check=False)
     pg = d.node("&#171;executionEnvironment&#187; <b>PostgreSQL 16</b> with <i>btree_gist</i>; direct endpoint "
-                "(not the pooler); suspends when idle, wakes on connect; planned: <i>vector</i> extension (ADR-0016)", 50, 1074, 740, 170, ENV + st("#FFFFFF"))
+                "(not the pooler); suspends when idle, wakes on connect; planned: <i>vector</i> and <i>pg_trgm</i> extensions (ADR-0016)", 50, 1074, 740, 170, ENV + st("#FFFFFF"))
     d.mark_container(pg, pass_through=True)
     artifact(d, "&#171;artifact&#187; <b>schema <i>dm</i></b> v2.3 (Alembic migration 0001): event store "
                 "(append-only, hash-chained), projections, bookings (EXCLUDE), assessments, cases, moderator "

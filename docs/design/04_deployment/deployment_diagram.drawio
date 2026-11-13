@@ -55,13 +55,13 @@
         <mxCell id="v17" value="&amp;#171;executionEnvironment&amp;#187;&lt;br&gt;&lt;b&gt;Web service&lt;/b&gt; &lt;i&gt;digitalmohalla-api&lt;/i&gt;: Docker container (sleeps after about 15 min idle)" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;fontSize=14;strokeColor=#5B6B7A;fontColor=#1F2D3A;fillColor=#FFFFFF;" vertex="1" parent="1">
           <mxGeometry x="50" y="500" width="360" height="410" as="geometry" />
         </mxCell>
-        <mxCell id="v18" value="&amp;#171;artifact&amp;#187; &lt;b&gt;API image&lt;/b&gt; (&lt;i&gt;backend/Dockerfile&lt;/i&gt;)&lt;br&gt;Python 3.12, FastAPI + Uvicorn, modular monolith (Modules 1, 3, 5, 9; planned: 4, 7)&lt;br&gt;start-up: &lt;i&gt;alembic upgrade head&lt;/i&gt;, then Uvicorn&lt;br&gt;REST &lt;i&gt;/api/v1&lt;/i&gt;; &lt;i&gt;GET /health&lt;/i&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=24;fontSize=13;fillColor=#FFFFFF;strokeColor=#6A7A8A;fontColor=#1F2D3A;" vertex="1" parent="1">
+        <mxCell id="v18" value="&amp;#171;artifact&amp;#187; &lt;b&gt;API image&lt;/b&gt; (&lt;i&gt;backend/Dockerfile&lt;/i&gt;)&lt;br&gt;Python 3.12, FastAPI + Uvicorn, modular monolith (Modules 1, 3, 5, 9; planned: 4, 7 and the job endpoint)&lt;br&gt;start-up: &lt;i&gt;alembic upgrade head&lt;/i&gt;, then Uvicorn&lt;br&gt;REST &lt;i&gt;/api/v1&lt;/i&gt;; &lt;i&gt;GET /health&lt;/i&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=24;fontSize=13;fillColor=#FFFFFF;strokeColor=#6A7A8A;fontColor=#1F2D3A;" vertex="1" parent="1">
           <mxGeometry x="66" y="578" width="328" height="162" as="geometry" />
         </mxCell>
         <mxCell id="v19" value="" style="shape=note;size=5;html=1;fillColor=#FFFFFF;strokeColor=#6A7A8A;" vertex="1" parent="1">
           <mxGeometry x="375" y="585" width="12" height="15" as="geometry" />
         </mxCell>
-        <mxCell id="v20" value="&amp;#171;artifact&amp;#187; &lt;i&gt;config/engine.json&lt;/i&gt;&lt;br&gt;config_version 1.3.0-iteration1-draft" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=24;fontSize=13;fillColor=#FFFFFF;strokeColor=#6A7A8A;fontColor=#1F2D3A;" vertex="1" parent="1">
+        <mxCell id="v20" value="&amp;#171;artifact&amp;#187; &lt;i&gt;config/engine.json&lt;/i&gt;&lt;br&gt;config_version 1.3.0-iteration1-draft; planned: 1.4.0 (ranking, timers)" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=24;fontSize=13;fillColor=#FFFFFF;strokeColor=#6A7A8A;fontColor=#1F2D3A;" vertex="1" parent="1">
           <mxGeometry x="66" y="752" width="328" height="62" as="geometry" />
         </mxCell>
         <mxCell id="v21" value="" style="shape=note;size=5;html=1;fillColor=#FFFFFF;strokeColor=#6A7A8A;" vertex="1" parent="1">
@@ -88,7 +88,7 @@
         <mxCell id="v28" value="free plan, AWS ap-southeast-1 (Singapore), the same region as the API" style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=top;fontSize=13;fontStyle=0;fontColor=#2E5E1E;spacing=2;overflow=visible;" vertex="1" parent="1">
           <mxGeometry x="250" y="1030" width="540" height="24" as="geometry" />
         </mxCell>
-        <mxCell id="v29" value="&amp;#171;executionEnvironment&amp;#187; &lt;b&gt;PostgreSQL 16&lt;/b&gt; with &lt;i&gt;btree_gist&lt;/i&gt;; direct endpoint (not the pooler); suspends when idle, wakes on connect; planned: &lt;i&gt;vector&lt;/i&gt; extension (ADR-0016)" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;fontSize=14;strokeColor=#5B6B7A;fontColor=#1F2D3A;fillColor=#FFFFFF;" vertex="1" parent="1">
+        <mxCell id="v29" value="&amp;#171;executionEnvironment&amp;#187; &lt;b&gt;PostgreSQL 16&lt;/b&gt; with &lt;i&gt;btree_gist&lt;/i&gt;; direct endpoint (not the pooler); suspends when idle, wakes on connect; planned: &lt;i&gt;vector&lt;/i&gt; and &lt;i&gt;pg_trgm&lt;/i&gt; extensions (ADR-0016)" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;fontSize=14;strokeColor=#5B6B7A;fontColor=#1F2D3A;fillColor=#FFFFFF;" vertex="1" parent="1">
           <mxGeometry x="50" y="1074" width="740" height="170" as="geometry" />
         </mxCell>
         <mxCell id="v30" value="&amp;#171;artifact&amp;#187; &lt;b&gt;schema &lt;i&gt;dm&lt;/i&gt;&lt;/b&gt; v2.3 (Alembic migration 0001): event store (append-only, hash-chained), projections, bookings (EXCLUDE), assessments, cases, moderator decisions, audit log. No coordinates, addresses or CNIC (suite 14). Planned: migration 0002 (schema v2.4, DA-09)." style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=24;fontSize=13;fillColor=#FFFFFF;strokeColor=#6A7A8A;fontColor=#1F2D3A;" vertex="1" parent="1">
