@@ -1,10 +1,10 @@
 <mxfile host="app.diagrams.net">
   <diagram name="Dispute-resolution activity diagram" id="Disputeresolutionact">
-    <mxGraphModel dx="1400" dy="900" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="0" pageScale="1" pageWidth="2020" pageHeight="3660" math="0" shadow="0">
+    <mxGraphModel dx="1400" dy="900" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="0" pageScale="1" pageWidth="2020" pageHeight="3840" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
-        <mxCell id="ctl" value="&lt;b&gt;Dispute-resolution activity diagram&lt;/b&gt;&lt;br&gt;UML 2.5.1 activity diagram with partitions (swimlanes)&lt;br&gt;&lt;br&gt;&lt;b&gt;Document:&lt;/b&gt; behaviour design, step A9 (S3)&lt;br&gt;&lt;b&gt;Version:&lt;/b&gt; 1.0; &lt;b&gt;Date:&lt;/b&gt; 2026-10-11&lt;br&gt;&lt;b&gt;Author:&lt;/b&gt; Student 3 (S3), drafted with Claude; reviewed by: Fatima Khursheed, Areeba Javed&lt;br&gt;&lt;b&gt;Status:&lt;/b&gt; Draft for design gate A14&lt;br&gt;&lt;b&gt;Based on:&lt;/b&gt; Use Cases v1.3 (UC-B12, D6, I4), FR/NFR v1.3, ADR-0003, ADR-0004&lt;br&gt;&lt;b&gt;Package:&lt;/b&gt; Module 9 (cases and decisions); Module 3 (lifecycle) for the DISPUTED transitions" style="rounded=0;fillColor=#fffbe6;strokeColor=#999999;html=1;verticalAlign=top;align=left;spacing=8;fontSize=11;whiteSpace=wrap;" vertex="1" parent="1">
+        <mxCell id="ctl" value="&lt;b&gt;Dispute-resolution activity diagram&lt;/b&gt;&lt;br&gt;UML 2.5.1 activity diagram with partitions (swimlanes)&lt;br&gt;&lt;br&gt;&lt;b&gt;Document:&lt;/b&gt; behaviour design, step A9 (S3)&lt;br&gt;&lt;b&gt;Version:&lt;/b&gt; 1.1 (DA-13: closure by item possession, ADR-0009 proposed); &lt;b&gt;Date:&lt;/b&gt; 2026-11-07 (v1.0: 2026-10-11)&lt;br&gt;&lt;b&gt;Author:&lt;/b&gt; Student 3 (S3), drafted with Claude; reviewed by: Fatima Khursheed, Areeba Javed&lt;br&gt;&lt;b&gt;Status:&lt;/b&gt; Draft for design gate A14&lt;br&gt;&lt;b&gt;Based on:&lt;/b&gt; Use Cases v1.3 (UC-B12, D6, I4), FR/NFR v1.3, ADR-0003, ADR-0004&lt;br&gt;&lt;b&gt;Package:&lt;/b&gt; Module 9 (cases and decisions); Module 3 (lifecycle) for the DISPUTED transitions" style="rounded=0;fillColor=#fffbe6;strokeColor=#999999;html=1;verticalAlign=top;align=left;spacing=8;fontSize=11;whiteSpace=wrap;" vertex="1" parent="1">
           <mxGeometry x="10" y="10" width="600" height="200" as="geometry" />
         </mxCell>
         <mxCell id="rat" value="&lt;b&gt;FRs realised:&lt;/b&gt; FR-B-16, FR-B-17, FR-B-08, FR-B-09, FR-T-10, FR-T-11, FR-T-03 (resolved outcome becomes evidence).&lt;br&gt;&lt;b&gt;Rationale:&lt;/b&gt; One flow crosses five partitions because UC-B12, D6 and I4 split the work between the raising party, the other party, the system, the moderator and Admin. The outer interruptible region lets the raising party withdraw at any point before a decision, which restores the stored previous state (dispute_withdrawn), and the inner region ends the other party's response period by timeout so that a missing reply cannot block the case (FR-B-17). The flow ends with dispute_resolved (DISPUTED to COMPLETED) so that replay can tell a moderator closure from a normal completion (ADR-0004). Only lifecycle states are drawn; ACTIVE_DISPUTE is an assurance state and does not appear.&lt;br&gt;&lt;b&gt;Not shown:&lt;/b&gt; appeal to a second moderator and later reversal (I4 ext 4b, 4c) belong to the case state machine (A3). Holds (HELD_FOR_REVIEW) use the same I4 steps but end in hold_cleared or request_declined (ADR-0003); see the SSD for I4. Automatic disputes for overdue items (FR-B-14) start at the system step &quot;Set DISPUTED&quot;." style="rounded=0;fillColor=#fffbe6;strokeColor=#999999;html=1;verticalAlign=top;align=left;spacing=8;fontSize=10;whiteSpace=wrap;" vertex="1" parent="1">
@@ -86,19 +86,19 @@
           <mxGeometry x="1829" y="170" width="150" height="30" as="geometry" />
         </mxCell>
         <mxCell id="n23" value="" style="rounded=0;fillColor=#ffffff;strokeColor=#666666;html=1;" vertex="1" parent="1">
-          <mxGeometry x="0" y="220" width="400" height="3440" as="geometry" />
+          <mxGeometry x="0" y="220" width="400" height="3620.0" as="geometry" />
         </mxCell>
         <mxCell id="n24" value="" style="rounded=0;fillColor=#f7f9fc;strokeColor=#666666;html=1;" vertex="1" parent="1">
-          <mxGeometry x="400" y="220" width="280" height="3440" as="geometry" />
+          <mxGeometry x="400" y="220" width="280" height="3620.0" as="geometry" />
         </mxCell>
         <mxCell id="n25" value="" style="rounded=0;fillColor=#ffffff;strokeColor=#666666;html=1;" vertex="1" parent="1">
-          <mxGeometry x="680" y="220" width="640" height="3440" as="geometry" />
+          <mxGeometry x="680" y="220" width="640" height="3620.0" as="geometry" />
         </mxCell>
         <mxCell id="n26" value="" style="rounded=0;fillColor=#f7f9fc;strokeColor=#666666;html=1;" vertex="1" parent="1">
-          <mxGeometry x="1320" y="220" width="420" height="3440" as="geometry" />
+          <mxGeometry x="1320" y="220" width="420" height="3620.0" as="geometry" />
         </mxCell>
         <mxCell id="n27" value="" style="rounded=0;fillColor=#ffffff;strokeColor=#666666;html=1;" vertex="1" parent="1">
-          <mxGeometry x="1740" y="220" width="280" height="3440" as="geometry" />
+          <mxGeometry x="1740" y="220" width="280" height="3620.0" as="geometry" />
         </mxCell>
         <mxCell id="n28" value="Raising party (lender or borrower)" style="rounded=0;fillColor=#dae8fc;strokeColor=#666666;html=1;fontStyle=1;fontSize=13;whiteSpace=wrap;" vertex="1" parent="1">
           <mxGeometry x="0" y="220" width="400" height="44" as="geometry" />
@@ -116,7 +116,7 @@
           <mxGeometry x="1740" y="220" width="280" height="44" as="geometry" />
         </mxCell>
         <mxCell id="R1" value="«interruptible region» Dispute under review (booking is DISPUTED)" style="rounded=1;arcSize=2;dashed=1;dashPattern=8 4;fillColor=none;html=1;verticalAlign=top;align=left;spacingLeft=8;spacingTop=2;fontSize=10;strokeColor=#444444;whiteSpace=wrap;" vertex="1" parent="1">
-          <mxGeometry x="8" y="1675" width="2004" height="1760" as="geometry" />
+          <mxGeometry x="8" y="1675" width="2004" height="1940.0" as="geometry" />
         </mxCell>
         <mxCell id="R2" value="«interruptible region» Awaiting response (5a)" style="rounded=1;arcSize=2;dashed=1;dashPattern=8 4;fillColor=none;html=1;verticalAlign=top;align=left;spacingLeft=8;spacingTop=2;fontSize=10;strokeColor=#444444;whiteSpace=wrap;" vertex="1" parent="1">
           <mxGeometry x="420" y="1875" width="240" height="200" as="geometry" />
@@ -268,23 +268,23 @@
         <mxCell id="F_cur" value="" style="shape=sumEllipse;perimeter=ellipsePerimeter;fillColor=#ffffff;strokeColor=#000000;html=1;" vertex="1" parent="1">
           <mxGeometry x="743" y="3093" width="24" height="24" as="geometry" />
         </mxCell>
-        <mxCell id="A_apply" value="Set COMPLETED; append dispute_resolved (DISPUTED → COMPLETED) with decision and reason (I4 4)" style="rounded=1;arcSize=28;fillColor=#ffffff;html=1;whiteSpace=wrap;fontSize=11;strokeColor=#000000;" vertex="1" parent="1">
+        <mxCell id="A_apply" value="Record the decision with the item's possession: NOT_HANDED_OVER, WITH_BORROWER, RETURNED or LOST (only those the stored previous_state allows; ADR-0009)" style="rounded=1;arcSize=28;fillColor=#ffffff;html=1;whiteSpace=wrap;fontSize=11;strokeColor=#000000;" vertex="1" parent="1">
           <mxGeometry x="820" y="3093" width="280" height="84" as="geometry" />
         </mxCell>
-        <mxCell id="S_out" value="Record resolved outcome as evidence for the assurance engine (I4 4)" style="rounded=1;arcSize=28;fillColor=#ffffff;html=1;whiteSpace=wrap;fontSize=11;strokeColor=#000000;" vertex="1" parent="1">
-          <mxGeometry x="835" y="3217" width="250" height="56" as="geometry" />
+        <mxCell id="S_out" value="Record the resolved outcome as evidence: the at-fault finding, and a return outcome only if RETURNED or LOST (I4 4)" style="rounded=1;arcSize=28;fillColor=#ffffff;html=1;whiteSpace=wrap;fontSize=11;strokeColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="835" y="3415" width="250" height="56" as="geometry" />
         </mxCell>
         <mxCell id="S_not2" value="Notify both parties (I4 4)" style="shape=mxgraph.sysml.sendSig;fillColor=#ffffff;html=1;whiteSpace=wrap;fontSize=11;strokeColor=#000000;" vertex="1" parent="1">
-          <mxGeometry x="850" y="3300" width="220" height="50" as="geometry" />
+          <mxGeometry x="850" y="3495" width="220" height="50" as="geometry" />
         </mxCell>
         <mxCell id="F_end" value="" style="ellipse;shape=endState;fillColor=#000000;strokeColor=#000000;html=1;" vertex="1" parent="1">
-          <mxGeometry x="947" y="3382" width="26" height="26" as="geometry" />
+          <mxGeometry x="947" y="3575" width="26" height="26" as="geometry" />
         </mxCell>
         <mxCell id="A_restore" value="Restore previous_state; append dispute_withdrawn (5b, ADR-0004)" style="rounded=1;arcSize=28;fillColor=#ffffff;html=1;whiteSpace=wrap;fontSize=11;strokeColor=#000000;" vertex="1" parent="1">
-          <mxGeometry x="675" y="3484" width="190" height="62" as="geometry" />
+          <mxGeometry x="675" y="3664.0" width="190" height="62" as="geometry" />
         </mxCell>
         <mxCell id="F_wd" value="" style="ellipse;shape=endState;fillColor=#000000;strokeColor=#000000;html=1;" vertex="1" parent="1">
-          <mxGeometry x="757" y="3582" width="26" height="26" as="geometry" />
+          <mxGeometry x="757" y="3762.0" width="26" height="26" as="geometry" />
         </mxCell>
         <mxCell id="n34" value="" style="edgeStyle=none;rounded=0;html=1;endArrow=open;endFill=0;endSize=8;exitX=0.5;exitY=1.0;exitDx=0;exitDy=0;entryX=0.5;entryY=0.0;entryDx=0;entryDy=0;" edge="1" parent="1" source="I0" target="A_sel">
           <mxGeometry relative="1" as="geometry" />
@@ -576,7 +576,7 @@
         <mxCell id="n107" value="[no]" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=top;whiteSpace=wrap;overflow=hidden;fontSize=10;fontColor=#000000;spacing=2;" vertex="1" parent="1">
           <mxGeometry x="966" y="3059" width="40" height="16" as="geometry" />
         </mxCell>
-        <mxCell id="n108" value="" style="edgeStyle=none;rounded=0;html=1;endArrow=open;endFill=0;endSize=8;exitX=0.5;exitY=1.0;exitDx=0;exitDy=0;entryX=0.5;entryY=0.0;entryDx=0;entryDy=0;" edge="1" parent="1" source="A_apply" target="S_out">
+        <mxCell id="n108" value="" style="edgeStyle=none;rounded=0;html=1;endArrow=open;endFill=0;endSize=8;exitX=0.5;exitY=1.0;exitDx=0;exitDy=0;entryX=0.5;entryY=0.0;entryDx=0;entryDy=0;" edge="1" parent="1" source="A_apply" target="D_poss">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="n109" value="" style="edgeStyle=none;rounded=0;html=1;endArrow=open;endFill=0;endSize=8;exitX=0.5;exitY=1.0;exitDx=0;exitDy=0;entryX=0.5;entryY=0.0;entryDx=0;entryDy=0;" edge="1" parent="1" source="S_out" target="S_not2">
@@ -588,7 +588,7 @@
         <mxCell id="n111" value="" style="edgeStyle=none;rounded=0;html=1;endArrow=open;endFill=0;endSize=8;strokeWidth=2;exitX=0.5;exitY=1.0;exitDx=0;exitDy=0;entryX=0.0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="W" target="A_restore">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
-              <mxPoint x="110" y="3515" />
+              <mxPoint x="110" y="3695" />
             </Array>
           </mxGeometry>
         </mxCell>
@@ -597,6 +597,67 @@
         </mxCell>
         <mxCell id="n113" value="" style="edgeStyle=none;rounded=0;html=1;endArrow=open;endFill=0;endSize=8;exitX=0.5;exitY=1.0;exitDx=0;exitDy=0;entryX=0.5;entryY=0.0;entryDx=0;entryDy=0;" edge="1" parent="1" source="A_restore" target="F_wd">
           <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="D_poss" value="" style="rhombus;fillColor=#ffffff;html=1;whiteSpace=wrap;fontSize=10;strokeColor=#000000;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="940" y="3195" width="40" height="40" />
+        </mxCell>
+        <mxCell id="P_noshow" value="Append dispute_resolved: DISPUTED &#8594; NO_SHOW; booking released (T25a)" style="rounded=1;arcSize=28;fillColor=#ffffff;html=1;whiteSpace=wrap;fontSize=11;strokeColor=#000000;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="685" y="3265" width="170" height="64" />
+        </mxCell>
+        <mxCell id="P_active" value="Append dispute_resolved: DISPUTED &#8594; ACTIVE; booking stays held, due date unchanged (T25b)" style="rounded=1;arcSize=28;fillColor=#ffffff;html=1;whiteSpace=wrap;fontSize=11;strokeColor=#000000;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="865" y="3265" width="190" height="64" />
+        </mxCell>
+        <mxCell id="P_done" value="Append dispute_resolved: DISPUTED &#8594; COMPLETED; booking released; LOST: item set to PAUSED (T25c)" style="rounded=1;arcSize=28;fillColor=#ffffff;html=1;whiteSpace=wrap;fontSize=11;strokeColor=#000000;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="1065" y="3265" width="240" height="64" />
+        </mxCell>
+        <mxCell id="M_poss" value="" style="rhombus;fillColor=#ffffff;html=1;whiteSpace=wrap;fontSize=10;strokeColor=#000000;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="940" y="3355" width="40" height="40" />
+        </mxCell>
+        <mxCell id="g_poss1" value="[NOT_HANDED_OVER]" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=top;whiteSpace=wrap;overflow=hidden;fontSize=10;fontColor=#000000;spacing=2;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="760" y="3195" width="110" height="16" />
+        </mxCell>
+        <mxCell id="g_poss2" value="[WITH_BORROWER]" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=top;whiteSpace=wrap;overflow=hidden;fontSize=10;fontColor=#000000;spacing=2;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="965" y="3240" width="100" height="16" />
+        </mxCell>
+        <mxCell id="g_poss3" value="[RETURNED or LOST]" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=top;whiteSpace=wrap;overflow=hidden;fontSize=10;fontColor=#000000;spacing=2;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="1075" y="3195" width="120" height="16" />
+        </mxCell>
+        <mxCell id="e_poss1" value="" style="edgeStyle=none;rounded=0;html=1;endArrow=open;endFill=0;endSize=8;exitX=0.5;exitY=1.0;exitDx=0;exitDy=0;entryX=0.5;entryY=0.0;entryDx=0;entryDy=0;" edge="1" parent="1" source="D_poss" target="P_noshow">
+          <mxGeometry as="geometry" relative="1">
+            <Array as="points">
+              <mxPoint x="770" y="3215" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e_poss2" value="" style="edgeStyle=none;rounded=0;html=1;endArrow=open;endFill=0;endSize=8;exitX=0.5;exitY=1.0;exitDx=0;exitDy=0;entryX=0.5;entryY=0.0;entryDx=0;entryDy=0;" edge="1" parent="1" source="D_poss" target="P_active">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="e_poss3" value="" style="edgeStyle=none;rounded=0;html=1;endArrow=open;endFill=0;endSize=8;exitX=0.5;exitY=1.0;exitDx=0;exitDy=0;entryX=0.5;entryY=0.0;entryDx=0;entryDy=0;" edge="1" parent="1" source="D_poss" target="P_done">
+          <mxGeometry as="geometry" relative="1">
+            <Array as="points">
+              <mxPoint x="1185" y="3215" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e_poss4" value="" style="edgeStyle=none;rounded=0;html=1;endArrow=open;endFill=0;endSize=8;exitX=0.5;exitY=1.0;exitDx=0;exitDy=0;entryX=0.5;entryY=0.0;entryDx=0;entryDy=0;" edge="1" parent="1" source="P_noshow" target="M_poss">
+          <mxGeometry as="geometry" relative="1">
+            <Array as="points">
+              <mxPoint x="770" y="3375" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e_poss5" value="" style="edgeStyle=none;rounded=0;html=1;endArrow=open;endFill=0;endSize=8;exitX=0.5;exitY=1.0;exitDx=0;exitDy=0;entryX=0.5;entryY=0.0;entryDx=0;entryDy=0;" edge="1" parent="1" source="P_active" target="M_poss">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="e_poss6" value="" style="edgeStyle=none;rounded=0;html=1;endArrow=open;endFill=0;endSize=8;exitX=0.5;exitY=1.0;exitDx=0;exitDy=0;entryX=0.5;entryY=0.0;entryDx=0;entryDy=0;" edge="1" parent="1" source="P_done" target="M_poss">
+          <mxGeometry as="geometry" relative="1">
+            <Array as="points">
+              <mxPoint x="1185" y="3375" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e_poss7" value="" style="edgeStyle=none;rounded=0;html=1;endArrow=open;endFill=0;endSize=8;exitX=0.5;exitY=1.0;exitDx=0;exitDy=0;entryX=0.5;entryY=0.0;entryDx=0;entryDy=0;" edge="1" parent="1" source="M_poss" target="S_out">
+          <mxGeometry as="geometry" relative="1" />
         </mxCell>
       </root>
     </mxGraphModel>

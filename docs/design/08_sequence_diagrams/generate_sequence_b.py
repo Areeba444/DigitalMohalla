@@ -22,14 +22,14 @@ LIFE = [  # key, label, x-centre, owner colour
     ("DB", ":EventStore<br>(PostgreSQL, triggers)", 960, "#E3EEF9"),
     ("ENG", ":OutcomeWriter<br>(infra/db/outcomes.py, M5)", 1170, "#FDEBDD"),
     ("TEP", ":TrustEdgeRefresh<br>(infra/db/trust_edges.py, S1)", 1370, "#E3EEF9"),
-    ("NOT", ":Notifier (M7)<br>planned, iteration 2", 1550, "#F7F7F7"),
+    ("NOT", ":NotificationService<br>(M7, iteration 2)", 1550, "#FDEBDD"),
 ]
 X = {k: x for k, _, x, _ in LIFE}
 SYNC = EDGE_BASE + "endArrow=block;endFill=1;strokeColor=#1D1D1D;fontSize=10.5;"
 ASYNC = EDGE_BASE + "endArrow=open;endFill=0;strokeColor=#1D1D1D;fontSize=10.5;"
 RET = EDGE_BASE + "endArrow=open;endFill=0;dashed=1;strokeColor=#46535F;fontColor=#33404D;fontSize=10.5;"
-# notifications are not built in iteration 1: drawn grey and labelled as planned
-PLAN = EDGE_BASE + "endArrow=open;endFill=0;strokeColor=#9A9A9A;fontColor=#7A7A7A;fontSize=10.5;"
+# notifications are built in iteration 2 (ADR-0013): drawn green, the shared "added in iteration 2" colour
+PLAN = EDGE_BASE + "endArrow=open;endFill=0;strokeColor=#0A7A36;fontColor=#0A7A36;fontSize=10.5;"
 FAIL = EDGE_BASE + "endArrow=open;endFill=0;dashed=1;strokeColor=#B00020;fontColor=#B00020;fontSize=10.5;"
 
 
@@ -79,10 +79,11 @@ class Seq:
 def build() -> Diagram:
     d = Diagram("Sequence (b) B7 + B8 (A9)", 1680, 2200)
     d.text("<b>Digital Mohalla &#8212; Sequence diagram (b): confirm handover (UC-B7) and return &#8594; evidence "
-           "(UC-B8)</b> &#8212; design step A9 (b), Student 1, v1.2 (as built, 14 October 2026)", 30, 12, 1500, 24, size=15, check=False)
+           "(UC-B8)</b> &#8212; design step A9 (b), Student 1, v1.3 (as built 14 October 2026; iteration 2 notifications)", 30, 12, 1500, 24, size=15, check=False)
     d.text("Precondition: request is ACCEPTED (UC-B6, T13; booking HELD). Event types and T-numbers: State_Machine_Design.md "
            "v2.2. Each API request runs in one database transaction (api/deps.py), committed when the request ends; every "
-           "append runs event_validate / event_apply (schema.sql). Grey messages = planned, not built.",
+           "append runs event_validate / event_apply (schema.sql). Green messages = added in iteration 2 (NotificationService, "
+           "ADR-0013).",
            30, 36, 1600, 20, size=11, color="#4A5560", check=False)
     bottom = 2140
     for k, label, x, colour in LIFE:
@@ -105,7 +106,7 @@ def build() -> Diagram:
     s.msg("SVC", "VAL", "checkConfirmation(ACCEPTED, lender, HANDOVER)")
     s.msg("VAL", "SVC", "ok", style=RET)
     s.msg("SVC", "DB", "INSERT condition_report(HANDOVER, LENDER) &#8212; party_guard: state ACCEPTED", dx=0)
-    s.msg("SVC", "NOT", "notify(borrower, review_handover) &#8212; planned (it.2)", style=PLAN, dx=200)
+    s.msg("SVC", "NOT", "notify(borrower, review_handover), dedupe_key", style=PLAN, dx=200)
     s.msg("API", "L", "202 awaiting borrower confirmation", style=RET)
     s.y += 6
     s.msg("B", "API", "POST /transactions/{id}/handover/confirm {condition_agreed}", dx=40)
@@ -118,7 +119,7 @@ def build() -> Diagram:
     s.msg("VAL", "SVC", "ok", style=RET)
     s.msg("SVC", "DB", "append handover_confirmed (stream_seq n+1, ACCEPTED &#8594; ACTIVE)")
     s.self_msg("DB", "trigger: check T18 guard, due_at := end date, hash chain; COMMIT")
-    s.msg("SVC", "NOT", "notify(both, loan_active, due_at) &#8212; planned (it.2)", style=PLAN, dx=200)
+    s.msg("SVC", "NOT", "notify(both, loan_active, due_at), dedupe_key", style=PLAN, dx=200)
     s.msg("API", "B", "200 {state: ACTIVE, due_at}", style=RET)
     g_dep = s.y + 4
     s.y += 34
@@ -142,7 +143,7 @@ def build() -> Diagram:
     s.msg("B", "API", "POST /transactions/{id}/return", dx=-10)
     s.msg("API", "SVC", "initiateReturn(id, borrower)")
     s.msg("SVC", "DB", "append return_initiated (ACTIVE &#8594; RETURN_INITIATED, T20)")
-    s.msg("SVC", "NOT", "notify(lender, return_started) &#8212; planned (it.2)", style=PLAN, dx=200)
+    s.msg("SVC", "NOT", "notify(lender, return_started), dedupe_key", style=PLAN, dx=200)
     s.msg("API", "B", "200 {state: RETURN_INITIATED}", style=RET)
     s.y += 6
     s.msg("L", "API", "POST /transactions/{id}/return/confirm {checklist, photos?, condition_agreed}", dx=220)
@@ -167,7 +168,7 @@ def build() -> Diagram:
     s.self_msg("TEP", "recompute and upsert trust_edge, both directions (ADR-0006)")
     s.msg("TEP", "SVC", "edges updated", style=RET)
     s.self_msg("DB", "COMMIT at the end of the request: events, booking release, outcomes and edges together")
-    s.msg("SVC", "NOT", "notify(both, completed; deposit release recorded) &#8212; planned (it.2)", style=PLAN, dx=200)
+    s.msg("SVC", "NOT", "notify(both, completed; deposit release recorded), dedupe_key", style=PLAN, dx=200)
     s.msg("API", "B", "200 {state: COMPLETED, outcome}", style=RET)
     g2_dis = s.y + 4
     s.y += 34

@@ -1,0 +1,239 @@
+<mxfile host="Electron" agent="Digital Mohalla design generator" version="24.7.17" type="device">
+  <diagram id="Sequence__e__B13_overdue__DA_12_" name="Sequence (e) B13 overdue (DA-12)">
+    <mxGraphModel dx="1400" dy="900" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1660" pageHeight="1302" math="0" shadow="0" background="#FFFFFF">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="v1" value="&lt;b&gt;Digital Mohalla &amp;#8212; Sequence diagram (e): scheduled jobs, an overdue loan becomes a dispute (UC-B13, T24)&lt;/b&gt; &amp;#8212; iteration 2, DA-12, Student 1, v1.0" style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=top;fontSize=15;fontStyle=0;fontColor=#1d1d1d;spacing=2;overflow=visible;" vertex="1" parent="1">
+          <mxGeometry x="30" y="12" width="1600" height="24" as="geometry" />
+        </mxCell>
+        <mxCell id="v2" value="ADR-0012: an external schedule calls the API every 15 minutes; every job claims its work in job_run, so a second run changes nothing (NFR-R-05). Timers come from config scheduler_b13. The same pattern runs every job." style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=top;fontSize=11;fontStyle=0;fontColor=#4A5560;spacing=2;overflow=visible;" vertex="1" parent="1">
+          <mxGeometry x="30" y="36" width="1640" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="ll_GHA" value="GitHub&lt;br&gt;schedule" style="shape=umlLifeline;participant=umlActor;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=0;verticalAlign=top;spacingTop=36;size=42;fontSize=11;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="40" y="80" width="80" height="1192" as="geometry" />
+        </mxCell>
+        <mxCell id="ll_API" value=":REST API" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=0;collapsible=0;size=56;fontSize=11;fillColor=#F2F2F2;strokeColor=#46535F;" vertex="1" parent="1">
+          <mxGeometry x="160" y="80" width="160" height="1192" as="geometry" />
+        </mxCell>
+        <mxCell id="ll_RUN" value=":JobRunner&lt;br&gt;(M3)" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=0;collapsible=0;size=56;fontSize=11;fillColor=#E3EEF9;strokeColor=#46535F;" vertex="1" parent="1">
+          <mxGeometry x="350" y="80" width="160" height="1192" as="geometry" />
+        </mxCell>
+        <mxCell id="ll_JOB" value=":OverdueJob&lt;br&gt;(M3)" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=0;collapsible=0;size=56;fontSize=11;fillColor=#E3EEF9;strokeColor=#46535F;" vertex="1" parent="1">
+          <mxGeometry x="540" y="80" width="160" height="1192" as="geometry" />
+        </mxCell>
+        <mxCell id="ll_BOR" value=":BorrowingService&lt;br&gt;(M3)" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=0;collapsible=0;size=56;fontSize=11;fillColor=#E3EEF9;strokeColor=#46535F;" vertex="1" parent="1">
+          <mxGeometry x="730" y="80" width="160" height="1192" as="geometry" />
+        </mxCell>
+        <mxCell id="ll_DB" value=":Database&lt;br&gt;(PostgreSQL, triggers)" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=0;collapsible=0;size=56;fontSize=11;fillColor=#E3EEF9;strokeColor=#46535F;" vertex="1" parent="1">
+          <mxGeometry x="930" y="80" width="160" height="1192" as="geometry" />
+        </mxCell>
+        <mxCell id="ll_NOT" value=":NotificationService&lt;br&gt;(M7)" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=0;collapsible=0;size=56;fontSize=11;fillColor=#FDEBDD;strokeColor=#46535F;" vertex="1" parent="1">
+          <mxGeometry x="1130" y="80" width="160" height="1192" as="geometry" />
+        </mxCell>
+        <mxCell id="v3" value="&lt;b&gt;Every 15 minutes&lt;/b&gt; (FR-B-18)" style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=top;fontSize=12;fontStyle=0;fontColor=#1F4E79;spacing=2;overflow=visible;" vertex="1" parent="1">
+          <mxGeometry x="30" y="152" width="900" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="e4" value="&lt;b&gt;1&lt;/b&gt; POST /internal/jobs/run  [Authorization: job token]" style="html=1;rounded=0;fontSize=10.5;labelBackgroundColor=#FFFFFF;fontColor=#1d1d1d;endSize=8;endArrow=block;endFill=1;strokeColor=#1D1D1D;fontSize=10.5" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="85" y="200" as="sourcePoint" />
+            <mxPoint x="235" y="200" as="targetPoint" />
+            <mxPoint x="0" y="-9" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e5" value="&lt;b&gt;2&lt;/b&gt; run_due_jobs(now)" style="html=1;rounded=0;fontSize=10.5;labelBackgroundColor=#FFFFFF;fontColor=#1d1d1d;endSize=8;endArrow=block;endFill=1;strokeColor=#1D1D1D;fontSize=10.5" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="245" y="230" as="sourcePoint" />
+            <mxPoint x="425" y="230" as="targetPoint" />
+            <mxPoint x="0" y="-9" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e6" value="&lt;b&gt;3&lt;/b&gt; pg_try_advisory_lock('dm.jobs')" style="html=1;rounded=0;fontSize=10.5;labelBackgroundColor=#FFFFFF;fontColor=#1d1d1d;endSize=8;endArrow=block;endFill=1;strokeColor=#1D1D1D;fontSize=10.5" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="435" y="260" as="sourcePoint" />
+            <mxPoint x="1005" y="260" as="targetPoint" />
+            <mxPoint x="0" y="-9" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e7" value="&lt;b&gt;4&lt;/b&gt; true" style="html=1;rounded=0;fontSize=10.5;labelBackgroundColor=#FFFFFF;fontColor=#1d1d1d;endSize=8;endArrow=open;endFill=0;dashed=1;strokeColor=#46535F;fontColor=#33404D;fontSize=10.5" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1005" y="340" as="sourcePoint" />
+            <mxPoint x="435" y="340" as="targetPoint" />
+            <mxPoint x="0" y="-9" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e8" value="&lt;b&gt;5&lt;/b&gt; due(now)" style="html=1;rounded=0;fontSize=10.5;labelBackgroundColor=#FFFFFF;fontColor=#1d1d1d;endSize=8;endArrow=block;endFill=1;strokeColor=#1D1D1D;fontSize=10.5" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="435" y="370" as="sourcePoint" />
+            <mxPoint x="615" y="370" as="targetPoint" />
+            <mxPoint x="0" y="-9" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e9" value="&lt;b&gt;6&lt;/b&gt; SELECT ACTIVE loans: due_at + overdue_limit &lt; now AND reminders_sent &gt;= 2" style="html=1;rounded=0;fontSize=10.5;labelBackgroundColor=#FFFFFF;fontColor=#1d1d1d;endSize=8;endArrow=block;endFill=1;strokeColor=#1D1D1D;fontSize=10.5" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="625" y="400" as="sourcePoint" />
+            <mxPoint x="1005" y="400" as="targetPoint" />
+            <mxPoint x="40" y="-9" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e10" value="&lt;b&gt;7&lt;/b&gt; [due items]" style="html=1;rounded=0;fontSize=10.5;labelBackgroundColor=#FFFFFF;fontColor=#1d1d1d;endSize=8;endArrow=open;endFill=0;dashed=1;strokeColor=#46535F;fontColor=#33404D;fontSize=10.5" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="615" y="430" as="sourcePoint" />
+            <mxPoint x="435" y="430" as="targetPoint" />
+            <mxPoint x="0" y="-9" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e11" value="&lt;b&gt;8&lt;/b&gt; INSERT job_run (overdue_escalation, '&lt;txn&gt;:overdue') ON CONFLICT DO NOTHING" style="html=1;rounded=0;fontSize=10.5;labelBackgroundColor=#FFFFFF;fontColor=#1d1d1d;endSize=8;endArrow=block;endFill=1;strokeColor=#1D1D1D;fontSize=10.5" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="435" y="510" as="sourcePoint" />
+            <mxPoint x="1005" y="510" as="targetPoint" />
+            <mxPoint x="40" y="-9" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e12" value="&lt;b&gt;9&lt;/b&gt; run(item, service)" style="html=1;rounded=0;fontSize=10.5;labelBackgroundColor=#FFFFFF;fontColor=#1d1d1d;endSize=8;endArrow=block;endFill=1;strokeColor=#1D1D1D;fontSize=10.5" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="435" y="590" as="sourcePoint" />
+            <mxPoint x="615" y="590" as="targetPoint" />
+            <mxPoint x="0" y="-9" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e13" value="&lt;b&gt;10&lt;/b&gt; escalate_overdue(txn)" style="html=1;rounded=0;fontSize=10.5;labelBackgroundColor=#FFFFFF;fontColor=#1d1d1d;endSize=8;endArrow=block;endFill=1;strokeColor=#1D1D1D;fontSize=10.5" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="625" y="620" as="sourcePoint" />
+            <mxPoint x="805" y="620" as="targetPoint" />
+            <mxPoint x="0" y="-9" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e14" value="&lt;b&gt;11&lt;/b&gt; append dispute_opened {reason: NON_RETURN}  system:scheduler  (ACTIVE -&gt; DISPUTED, T24)" style="html=1;rounded=0;fontSize=10.5;labelBackgroundColor=#FFFFFF;fontColor=#1d1d1d;endSize=8;endArrow=block;endFill=1;strokeColor=#1D1D1D;fontSize=10.5" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="815" y="650" as="sourcePoint" />
+            <mxPoint x="1005" y="650" as="targetPoint" />
+            <mxPoint x="40" y="-9" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e15" value="&lt;b&gt;12&lt;/b&gt; event_validate: system opens only NON_RETURN; event_apply: case opened (D6), deposit record frozen" style="html=1;rounded=0;fontSize=10.5;labelBackgroundColor=#FFFFFF;fontColor=#1d1d1d;endSize=8;endArrow=block;endFill=1;strokeColor=#1D1D1D;fontSize=10.5" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1015" y="680" as="sourcePoint" />
+            <mxPoint x="1015" y="698" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="1045" y="680" />
+              <mxPoint x="1045" y="698" />
+            </Array>
+            <mxPoint x="266.80" y="0" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e16" value="&lt;b&gt;13&lt;/b&gt; notify(borrower and lender, dispute_opened, dedupe '&lt;txn&gt;:overdue')" style="html=1;rounded=0;fontSize=10.5;labelBackgroundColor=#FFFFFF;fontColor=#1d1d1d;endSize=8;endArrow=open;endFill=0;strokeColor=#1D1D1D;fontSize=10.5" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="815" y="720" as="sourcePoint" />
+            <mxPoint x="1205" y="720" as="targetPoint" />
+            <mxPoint x="20" y="-9" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e17" value="&lt;b&gt;14&lt;/b&gt; UPDATE job_run SUCCEEDED" style="html=1;rounded=0;fontSize=10.5;labelBackgroundColor=#FFFFFF;fontColor=#1d1d1d;endSize=8;endArrow=block;endFill=1;strokeColor=#1D1D1D;fontSize=10.5" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="435" y="750" as="sourcePoint" />
+            <mxPoint x="1005" y="750" as="targetPoint" />
+            <mxPoint x="0" y="-9" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e18" value="&lt;b&gt;15&lt;/b&gt; 0 rows: already claimed by an earlier run, skip" style="html=1;rounded=0;fontSize=10.5;labelBackgroundColor=#FFFFFF;fontColor=#1d1d1d;endSize=8;endArrow=open;endFill=0;dashed=1;strokeColor=#46535F;fontColor=#33404D;fontSize=10.5" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1005" y="814" as="sourcePoint" />
+            <mxPoint x="435" y="814" as="targetPoint" />
+            <mxPoint x="0" y="-9" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e19" value="&lt;b&gt;16&lt;/b&gt; error (e.g. state changed: the borrower just started the return)" style="html=1;rounded=0;fontSize=10.5;labelBackgroundColor=#FFFFFF;fontColor=#1d1d1d;endSize=8;endArrow=open;endFill=0;dashed=1;strokeColor=#B00020;fontColor=#B00020;fontSize=10.5" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="805" y="878" as="sourcePoint" />
+            <mxPoint x="625" y="878" as="targetPoint" />
+            <mxPoint x="40" y="-9" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e20" value="&lt;b&gt;17&lt;/b&gt; UPDATE job_run FAILED, attempts + 1; retried next run up to max_attempts" style="html=1;rounded=0;fontSize=10.5;labelBackgroundColor=#FFFFFF;fontColor=#1d1d1d;endSize=8;endArrow=open;endFill=0;dashed=1;strokeColor=#B00020;fontColor=#B00020;fontSize=10.5" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="435" y="908" as="sourcePoint" />
+            <mxPoint x="1005" y="908" as="targetPoint" />
+            <mxPoint x="40" y="-9" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="v21" value="alt" style="shape=umlFrame;whiteSpace=wrap;html=1;width=52;height=22;boundedLbl=1;verticalAlign=middle;align=left;spacingLeft=4;fontStyle=1;fontSize=11;fillColor=none;strokeColor=#5F6B76;" vertex="1" parent="1">
+          <mxGeometry x="330" y="532" width="1270" height="406" as="geometry" />
+        </mxCell>
+        <mxCell id="v22" value="&lt;b&gt;[claimed now]&lt;/b&gt;" style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=top;fontSize=10.5;fontStyle=0;fontColor=#33404D;spacing=2;overflow=visible;" vertex="1" parent="1">
+          <mxGeometry x="388" y="546" width="900" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="e23" value="" style="endArrow=none;dashed=1;html=1;strokeColor=#5F6B76" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="330" y="778" as="sourcePoint" />
+            <mxPoint x="1600" y="778" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="v24" value="&lt;b&gt;[claimed before]&lt;/b&gt;" style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=top;fontSize=10.5;fontStyle=0;fontColor=#33404D;spacing=2;overflow=visible;" vertex="1" parent="1">
+          <mxGeometry x="338" y="780" width="900" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="e25" value="" style="endArrow=none;dashed=1;html=1;strokeColor=#5F6B76" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="330" y="842" as="sourcePoint" />
+            <mxPoint x="1600" y="842" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="v26" value="&lt;b&gt;[command refused]&lt;/b&gt;" style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=top;fontSize=10.5;fontStyle=0;fontColor=#33404D;spacing=2;overflow=visible;" vertex="1" parent="1">
+          <mxGeometry x="338" y="844" width="900" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="v27" value="loop" style="shape=umlFrame;whiteSpace=wrap;html=1;width=52;height=22;boundedLbl=1;verticalAlign=middle;align=left;spacingLeft=4;fontStyle=1;fontSize=11;fillColor=none;strokeColor=#5F6B76;" vertex="1" parent="1">
+          <mxGeometry x="300" y="452" width="1315" height="510" as="geometry" />
+        </mxCell>
+        <mxCell id="v28" value="&lt;b&gt;[for each due loan]&lt;/b&gt;" style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=top;fontSize=10.5;fontStyle=0;fontColor=#33404D;spacing=2;overflow=visible;" vertex="1" parent="1">
+          <mxGeometry x="358" y="466" width="900" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="e29" value="&lt;b&gt;18&lt;/b&gt; pg_advisory_unlock('dm.jobs')" style="html=1;rounded=0;fontSize=10.5;labelBackgroundColor=#FFFFFF;fontColor=#1d1d1d;endSize=8;endArrow=block;endFill=1;strokeColor=#1D1D1D;fontSize=10.5" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="435" y="986" as="sourcePoint" />
+            <mxPoint x="1005" y="986" as="targetPoint" />
+            <mxPoint x="0" y="-9" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e30" value="&lt;b&gt;19&lt;/b&gt; false: another run is active" style="html=1;rounded=0;fontSize=10.5;labelBackgroundColor=#FFFFFF;fontColor=#1d1d1d;endSize=8;endArrow=open;endFill=0;dashed=1;strokeColor=#46535F;fontColor=#33404D;fontSize=10.5" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1005" y="1050" as="sourcePoint" />
+            <mxPoint x="435" y="1050" as="targetPoint" />
+            <mxPoint x="0" y="-9" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="v31" value="alt" style="shape=umlFrame;whiteSpace=wrap;html=1;width=52;height=22;boundedLbl=1;verticalAlign=middle;align=left;spacingLeft=4;fontStyle=1;fontSize=11;fillColor=none;strokeColor=#5F6B76;" vertex="1" parent="1">
+          <mxGeometry x="20" y="282" width="1610" height="798" as="geometry" />
+        </mxCell>
+        <mxCell id="v32" value="&lt;b&gt;[lock acquired]&lt;/b&gt;" style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=top;fontSize=10.5;fontStyle=0;fontColor=#33404D;spacing=2;overflow=visible;" vertex="1" parent="1">
+          <mxGeometry x="78" y="296" width="900" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="e33" value="" style="endArrow=none;dashed=1;html=1;strokeColor=#5F6B76" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="20" y="1014" as="sourcePoint" />
+            <mxPoint x="1630" y="1014" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="v34" value="&lt;b&gt;[lock busy]&lt;/b&gt;" style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=top;fontSize=10.5;fontStyle=0;fontColor=#33404D;spacing=2;overflow=visible;" vertex="1" parent="1">
+          <mxGeometry x="28" y="1016" width="900" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="e35" value="&lt;b&gt;20&lt;/b&gt; JobReport {ran, skipped, failed per job}" style="html=1;rounded=0;fontSize=10.5;labelBackgroundColor=#FFFFFF;fontColor=#1d1d1d;endSize=8;endArrow=open;endFill=0;dashed=1;strokeColor=#46535F;fontColor=#33404D;fontSize=10.5" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="425" y="1106" as="sourcePoint" />
+            <mxPoint x="245" y="1106" as="targetPoint" />
+            <mxPoint x="0" y="-9" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e36" value="&lt;b&gt;21&lt;/b&gt; 200 JobReport" style="html=1;rounded=0;fontSize=10.5;labelBackgroundColor=#FFFFFF;fontColor=#1d1d1d;endSize=8;endArrow=open;endFill=0;dashed=1;strokeColor=#46535F;fontColor=#33404D;fontSize=10.5" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="235" y="1136" as="sourcePoint" />
+            <mxPoint x="85" y="1136" as="targetPoint" />
+            <mxPoint x="0" y="-9" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="v37" value="&lt;b&gt;ref&lt;/b&gt; before T24: return reminders I02 at due - 24 h and at the due date use the same claim pattern with due keys '&lt;txn&gt;:return_reminder:1' and ':2'. Other jobs: request expiry T15, no-show T19, confirmation reminder I06, listing expiry, embedding backfill, population baseline. A late schedule only delays a job; events keep the database's own timestamps." style="shape=note;size=10;whiteSpace=wrap;html=1;fontSize=10;align=left;spacingLeft=6;fillColor=#F4F6F8;strokeColor=#B26A00;" vertex="1" parent="1">
+          <mxGeometry x="40" y="1170" width="1580" height="60" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

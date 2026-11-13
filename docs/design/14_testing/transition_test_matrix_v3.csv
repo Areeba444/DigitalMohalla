@@ -1,0 +1,337 @@
+case,state,event_type,expected,next_states,transitions,actors,iteration
+TM-001,REQUEST_CREATED,request_created,"REJECT (409, logged)",,,,1
+TM-002,REQUEST_CREATED,locality_checked,VALID,LOCALITY_CHECKED,T02,SYSTEM,1
+TM-003,REQUEST_CREATED,held_for_review,VALID,HELD_FOR_REVIEW,T03|T04,SYSTEM,1
+TM-004,REQUEST_CREATED,assessment_generated,"REJECT (409, logged)",,,,1
+TM-005,REQUEST_CREATED,hold_cleared,"REJECT (409, logged)",,,,1
+TM-006,REQUEST_CREATED,request_accepted,"REJECT (409, logged)",,,,1
+TM-007,REQUEST_CREATED,request_declined,VALID,DECLINED,T17,SYSTEM,1
+TM-008,REQUEST_CREATED,request_cancelled,VALID,CANCELLED,T16,BORROWER,1
+TM-009,REQUEST_CREATED,request_expired,"REJECT (409, logged)",,,,1
+TM-010,REQUEST_CREATED,handover_confirmed,"REJECT (409, logged)",,,,1
+TM-011,REQUEST_CREATED,no_show,"REJECT (409, logged)",,,,1
+TM-012,REQUEST_CREATED,return_initiated,"REJECT (409, logged)",,,,1
+TM-013,REQUEST_CREATED,return_confirmed,"REJECT (409, logged)",,,,1
+TM-014,REQUEST_CREATED,transaction_closed,"REJECT (409, logged)",,,,1
+TM-015,REQUEST_CREATED,dispute_opened,"REJECT (409, logged)",,,,1
+TM-016,REQUEST_CREATED,dispute_resolved,"REJECT (409, logged)",,,,1
+TM-017,REQUEST_CREATED,dispute_withdrawn,"REJECT (409, logged)",,,,1
+TM-018,REQUEST_CREATED,reminder_sent,"REJECT (409, logged)",,,,1
+TM-019,REQUEST_CREATED,extension_requested,"REJECT (409, logged)",,,,1
+TM-020,REQUEST_CREATED,extension_approved,"REJECT (409, logged)",,,,1
+TM-021,REQUEST_CREATED,extension_declined,"REJECT (409, logged)",,,,1
+TM-022,REQUEST_CREATED,counter_offered,"REJECT (409, logged)",,,,1
+TM-023,REQUEST_CREATED,counter_accepted,"REJECT (409, logged)",,,,1
+TM-024,REQUEST_CREATED,counter_declined,"REJECT (409, logged)",,,,1
+TM-025,LOCALITY_CHECKED,request_created,"REJECT (409, logged)",,,,1
+TM-026,LOCALITY_CHECKED,locality_checked,"REJECT (409, logged)",,,,1
+TM-027,LOCALITY_CHECKED,held_for_review,VALID,HELD_FOR_REVIEW,T06|T07|T08,SYSTEM,1
+TM-028,LOCALITY_CHECKED,assessment_generated,VALID,ASSESSED,T05,SYSTEM,1
+TM-029,LOCALITY_CHECKED,hold_cleared,"REJECT (409, logged)",,,,1
+TM-030,LOCALITY_CHECKED,request_accepted,"REJECT (409, logged)",,,,1
+TM-031,LOCALITY_CHECKED,request_declined,VALID,DECLINED,T17,SYSTEM,1
+TM-032,LOCALITY_CHECKED,request_cancelled,VALID,CANCELLED,T16,BORROWER,1
+TM-033,LOCALITY_CHECKED,request_expired,"REJECT (409, logged)",,,,1
+TM-034,LOCALITY_CHECKED,handover_confirmed,"REJECT (409, logged)",,,,1
+TM-035,LOCALITY_CHECKED,no_show,"REJECT (409, logged)",,,,1
+TM-036,LOCALITY_CHECKED,return_initiated,"REJECT (409, logged)",,,,1
+TM-037,LOCALITY_CHECKED,return_confirmed,"REJECT (409, logged)",,,,1
+TM-038,LOCALITY_CHECKED,transaction_closed,"REJECT (409, logged)",,,,1
+TM-039,LOCALITY_CHECKED,dispute_opened,"REJECT (409, logged)",,,,1
+TM-040,LOCALITY_CHECKED,dispute_resolved,"REJECT (409, logged)",,,,1
+TM-041,LOCALITY_CHECKED,dispute_withdrawn,"REJECT (409, logged)",,,,1
+TM-042,LOCALITY_CHECKED,reminder_sent,"REJECT (409, logged)",,,,1
+TM-043,LOCALITY_CHECKED,extension_requested,"REJECT (409, logged)",,,,1
+TM-044,LOCALITY_CHECKED,extension_approved,"REJECT (409, logged)",,,,1
+TM-045,LOCALITY_CHECKED,extension_declined,"REJECT (409, logged)",,,,1
+TM-046,LOCALITY_CHECKED,counter_offered,"REJECT (409, logged)",,,,1
+TM-047,LOCALITY_CHECKED,counter_accepted,"REJECT (409, logged)",,,,1
+TM-048,LOCALITY_CHECKED,counter_declined,"REJECT (409, logged)",,,,1
+TM-049,HELD_FOR_REVIEW,request_created,"REJECT (409, logged)",,,,1
+TM-050,HELD_FOR_REVIEW,locality_checked,"REJECT (409, logged)",,,,1
+TM-051,HELD_FOR_REVIEW,held_for_review,"REJECT (409, logged)",,,,1
+TM-052,HELD_FOR_REVIEW,assessment_generated,"REJECT (409, logged)",,,,1
+TM-053,HELD_FOR_REVIEW,hold_cleared,VALID,ASSESSED|LOCALITY_CHECKED,T09|T10|T11,ADMIN|MODERATOR,1
+TM-054,HELD_FOR_REVIEW,request_accepted,"REJECT (409, logged)",,,,1
+TM-055,HELD_FOR_REVIEW,request_declined,VALID,DECLINED,T12|T17,ADMIN|MODERATOR|SYSTEM,1
+TM-056,HELD_FOR_REVIEW,request_cancelled,VALID,CANCELLED,T16,BORROWER,1
+TM-057,HELD_FOR_REVIEW,request_expired,"REJECT (409, logged)",,,,1
+TM-058,HELD_FOR_REVIEW,handover_confirmed,"REJECT (409, logged)",,,,1
+TM-059,HELD_FOR_REVIEW,no_show,"REJECT (409, logged)",,,,1
+TM-060,HELD_FOR_REVIEW,return_initiated,"REJECT (409, logged)",,,,1
+TM-061,HELD_FOR_REVIEW,return_confirmed,"REJECT (409, logged)",,,,1
+TM-062,HELD_FOR_REVIEW,transaction_closed,"REJECT (409, logged)",,,,1
+TM-063,HELD_FOR_REVIEW,dispute_opened,"REJECT (409, logged)",,,,1
+TM-064,HELD_FOR_REVIEW,dispute_resolved,"REJECT (409, logged)",,,,1
+TM-065,HELD_FOR_REVIEW,dispute_withdrawn,"REJECT (409, logged)",,,,1
+TM-066,HELD_FOR_REVIEW,reminder_sent,"REJECT (409, logged)",,,,1
+TM-067,HELD_FOR_REVIEW,extension_requested,"REJECT (409, logged)",,,,1
+TM-068,HELD_FOR_REVIEW,extension_approved,"REJECT (409, logged)",,,,1
+TM-069,HELD_FOR_REVIEW,extension_declined,"REJECT (409, logged)",,,,1
+TM-070,HELD_FOR_REVIEW,counter_offered,"REJECT (409, logged)",,,,1
+TM-071,HELD_FOR_REVIEW,counter_accepted,"REJECT (409, logged)",,,,1
+TM-072,HELD_FOR_REVIEW,counter_declined,"REJECT (409, logged)",,,,1
+TM-073,ASSESSED,request_created,"REJECT (409, logged)",,,,1
+TM-074,ASSESSED,locality_checked,"REJECT (409, logged)",,,,1
+TM-075,ASSESSED,held_for_review,"REJECT (409, logged)",,,,1
+TM-076,ASSESSED,assessment_generated,"REJECT (409, logged)",,,,1
+TM-077,ASSESSED,hold_cleared,"REJECT (409, logged)",,,,1
+TM-078,ASSESSED,request_accepted,VALID,ACCEPTED,T13,LENDER,1
+TM-079,ASSESSED,request_declined,VALID,DECLINED,T14|T17,LENDER|SYSTEM,1
+TM-080,ASSESSED,request_cancelled,VALID,CANCELLED,T16,BORROWER,1
+TM-081,ASSESSED,request_expired,VALID,EXPIRED,T15,SYSTEM,2
+TM-082,ASSESSED,handover_confirmed,"REJECT (409, logged)",,,,1
+TM-083,ASSESSED,no_show,"REJECT (409, logged)",,,,1
+TM-084,ASSESSED,return_initiated,"REJECT (409, logged)",,,,1
+TM-085,ASSESSED,return_confirmed,"REJECT (409, logged)",,,,1
+TM-086,ASSESSED,transaction_closed,"REJECT (409, logged)",,,,1
+TM-087,ASSESSED,dispute_opened,"REJECT (409, logged)",,,,1
+TM-088,ASSESSED,dispute_resolved,"REJECT (409, logged)",,,,1
+TM-089,ASSESSED,dispute_withdrawn,"REJECT (409, logged)",,,,1
+TM-090,ASSESSED,reminder_sent,"REJECT (409, logged)",,,,1
+TM-091,ASSESSED,extension_requested,"REJECT (409, logged)",,,,1
+TM-092,ASSESSED,extension_approved,"REJECT (409, logged)",,,,1
+TM-093,ASSESSED,extension_declined,"REJECT (409, logged)",,,,1
+TM-094,ASSESSED,counter_offered,VALID,ASSESSED,I07,LENDER,2
+TM-095,ASSESSED,counter_accepted,VALID,LOCALITY_CHECKED,T29,BORROWER,2
+TM-096,ASSESSED,counter_declined,VALID,ASSESSED,I08,BORROWER,2
+TM-097,ACCEPTED,request_created,"REJECT (409, logged)",,,,1
+TM-098,ACCEPTED,locality_checked,"REJECT (409, logged)",,,,1
+TM-099,ACCEPTED,held_for_review,"REJECT (409, logged)",,,,1
+TM-100,ACCEPTED,assessment_generated,"REJECT (409, logged)",,,,1
+TM-101,ACCEPTED,hold_cleared,"REJECT (409, logged)",,,,1
+TM-102,ACCEPTED,request_accepted,"REJECT (409, logged)",,,,1
+TM-103,ACCEPTED,request_declined,"REJECT (409, logged)",,,,1
+TM-104,ACCEPTED,request_cancelled,"REJECT (409, logged)",,,,1
+TM-105,ACCEPTED,request_expired,"REJECT (409, logged)",,,,1
+TM-106,ACCEPTED,handover_confirmed,VALID,ACTIVE,T18,BORROWER|LENDER,1
+TM-107,ACCEPTED,no_show,VALID,NO_SHOW,T19,SYSTEM,2
+TM-108,ACCEPTED,return_initiated,"REJECT (409, logged)",,,,1
+TM-109,ACCEPTED,return_confirmed,"REJECT (409, logged)",,,,1
+TM-110,ACCEPTED,transaction_closed,"REJECT (409, logged)",,,,1
+TM-111,ACCEPTED,dispute_opened,VALID,DISPUTED,T23,BORROWER|LENDER,1
+TM-112,ACCEPTED,dispute_resolved,"REJECT (409, logged)",,,,1
+TM-113,ACCEPTED,dispute_withdrawn,"REJECT (409, logged)",,,,1
+TM-114,ACCEPTED,reminder_sent,VALID,ACCEPTED,I01,SYSTEM,2
+TM-115,ACCEPTED,extension_requested,"REJECT (409, logged)",,,,1
+TM-116,ACCEPTED,extension_approved,"REJECT (409, logged)",,,,1
+TM-117,ACCEPTED,extension_declined,"REJECT (409, logged)",,,,1
+TM-118,ACCEPTED,counter_offered,"REJECT (409, logged)",,,,1
+TM-119,ACCEPTED,counter_accepted,"REJECT (409, logged)",,,,1
+TM-120,ACCEPTED,counter_declined,"REJECT (409, logged)",,,,1
+TM-121,ACTIVE,request_created,"REJECT (409, logged)",,,,1
+TM-122,ACTIVE,locality_checked,"REJECT (409, logged)",,,,1
+TM-123,ACTIVE,held_for_review,"REJECT (409, logged)",,,,1
+TM-124,ACTIVE,assessment_generated,"REJECT (409, logged)",,,,1
+TM-125,ACTIVE,hold_cleared,"REJECT (409, logged)",,,,1
+TM-126,ACTIVE,request_accepted,"REJECT (409, logged)",,,,1
+TM-127,ACTIVE,request_declined,"REJECT (409, logged)",,,,1
+TM-128,ACTIVE,request_cancelled,"REJECT (409, logged)",,,,1
+TM-129,ACTIVE,request_expired,"REJECT (409, logged)",,,,1
+TM-130,ACTIVE,handover_confirmed,"REJECT (409, logged)",,,,1
+TM-131,ACTIVE,no_show,"REJECT (409, logged)",,,,1
+TM-132,ACTIVE,return_initiated,VALID,RETURN_INITIATED,T20,BORROWER,1
+TM-133,ACTIVE,return_confirmed,"REJECT (409, logged)",,,,1
+TM-134,ACTIVE,transaction_closed,"REJECT (409, logged)",,,,1
+TM-135,ACTIVE,dispute_opened,VALID,DISPUTED,T23|T24,BORROWER|LENDER|SYSTEM,1
+TM-136,ACTIVE,dispute_resolved,"REJECT (409, logged)",,,,1
+TM-137,ACTIVE,dispute_withdrawn,"REJECT (409, logged)",,,,1
+TM-138,ACTIVE,reminder_sent,VALID,ACTIVE,I02,SYSTEM,2
+TM-139,ACTIVE,extension_requested,VALID,ACTIVE,I03,BORROWER,2
+TM-140,ACTIVE,extension_approved,VALID,ACTIVE,I04,LENDER,2
+TM-141,ACTIVE,extension_declined,VALID,ACTIVE,I05,LENDER,2
+TM-142,ACTIVE,counter_offered,"REJECT (409, logged)",,,,1
+TM-143,ACTIVE,counter_accepted,"REJECT (409, logged)",,,,1
+TM-144,ACTIVE,counter_declined,"REJECT (409, logged)",,,,1
+TM-145,RETURN_INITIATED,request_created,"REJECT (409, logged)",,,,1
+TM-146,RETURN_INITIATED,locality_checked,"REJECT (409, logged)",,,,1
+TM-147,RETURN_INITIATED,held_for_review,"REJECT (409, logged)",,,,1
+TM-148,RETURN_INITIATED,assessment_generated,"REJECT (409, logged)",,,,1
+TM-149,RETURN_INITIATED,hold_cleared,"REJECT (409, logged)",,,,1
+TM-150,RETURN_INITIATED,request_accepted,"REJECT (409, logged)",,,,1
+TM-151,RETURN_INITIATED,request_declined,"REJECT (409, logged)",,,,1
+TM-152,RETURN_INITIATED,request_cancelled,"REJECT (409, logged)",,,,1
+TM-153,RETURN_INITIATED,request_expired,"REJECT (409, logged)",,,,1
+TM-154,RETURN_INITIATED,handover_confirmed,"REJECT (409, logged)",,,,1
+TM-155,RETURN_INITIATED,no_show,"REJECT (409, logged)",,,,1
+TM-156,RETURN_INITIATED,return_initiated,"REJECT (409, logged)",,,,1
+TM-157,RETURN_INITIATED,return_confirmed,VALID,RETURNED,T21,BORROWER|LENDER,1
+TM-158,RETURN_INITIATED,transaction_closed,"REJECT (409, logged)",,,,1
+TM-159,RETURN_INITIATED,dispute_opened,VALID,DISPUTED,T23,BORROWER|LENDER,1
+TM-160,RETURN_INITIATED,dispute_resolved,"REJECT (409, logged)",,,,1
+TM-161,RETURN_INITIATED,dispute_withdrawn,"REJECT (409, logged)",,,,1
+TM-162,RETURN_INITIATED,reminder_sent,VALID,RETURN_INITIATED,I06,SYSTEM,2
+TM-163,RETURN_INITIATED,extension_requested,"REJECT (409, logged)",,,,1
+TM-164,RETURN_INITIATED,extension_approved,"REJECT (409, logged)",,,,1
+TM-165,RETURN_INITIATED,extension_declined,"REJECT (409, logged)",,,,1
+TM-166,RETURN_INITIATED,counter_offered,"REJECT (409, logged)",,,,1
+TM-167,RETURN_INITIATED,counter_accepted,"REJECT (409, logged)",,,,1
+TM-168,RETURN_INITIATED,counter_declined,"REJECT (409, logged)",,,,1
+TM-169,RETURNED,request_created,"REJECT (409, logged)",,,,1
+TM-170,RETURNED,locality_checked,"REJECT (409, logged)",,,,1
+TM-171,RETURNED,held_for_review,"REJECT (409, logged)",,,,1
+TM-172,RETURNED,assessment_generated,"REJECT (409, logged)",,,,1
+TM-173,RETURNED,hold_cleared,"REJECT (409, logged)",,,,1
+TM-174,RETURNED,request_accepted,"REJECT (409, logged)",,,,1
+TM-175,RETURNED,request_declined,"REJECT (409, logged)",,,,1
+TM-176,RETURNED,request_cancelled,"REJECT (409, logged)",,,,1
+TM-177,RETURNED,request_expired,"REJECT (409, logged)",,,,1
+TM-178,RETURNED,handover_confirmed,"REJECT (409, logged)",,,,1
+TM-179,RETURNED,no_show,"REJECT (409, logged)",,,,1
+TM-180,RETURNED,return_initiated,"REJECT (409, logged)",,,,1
+TM-181,RETURNED,return_confirmed,"REJECT (409, logged)",,,,1
+TM-182,RETURNED,transaction_closed,VALID,COMPLETED,T22,SYSTEM,1
+TM-183,RETURNED,dispute_opened,"REJECT (409, logged)",,,,1
+TM-184,RETURNED,dispute_resolved,"REJECT (409, logged)",,,,1
+TM-185,RETURNED,dispute_withdrawn,"REJECT (409, logged)",,,,1
+TM-186,RETURNED,reminder_sent,"REJECT (409, logged)",,,,1
+TM-187,RETURNED,extension_requested,"REJECT (409, logged)",,,,1
+TM-188,RETURNED,extension_approved,"REJECT (409, logged)",,,,1
+TM-189,RETURNED,extension_declined,"REJECT (409, logged)",,,,1
+TM-190,RETURNED,counter_offered,"REJECT (409, logged)",,,,1
+TM-191,RETURNED,counter_accepted,"REJECT (409, logged)",,,,1
+TM-192,RETURNED,counter_declined,"REJECT (409, logged)",,,,1
+TM-193,COMPLETED,request_created,"REJECT (409, logged)",,,,1
+TM-194,COMPLETED,locality_checked,"REJECT (409, logged)",,,,1
+TM-195,COMPLETED,held_for_review,"REJECT (409, logged)",,,,1
+TM-196,COMPLETED,assessment_generated,"REJECT (409, logged)",,,,1
+TM-197,COMPLETED,hold_cleared,"REJECT (409, logged)",,,,1
+TM-198,COMPLETED,request_accepted,"REJECT (409, logged)",,,,1
+TM-199,COMPLETED,request_declined,"REJECT (409, logged)",,,,1
+TM-200,COMPLETED,request_cancelled,"REJECT (409, logged)",,,,1
+TM-201,COMPLETED,request_expired,"REJECT (409, logged)",,,,1
+TM-202,COMPLETED,handover_confirmed,"REJECT (409, logged)",,,,1
+TM-203,COMPLETED,no_show,"REJECT (409, logged)",,,,1
+TM-204,COMPLETED,return_initiated,"REJECT (409, logged)",,,,1
+TM-205,COMPLETED,return_confirmed,"REJECT (409, logged)",,,,1
+TM-206,COMPLETED,transaction_closed,"REJECT (409, logged)",,,,1
+TM-207,COMPLETED,dispute_opened,"REJECT (409, logged)",,,,1
+TM-208,COMPLETED,dispute_resolved,"REJECT (409, logged)",,,,1
+TM-209,COMPLETED,dispute_withdrawn,"REJECT (409, logged)",,,,1
+TM-210,COMPLETED,reminder_sent,"REJECT (409, logged)",,,,1
+TM-211,COMPLETED,extension_requested,"REJECT (409, logged)",,,,1
+TM-212,COMPLETED,extension_approved,"REJECT (409, logged)",,,,1
+TM-213,COMPLETED,extension_declined,"REJECT (409, logged)",,,,1
+TM-214,COMPLETED,counter_offered,"REJECT (409, logged)",,,,1
+TM-215,COMPLETED,counter_accepted,"REJECT (409, logged)",,,,1
+TM-216,COMPLETED,counter_declined,"REJECT (409, logged)",,,,1
+TM-217,DECLINED,request_created,"REJECT (409, logged)",,,,1
+TM-218,DECLINED,locality_checked,"REJECT (409, logged)",,,,1
+TM-219,DECLINED,held_for_review,"REJECT (409, logged)",,,,1
+TM-220,DECLINED,assessment_generated,"REJECT (409, logged)",,,,1
+TM-221,DECLINED,hold_cleared,"REJECT (409, logged)",,,,1
+TM-222,DECLINED,request_accepted,"REJECT (409, logged)",,,,1
+TM-223,DECLINED,request_declined,"REJECT (409, logged)",,,,1
+TM-224,DECLINED,request_cancelled,"REJECT (409, logged)",,,,1
+TM-225,DECLINED,request_expired,"REJECT (409, logged)",,,,1
+TM-226,DECLINED,handover_confirmed,"REJECT (409, logged)",,,,1
+TM-227,DECLINED,no_show,"REJECT (409, logged)",,,,1
+TM-228,DECLINED,return_initiated,"REJECT (409, logged)",,,,1
+TM-229,DECLINED,return_confirmed,"REJECT (409, logged)",,,,1
+TM-230,DECLINED,transaction_closed,"REJECT (409, logged)",,,,1
+TM-231,DECLINED,dispute_opened,"REJECT (409, logged)",,,,1
+TM-232,DECLINED,dispute_resolved,"REJECT (409, logged)",,,,1
+TM-233,DECLINED,dispute_withdrawn,"REJECT (409, logged)",,,,1
+TM-234,DECLINED,reminder_sent,"REJECT (409, logged)",,,,1
+TM-235,DECLINED,extension_requested,"REJECT (409, logged)",,,,1
+TM-236,DECLINED,extension_approved,"REJECT (409, logged)",,,,1
+TM-237,DECLINED,extension_declined,"REJECT (409, logged)",,,,1
+TM-238,DECLINED,counter_offered,"REJECT (409, logged)",,,,1
+TM-239,DECLINED,counter_accepted,"REJECT (409, logged)",,,,1
+TM-240,DECLINED,counter_declined,"REJECT (409, logged)",,,,1
+TM-241,CANCELLED,request_created,"REJECT (409, logged)",,,,1
+TM-242,CANCELLED,locality_checked,"REJECT (409, logged)",,,,1
+TM-243,CANCELLED,held_for_review,"REJECT (409, logged)",,,,1
+TM-244,CANCELLED,assessment_generated,"REJECT (409, logged)",,,,1
+TM-245,CANCELLED,hold_cleared,"REJECT (409, logged)",,,,1
+TM-246,CANCELLED,request_accepted,"REJECT (409, logged)",,,,1
+TM-247,CANCELLED,request_declined,"REJECT (409, logged)",,,,1
+TM-248,CANCELLED,request_cancelled,"REJECT (409, logged)",,,,1
+TM-249,CANCELLED,request_expired,"REJECT (409, logged)",,,,1
+TM-250,CANCELLED,handover_confirmed,"REJECT (409, logged)",,,,1
+TM-251,CANCELLED,no_show,"REJECT (409, logged)",,,,1
+TM-252,CANCELLED,return_initiated,"REJECT (409, logged)",,,,1
+TM-253,CANCELLED,return_confirmed,"REJECT (409, logged)",,,,1
+TM-254,CANCELLED,transaction_closed,"REJECT (409, logged)",,,,1
+TM-255,CANCELLED,dispute_opened,"REJECT (409, logged)",,,,1
+TM-256,CANCELLED,dispute_resolved,"REJECT (409, logged)",,,,1
+TM-257,CANCELLED,dispute_withdrawn,"REJECT (409, logged)",,,,1
+TM-258,CANCELLED,reminder_sent,"REJECT (409, logged)",,,,1
+TM-259,CANCELLED,extension_requested,"REJECT (409, logged)",,,,1
+TM-260,CANCELLED,extension_approved,"REJECT (409, logged)",,,,1
+TM-261,CANCELLED,extension_declined,"REJECT (409, logged)",,,,1
+TM-262,CANCELLED,counter_offered,"REJECT (409, logged)",,,,1
+TM-263,CANCELLED,counter_accepted,"REJECT (409, logged)",,,,1
+TM-264,CANCELLED,counter_declined,"REJECT (409, logged)",,,,1
+TM-265,EXPIRED,request_created,"REJECT (409, logged)",,,,1
+TM-266,EXPIRED,locality_checked,"REJECT (409, logged)",,,,1
+TM-267,EXPIRED,held_for_review,"REJECT (409, logged)",,,,1
+TM-268,EXPIRED,assessment_generated,"REJECT (409, logged)",,,,1
+TM-269,EXPIRED,hold_cleared,"REJECT (409, logged)",,,,1
+TM-270,EXPIRED,request_accepted,"REJECT (409, logged)",,,,1
+TM-271,EXPIRED,request_declined,"REJECT (409, logged)",,,,1
+TM-272,EXPIRED,request_cancelled,"REJECT (409, logged)",,,,1
+TM-273,EXPIRED,request_expired,"REJECT (409, logged)",,,,1
+TM-274,EXPIRED,handover_confirmed,"REJECT (409, logged)",,,,1
+TM-275,EXPIRED,no_show,"REJECT (409, logged)",,,,1
+TM-276,EXPIRED,return_initiated,"REJECT (409, logged)",,,,1
+TM-277,EXPIRED,return_confirmed,"REJECT (409, logged)",,,,1
+TM-278,EXPIRED,transaction_closed,"REJECT (409, logged)",,,,1
+TM-279,EXPIRED,dispute_opened,"REJECT (409, logged)",,,,1
+TM-280,EXPIRED,dispute_resolved,"REJECT (409, logged)",,,,1
+TM-281,EXPIRED,dispute_withdrawn,"REJECT (409, logged)",,,,1
+TM-282,EXPIRED,reminder_sent,"REJECT (409, logged)",,,,1
+TM-283,EXPIRED,extension_requested,"REJECT (409, logged)",,,,1
+TM-284,EXPIRED,extension_approved,"REJECT (409, logged)",,,,1
+TM-285,EXPIRED,extension_declined,"REJECT (409, logged)",,,,1
+TM-286,EXPIRED,counter_offered,"REJECT (409, logged)",,,,1
+TM-287,EXPIRED,counter_accepted,"REJECT (409, logged)",,,,1
+TM-288,EXPIRED,counter_declined,"REJECT (409, logged)",,,,1
+TM-289,NO_SHOW,request_created,"REJECT (409, logged)",,,,1
+TM-290,NO_SHOW,locality_checked,"REJECT (409, logged)",,,,1
+TM-291,NO_SHOW,held_for_review,"REJECT (409, logged)",,,,1
+TM-292,NO_SHOW,assessment_generated,"REJECT (409, logged)",,,,1
+TM-293,NO_SHOW,hold_cleared,"REJECT (409, logged)",,,,1
+TM-294,NO_SHOW,request_accepted,"REJECT (409, logged)",,,,1
+TM-295,NO_SHOW,request_declined,"REJECT (409, logged)",,,,1
+TM-296,NO_SHOW,request_cancelled,"REJECT (409, logged)",,,,1
+TM-297,NO_SHOW,request_expired,"REJECT (409, logged)",,,,1
+TM-298,NO_SHOW,handover_confirmed,"REJECT (409, logged)",,,,1
+TM-299,NO_SHOW,no_show,"REJECT (409, logged)",,,,1
+TM-300,NO_SHOW,return_initiated,"REJECT (409, logged)",,,,1
+TM-301,NO_SHOW,return_confirmed,"REJECT (409, logged)",,,,1
+TM-302,NO_SHOW,transaction_closed,"REJECT (409, logged)",,,,1
+TM-303,NO_SHOW,dispute_opened,"REJECT (409, logged)",,,,1
+TM-304,NO_SHOW,dispute_resolved,"REJECT (409, logged)",,,,1
+TM-305,NO_SHOW,dispute_withdrawn,"REJECT (409, logged)",,,,1
+TM-306,NO_SHOW,reminder_sent,"REJECT (409, logged)",,,,1
+TM-307,NO_SHOW,extension_requested,"REJECT (409, logged)",,,,1
+TM-308,NO_SHOW,extension_approved,"REJECT (409, logged)",,,,1
+TM-309,NO_SHOW,extension_declined,"REJECT (409, logged)",,,,1
+TM-310,NO_SHOW,counter_offered,"REJECT (409, logged)",,,,1
+TM-311,NO_SHOW,counter_accepted,"REJECT (409, logged)",,,,1
+TM-312,NO_SHOW,counter_declined,"REJECT (409, logged)",,,,1
+TM-313,DISPUTED,request_created,"REJECT (409, logged)",,,,1
+TM-314,DISPUTED,locality_checked,"REJECT (409, logged)",,,,1
+TM-315,DISPUTED,held_for_review,"REJECT (409, logged)",,,,1
+TM-316,DISPUTED,assessment_generated,"REJECT (409, logged)",,,,1
+TM-317,DISPUTED,hold_cleared,"REJECT (409, logged)",,,,1
+TM-318,DISPUTED,request_accepted,"REJECT (409, logged)",,,,1
+TM-319,DISPUTED,request_declined,"REJECT (409, logged)",,,,1
+TM-320,DISPUTED,request_cancelled,"REJECT (409, logged)",,,,1
+TM-321,DISPUTED,request_expired,"REJECT (409, logged)",,,,1
+TM-322,DISPUTED,handover_confirmed,"REJECT (409, logged)",,,,1
+TM-323,DISPUTED,no_show,"REJECT (409, logged)",,,,1
+TM-324,DISPUTED,return_initiated,"REJECT (409, logged)",,,,1
+TM-325,DISPUTED,return_confirmed,"REJECT (409, logged)",,,,1
+TM-326,DISPUTED,transaction_closed,"REJECT (409, logged)",,,,1
+TM-327,DISPUTED,dispute_opened,"REJECT (409, logged)",,,,1
+TM-328,DISPUTED,dispute_resolved,VALID,ACTIVE|COMPLETED|NO_SHOW,T25a|T25b|T25c,ADMIN|MODERATOR,1
+TM-329,DISPUTED,dispute_withdrawn,VALID,ACCEPTED|ACTIVE|RETURN_INITIATED,T26,BORROWER|LENDER,1
+TM-330,DISPUTED,reminder_sent,"REJECT (409, logged)",,,,1
+TM-331,DISPUTED,extension_requested,"REJECT (409, logged)",,,,1
+TM-332,DISPUTED,extension_approved,"REJECT (409, logged)",,,,1
+TM-333,DISPUTED,extension_declined,"REJECT (409, logged)",,,,1
+TM-334,DISPUTED,counter_offered,"REJECT (409, logged)",,,,1
+TM-335,DISPUTED,counter_accepted,"REJECT (409, logged)",,,,1
+TM-336,DISPUTED,counter_declined,"REJECT (409, logged)",,,,1

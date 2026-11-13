@@ -1,4 +1,7 @@
-"""Generates deployment_diagram.drawio: the deployment diagram as built in iteration 1 (v1.0).
+"""Generates deployment_diagram.drawio: the deployment diagram as built in iteration 1 (v1.0), with the iteration 2
+additions drawn as planned (v1.1, DA-17, Student 3, 7 November 2026): the scheduler trigger from a GitHub Actions
+cron (ADR-0012, proposed), object storage for photos (ADR-0014, proposed), and pgvector with migration 0002
+(ADR-0016, DA-09, proposed).
 
 The provisional Part A design (one AWS EC2 host with Docker Compose and GHCR, design step A13, v0.9/0.10)
 is kept in archive_v1/ (deployment_diagram_v0.9_partA_provisional.drawio and its generator).
@@ -30,6 +33,10 @@ PLANNED = ("shape=note;size=14;whiteSpace=wrap;html=1;align=left;verticalAlign=t
 LINK = EDGE_BASE + "endArrow=none;strokeColor=#2F4F6F;strokeWidth=1.6;fontSize=13;"
 # deployment by Render from GitHub: a dependency (dashed, open arrow) labelled with the trigger
 DEPLOY = EDGE_BASE + "endArrow=open;endSize=12;dashed=1;strokeColor=#5B3E86;strokeWidth=1.6;fontSize=13;"
+# planned (iteration 2) communication path: grey dashed, arrow from the caller
+PLANNED_LINK = EDGE_BASE + "endArrow=open;endSize=10;dashed=1;strokeColor=#7A7A7A;strokeWidth=1.6;fontSize=13;"
+PLANNED_NODE = ("shape=cube;whiteSpace=wrap;html=1;size=14;align=left;verticalAlign=top;spacingLeft=10;spacingTop=16;"
+                "fontSize=15;dashed=1;fillColor=#F4F4F4;strokeColor=#7A7A7A;fontColor=#3A3A3A;")
 
 
 def artifact(d, label, x, y, w, h):
@@ -44,13 +51,14 @@ def st(fill):
 
 
 def build():
-    d = Diagram("Deployment diagram (as built)", 1240, 1290)
-    d.text("<b>Digital Mohalla &#8212; deployment diagram, iteration 1, as built</b> (v1.0, 14 October 2026; "
-           "replaces the provisional Part A design A13)", 30, 12, 1180, 26, size=18, check=False)
+    d = Diagram("Deployment diagram (as built, iteration 2 planned)", 1640, 1290)
+    d.text("<b>Digital Mohalla &#8212; deployment diagram: iteration 1 as built, iteration 2 planned</b> "
+           "(v1.1, 7 November 2026, DA-17)", 30, 12, 1580, 26,
+           size=18, check=False)
     d.text("UML 2.5 deployment notation: 3-D box = node (&#171;device&#187; or &#171;cloud service&#187;); plain box = "
            "&#171;executionEnvironment&#187;; box with document icon = &#171;artifact&#187;; folded note = comment; "
            "solid line = communication path with protocol and port; dashed arrow = deployment trigger; "
-           "grey dashed note = planned, not built.", 30, 44, 1180, 40, size=13, color="#4A5560", check=False)
+           "grey dashed node, note or path = planned for iteration 2, not built.", 30, 44, 1580, 40, size=13, color="#4A5560", check=False)
 
     # ---------------------------------------------------------------- clients
     phone = d.node("&#171;device&#187;<br><b>Android phone</b> [*]: residents, lenders, moderators", 30, 100, 380, 250,
@@ -77,7 +85,8 @@ def build():
                 "<i>develop</i> = integration; <i>render.yaml</i>", 870, 162, 320, 100)
     act = d.node("&#171;executionEnvironment&#187; <b>GitHub Actions runner</b><br>&#171;artifact&#187; <i>ci.yml</i> "
                  "on every push and pull request: Backend (ruff, mypy, bandit, pytest on a PostgreSQL 16 service "
-                 "container), Frontend (tsc, ESLint, Jest), API client in sync", 870, 280, 320, 230, ENV + st("#FFFFFF"))
+                 "container), Frontend (tsc, ESLint, Jest), API client in sync<br>&#171;artifact&#187; <i>jobs.yml</i> "
+                 "(planned): cron calls the API's run-due-jobs endpoint", 870, 280, 320, 230, ENV + st("#FFFFFF"))
     d.mark_container(act, pass_through=True)
 
     # ---------------------------------------------------------------- Render
@@ -89,12 +98,12 @@ def build():
                  "container (sleeps after about 15 min idle)", 50, 500, 360, 410, ENV + st("#FFFFFF"))
     d.mark_container(web, pass_through=True)
     artifact(d, "&#171;artifact&#187; <b>API image</b> (<i>backend/Dockerfile</i>)<br>Python 3.12, FastAPI + "
-                "Uvicorn, modular monolith (Modules 1, 3, 5, 9)<br>start-up: <i>alembic upgrade head</i>, then "
-                "Uvicorn<br>REST <i>/api/v1</i>; <i>GET /health</i>", 66, 578, 328, 162)
-    artifact(d, "&#171;artifact&#187; <i>config/engine.json</i><br>config_version 1.3.0-iteration1-draft",
+                "Uvicorn, modular monolith (Modules 1, 3, 5, 9; planned: 4, 7 and the job endpoint)<br>start-up: <i>alembic upgrade head</i>, "
+                "then Uvicorn<br>REST <i>/api/v1</i>; <i>GET /health</i>", 66, 578, 328, 162)
+    artifact(d, "&#171;artifact&#187; <i>config/engine.json</i><br>config_version 1.3.0-iteration1-draft; planned: 1.4.0 (ranking, timers)",
              66, 752, 328, 62)
     d.node("Secrets in Render settings: <i>DATABASE_URL</i>, <i>JWT_SECRET</i> (generated); "
-           "<i>CORS_ORIGINS</i> = the web app only", 66, 826, 328, 72, COMMENT + "fillColor=#FFF3E0;strokeColor=#C77700;")
+           "<i>CORS_ORIGINS</i> = the web app only; planned: <i>JOBS_TOKEN</i>, storage keys", 66, 826, 328, 72, COMMENT + "fillColor=#FFF3E0;strokeColor=#C77700;")
 
     static = d.node("&#171;executionEnvironment&#187;<br><b>Static site</b> <i>digitalmohalla-web</i> on "
                     "Render's CDN (does not sleep)", 480, 500, 310, 230, ENV + st("#FFFFFF"))
@@ -112,11 +121,12 @@ def build():
     d.text("free plan, AWS ap-southeast-1 (Singapore), the same region as the API", 250, 1030, 540, 24,
            size=13, color="#2E5E1E", check=False)
     pg = d.node("&#171;executionEnvironment&#187; <b>PostgreSQL 16</b> with <i>btree_gist</i>; direct endpoint "
-                "(not the pooler); suspends when idle, wakes on connect", 50, 1074, 740, 170, ENV + st("#FFFFFF"))
+                "(not the pooler); suspends when idle, wakes on connect; planned: <i>vector</i> and <i>pg_trgm</i> extensions (ADR-0016)", 50, 1074, 740, 170, ENV + st("#FFFFFF"))
     d.mark_container(pg, pass_through=True)
     artifact(d, "&#171;artifact&#187; <b>schema <i>dm</i></b> v2.3 (Alembic migration 0001): event store "
                 "(append-only, hash-chained), projections, bookings (EXCLUDE), assessments, cases, moderator "
-                "decisions, audit log. No coordinates, addresses or CNIC (suite 14).", 66, 1132, 708, 96)
+                "decisions, audit log. No coordinates, addresses or CNIC (suite 14). Planned: migration 0002 "
+                "(schema v2.4, DA-09).", 66, 1132, 708, 96)
 
     # ---------------------------------------------------------------- right column
     lap = d.node("&#171;device&#187;<br><b>Team laptop</b>: development and demo fallback", 850, 620, 360, 230,
@@ -127,11 +137,19 @@ def build():
            870, 688, 320, 144, ENV + st("#FAFAFA"))
     d.node("<b>Planned, not built yet</b> (Iteration 2): Android release build with the API address (EAS, "
            "TC-73); post-deploy smoke test (TC-91); rehearsed rollback; a paid tier or small host for the pilot "
-           "if free-tier sleep affects users.", 850, 878, 360, 160, PLANNED)
+           "if free-tier sleep affects users. Plan: 14_testing/Test_Deployment_Rollback_Handover_Plan.md.", 1250, 100, 360, 200,
+           PLANNED)
     d.node("<b>Why</b>: managed services give HTTPS, TLS to the database, health-gated deploys and rollback "
            "without server administration. Serves NFR-S-01, NFR-D-03, NFR-D-04, NFR-PR-01, NFR-S-07. "
-           "The Part A design (one AWS host) is kept for reference.", 850, 1062, 360, 198,
+           "The Part A design (one AWS host) is kept for reference.", 1250, 1062, 360, 198,
            COMMENT + "fillColor=#FFFFFF;strokeColor=#B0BAC4;")
+
+    store = d.node("&#171;cloud service&#187;<br><b>Object storage</b> (planned; provider is an open point "
+                   "of DA-17)", 1250, 640, 360, 260, PLANNED_NODE)
+    d.mark_container(store, pass_through=True)
+    artifact(d, "&#171;artifact&#187; <b>private bucket</b><br>photos and documents of handovers, returns and "
+                "disputes; files reach it only after the API has checked type and size and stripped EXIF; read "
+                "through short-lived signed URLs (ADR-0014)", 1270, 720, 320, 160)
 
     # ---------------------------------------------------------------- communication paths
     d.edge(phone, web, "HTTPS :443<br>REST /api/v1 (JSON)", style=LINK, exit=(0.5, 1), entry=(0.4722, 0),
@@ -144,6 +162,10 @@ def build():
            entry=(0.2432, 0), label_x=0.05)
     d.edge(gh, render, "push to main, CI passed:<br>build and deploy", style=DEPLOY, exit=(0.5, 1),
            entry=(1, 0.26), points=[(1030, 560)], label_x=0.35)
+    d.edge(act, web, "HTTPS :443 POST run-due-jobs<br>(cron, token; ADR-0012)", style=PLANNED_LINK, exit=(1, 0.8),
+           entry=(0.3, 1), points=[(1230, 464), (1230, 985), (158, 985)], label_x=0.45, label_dy=14)
+    d.edge(web, store, "HTTPS :443 (S3-style API)<br>put, signed URL", style=PLANNED_LINK, exit=(0.8, 1),
+           entry=(0.5, 1), points=[(338, 958), (1430, 958)], label_x=0.1, label_dy=-14)
     return d
 
 

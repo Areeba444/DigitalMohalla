@@ -1,0 +1,243 @@
+<mxfile host="Electron" agent="Digital Mohalla design generator" version="24.7.17" type="device">
+  <diagram id="Sequence__g__information_request__DA_12_" name="Sequence (g) information request (DA-12)">
+    <mxGraphModel dx="1400" dy="900" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1560" pageHeight="1350" math="0" shadow="0" background="#FFFFFF">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="v1" value="&lt;b&gt;Digital Mohalla &amp;#8212; Sequence diagram (g): information request, party response and deadline&lt;/b&gt; &amp;#8212; DA-12, Student 3, v1.1 draft (iteration 2)" style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=top;fontSize=15;fontStyle=0;fontColor=#1d1d1d;spacing=2;overflow=visible;" vertex="1" parent="1">
+          <mxGeometry x="30" y="12" width="1500" height="24" as="geometry" />
+        </mxCell>
+        <mxCell id="v2" value="Precondition: an escalation case is OPEN (sequence c, transition C01) and assigned to a moderator of the transaction's community. Case transitions C02&amp;#8211;C04: escalation-case state machine. Endpoints are in the DA-10 REST table. NotificationService (Module 7, ADR-0013) and JobRunner (the scheduler, ADR-0012) are iteration 2 components owned by Areeba and Fatima." style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=top;fontSize=11;fontStyle=0;fontColor=#4A5560;spacing=2;overflow=visible;" vertex="1" parent="1">
+          <mxGeometry x="30" y="36" width="1500" height="34" as="geometry" />
+        </mxCell>
+        <mxCell id="ll_MOD" value="Moderator" style="shape=umlLifeline;participant=umlActor;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=0;verticalAlign=top;spacingTop=36;size=42;fontSize=11;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="40" y="80" width="80" height="1210" as="geometry" />
+        </mxCell>
+        <mxCell id="ll_P" value="Party&lt;br&gt;(borrower or lender)" style="shape=umlLifeline;participant=umlActor;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=0;verticalAlign=top;spacingTop=36;size=42;fontSize=11;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="170" y="80" width="80" height="1210" as="geometry" />
+        </mxCell>
+        <mxCell id="ll_API" value=":REST API" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=0;collapsible=0;size=56;fontSize=11;fillColor=#F2F2F2;strokeColor=#46535F;" vertex="1" parent="1">
+          <mxGeometry x="298" y="80" width="164" height="1210" as="geometry" />
+        </mxCell>
+        <mxCell id="ll_CS" value=":CaseService&lt;br&gt;(M9)" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=0;collapsible=0;size=56;fontSize=11;fillColor=#EFE6F6;strokeColor=#46535F;" vertex="1" parent="1">
+          <mxGeometry x="508" y="80" width="164" height="1210" as="geometry" />
+        </mxCell>
+        <mxCell id="ll_DB" value=":Database (PostgreSQL)&lt;br&gt;escalation_case, case_statement" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=0;collapsible=0;size=56;fontSize=11;fillColor=#F2F2F2;strokeColor=#46535F;" vertex="1" parent="1">
+          <mxGeometry x="738" y="80" width="164" height="1210" as="geometry" />
+        </mxCell>
+        <mxCell id="ll_AUD" value=":AuditLogService (M9)&lt;br&gt;audit_log, hash chain" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=0;collapsible=0;size=56;fontSize=11;fillColor=#EFE6F6;strokeColor=#46535F;" vertex="1" parent="1">
+          <mxGeometry x="958" y="80" width="164" height="1210" as="geometry" />
+        </mxCell>
+        <mxCell id="ll_NOT" value=":NotificationService (M7)&lt;br&gt;&amp;#171;INotify&amp;#187;" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=0;collapsible=0;size=56;fontSize=11;fillColor=#FDEBDD;strokeColor=#46535F;" vertex="1" parent="1">
+          <mxGeometry x="1168" y="80" width="164" height="1210" as="geometry" />
+        </mxCell>
+        <mxCell id="ll_SCH" value=":JobRunner (M3)&lt;br&gt;scheduler, ADR-0012" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=0;collapsible=0;size=56;fontSize=11;fillColor=#E3EEF9;strokeColor=#46535F;" vertex="1" parent="1">
+          <mxGeometry x="1368" y="80" width="164" height="1210" as="geometry" />
+        </mxCell>
+        <mxCell id="v3" value="&lt;b&gt;1. The moderator asks for more information&lt;/b&gt; (UC-I4 step 2; C02)" style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=top;fontSize=12;fontStyle=0;fontColor=#1F4E79;spacing=2;overflow=visible;" vertex="1" parent="1">
+          <mxGeometry x="30" y="152" width="900" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="e4" value="&lt;b&gt;1&lt;/b&gt; POST /moderation/cases/{id}/information-requests {to: borrower | lender | both, question} (proposed)" style="html=1;rounded=0;fontSize=10.5;labelBackgroundColor=#FFFFFF;fontColor=#1d1d1d;endSize=8;endArrow=block;endFill=1;strokeColor=#1D1D1D;fontSize=10.5" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="85" y="200" as="sourcePoint" />
+            <mxPoint x="375" y="200" as="targetPoint" />
+            <mxPoint x="330" y="-9" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e5" value="&lt;b&gt;2&lt;/b&gt; requestInformation(case, moderator, to, question)" style="html=1;rounded=0;fontSize=10.5;labelBackgroundColor=#FFFFFF;fontColor=#1d1d1d;endSize=8;endArrow=block;endFill=1;strokeColor=#1D1D1D;fontSize=10.5" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="385" y="230" as="sourcePoint" />
+            <mxPoint x="585" y="230" as="targetPoint" />
+            <mxPoint x="0" y="-9" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e6" value="&lt;b&gt;3&lt;/b&gt; SELECT case FOR UPDATE; moderator of this community, not a party, status OPEN" style="html=1;rounded=0;fontSize=10.5;labelBackgroundColor=#FFFFFF;fontColor=#1d1d1d;endSize=8;endArrow=block;endFill=1;strokeColor=#1D1D1D;fontSize=10.5" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="595" y="260" as="sourcePoint" />
+            <mxPoint x="815" y="260" as="targetPoint" />
+            <mxPoint x="40" y="-9" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e7" value="&lt;b&gt;4&lt;/b&gt; UPDATE escalation_case SET status = AWAITING_INFORMATION, info_deadline = now() + window" style="html=1;rounded=0;fontSize=10.5;labelBackgroundColor=#FFFFFF;fontColor=#1d1d1d;endSize=8;endArrow=block;endFill=1;strokeColor=#1D1D1D;fontSize=10.5" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="595" y="320" as="sourcePoint" />
+            <mxPoint x="815" y="320" as="targetPoint" />
+            <mxPoint x="0" y="-9" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e8" value="&lt;b&gt;5&lt;/b&gt; store the question (needs a moderator-authored record: open point, schema v2.4)" style="html=1;rounded=0;fontSize=10.5;labelBackgroundColor=#FFFFFF;fontColor=#1d1d1d;endSize=8;endArrow=block;endFill=1;strokeColor=#1D1D1D;fontSize=10.5" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="595" y="350" as="sourcePoint" />
+            <mxPoint x="815" y="350" as="targetPoint" />
+            <mxPoint x="40" y="-9" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e9" value="&lt;b&gt;6&lt;/b&gt; record(info_requested, case, moderator, authorisation)" style="html=1;rounded=0;fontSize=10.5;labelBackgroundColor=#FFFFFF;fontColor=#1d1d1d;endSize=8;endArrow=block;endFill=1;strokeColor=#1D1D1D;fontSize=10.5" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="595" y="380" as="sourcePoint" />
+            <mxPoint x="1035" y="380" as="targetPoint" />
+            <mxPoint x="0" y="-9" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e10" value="&lt;b&gt;7&lt;/b&gt; notify(party, information_requested, {case, question, deadline})" style="html=1;rounded=0;fontSize=10.5;labelBackgroundColor=#FFFFFF;fontColor=#1d1d1d;endSize=8;endArrow=open;endFill=0;strokeColor=#1D1D1D;fontSize=10.5" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="595" y="410" as="sourcePoint" />
+            <mxPoint x="1245" y="410" as="targetPoint" />
+            <mxPoint x="0" y="-9" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e11" value="&lt;b&gt;8&lt;/b&gt; 200 {status: AWAITING_INFORMATION, deadline}" style="html=1;rounded=0;fontSize=10.5;labelBackgroundColor=#FFFFFF;fontColor=#1d1d1d;endSize=8;endArrow=open;endFill=0;dashed=1;strokeColor=#46535F;fontColor=#33404D;fontSize=10.5" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="375" y="440" as="sourcePoint" />
+            <mxPoint x="85" y="440" as="targetPoint" />
+            <mxPoint x="0" y="-9" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e12" value="&lt;b&gt;9&lt;/b&gt; record(rejected command, reason)" style="html=1;rounded=0;fontSize=10.5;labelBackgroundColor=#FFFFFF;fontColor=#1d1d1d;endSize=8;endArrow=block;endFill=1;strokeColor=#1D1D1D;fontSize=10.5" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="595" y="514" as="sourcePoint" />
+            <mxPoint x="1035" y="514" as="targetPoint" />
+            <mxPoint x="0" y="-9" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e13" value="&lt;b&gt;10&lt;/b&gt; 403 not authorised | 409 case already decided (UC-I4 4a)" style="html=1;rounded=0;fontSize=10.5;labelBackgroundColor=#FFFFFF;fontColor=#1d1d1d;endSize=8;endArrow=open;endFill=0;dashed=1;strokeColor=#B00020;fontColor=#B00020;fontSize=10.5" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="375" y="544" as="sourcePoint" />
+            <mxPoint x="85" y="544" as="targetPoint" />
+            <mxPoint x="0" y="-9" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="v14" value="alt" style="shape=umlFrame;whiteSpace=wrap;html=1;width=46;height=22;boundedLbl=1;verticalAlign=middle;align=left;spacingLeft=4;fontStyle=1;fontSize=11;fillColor=none;strokeColor=#5F6B76;" vertex="1" parent="1">
+          <mxGeometry x="40" y="282" width="1290" height="296" as="geometry" />
+        </mxCell>
+        <mxCell id="v15" value="&lt;b&gt;[authorised and case OPEN]&lt;/b&gt;" style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=top;fontSize=10.5;fontStyle=0;fontColor=#33404D;spacing=2;overflow=visible;" vertex="1" parent="1">
+          <mxGeometry x="92" y="288" width="900" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="e16" value="" style="endArrow=none;dashed=1;html=1;strokeColor=#5F6B76" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="40" y="482" as="sourcePoint" />
+            <mxPoint x="1330" y="482" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="v17" value="&lt;b&gt;[not authorised, a party to the loan, or case no longer OPEN]&lt;/b&gt;" style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=top;fontSize=10.5;fontStyle=0;fontColor=#33404D;spacing=2;overflow=visible;" vertex="1" parent="1">
+          <mxGeometry x="48" y="484" width="900" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="v18" value="&lt;b&gt;2. The party answers, or the deadline passes&lt;/b&gt; (UC-I4 2a; FR-B-17; C03, C04)" style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=top;fontSize=12;fontStyle=0;fontColor=#1F4E79;spacing=2;overflow=visible;" vertex="1" parent="1">
+          <mxGeometry x="30" y="610" width="900" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="e19" value="&lt;b&gt;11&lt;/b&gt; POST /cases/{id}/statements {statement, attachment_ids?} (proposed; photos via uploads, M4)" style="html=1;rounded=0;fontSize=10.5;labelBackgroundColor=#FFFFFF;fontColor=#1d1d1d;endSize=8;endArrow=block;endFill=1;strokeColor=#1D1D1D;fontSize=10.5" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="215" y="688" as="sourcePoint" />
+            <mxPoint x="375" y="688" as="targetPoint" />
+            <mxPoint x="250" y="-9" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e20" value="&lt;b&gt;12&lt;/b&gt; addStatement(case, party, statement)" style="html=1;rounded=0;fontSize=10.5;labelBackgroundColor=#FFFFFF;fontColor=#1d1d1d;endSize=8;endArrow=block;endFill=1;strokeColor=#1D1D1D;fontSize=10.5" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="385" y="718" as="sourcePoint" />
+            <mxPoint x="585" y="718" as="targetPoint" />
+            <mxPoint x="0" y="-9" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e21" value="&lt;b&gt;13&lt;/b&gt; party to this loan; status AWAITING_INFORMATION; now &amp;lt; info_deadline" style="html=1;rounded=0;fontSize=10.5;labelBackgroundColor=#FFFFFF;fontColor=#1d1d1d;endSize=8;endArrow=block;endFill=1;strokeColor=#1D1D1D;fontSize=10.5" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="595" y="748" as="sourcePoint" />
+            <mxPoint x="815" y="748" as="targetPoint" />
+            <mxPoint x="10" y="-9" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e22" value="&lt;b&gt;14&lt;/b&gt; INSERT case_statement (append-only); UPDATE status = OPEN" style="html=1;rounded=0;fontSize=10.5;labelBackgroundColor=#FFFFFF;fontColor=#1d1d1d;endSize=8;endArrow=block;endFill=1;strokeColor=#1D1D1D;fontSize=10.5" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="595" y="778" as="sourcePoint" />
+            <mxPoint x="815" y="778" as="targetPoint" />
+            <mxPoint x="0" y="-9" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e23" value="&lt;b&gt;15&lt;/b&gt; record(info_received, case, party)" style="html=1;rounded=0;fontSize=10.5;labelBackgroundColor=#FFFFFF;fontColor=#1d1d1d;endSize=8;endArrow=block;endFill=1;strokeColor=#1D1D1D;fontSize=10.5" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="595" y="808" as="sourcePoint" />
+            <mxPoint x="1035" y="808" as="targetPoint" />
+            <mxPoint x="0" y="-9" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e24" value="&lt;b&gt;16&lt;/b&gt; notify(moderator, information_received, {case})" style="html=1;rounded=0;fontSize=10.5;labelBackgroundColor=#FFFFFF;fontColor=#1d1d1d;endSize=8;endArrow=open;endFill=0;strokeColor=#1D1D1D;fontSize=10.5" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="595" y="838" as="sourcePoint" />
+            <mxPoint x="1245" y="838" as="targetPoint" />
+            <mxPoint x="0" y="-9" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e25" value="&lt;b&gt;17&lt;/b&gt; 201 statement recorded" style="html=1;rounded=0;fontSize=10.5;labelBackgroundColor=#FFFFFF;fontColor=#1d1d1d;endSize=8;endArrow=open;endFill=0;dashed=1;strokeColor=#46535F;fontColor=#33404D;fontSize=10.5" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="375" y="868" as="sourcePoint" />
+            <mxPoint x="215" y="868" as="targetPoint" />
+            <mxPoint x="0" y="-9" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e26" value="&lt;b&gt;18&lt;/b&gt; run_due_jobs(now) &amp;#8594; expire_information(now)" style="html=1;rounded=0;fontSize=10.5;labelBackgroundColor=#FFFFFF;fontColor=#1d1d1d;endSize=8;endArrow=block;endFill=1;strokeColor=#1D1D1D;fontSize=10.5" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1445" y="942" as="sourcePoint" />
+            <mxPoint x="595" y="942" as="targetPoint" />
+            <mxPoint x="-40" y="-9" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e27" value="&lt;b&gt;19&lt;/b&gt; SELECT cases WHERE status = AWAITING_INFORMATION AND info_deadline &amp;lt; now FOR UPDATE SKIP LOCKED" style="html=1;rounded=0;fontSize=10.5;labelBackgroundColor=#FFFFFF;fontColor=#1d1d1d;endSize=8;endArrow=block;endFill=1;strokeColor=#1D1D1D;fontSize=10.5" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="595" y="972" as="sourcePoint" />
+            <mxPoint x="815" y="972" as="targetPoint" />
+            <mxPoint x="80" y="-9" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e28" value="&lt;b&gt;20&lt;/b&gt; UPDATE status = OPEN (deadline kept as evidence of non-response)" style="html=1;rounded=0;fontSize=10.5;labelBackgroundColor=#FFFFFF;fontColor=#1d1d1d;endSize=8;endArrow=block;endFill=1;strokeColor=#1D1D1D;fontSize=10.5" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="595" y="1002" as="sourcePoint" />
+            <mxPoint x="815" y="1002" as="targetPoint" />
+            <mxPoint x="0" y="-9" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e29" value="&lt;b&gt;21&lt;/b&gt; record(info_deadline_passed, case, SYSTEM)" style="html=1;rounded=0;fontSize=10.5;labelBackgroundColor=#FFFFFF;fontColor=#1d1d1d;endSize=8;endArrow=block;endFill=1;strokeColor=#1D1D1D;fontSize=10.5" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="595" y="1032" as="sourcePoint" />
+            <mxPoint x="1035" y="1032" as="targetPoint" />
+            <mxPoint x="0" y="-9" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e30" value="&lt;b&gt;22&lt;/b&gt; notify(moderator, deadline_passed, {case}) &amp;#8212; dedupe key = case + deadline" style="html=1;rounded=0;fontSize=10.5;labelBackgroundColor=#FFFFFF;fontColor=#1d1d1d;endSize=8;endArrow=open;endFill=0;strokeColor=#1D1D1D;fontSize=10.5" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="595" y="1062" as="sourcePoint" />
+            <mxPoint x="1245" y="1062" as="targetPoint" />
+            <mxPoint x="0" y="-9" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e31" value="&lt;b&gt;23&lt;/b&gt; n cases closed (a re-run finds none: idempotent, NFR-R-05)" style="html=1;rounded=0;fontSize=10.5;labelBackgroundColor=#FFFFFF;fontColor=#1d1d1d;endSize=8;endArrow=open;endFill=0;dashed=1;strokeColor=#46535F;fontColor=#33404D;fontSize=10.5" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="595" y="1092" as="sourcePoint" />
+            <mxPoint x="1445" y="1092" as="targetPoint" />
+            <mxPoint x="0" y="-9" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="v32" value="alt" style="shape=umlFrame;whiteSpace=wrap;html=1;width=46;height=22;boundedLbl=1;verticalAlign=middle;align=left;spacingLeft=4;fontStyle=1;fontSize=11;fillColor=none;strokeColor=#5F6B76;" vertex="1" parent="1">
+          <mxGeometry x="40" y="650" width="1480" height="476" as="geometry" />
+        </mxCell>
+        <mxCell id="v33" value="&lt;b&gt;[the party answers before the deadline] C03&lt;/b&gt;" style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=top;fontSize=10.5;fontStyle=0;fontColor=#33404D;spacing=2;overflow=visible;" vertex="1" parent="1">
+          <mxGeometry x="92" y="656" width="900" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="e34" value="" style="endArrow=none;dashed=1;html=1;strokeColor=#5F6B76" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="40" y="910" as="sourcePoint" />
+            <mxPoint x="1520" y="910" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="v35" value="&lt;b&gt;[the deadline passes without an answer] C04&lt;/b&gt;" style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=top;fontSize=10.5;fontStyle=0;fontColor=#33404D;spacing=2;overflow=visible;" vertex="1" parent="1">
+          <mxGeometry x="48" y="912" width="900" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="v36" value="&lt;b&gt;3. The moderator decides on the evidence available&lt;/b&gt; (UC-I4 2a, step 3; C06)" style="text;html=1;whiteSpace=wrap;align=left;verticalAlign=top;fontSize=12;fontStyle=0;fontColor=#1F4E79;spacing=2;overflow=visible;" vertex="1" parent="1">
+          <mxGeometry x="30" y="1158" width="900" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="v37" value="The case is OPEN again in both branches. The moderator decides as in sequence (c) and, for disputes, with the item's possession recorded (ADR-0009, sequence h). A non-response is shown to the moderator as a fact, never as an automatic loss for the party." style="shape=note;size=10;whiteSpace=wrap;html=1;fontSize=10;align=left;spacingLeft=6;fillColor=#FFF8E1;strokeColor=#B26A00;" vertex="1" parent="1">
+          <mxGeometry x="360" y="1200" width="900" height="48" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

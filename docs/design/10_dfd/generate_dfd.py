@@ -16,7 +16,7 @@ import sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.join(HERE, "..", "_tools"))
-from drawio import Diagram, EDGE_BASE, save_pages  # noqa: E402
+from drawio import EDGE_BASE, Diagram, save_pages  # noqa: E402
 
 ENT = ("rounded=0;whiteSpace=wrap;html=1;fillColor=#1F2D3A;strokeColor=#0F1A24;fontColor=#FFFFFF;fontStyle=1;"
        "fontSize=12;shadow=1;")
@@ -40,46 +40,57 @@ def store(d, sid, name, x, y, w=240):
 
 
 def level0():
-    d = Diagram("DFD level 0 (context)", 1760, 760, grid=False)
-    d.text("<b>Digital Mohalla &#8212; DFD level 0: context diagram</b> (Gane &amp; Sarson; design step A10, Student 2, "
-           "v1.2)", 30, 14, 1500, 24, size=15, check=False)
-    p0 = proc(d, "0", "Digital Mohalla<br>borrowing and assurance system", "Modules 1, 3, 5, 9 (iteration 1 core)",
-              760, 280, 300, 300)
-    bor = d.node("Borrower", 120, 290, 170, 70, ENT)
-    adm = d.node("System administrator", 120, 500, 170, 70, ENT)
-    len_ = d.node("Lender", 1530, 290, 170, 70, ENT)
-    mod = d.node("Community moderator", 1530, 500, 170, 70, ENT)
+    d = Diagram("DFD level 0 (context)", 1760, 880, grid=False)
+    d.text("<b>Digital Mohalla &#8212; DFD level 0: context diagram</b> (Gane &amp; Sarson; design step A10, v1.3: "
+           "iteration 2 joining and review flows added, DA-14, Student 3)", 30, 14, 1600, 24, size=15, check=False)
+    p0 = proc(d, "0", "Digital Mohalla<br>borrowing and assurance system", "Modules 1, 3, 5, 9 (core)",
+              760, 240, 300, 440)
+    bor = d.node("Borrower", 120, 250, 170, 120, ENT)
+    app = d.node("Applicant<br>(member joining)", 120, 410, 170, 80, ENT)
+    adm = d.node("System administrator", 120, 540, 170, 80, ENT)
+    len_ = d.node("Lender", 1530, 250, 170, 120, ENT)
+    mod = d.node("Community moderator", 1530, 430, 170, 180, ENT)
 
-    def pair(a, b, ya, yb, la, lb, a_left):
-        # a -> b on ya, b -> a on yb; a is the entity
-        ax = 290 if a_left else 1530
-        px = 760 if a_left else 1060
-        d.edge(a, b, la, style=FLOW, exit=(1 if a_left else 0, (ya - d.by_id[a]["y"]) / 70),
-               entry=(0 if a_left else 1, (ya - 280) / 300))
-        d.edge(b, a, lb, style=FLOW, exit=(0 if a_left else 1, (yb - 280) / 300),
-               entry=(1 if a_left else 0, (yb - d.by_id[a]["y"]) / 70))
-        return ax, px
+    def flow(a, b, y, label, entity_left):
+        """One horizontal flow between an entity and process 0 at height y (a -> b)."""
+        ent, src_is_ent = (a, True) if a != p0 else (b, False)
+        ey = (y - d.by_id[ent]["y"]) / d.by_id[ent]["h"]
+        py = (y - d.by_id[p0]["y"]) / d.by_id[p0]["h"]
+        e_side, p_side = (1, 0) if entity_left else (0, 1)
+        if src_is_ent:
+            d.edge(a, b, label, style=FLOW, exit=(e_side, ey), entry=(p_side, py))
+        else:
+            d.edge(a, b, label, style=FLOW, exit=(p_side, py), entry=(e_side, ey))
 
-    pair(bor, p0, 305, 345, "DF-01 Borrowing request (item, dates, message; no location)",
-         "DF-02 Request status and safeguards", True)
-    pair(adm, p0, 515, 555, "DF-07 Configuration updates", "DF-08 Health and audit reports", True)
-    pair(len_, p0, 345, 305, "DF-04 Booking decision (accept / decline)",
-         "DF-03 Request with evidence summary and safeguards", False)
-    pair(mod, p0, 555, 515, "DF-06 Moderator decision with reason", "DF-05 Escalation case with evidence trail", False)
+    flow(bor, p0, 270, "DF-01 Borrowing request (item, dates, message; no location)", True)
+    flow(p0, bor, 310, "DF-02 Request status and safeguards", True)
+    flow(bor, p0, 350, "DF-11 Review of a completed loan", True)
+    flow(app, p0, 430, "DF-09 Join request: one coarse fix and invitation code", True)
+    flow(p0, app, 470, "DF-10 Join request status", True)
+    flow(adm, p0, 560, "DF-07 Configuration updates", True)
+    flow(p0, adm, 600, "DF-08 Health and audit reports", True)
+    flow(p0, len_, 270, "DF-03 Request with evidence summary and safeguards", False)
+    flow(len_, p0, 310, "DF-04 Booking decision (accept / decline)", False)
+    flow(len_, p0, 350, "DF-11 Review of a completed loan", False)
+    flow(p0, mod, 450, "DF-05 Escalation case with evidence trail", False)
+    flow(mod, p0, 490, "DF-06 Moderator decision with reason", False)
+    flow(p0, mod, 540, "DF-12 Membership request with coarse outcome", False)
+    flow(mod, p0, 580, "DF-13 Membership decision with reason", False)
     d.node("<b>Gane &amp; Sarson notation.</b> Dark square = external entity; rounded box = process (number above the "
-           "line); arrow = data flow. A context diagram has one process and no data stores: the stores D1&#8211;D5 "
-           "belong to level 1.<br><b>Privacy.</b> No flow on this diagram carries a location: a borrowing request has "
-           "none (A11, decision D13).", 120, 640, 1580, 60, NOTE, check=False)
+           "line); arrow = data flow. A context diagram has one process and no data stores: the stores D1&#8211;D7 "
+           "belong to level 1.<br><b>Privacy.</b> The only flow that touches location is DF-09, and it carries a "
+           "single coarse fix that process 0 evaluates in memory and discards; nothing that leaves process 0 carries "
+           "a location (A11, decision D13, NFR-PR-01).", 120, 720, 1580, 70, NOTE, check=False)
     return d
 
 
 def level1():
-    d = Diagram("DFD level 1 (assurance pipeline)", 2140, 1330, grid=False)
+    d = Diagram("DFD level 1 (assurance pipeline)", 2140, 1720, grid=False)
     d.text("<b>Digital Mohalla &#8212; DFD level 1: decomposition of process 0, centred on the assurance pipeline</b> "
-           "(Gane &amp; Sarson; design step A10, Student 2, v1.2)", 30, 14, 2000, 24, size=15, check=False)
+           "(Gane &amp; Sarson; design step A10, v1.3: joining and reviews added for iteration 2, DA-14, Student 3)", 30, 14, 2000, 24, size=15, check=False)
     # entities
     bor = d.node("Borrower", 40, 245, 150, 70, ENT)
-    adm = d.node("System administrator", 40, 1160, 150, 70, ENT)
+    adm = d.node("System administrator", 40, 1500, 150, 70, ENT)
     mod = d.node("Community moderator", 1950, 415, 150, 70, ENT)
     len_ = d.node("Lender", 1950, 975, 150, 70, ENT)
     # processes
@@ -95,13 +106,28 @@ def level1():
               1640, 400)
     p9 = proc(d, "9.0", "Record booking decisions and outcomes", "BorrowingService, TrustEdgeProjector (M3, M5)",
               1640, 960)
-    p10 = proc(d, "10.0", "Manage configuration and reports", "ConfigLoader, AuditLogService (M5, M9)", 330, 1145)
+    p10 = proc(d, "10.0", "Manage configuration and reports", "ConfigLoader, AuditLogService (M5, M9)", 330, 1485)
     # stores
     d5 = store(d, "D5", "Locality results (coarse outcome only)", 200, 100, 220)
     d1 = store(d, "D1", "Event store (lifecycle events, assessments)", 700, 100, 300)
     d4 = store(d, "D4", "Escalation cases and audit log", 1620, 300, 240)
     d2 = store(d, "D2", "Trust graph (edges, ADR-0006)", 1620, 600, 240)
-    d3 = store(d, "D3", "Engine configuration (1.1.0-iteration1-draft)", 560, 1000, 380)
+    d3 = store(d, "D3", "Engine configuration (versioned config_version)", 560, 1000, 380)
+    # ---- iteration 2 (DA-14): joining a community and reviews
+    app = d.node("Applicant<br>(member joining)", 40, 1150, 150, 70, ENT)
+    mod2 = d.node("Community<br>moderator *", 40, 1330, 150, 70, ENT)
+    bor2 = d.node("Borrower *", 1640, 1160, 150, 70, ENT)
+    d.node("<b>Privacy boundary</b>: the coarse fix exists<br>only inside 11.0, in memory", 285, 1090, 240, 170,
+           "rounded=0;whiteSpace=wrap;html=1;dashed=1;dashPattern=6 3;fillColor=none;strokeColor=#C62828;"
+           "fontColor=#C62828;fontSize=10;verticalAlign=top;align=left;spacingLeft=4;", check=False)
+    p11 = proc(d, "11.0", "Check locality at join and record the request", "MembershipService + "
+               "LocalityVerifier (M1)", 300, 1140, 200, 100, style=PRIV)
+    p12 = proc(d, "12.0", "Decide membership request", "MembershipService (M1, moderator queue)", 300, 1310, 200,
+               100)
+    p13 = proc(d, "13.0", "Record review and set flags", "ReviewService (M5, D1)", 1300, 1150, 180, 100)
+    d6 = store(d, "D6", "Membership requests and decisions", 620, 1195, 260)
+    d7 = store(d, "D7", "Reviews (ratings, text, flags)", 980, 1190, 220)
+
 
     E = d.edge
     # 1.0
@@ -117,7 +143,7 @@ def level1():
     E(d1, p2, "DF-106 Outcome and<br>dispute events", style=FLOW, exit=(0.3, 1), entry=(0.5, 0), label_dx=52)
     E(p2, p3, "DF-107 Direct<br>evidence set", style=FLOW, exit=(0.278, 1), entry=(0.278, 0), label_dx=-44)
     E(p2, p4, "DF-108 Subject IDs", style=FLOW, exit=(0.667, 1), entry=(0.333, 0), points=[(820, 420), (1060, 420)])
-    E(p2, p5, "DF-109 Interaction history, review texts", style=FLOW, exit=(1, 0.4), entry=(0.333, 0),
+    E(p2, p5, "DF-109 Interaction history, complaints", style=FLOW, exit=(1, 0.4), entry=(0.333, 0),
       points=[(1360, 270)], label_x=-0.35)
     E(p2, p6, "DF-109B Request valuation", style=FLOW, exit=(0, 0.8), entry=(0, 0.7), points=[(640, 310), (640, 830)],
       label_x=0.55)
@@ -160,18 +186,43 @@ def level1():
     # 10.0
     E(adm, p10, "DF-128 Configuration<br>updates", style=FLOW, exit=(1, 0.2), entry=(0, 0.25))
     E(p10, adm, "DF-08 Health and<br>audit reports", style=FLOW, exit=(0, 0.75), entry=(1, 0.8))
-    E(p10, d3, "DF-128B Versioned config", style=FLOW, exit=(1, 0.4), entry=(0.105, 1), points=[(600, 1185)],
+    E(p10, d3, "DF-128B Versioned config", style=FLOW, exit=(1, 0.4), entry=(0.895, 1), points=[(900, 1525)],
       label_x=-0.3)
-    E(d1, p10, "DF-130 Audit events", style=FLOW, exit=(0, 0.875), entry=(1, 0.15), points=[(540, 135), (540, 1160)],
-      label_x=0.55)
+    E(d1, p10, "DF-130 Audit events", style=FLOW, exit=(0, 0.875), entry=(1, 0.15), points=[(540, 135), (540, 1500)],
+      label_x=0.0)
 
-    d.node("<b>Privacy boundary (A11, FR-A-07, NFR-PR-01).</b> Process 1.0 (red) is the only place locality is used, "
-           "and it reads only the stored coarse outcome (D5: VERIFIED / INCONCLUSIVE / CONFLICTING). The device location "
-           "is read once, in memory, when a member joins (UC-A3), outside this diagram. No flow or store here carries "
-           "coordinates.", 30, 20 + 1240, 1000, 56, NOTE, check=False)
+
+    # 11.0 to 13.0: iteration 2 (DA-14). The device fix never leaves 11.0; reviews reach detection through D7.
+    E(app, p11, "DF-140 Coarse fix<br>+ invitation code<br>(memory only)", style=FLOW, exit=(1, 0.3),
+      entry=(0, 0.21), label_dy=-28)
+    E(p11, app, "DF-147 Request<br>status", style=FLOW, exit=(0, 0.8), entry=(1, 0.85), label_dy=18)
+    E(p11, d5, "DF-141 Coarse outcome and signal only", style=FLOW, exit=(0, 0.2), entry=(0.214, 1),
+      points=[(260, 1160), (260, 140)], label_x=0.0, label_dx=-70)
+    E(p11, d6, "DF-142 Join request,<br>coarse outcome", style=FLOW, exit=(1, 0.75), entry=(0, 0.5), label_dy=-22)
+    E(d6, p12, "DF-143 Pending request,<br>outcome, flags", style=FLOW, exit=(0.2, 1), entry=(1, 0.3),
+      points=[(672, 1340)], label_x=0.2, label_dy=18)
+    E(p12, d6, "DF-146 APPROVED / REJECTED", style=FLOW, exit=(1, 0.7), entry=(0.538, 1),
+      points=[(760, 1380)], label_x=-0.2, label_dy=14)
+    E(p12, mod2, "DF-144 Membership<br>queue", style=FLOW, exit=(0, 0.3), entry=(1, 0.143), label_dy=-18)
+    E(mod2, p12, "DF-145 Decision<br>with reason", style=FLOW, exit=(1, 0.786), entry=(0, 0.75), label_dy=18)
+    E(p12, app, "DF-147B Decision<br>outcome", style=FLOW, exit=(0, 0.1), entry=(0.85, 1),
+      points=[(230, 1320), (230, 1260), (167, 1260)], label_x=0.0, label_dx=-46)
+    E(bor2, p13, "DF-150 Review", style=FLOW, exit=(0, 0.5), entry=(1, 0.45), label_dy=-12)
+    E(len_, p13, "DF-151 Review", style=FLOW, exit=(0.5, 1), entry=(1, 0.9), points=[(2025, 1240)],
+      label_dy=-10)
+    E(p13, d7, "DF-152 Review,<br>flags", style=FLOW, exit=(0, 0.6), entry=(1, 0.5), label_dy=-18)
+    E(d7, p5, "DF-153 Reviews in the<br>window (S1, S4,<br>retaliation)", style=FLOW, exit=(0.5, 0),
+      entry=(0, 0.92), points=[(1090, 1100), (1255, 1100), (1255, 592)], label_x=-0.27, label_dx=62)
+
+    d.node("<b>Privacy boundary (A11, FR-A-07, NFR-PR-01).</b> The device's coarse fix (DF-140) exists only inside "
+           "process 11.0, in memory: 11.0 writes the coarse outcome and signal to D5 and the request to D6, never a "
+           "coordinate. Process 1.0 (red) reads only the stored outcome (DF-129). No other flow or store on this page "
+           "carries a location.", 30, 1620, 1000, 70, NOTE, check=False)
     d.node("<b>Balancing with level 0:</b> DF-01 = DF-101; DF-02 = DF-123 + DF-132; DF-03 = DF-122; DF-04 = DF-04; "
-           "DF-05 = DF-126B; DF-06 = DF-127; DF-07 = DF-128; DF-08 = DF-08. Every flow starts or ends at a process.",
-           1050, 1260, 1060, 56, NOTE, check=False)
+           "DF-05 = DF-126B; DF-06 = DF-127; DF-07 = DF-128; DF-08 = DF-08; DF-09 = DF-140; DF-10 = DF-147 + DF-147B; "
+           "DF-11 = DF-150 + DF-151; DF-12 = DF-144; DF-13 = DF-145. Every flow starts or ends at a process. "
+           "* = an entity drawn a second time to avoid crossing lines (Gane &amp; Sarson duplicate mark).",
+           1050, 1620, 1060, 70, NOTE, check=False)
     return d
 
 

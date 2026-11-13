@@ -1,12 +1,12 @@
-# **Digital Mohalla: Functional and Non-Functional Requirements (Baseline v1.3)**
+# **Digital Mohalla: Functional and Non-Functional Requirements (Baseline v1.3, v1.4 draft)**
 
 | Field | Value |
 | :---- | :---- |
-| Version | 1.3 (v1.2 plus the integration decisions of 2026-10-11) |
-| Date | 2026-10-11 (v1.1: 2026-10-10; v1.2 and v1.3: 2026-10-11) |
+| Version | 1.4 draft (iteration 2, DA-03 and DA-20, Student 3, drafted with Claude Code, review by Student 1 pending). v1.3: v1.2 plus the integration decisions of 2026-10-11 |
+| Date | 2026-11-07 (v1.1: 2026-10-10; v1.2 and v1.3: 2026-10-11) |
 | Authors | Team Digital Mohalla (v1.1 edits drafted with Claude; reviewed by: Fatima Khursheed, Areeba Javed, Minahil Kashif) |
 | Status | Requirements baseline: ADR-0001 to ADR-0005 accepted on 2026-10-11; ADR-0007 and ADR-0008 accepted for integration (Students 2 and 3 to initial) |
-| Changes | See Part D, "Changes in v1.1", "Changes in v1.2" and "Changes in v1.3" |
+| Changes | See Part D, "Changes in v1.1" to "Changes in v1.4". Values and wording marked [proposed] in v1.4 need team sign-off at the design gate |
 
 **Companion files:** `01_requirements/DigitalMohalla_Use_Cases_Ver1.md` (same IDs, same state list, same terminology) and `03_architecture/DigitalMohalla_ADRs_Ver1.md` (design decisions referenced below as ADR-0001 to ADR-0008).
 **Derived from:** Platform Overview (post-defence version) and the Use Case baseline. Every requirement is traced to a use case (UC) or overview section. Items marked ⚠ point to an open issue in Part D.
@@ -29,7 +29,7 @@
 | FR-A-06 | List communities (nearby if coarse location is permitted, otherwise by name or code) and show each community's rules and available verification methods. | Member | A3 | CORE |
 | FR-A-07 | Verify locality with the method selected in design step A11 (a one-time coarse geofence check plus an invitation from a verified member, a moderator deciding anything inconclusive or conflicting), chosen by comparing the candidate methods (Overview §1) on false accepts and rejects, privacy, spoofing resistance and cost. Store only the coarse community and verification outcome, and never store raw location traces or exact addresses. | Member | A3, Overview §1 | CORE |
 | FR-A-08 | Treat locality outcomes as three-valued: verified, insufficient/inconclusive (e.g. permission refused, boundary case), or conflicting (possible spoofing). Inconclusive and conflicting outcomes go to moderator review and are never auto-rejected. | System | A3 (3a to 3c) | CORE |
-| FR-A-09 | Create membership requests as Pending (or auto-approve for open-join communities and notify moderators), block duplicate requests, and handle closed or full communities. | Member | A3 | CORE |
+| FR-A-09 | Create membership requests as Pending, block duplicate requests, and handle closed or full communities. *v1.4 [proposed]: auto-approval for open-join communities is deferred to iteration 3; until then a moderator decides every request after the locality check, so no community bypasses locality (I-10 closed).* | Member | A3 | CORE |
 | FR-A-10 | Give moderators a membership queue showing locality evidence and flags, and let them approve, reject or request more information, with a mandatory reason, limited to their own community. | Moderator | A4 | CORE |
 | FR-A-11 | Handle concurrent or reversed moderator decisions by showing current state without re-applying, and keep both decisions in the log on reversal. | Moderator | A4 | CORE |
 | FR-A-12 | Let members edit photo, bio, interests, skills and account type, with field validation, per-field visibility (public / community-only / private), a preview, and moderation hold for flagged text. | Member | A5, A6 | ENAB |
@@ -64,11 +64,11 @@
 
 | ID | The system shall… | Actor | Source | Scope |
 | :---- | :---- | :---- | :---- | :---- |
-| FR-S-01 | Return ranked item results for a query using semantic retrieval plus hybrid re-ranking (similarity, lender evidence, availability, distance, recency), with a short explanation per result. Eligibility filters (community, visibility, state) must be applied inside retrieval or with enough over-fetch to avoid thin results. ⚠I-5 | Borrower | B3, Overview §4 | SUPP |
+| FR-S-01 | Return ranked item results for a query using semantic retrieval plus hybrid re-ranking (similarity, lender evidence, availability, same community, recency), with a short explanation per result. Eligibility filters (community, visibility, state) are applied inside retrieval, in the same query (ADR-0016, proposed; closes I-5 when accepted). *v1.4: "distance" became "same community" (change S1).* | Borrower | B3, Overview §4 | SUPP |
 | FR-S-02 | Fall back to keyword search if embedding or vector index is unavailable, and to a default prior if the assurance service is unavailable. | System | B3 | SUPP |
-| FR-S-03 | Support filters (category, radius, dates, price, condition, transaction type) and sort orders (relevance, distance, evidence, newest). | Borrower | B3, Overview §4 | SUPP |
+| FR-S-03 | Support filters (category, community, dates, deposit, condition) and sort orders (relevance, evidence, newest). *v1.4: radius and distance removed (change S1), price became deposit (S2), transaction type waits for donation listings (S3).* | Borrower | B3, Overview §4 | SUPP |
 | FR-S-04 | Show item details with the lender's evidence factors and confidence (never a single number), and show "not enough history" for lenders without history. | Borrower | B4 | SUPP |
-| FR-S-05 | Log queries, displayed results, clicks and ignored impressions for evaluation. | System | B3 | SUPP |
+| FR-S-05 | Log queries, displayed results, clicks and ignored impressions for evaluation, with no location or coordinates (NFR-PR-01). | System | B3 | SUPP |
 | FR-S-06 | Let a borrower post an item request when nothing is found, and check it against existing listings. Requests can be cancelled, fulfilled or expire. | Borrower | B9 | SUPP |
 | FR-S-07 | Propose request-to-item matches using bipartite matching with fairness constraints. A match is only a proposal: no booking is created without borrower and lender acceptance. ⚠I-7 | System | B10 | SUPP |
 | FR-S-08 | Report fairness measures (e.g. Gini coefficient) per matching run and log a warning if disparity remains high. | Admin | B10 | SUPP |
@@ -213,9 +213,9 @@ Numeric gates are kept only where iteration 1 can measure them: NFR-R-01 to R-03
 | :---- | :---- | :---- | :---- |
 | NFR-D-01 | Trust parameters (prior, decay, k, cap, thresholds, recency rate) live in versioned configuration, and 100% of stored assessments record the `config_version` used. | Config test | [doc] |
 | NFR-D-02 | A person outside the team can install and run the system from documentation in a clean environment. | Clean-install test | School guide |
-| NFR-D-03 | Deployment target and rollback are rehearsed before release. Target per the confirmed stack is AWS. | Deployment rehearsal | School guide |
+| NFR-D-03 | Deployment target and rollback are rehearsed before release. The target as built is Render (API and web app) with PostgreSQL 16 on Neon (`04_deployment/Deployment_Design.md`; ADR-0011, to be recorded). *v1.4: corrected from AWS.* | Deployment rehearsal | School guide |
 | NFR-D-04 | The state machine, assurance pipeline and privacy checks have automated tests that run on every build; a failing test blocks the merge. | CI report | [doc] §13 |
-| NFR-D-05 | Client platform is Android and iOS via React Native/Expo (assumption from the stack, to be confirmed). | Device test | \[proposed\] |
+| NFR-D-05 | Client platforms are Android and the web build, via React Native/Expo; iOS is not targeted or tested (decision D15). *v1.4: corrected from "Android and iOS".* | Device test (Android), browser test (web) | D15 |
 
 # **Part C: Traceability**
 
@@ -234,6 +234,8 @@ Every use case ID in the Use Case baseline maps to at least one FR through the S
 | I4 | FR-T-11 | NFR-S-02, S-03 | ES-07, ES-11 |
 | I6 | FR-M-05 | NFR-S-02, S-05 | ES-11 |
 | A3, A4 | FR-A-06 to A-11 | NFR-Q-04, PR-01, PR-02 | ES-09, ES-10 |
+| B3, B4 | FR-S-01 to S-05 | NFR-P-01, P-02, R-04, PR-01 | none (search evaluation, DA-25) |
+| B13 | FR-B-18 | NFR-R-05 | ES-08 |
 | All events | FR-B-09, N-03 | NFR-R-03, D-01 | all |
 
 # **Part D: Issues**
@@ -245,6 +247,8 @@ Every use case ID in the Use Case baseline maps to at least one FR through the S
 **Resolved in v1.2 (team decisions of 2026-10-11):** N-5 (ADR-0001 to ADR-0004 accepted, with the ADR-0002 wording amendment), N-6 (event-specific data stored in `payload`, ADR-0005).
 
 **Resolved in v1.3 (integration decisions of 2026-10-11):** N-7 (A5 rule R4 holds a high-value request with weak or dissimilar evidence; with strong similar evidence it reaches the lender, rule R8).
+
+**Resolved in v1.4 [proposed] (iteration 2, DA-03):** I-3 (the ENAB tags are the committed scope the iteration 2 plan asks the supervisor to confirm, decision DM05: CORE plus ENAB plus Module 4; closed once that ruling is recorded), I-10 (open-join deferred; every request is moderator-decided after the locality check, FR-A-09), N-2 (criteria added for FR-A-06 to A-11, A-13, B-02, B-18 and N-03 in Part E).
 
 **Changes in v1.1**
 
@@ -278,30 +282,64 @@ Every use case ID in the Use Case baseline maps to at least one FR through the S
 | D13 | Locality at request time reads the stored result (A11) | FR-B-07 |
 | D6 (follow-up) | FR-B-04 wording: held bookings, not "Accepted or Active" | FR-B-04 |
 
+**Changes in v1.4 (draft, 2026-11-07; recorded under handbook C.5.3)**
+
+| # | Change | Affects |
+| :---- | :---- | :---- |
+| S1 | "Radius" and "distance" removed: the system stores no coordinates (NFR-PR-01), so distance becomes same community or not | FR-S-01, S-03 |
+| S2 | "Price" filter becomes a deposit filter: lending has no price | FR-S-03 |
+| S3 | "Transaction type" filter waits for donation listings: only lending exists | FR-S-03 |
+| S4 | Search technology: Postgres full-text search plus pgvector exact search with a small sentence-embedding model, replacing the overview's BERT-768 and FAISS (ADR-0016, proposed, Student 1) | FR-S-01, S-02 |
+| DA-03 | Criteria added for FR-A-06 to A-11, A-13, B-02, B-18, N-03 and FR-S-01 to S-05; FR-T-11 criterion follows ADR-0009 (proposed) | Part E |
+| DA-03 | Timer values proposed (table below) | FR-B-10, B-12, B-13, B-14, B-17, B-18, T-09, T-11 |
+| D15, as built | NFR-D-03 target AWS → Render and Neon; NFR-D-05 iOS removed, web build added | NFR-D-03, D-05 |
+| I-10 | Open-join auto-approval deferred to iteration 3 | FR-A-09 |
+
+**Timer values [proposed], for the scheduler (build F4, ADR-0012) and the case and review services.** They live in versioned configuration next to the engine parameters, never in code (NFR-D-01); a demo shortens them only through configuration. Each is a starting value to be checked in the pilot, not a measured optimum.
+
+| Timer | Proposed value | Starts at | On expiry | Why this value | FR |
+| :---- | :---- | :---- | :---- | :---- | :---- |
+| Lender response window | 48 h, or the request start date if earlier | Request reaches ASSESSED | EXPIRED (`request_expired`) | Two evenings for a neighbour to answer; a request should not block the borrower's planning longer | FR-B-10 |
+| Handover grace period | 24 h | Agreed start date | NO_SHOW (T19), outcome not attributed | One day covers a missed meeting being rearranged | FR-B-12 |
+| Return reminders | 24 h before due, at due, then daily | Due date | `reminder_sent` (internal) | Reminds without spamming | FR-B-14 |
+| Overdue limit | 72 h after due, with no approved extension | Due date | Automatic dispute, reason NON_RETURN (T24) | Three daily reminders go unanswered before a human looks | FR-B-14 |
+| Lender return-confirmation window | 48 h | `return_initiated` | Reminder, then flagged for a moderator (UC-B8 3b) | Same as the response window | FR-B-13 |
+| Dispute window | No separate timer: while ACCEPTED, ACTIVE or RETURN_INITIATED; none after RETURNED (D4) | — | — | The lifecycle state already bounds it | FR-B-16 |
+| Dispute response period | 72 h | `dispute_opened` | Case marked "no response" and passed on | Gives the other party a weekend | FR-B-17 |
+| Information-request deadline | 72 h | `info_requested` (C02) | `deadline_passed`, case back to OPEN (C04) | Same as the dispute response period | FR-T-11 |
+| Appeal window | 7 days | The decision being appealed | No appeal accepted (C08 guard) | Time to gather evidence; keeps cases from staying open | FR-T-11 |
+| Review window | 14 days | COMPLETED | Review no longer accepted | Matches the retaliation window (`retaliation_window_days` 14, engine config 1.3.0) | FR-T-09 |
+| Review edit window | 24 h | Review submitted | Review read-only | "Short edit window" in FR-T-09 | FR-T-09 |
+
 **Still open**
 
 | # | Severity | Finding | Suggested fix |
 | :---- | :---- | :---- | :---- |
-| I-3 | Medium | Remaining ENAB items (B1/B2, I1/I2/I3, D7) still need team confirmation as core-enabling | Confirm |
 | I-5 | Medium | Search filters applied after top-100 retrieval | Per-community index or filtered vector query |
 | I-6 | Medium | Event recommendation weights sum to 1.05 | Normalise to 1.00 |
 | I-7 | Medium | Hungarian matching is one-to-one but B10 allows K matches per item; fairness boost must not contradict "no history is not negative" | Replicate items K times or use min-cost flow |
 | I-8 | Medium | A8 (vendor role) overlaps H1; Admin missing from the overview role list | Merge A8-Vendor into H1; add Admin |
 | I-9 | Medium | Identity, organizer and vendor verification levels have no use case | Drop or define |
-| I-10 | Medium | Locality method decided in A11 (geofence + invitation); open-join communities still bypass locality | Open-join must still record a locality outcome (team to confirm) |
 | I-12 | Low | Chat as dispute evidence vs privacy (NFR-PR-03) | Confirm rule |
 | I-14 | Low | Household accounts vs per-person evidence | Decide |
-| I-15 | Low | Search and matching targets are estimates, not measurements | Measure baseline first |
-| N-2 | Low | Other CORE FRs have no acceptance criteria yet: FR-A-06 to A-11, A-13, B-02, B-18, N-03 (A-06 to A-11 matter once A3/A4 are built) | Add when A3/A4 are scheduled |
+| I-15 | Low | Search and matching targets are estimates, not measurements | Measure baseline first; NFR-P-01 and P-02 stay without numbers until the iteration 2 baseline (DA-20) |
 | N-3 | Low | B13 is tagged CORE but is in Appendix B only | Promote if the supervisor wants it dressed |
 | N-4 | Low | Project instructions still say "Beta-Binomial" | Team to update the instructions to "recency-weighted Beta posterior" |
 
 # **Part E: Acceptance Criteria (core FRs)**
 
-One Given/When/Then per FR, with at most one "And" for the key edge case.
+One Given/When/Then per FR, with at most one "And" for the key edge case. v1.4 adds the remaining CORE FRs and the five iteration 2 search FRs, so every CORE FR has a criterion.
 
 | FR | Given | When | Then | And | UC / ES |
 | :---- | :---- | :---- | :---- | :---- | :---- |
+| FR-A-06 | A member who refused location permission | They open "Join a community" | Communities are listed by name or code, each with its rules and verification methods | With coarse permission, nearby communities come first and no coordinates are stored | A3 / ES-10 |
+| FR-A-07 | A geofence signal INSIDE (accuracy within `max_accuracy_m`, margin at least `min_margin_m`, `locality_a11` config) and a valid unused invitation from a verified member | The locality check runs | The outcome is VERIFIED with method GEOFENCE_INVITATION and only the coarse outcome is stored | An invitation older than `invite_ttl_days` or already used is refused with "invalid or expired invitation" | A3 / none |
+| FR-A-08 | A geofence signal NEAR_BOUNDARY or UNAVAILABLE (permission refused) | The locality check runs | The outcome is INCONCLUSIVE and the request goes to a moderator; nothing is rejected | A signal OUTSIDE, or a mock-location flag, gives CONFLICTING with a flag for the moderator, still not rejected | A3 / ES-09, ES-10 |
+| FR-A-09 | A member with a PENDING request for community C | They submit another request for C | It is refused and the existing request's status is shown | No request is approved without a moderator in iteration 2 (I-10) | A3 / none |
+| FR-A-10 | A PENDING request in community C and a moderator of C | The moderator approves without a reason | The decision is blocked until a reason is given | A moderator of another community neither sees nor decides it; the attempt is denied and logged | A4 / none |
+| FR-A-11 | Two moderators open the same PENDING request | The second submits after the first decision committed | The second sees the current state and nothing is applied twice | A later revocation keeps both decisions in the log | A4 / none |
+| FR-A-13 | A member editing their profile | They enter a street address with a house number | It is rejected or coarsened to the community name, and nothing exact is stored | When they tighten visibility during an active loan, the other party still sees the minimum needed (name, community) | A5 / none |
+| FR-B-02 | An item in a restricted category whose `required_verification` is COMMUNITY_VERIFIED, and a borrower at CONTACT_VERIFIED | The borrower requests it | No request is created (database guard G1) and the borrower sees a neutral message naming the level required, not an accusation | A COMMUNITY_VERIFIED borrower's request for the same item is created | B5 / none |
 | FR-B-05 | Two ASSESSED requests for the same item with overlapping dates | Their lenders' acceptances are submitted at the same moment | Exactly one commits as ACCEPTED; the database refuses the other, whose lender is told the dates are taken | The refused request ends DECLINED with reason "dates taken", logged as an event | B6 / none |
 | FR-B-06 | A published item and a borrower the lender has not blocked | The borrower submits a request for dates another pending request already covers | The request is created in REQUEST_CREATED, its dates are marked as requested and `request_created` is logged | If the lender has blocked the borrower, the request is denied with no mention of the block | B5 / none |
 | FR-B-07 | A request in REQUEST_CREATED | The locality check returns *verified* | An assessment is stored before the lender can see the request | If locality is inconclusive, the request goes to HELD_FOR_REVIEW with hold reason `locality_inconclusive` and is not rejected | B5 / ES-09, ES-10 |
@@ -315,6 +353,13 @@ One Given/When/Then per FR, with at most one "And" for the key edge case.
 | FR-B-15 | A booking closing with confirmed handover and return | The booking reaches COMPLETED | The outcome is sent to the engine, the calendar is freed and reviews unlock | An outcome under dispute is not counted until resolved | B8 / ES-07 |
 | FR-B-16 | A booking in an allowed state inside the dispute window | A party raises a dispute with a reason and evidence | The booking is DISPUTED with its previous state stored, transitions and the deposit record are frozen and a case is queued | A second dispute on the same booking shows the existing case | B12 / ES-07 |
 | FR-B-17 | An open dispute | The other party does not respond within the period | The case is marked "no response" and passed to a moderator | If the raising party withdraws, `dispute_withdrawn` restores the previous state | B12 / none |
+| FR-B-18 | A request past its response window | The scheduler's `run_due_jobs` runs twice, or two runs overlap | The request is EXPIRED once and one notification is sent | A job that fails is logged and retried on the next run | B13 / none |
+| FR-N-03 | A loan run from REQUEST_CREATED to COMPLETED | Its events are read back | Every event has the frozen fields, `schema_version` and a `payload` matching the event catalogue (TC-72) | Assessment events also carry `config_version` | all / none |
+| FR-S-01 | A community with a published drill described as making holes in walls, and a borrower in that community | The borrower searches "something to make holes in a wall", which shares no keyword with the title | The drill is in the top 5, with a reason line per result | Items of other communities and items not PUBLISHED never appear, however close the match | B3 / none |
+| FR-S-02 | The embedding model or the vector index is unavailable | A borrower searches | Keyword results are returned with a "keyword results only" notice | With the assurance engine unavailable, ranking uses the same default prior for every lender and results still return | B3 / none |
+| FR-S-03 | Items differing in category, deposit and condition | A borrower filters by a category, a maximum deposit, a condition and dates, and sorts by newest | Only items matching every filter and free on those dates are returned, newest first | No filter or sort uses distance or coordinates | B3 / none |
+| FR-S-04 | An item whose lender has no verified loans as a lender | A borrower opens the item | "Not enough history yet" is shown, worded as an absence of evidence | For a lender with history, the factors are shown separately with confidence and never as one number | B4 / ES-01 |
+| FR-S-05 | A search that shows ten results | The borrower opens the third | The query, the ten shown results with ranks, the click and the nine not clicked are logged | The log holds no location or coordinates | B3 / none |
 | FR-T-01 | A request whose locality is verified | The assessment runs | Exactly one of the four assurance states is returned with confidence, direct and indirect evidence, manipulation signals, safeguards and explanation | No single trust number is shown | D3/4/5 / ES-01 to ES-07 |
 | FR-T-02 | A user with no verified history | The assessment runs | The state is INSUFFICIENT_EVIDENCE with "Insufficient verified history; lender review required" | The estimate is the prior Beta(1,1) with a wide credible interval | D3 / ES-01 |
 | FR-T-03 | Two outcomes aged 10 and 360 days and a 180-day half-life | Evidence weights are computed | Weights are about 0.96 and 0.25 | Unconfirmed or conflicting outcomes are excluded | D3 / ES-02, ES-12 |
@@ -325,7 +370,7 @@ One Given/When/Then per FR, with at most one "And" for the key edge case.
 | FR-T-08 | A user with too few observations | A member opens the trust profile | Factors are shown separately with confidence and the detail is suppressed | No single number appears anywhere | D2 / ES-01 |
 | FR-T-09 | A COMPLETED transaction | A party submits a review | The multi-dimension review is stored and linked to the transaction | A negative review right after the other party's complaint that conflicts with records is flagged and down-weighted | D1 / ES-05 |
 | FR-T-10 | An escalation trigger such as a dispute or a manipulation flag | The case is created | It carries trigger type, priority, reason and the full evidence trail | A case already open for the transaction is reused | D6 / ES-04, ES-07 |
-| FR-T-11 | An open dispute and an authorised moderator | The moderator submits a decision with a reason | `dispute_resolved` moves the booking to COMPLETED, the decision is logged and the resolved outcome becomes evidence | A later reversal keeps both decisions and flags the affected evidence | I4 / ES-11 |
+| FR-T-11 | An open dispute raised from ACTIVE and an authorised moderator | The moderator submits a decision with a reason and the possession RETURNED | `dispute_resolved` moves the booking to COMPLETED, the decision is logged and the resolved outcome becomes evidence | With possession WITH_BORROWER it returns to ACTIVE instead (ADR-0009, proposed); a later reversal keeps both decisions and flags the affected outcomes | I4 / ES-11 |
 | FR-M-05 | Any privileged action or lifecycle transition | It is performed | An audit entry with actor, timestamp, previous and new state, evidence and authorisation exists | An attempt to alter the entry is detected | I6 / ES-11 |
 
 # **Part F: Framing note for report chapter 1**

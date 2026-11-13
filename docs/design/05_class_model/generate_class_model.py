@@ -21,7 +21,16 @@ COL = {"S1": ("#E3EEF9", "#1F4E79"), "S2": ("#FDEBDD", "#8A4B12"), "S3": ("#EEE5
        "ENUM": ("#F4F6F8", "#46535F")}
 
 
-def klass(d, cid, name, x, y, w, attrs=(), ops=(), frs="", owner="S1", stereo=None):
+NEW_INK = "#0A7A36"   # one colour on every cumulative diagram: added or changed in iteration 2
+
+
+def G(text: str) -> str:
+    """A member, value or label added or changed in iteration 2 (drawn green)."""
+    return f"<font color='{NEW_INK}'>{text}</font>"
+
+
+def klass(d, cid, name, x, y, w, attrs=(), ops=(), frs="", owner="S1", stereo=None, new=False):
+    """new=True: the whole class is new in iteration 2 (green border)."""
     fill, ink = COL[owner]
     head = (f"<span style='font-weight:normal;font-size:10px'>&#171;{stereo}&#187;</span><br>" if stereo else "") + \
         f"<b>{name}</b>"
@@ -33,7 +42,8 @@ def klass(d, cid, name, x, y, w, attrs=(), ops=(), frs="", owner="S1", stereo=No
         body += f"<hr style='margin:3px 0'><i style='color:#6A7A8A'>{frs}</i>"
     n_lines = max(1, len(attrs)) + len(ops) + (1 if frs else 0) + math.ceil(len(frs) / (w / 6.2)) - (1 if frs else 0)
     h = hh + n_lines * LINE + 8 + (6 if ops else 0) + (6 if frs else 0)
-    c = d.node(head, x, y, w, h, f"swimlane;html=1;startSize={hh};fillColor={fill};strokeColor={ink};fontColor=#1D1D1D;"
+    stroke = f"strokeColor={NEW_INK};strokeWidth=2.5;" if new else f"strokeColor={ink};"
+    c = d.node(head, x, y, w, h, f"swimlane;html=1;startSize={hh};fillColor={fill};{stroke}fontColor=#1D1D1D;"
                "swimlaneFillColor=#FFFFFF;fontSize=12;whiteSpace=wrap;collapsible=0;container=1;childLayout=stackLayout;"
                "horizontalStack=0;resizeParent=1;resizeParentMax=0;marginBottom=0;rounded=0;", id=cid)
     d.mark_container(c)
@@ -76,14 +86,15 @@ def link(d, a, b, name="", ma="", mb="", style=ASSOC, exit=None, entry=None, poi
 
 # =============================================================================== domain model (A2)
 def domain_model() -> Diagram:
-    d = Diagram("Domain model (A2)", 2010, 1020)
-    d.text("<b>Digital Mohalla &#8212; Domain model (conceptual), iteration-1 core</b> (design step A2, v1.0 baseline; "
-           "LocalityResult, ConditionReport and Booking kept, decision D18)", 40, 12, 1400, 24, size=16, check=False)
+    d = Diagram("Domain model (A2, iteration 2)", 2010, 1320)
+    d.text("<b>Digital Mohalla &#8212; Domain model (conceptual)</b> (design step A2 v1.0; iteration 2 v2.0, DA-11: "
+           "<font color='#0A7A36'>green = added or changed in iteration 2</font>)", 40, 12, 1700, 24, size=16, check=False)
     d.text("Conceptual classes and associations only (no operations, no implementation types). Colour = owning module. "
            "References to User inside Outcome, TrustEdge, Review and ModeratorDecision are shown as role attributes.",
            40, 36, 1700, 20, size=11, color="#4A5560", check=False)
     K = lambda *a, **k: klass(d, *a, **k)  # noqa: E731
-    K("Community", "Community", 40, 110, 300, ["name", "rules", "isActive"], owner="S1")
+    K("Community", "Community", 40, 110, 300, ["name", "rules", "isActive", G("joinPolicy {moderated, open}")],
+      owner="S1")
     K("Membership", "Membership", 40, 330, 300, ["role {member, moderator}", "status {pending, approved, &#8230;}",
                                                  "requestedAt, decidedAt"], owner="S1")
     K("LocalityResult", "LocalityResult", 40, 560, 300, ["method (geofence + invitation, A11)", "outcome {verified, inconclusive, "
@@ -92,7 +103,8 @@ def domain_model() -> Diagram:
     K("User", "User", 430, 110, 300, ["displayName", "contact (email or phone)", "verificationLevel", "platformRole "
                                       "{member, admin}", "status", "isSynthetic"], owner="S1")
     K("Item", "Item", 430, 450, 300, ["title, category", "valueBand", "depositAmount (record-only)", "status "
-                                      "{published, &#8230;}"], owner="S1")
+                                      "{published, &#8230;}", G("description, condition, usageTerms"),
+                                      G("searchTerms, expiresAt")], owner="S1")
     K("Booking", "Booking", 430, 720, 300, ["period", "status {held, released}"], owner="S1")
     K("BorrowingTransaction", "BorrowingTransaction", 840, 110, 320, ["requestedPeriod", "message",
                                                                       "lifecycleState (14 states, A3)",
@@ -101,7 +113,7 @@ def domain_model() -> Diagram:
                                                             "checklist, photos", "conditionAgreed", "depositReceived "
                                                             "(lender, handover)"], owner="S1")
     K("Review", "Review", 840, 740, 320, ["reviewer, reviewee : User", "ratings, comment", "retaliationFlag, "
-                                          "similarityFlag", "(seeded in iteration 1)"], owner="S2")
+                                          "similarityFlag", G("submitted by the parties (D1)")], owner="S2")
     K("LifecycleEvent", "LifecycleEvent", 1270, 110, 320, ["eventId, streamSeq", "eventType, schemaVersion",
                                                            "actor, occurredAt", "previousState, newState",
                                                            "evidenceRefs, authorisation", "configVersion "
@@ -114,15 +126,37 @@ def domain_model() -> Diagram:
                                              "category, valueBand, duration (snapshot)", "status {valid, flagged}"],
       owner="S2")
     K("EscalationCase", "EscalationCase", 1670, 110, 300, ["triggerType", "holdReason | disputeReason", "status (A3)",
-                                                           "priority, reason", "assignedTo : User"], owner="S3")
+                                                           "priority, reason", "assignedTo : User",
+                                                           G("infoDeadline")], owner="S3")
     K("ModeratorDecision", "ModeratorDecision", 1670, 420, 300, ["decidedBy : User", "kind, reason", "safeguards",
-                                                                 "decidedAt"], owner="S3")
+                                                                 "decidedAt", G("possession (disputes, ADR-0009)"),
+                                                                 G("reverses : ModeratorDecision")], owner="S3")
     K("TrustEdge", "TrustEdge", 1670, 720, 300, ["source, target : User", "role, metric", "weight = posterior mean (ADR-0006)",
                                                  "evidenceCount"], owner="S1")
+
+    NY = 930
+    K("MembershipDecision", "MembershipDecision", 40, NY, 300, ["decidedBy : User", "kind {approved, rejected, "
+                                                                "infoRequested, reversed}", "reason, decidedAt"],
+      owner="S1", new=True)
+    K("Notification", "Notification", 430, NY, 300, ["recipient : User", "type, payload (no location)", "dedupeKey",
+                                                     "createdAt, readAt"], owner="S2", new=True)
+    K("SearchQuery", "SearchQuery", 840, NY, 320, ["searcher (pseudonymous session)", "queryText, filters",
+                                                   "mode {hybrid, keywordOnly}", "createdAt"], owner="S3", new=True)
+    K("SearchImpression", "SearchImpression", 1270, NY, 320, ["item : Item, rank", "scoreParts (not shown)",
+                                                              "clicked"], owner="S3", new=True)
+    K("Attachment", "Attachment", 1670, NY, 300, ["of : Item | ConditionReport | CaseStatement",
+                                                  "storageKey, sha256, mimeType", "metadataStripped (EXIF, ADR-0014)"],
+      owner="S3", new=True)
 
     def Y(cid, f):
         b = d.box(cid)
         return b[1] + f * (b[3] - b[1])
+
+    link(d, "Membership", "MembershipDecision", "decided by", "1", "0..*", exit=(0, 0.6), entry=(0, 0.5),
+         points=[(22, Y("Membership", 0.6)), (22, Y("MembershipDecision", 0.5))], label_x=0.3, label_dx=-12, label_dy=0,
+         ma_off=(0, -1), mb_off=(0, 1))
+    link(d, "SearchQuery", "SearchImpression", "showed", "1", "0..*", style=COMPOSE, exit=(1, 0.5), entry=(0, 0.5),
+         label_dy=-10)
 
     link(d, "Community", "Membership", "has", "1", "0..*", exit=(0.5, 1), entry=(0.5, 0), label_dx=-22, label_dy=0,
          ma_off=(0, -1), mb_off=(0, -1))
@@ -167,24 +201,28 @@ def domain_model() -> Diagram:
          points=[(1615, Y("LifecycleEvent", 0.85)), (1615, Y("Outcome", 0.2))], label_x=-0.55, label_dx=-60, label_dy=0,
          mb_off=(0, -1))
     link(d, "Outcome", "TrustEdge", "&#171;derive&#187;", style=DEPEND, exit=(1, 0.92), entry=(0, 0.85), label_dy=10)
-    d.node("", 40, 910, 1930, 80, "rounded=0;html=1;fillColor=#FFFFFF;strokeColor=#B0BAC4;", check=False)
+    d.node("", 40, 1210, 1930, 90, "rounded=0;html=1;fillColor=#FFFFFF;strokeColor=#B0BAC4;", check=False)
     d.text("<b>Separate attributes, deliberately:</b> BorrowingTransaction.lifecycleState (where the loan is) and "
            "Assessment.assuranceState (what the evidence says) &#8212; e.g. HELD_FOR_REVIEW with REVIEW_RECOMMENDED (ES-04). "
-           "<b>Deliberately left out of iteration 1:</b> chat thread and messages (G1), notifications (G3), calendar blocks "
-           "(B2), listing photos, counter-offer, appeal (modelled as later ModeratorDecisions). &#9670; composition: events "
+           "<b>Iteration 2</b> (green): membership decisions, joining policy, listing fields, in-app notifications, search "
+           "logs, photo attachments, dispute possession; a counter-offer and an appeal are not classes (lifecycle events and "
+           "later ModeratorDecisions). <b>Still left out:</b> chat thread and messages (G1), calendar blocks (B2). "
+           "&#9670; composition: events "
            "live and die with their transaction. Colours: <span style='background:#E3EEF9'>&nbsp;S1&nbsp;</span> "
            "<span style='background:#FDEBDD'>&nbsp;S2&nbsp;</span> <span style='background:#EEE5F6'>&nbsp;S3&nbsp;</span>.",
-           50, 916, 1860, 70, size=10.5, check=False)
+           50, 1216, 1860, 80, size=10.5, check=False)
     return d
 
 
 # =============================================================================== class diagram (A7, Student 1)
 def class_diagram() -> Diagram:
-    d = Diagram("Class diagram, Student 1 (A7)", 2280, 1650)
-    d.text("<b>Digital Mohalla &#8212; Class diagram, Student 1 packages</b> (design step A7, v1.0): Module 1 accounts &amp; "
-           "locality, Module 3 borrowing lifecycle, Module 5 indirect trust", 40, 12, 1800, 24, size=16, check=False)
-    d.text("Python design classes (iteration 1). Each class lists the FRs it realises. Student 2 classes appear only as the "
-           "interfaces Student 1 depends on (orange).", 40, 36, 1700, 20, size=11, color="#4A5560", check=False)
+    d = Diagram("S1 (1 of 2): accounts, lifecycle, indirect trust", 2280, 1650)
+    d.text("<b>Digital Mohalla &#8212; Class diagram, Student 1 packages (1 of 2)</b> (A7 v1.0; iteration 2 v2.0, DA-11): "
+           "Module 1 accounts &amp; locality, Module 3 borrowing lifecycle, Module 5 indirect trust", 40, 12, 1900, 24,
+           size=16, check=False)
+    d.text("Python design classes. Each class lists the FRs it realises. <font color='#0A7A36'>Green = added or changed in "
+           "iteration 2.</font> New iteration 2 classes are on page 2. Student 2 classes appear only as the interfaces "
+           "Student 1 depends on (orange).", 40, 36, 1900, 20, size=11, color="#4A5560", check=False)
 
     def pkg(pid, name, x, y, w, h, colour):
         tab = int(len(name.replace("&#8212;", "-")) * 6.6) + 30
@@ -201,8 +239,9 @@ def class_diagram() -> Diagram:
 
     # ---------------- accounts
     K("c_User", "User", 60, 120, 460, ["id: UUID", "display_name: str", "verification_level: VerificationLevel",
-                                       "platform_role: PlatformRole", "status: AccountStatus", "is_synthetic: bool"],
-      frs="FR-A-04 (part), NFR-S-07: no CNIC / address fields")
+                                       "platform_role: PlatformRole", "status: AccountStatus", "is_synthetic: bool",
+                                       G("terms_accepted_at: datetime | None")],
+      frs="FR-A-01, FR-A-04 (part), NFR-S-07: no CNIC / address fields")
     K("c_Membership", "Membership", 60, 309, 460, ["user_id: UUID", "community_id: UUID", "role: MembershipRole",
                                                    "status: MembershipStatus"],
       ["is_moderator_of(community_id): bool"], frs="FR-A-09 (seeded), NFR-S-03")
@@ -230,12 +269,15 @@ def class_diagram() -> Diagram:
     # ---------------- lifecycle
     K("c_Svc", "BorrowingService", 620, 120, 440, ["- store: EventStore", "- validator: TransitionValidator",
                                                    "- engine: AssuranceEngine", "- locality: LocalityChecker",
-                                                   "- outcomes: OutcomeSink"],
+                                                   "- outcomes: OutcomeSink", G("- notify: INotify")],
       ["create_request(cmd: CreateRequest): BorrowingTransaction", "accept(id, actor) / decline(id, actor, reason)",
        "cancel(id, actor)", "record_handover_checklist(id, actor, report)", "confirm_handover(id, actor, agreed)",
        "initiate_return(id, actor)", "confirm_return(id, actor, report)", "open_dispute(id, actor, reason) / "
-       "withdraw_dispute(id, actor)", "apply_decision(id, decision: ModeratorDecision)"],
-      frs="FR-B-05, B-06, B-07, B-10, B-11, B-13, B-15, B-16, B-17", stereo="application service")
+       "withdraw_dispute(id, actor)", "apply_decision(id, decision: ModeratorDecision)",
+       G("counter_offer(id, lender, period)  # I07"), G("respond_counter(id, borrower, accept)  # T29 / I08"),
+       G("request_extension(id, borrower, new_due)  # I03"), G("respond_extension(id, lender, approve)  # I04 / I05"),
+       G("expire(id) / no_show(id) / remind(id, step)  # scheduler"), G("escalate_overdue(id)  # T24")],
+      frs="FR-B-05 to B-07, B-10 to B-18", stereo="application service")
     K("c_Txn", "BorrowingTransaction", 1120, 120, 440, ["id: UUID  # = stream_id", "item_id, borrower_id, lender_id: UUID",
                                                         "requested_period: DateTimeRange", "lifecycle_state: LifecycleState",
                                                         "hold_reason: HoldReason | None", "due_at: datetime | None",
@@ -252,11 +294,11 @@ def class_diagram() -> Diagram:
     K("c_Val", "TransitionValidator", 620, 590, 460, ["- table: TransitionTable"],
       ["validate(txn, event_type, target, actor): Transition", "  raises InvalidTransition, NotAuthorised, GuardFailed"],
       frs="FR-B-08, NFR-R-02, NFR-S-02, NFR-S-03")
-    K("c_Table", "TransitionTable", 620, 780, 460, ["rows: list[Transition]  # 34, from transition_table.csv"],
+    K("c_Table", "TransitionTable", 620, 780, 460, [G("rows: list[Transition]  # 39, from transition_table_v3.csv")],
       ["lookup(state, event_type, target): Transition | None"], frs="FR-B-08, NFR-R-02 (A3 table = test matrix)")
     K("c_Trans", "Transition", 620, 940, 460, ["from_state, to_state: LifecycleState", "event_type: EventType",
                                                "allowed_roles: frozenset[ActorRole]", "guard: Callable[[Context], bool]",
-                                               "ref: str  # T01..T26"], frs="FR-B-08", stereo="value")
+                                               G("ref: str  # T01..T29 (T25a&#8211;c), I01..I08")], frs="FR-B-08", stereo="value")
     K("c_Store", "EventStore", 1120, 820, 440, [], ["append(stream_id, expected_seq, event): None", "  raises StaleStream",
                                                     "load(stream_id): list[LifecycleEvent]"],
       frs="FR-B-09, ADR-0002 (unique stream_id + stream_seq)", stereo="interface")
@@ -270,8 +312,9 @@ def class_diagram() -> Diagram:
                                                        "deposit_received: bool | None", "reduced_evidence: bool"],
       frs="FR-B-11, FR-B-13; I-4 record-only deposit", stereo="value")
     K("c_Enums", "LifecycleState / EventType / HoldReason", 620, 1340, 460,
-      ["14 states, 21 event types, 5 hold reasons", "(lists: State_Machine_Design.md v2.0)"],
-      frs="FR-B-08, FR-B-09, ADR-0003", stereo="enumeration",
+      ["14 states, " + G("24 event types (+3 counter-offer, ADR-0015)") + ", 5 hold reasons",
+       G("Possession: NOT_HANDED_OVER | WITH_BORROWER | RETURNED | LOST"), G("(lists: State_Machine_Design_v3.md)")],
+      frs="FR-B-08, FR-B-09, ADR-0003, ADR-0009", stereo="enumeration",
       owner="ENUM")
     K("c_Actor", "Actor", 1120, 1390, 440, ["user_id: UUID | None", "role: ActorRole", "authorisation: str"],
       frs="NFR-S-02", stereo="value")
@@ -359,10 +402,13 @@ def class_diagram() -> Diagram:
            "implements IndirectTrustEngine, which the AssuranceEngine calls through IIndirectEvidence.<br>&#8226; Module 9 "
            "(Student 3) calls BorrowingService.apply_decision() through ILifecycleCommands; it is not drawn here.<br>"
            "&#8226; Relationship ends: &#9670; composition, &#9671; aggregation, dashed open arrow = dependency, dashed "
-           "hollow triangle = realisation.", 40, 1354, 500, 258, size=10.5, check=False)
+           "hollow triangle = realisation.<br>&#8226; <font color='#0A7A36'>Green</font> = added or changed in "
+           "iteration 2; the scheduler (JobRunner) calls BorrowingService like any user command.",
+           40, 1354, 500, 258, size=10.5, check=False)
     return d
 
 
 if __name__ == "__main__":
     domain_model().save(os.path.join(HERE, "domain_model.drawio"))
-    class_diagram().save(os.path.join(HERE, "class_diagram_s1.drawio"))
+    # class_diagram_s1.drawio (page 1 = class_diagram(), page 2 = the iteration 2 packages) is written by
+    # generate_class_diagrams_iteration2.py.

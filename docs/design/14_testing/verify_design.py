@@ -226,7 +226,9 @@ def c08():
 # --------------------------------------------------------------------------- C09
 GENERATED = {"06_data_model/Data_Dictionary.md", "07_state_machines/transition_table.md",
              "11_assurance_engine/khop_example_results.md", "12_locality/locality_test_results.md",
-             "14_testing/fixture_verification_results.md"}
+             "14_testing/fixture_verification_results.md",
+             # iteration 2, Student 1 (checked by verify_iteration2.py)
+             "07_state_machines/transition_table_v3.md", "11_assurance_engine/ranking_example_results.md"}
 
 
 @check("C09", "Hand-written design documents carry a control block")

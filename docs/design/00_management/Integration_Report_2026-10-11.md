@@ -141,7 +141,7 @@ At the user's request (sign-offs set aside), the remaining Part A items were com
 | Change | Files |
 |---|---|
 | A2 domain model v1.0; LocalityResult, ConditionReport and Booking kept (D18) | `05_class_model/domain_model.drawio`, `Class_Model_Design.md` |
-| A7 class diagrams for Student 2 (assurance engine) and Student 3 (moderation, scenario suite) | `05_class_model/class_diagram_s2.drawio`, `class_diagram_s3.drawio`, `generate_class_diagrams_s2_s3.py` |
+| A7 class diagrams for Student 2 (assurance engine) and Student 3 (moderation, scenario suite) | `05_class_model/archive_v1/class_diagram_s2_iteration1.drawio` (iteration 1 copy; now part of `class_diagram.drawio`), `class_diagram_s3.drawio`, `generate_class_diagrams_s2_s3.py` |
 | Use case diagram redrawn in UML 2.5: Trust Engine no longer an actor, extension points shown | `02_use_case_model/use_case_diagram.drawio`, `generate_use_case_diagram.py`; Use Cases v1.3 D3/4/5, D6 actor note |
 | Sequence (a) redrawn in UML 2.5: stick-figure actors, `:Class` lifelines, activations, correct `alt` operands | `08_sequence_diagrams/sequence_a_request_to_assessment.drawio`, `generate_sequence_a.py`, spec v1.2 |
 | Decision-policy activity diagram redrawn: guarded decisions, explicit merges, partitions | `09_activity_diagrams/decision_policy_activity_diagram.drawio`, `generate_decision_policy_activity.py`, spec v1.2 |

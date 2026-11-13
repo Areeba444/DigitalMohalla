@@ -2,7 +2,7 @@
 
 | Field | Value |
 | :--- | :--- |
-| Version | 1.3 (v1.2 plus the integration decisions of 2026-10-11) |
+| Version | 1.4 draft, 2026-11-07: Student 3 sections done (UC-D1, UC-D2 dressed; UC-B12, UC-I4, UC-I6 extended; DA-02; UC-B3, UC-B4 dressed, DA-20); Student 1 sections done 2026-11-12 (UC-A1, UC-B13, UC-G3 dressed; UC-B6 ext 3b and UC-B8 ext 1a and *a expanded; §2 event types; DA-02). v1.3: v1.2 plus the integration decisions of 2026-10-11 |
 | Date | 2026-10-11 (v1.1: 2026-10-10; v1.2 and v1.3: 2026-10-11) |
 | Authors | Team Digital Mohalla (v1.1 edits drafted with Claude; reviewed by: Fatima Khursheed, Areeba Javed, Minahil Kashif) |
 | Status | Baseline: ADR-0001 to ADR-0005 accepted on 2026-10-11; ADR-0007 and ADR-0008 accepted for integration (Students 2 and 3 to initial) |
@@ -41,6 +41,8 @@ Event-sourced, as in Overview §3. Module label for B5 to B8 and B12: **Borrowin
 
 Extension requests and reminders are events inside ACTIVE and do not change state (event types `reminder_sent`, `extension_requested`, `extension_approved`, `extension_declined`; built in iteration 2). `reminder_sent` is also used in ACCEPTED and RETURN_INITIATED.
 
+**v1.4 (ADR-0015, proposed): counter-offer.** Three event types are added: `counter_offered` and `counter_declined` are events inside ASSESSED, and `counter_accepted` moves the request to LOCALITY_CHECKED with the new dates, so the assessment runs again (B6 ext 3b). The 14 states are unchanged. Lifecycle v3: `07_state_machines/State_Machine_Design_v3.md`.
+
 **Exits from HELD_FOR_REVIEW (ADR-0003).** Hold reasons: `locality_inconclusive`, `locality_conflict`, `manipulation_risk`, `high_value_low_confidence`, `engine_failure`.
 
 | Hold reason | Cleared | Safeguards imposed | Restricted |
@@ -49,7 +51,7 @@ Extension requests and reminders are events inside ACTIVE and do not change stat
 | Manipulation risk, high value with low confidence | → ASSESSED (existing assessment plus moderator note) | → ASSESSED with added safeguards | → DECLINED |
 | Engine failure | → LOCALITY_CHECKED, assessment re-run | Not available (no assessment exists) | → DECLINED |
 
-**Exits from DISPUTED (ADR-0004).** `dispute_resolved` → COMPLETED (moderator decision); `dispute_withdrawn` → the state stored as `previous_state` in the `dispute_opened` event. A dispute can be opened from ACCEPTED, ACTIVE or RETURN_INITIATED, not from RETURNED (B12).
+**Exits from DISPUTED (ADR-0004; v1.4: ADR-0009, proposed).** `dispute_resolved` → the state that the recorded item possession allows: NO_SHOW (`NOT_HANDED_OVER`, T25a), ACTIVE (`WITH_BORROWER`, T25b) or COMPLETED (`RETURNED` or `LOST`, T25c); `dispute_withdrawn` → the state stored as `previous_state` in the `dispute_opened` event. A dispute can be opened from ACCEPTED, ACTIVE or RETURN_INITIATED, not from RETURNED (B12).
 
 **Event record (schema frozen):** `event_id, stream_id (transaction), stream_seq, event_type, schema_version, actor_id, occurred_at, previous_state, new_state, evidence_refs, authorisation, payload`. Assessment events also store `config_version`. `payload` is a JSON object holding event-specific data (dates, hold reason, decision, dispute reason, outcome), defined per event type in the event catalogue (ADR-0005). Any addition, including a new event type, needs sign-off from all three students and is reviewed in the class diagram. v1.1 added the event types `hold_cleared`, `dispute_resolved` and `dispute_withdrawn` (ADR-0003, ADR-0004); v1.2 adds `payload` and the four internal event types (ADR-0005).
 
@@ -65,13 +67,66 @@ Extension requests and reminders are events inside ACTIVE and do not change stat
 | D3/4/5 Assess transaction assurance | CORE | M | FR-T-01 to T-07 | Computing core |
 | D6 Escalate case | CORE | M | FR-T-10 | |
 | I4 Resolve escalated case or dispute | CORE | M | FR-T-11 | Generalised from "Resolve disputes" |
-| I6 View audit logs | CORE | M | FR-M-05 | |
+| I6 View audit logs | CORE | M | FR-M-05 | Extended in v1.4 (filters, masking, tamper warning) |
+| D1 Submit review and rating | CORE (iteration 2) | M | FR-T-09, FR-B-15 | Dressed in v1.4 |
+| D2 View my evidence (trust profile) | CORE (iteration 2) | M | FR-T-08 | Dressed in v1.4 |
 | A3 Select neighbourhood, request membership | CORE (iteration 2) | M | FR-A-06 to A-09 | |
 | A4 Approve or reject membership | CORE (iteration 2) | M | FR-A-10, A-11 | |
+| A1 Register | ENAB (iteration 2) | M | FR-A-01 | Dressed in v1.4; OTP (A9, FR-A-02) in iteration 3 |
+| B13 Run scheduled jobs | CORE (iteration 2) | M | FR-B-18, NFR-R-05 | Dressed in v1.4 |
+| G3 Receive in-app notifications | ENAB (iteration 2) | M | FR-C-02 (in-app part) | Dressed in v1.4 |
+| B3 Search for items | Module 4 (iteration 2) | S | FR-S-01 to S-03, S-05 | Dressed in v1.4 (DA-20) |
+| B4 View item details and lender evidence | Module 4 (iteration 2) | S | FR-S-04 | Dressed in v1.4 (DA-20) |
 
 ---
 
 ## 4. Fully dressed use cases
+
+### UC-B3: Search for items (Module 4, iteration 2)
+| | |
+| :--- | :--- |
+| Module / Scope / Level | Search and discovery / SUPP, in committed scope for iteration 2 (S) / User goal |
+| Primary actor | Borrower (a member of an approved community). Secondary: embedding model, assurance engine |
+| Stakeholders | **Borrower:** finds a suitable item quickly. **Lender:** new lenders are not buried for having no history. **Community:** only its own items are shown. **Team:** search quality can be measured. |
+| Pre-conditions | The borrower is logged in with an APPROVED membership. |
+| Post-conditions | A ranked list of eligible items is shown, each with a reason line; the query, shown results, clicks and ignored results are logged without location (FR-S-05). Nothing else changes. |
+
+| # | Borrower | System |
+| :-: | :--- | :--- |
+| 1 | Types a query (English or common Roman Urdu item names) | Embeds the query |
+| 2 | | Retrieves candidates by meaning and by keyword in one query that already applies eligibility: the borrower's community, PUBLISHED items, not their own, not blocked (ADR-0016, proposed) |
+| 3 | | Re-ranks by similarity, the lender's evidence, availability for the borrower's dates and recency (weights: DA-22, not set here); a lender with no history gets the same default as the prior, never a penalty |
+| 4 | | Shows the results with a reason line each (for example "matches: drill; free on your dates; lender has verified loans"), and logs the query, the shown results and their ranks |
+| 5 | Optionally sets filters (category, dates, maximum deposit, condition) or a sort (relevance, evidence, newest) | Re-runs steps 2 to 4 with the filters inside the query |
+| 6 | Opens a result | Logs the click; continues in UC-B4 |
+
+**Extensions**
+- 2a. Embedding model or vector index unavailable: keyword search only, with a "keyword results only" notice (FR-S-02, NFR-R-04).
+- 3a. Assurance engine unavailable: every lender gets the same default prior; results still return (FR-S-02).
+- 4a. No results: suggest removing filters; posting an item request (UC-B9) comes in iteration 3.
+- 5a. A filter on distance or price is not offered: no coordinates are stored (NFR-PR-01) and lending has no price (FR/NFR v1.4 changes S1, S2).
+- *a. The borrower leaves without opening a result: the shown results are logged as ignored impressions (FR-S-05).
+
+### UC-B4: View item details and lender evidence (Module 4, iteration 2)
+| | |
+| :--- | :--- |
+| Module / Scope / Level | Search and discovery / SUPP, in committed scope for iteration 2 (S) / User goal |
+| Primary actor | Borrower. Secondary: assurance engine |
+| Stakeholders | **Borrower:** judges the item and the lender before asking. **Lender:** is described by evidence, never labelled. |
+| Pre-conditions | The item is PUBLISHED in the borrower's community. |
+| Post-conditions | Item and lender evidence are shown; nothing changes. The borrower may start UC-B5. |
+
+| # | Borrower | System |
+| :-: | :--- | :--- |
+| 1 | Opens an item | Shows title, description, category, condition, deposit, terms, photos, availability and the community (no exact location) |
+| 2 | | Shows the lender's evidence as a lender: each metric with its verified loans and confidence in words, never one number (FR-S-04, NFR-U-01) |
+| 3 | Chooses "Request to borrow" | Continues in UC-B5 with the item and dates |
+
+**Extensions**
+- 2a. Lender has no verified loans as a lender: "Not enough history yet", explained as an absence of evidence, not a negative finding.
+- 2b. Too few loans for a metric (below n_min): the detail is suppressed (FR-T-08).
+- 2c. Engine unavailable: the evidence panel says "evidence not available right now"; the item is still shown.
+- 3a. Item no longer PUBLISHED, or the borrower is blocked by the lender: the request is not offered (without revealing a block).
 
 ### UC-B5: Send borrowing request
 | | |
@@ -125,7 +180,12 @@ Extension requests and reminders are events inside ACTIVE and do not change stat
 
 **Extensions**
 - 3a. Lender chooses "Decline": optional reason, DECLINED, requested-date mark removed, borrower notified.
-- 3b. Lender proposes different dates: counter-offer; the borrower accepts or declines.
+- 3b. Lender proposes different dates.
+  1. The lender chooses "Propose other dates" and picks new dates. The system checks that they are in the future, differ from the request and do not overlap a held booking; it appends `counter_offered` (I07), restarts the response window and notifies the borrower.
+  2. The borrower accepts: the system checks the dates are still free, appends `counter_accepted` (T29), changes the request to the new dates and runs the assessment again (sequence (a)), because loan length is part of the evidence weighting. The lender then sees the new assessment and accepts or declines as in steps 2 to 6.
+  3. The borrower declines: `counter_declined` (I08); the original dates stand and the lender may still accept or decline them.
+  4. Only one counter-offer is open at a time. A second one is refused until the borrower answers.
+  5. If the offered dates become taken before the borrower answers, acceptance is refused with "dates now taken" and the borrower may ask for another offer.
 - 3c. Another acceptance for overlapping dates committed first: the database refuses this one and nothing is committed (ADR-0002). The lender is told the dates are taken and the request ends DECLINED with reason "dates taken".
 - 3d. Actor is not the listing owner: deny and log the attempt.
 - 2a. Assurance state is INSUFFICIENT_EVIDENCE: show "Insufficient verified history; lender review required"; the lender decides.
@@ -172,8 +232,14 @@ Extension requests and reminders are events inside ACTIVE and do not change stat
 | 5 | | Sends the outcome to the engine, records the deposit release, frees the calendar, unlocks reviews, notifies both |
 
 **Extensions**
-- 1a. Borrower needs more time: extension request; the lender approves (due date updated) or declines.
-- *a. Item overdue beyond the limit: escalating reminders, then an automatic dispute (B12) (ES-08).
+- 1a. Borrower needs more time.
+  1. While ACTIVE, the borrower requests a new due date (`extension_requested`, I03); one request may be open at a time.
+  2. The lender approves (`extension_approved`, I04): the due date and the held booking move together. If the longer booking overlaps another held booking, the database refuses it and the lender is told the dates are taken.
+  3. The lender declines (`extension_declined`, I05): the due date stands.
+- *a. Item overdue.
+  1. The scheduler (UC-B13) sends a reminder 24 hours before the due date and one at the due date (`reminder_sent`, I02).
+  2. When the due date plus the overdue limit (initially 72 hours) passes and at least two reminders were sent, the scheduler opens a dispute with reason NON_RETURN (`dispute_opened`, T24). The case goes to a moderator (B12, D6) and both parties are notified (ES-08).
+  3. If the borrower starts the return before the limit, the escalation does not happen.
 - 3a. Lender reports damage or missing parts, or the parties disagree on condition: DISPUTED (B12), deposit record held, outcome not counted until resolved (ES-07).
 - 3b. Lender does not confirm within the window: reminder, then flagged for moderator attention.
 - 4a. Return is late: record a "late return" outcome and continue.
@@ -185,15 +251,17 @@ Extension requests and reminders are events inside ACTIVE and do not change stat
 | Primary actor | Lender or Borrower (raising party). Secondary: Moderator (I4) |
 | Stakeholders | **Raising party:** fair resolution. **Other party:** can respond with evidence. **Moderator:** complete evidence trail. **Trust Engine:** receives the resolved outcome. |
 | Pre-conditions | Actor is a party to the booking. State is ACCEPTED, ACTIVE or RETURN_INITIATED and inside the dispute window. (RETURNED is closed at once by B8 step 4; a disagreement at return is raised in RETURN_INITIATED, B8 ext 3a.) |
-| Post-conditions | Booking is DISPUTED (previous state stored in the `dispute_opened` event); deposit record and further transitions frozen; case in the moderator queue; both parties notified; events logged. |
+| Post-conditions | Booking is DISPUTED (previous state stored in the `dispute_opened` event); deposit record and further transitions frozen; case in the moderator queue; both parties notified; events logged. When a moderator resolves it (UC-I4), the loan ends in the state that the item's possession allows (ADR-0009, proposed). |
 
 | # | Actor | System |
 | :-: | :--- | :--- |
 | 1 | Party selects "Raise a dispute" | Checks state and time window |
 | 2 | Chooses a reason (damage, non-return, condition mismatch, no-show, other) and describes it | Offers evidence upload |
-| 3 | Attaches photos or documents and submits | Sets DISPUTED, freezes the deposit record and transitions, appends `dispute_opened` |
+| 3 | Attaches photos or documents and submits | Checks each file's type and size, strips its metadata and stores it through the storage port (ADR-0014); sets DISPUTED, freezes the deposit record and transitions, appends `dispute_opened` |
 | 4 | | Triggers D6 to compile the evidence trail and queue the case |
 | 5 | | Notifies the other party (who can respond with evidence) and the moderator (G3) |
+| 6 | Other party submits a response with evidence | Appends a `case_statement` to the case (append-only) and notifies the moderator (escalation case C03 when information was requested) |
+| 7 | | The case is decided in UC-I4, with the item's possession recorded (ADR-0009) |
 
 **Extensions**
 - *a. Party withdraws before submitting: draft discarded.
@@ -201,6 +269,82 @@ Extension requests and reminders are events inside ACTIVE and do not change stat
 - 1b. Window closed: explain, suggest reporting the user (D7).
 - 5a. Other party does not respond within the period: mark "no response" and pass to the moderator anyway.
 - 5b. Parties settle: the raising party withdraws; `dispute_withdrawn` restores the previous state and the outcome is logged (ADR-0004).
+- 3a. A file has a disallowed type or is too large: refused with a reason; the party may submit without it (TC-85).
+- 3b. Storage is unavailable: the dispute is still raised, marked "reduced evidence"; files can be added later as a statement (ADR-0014).
+- 6a. The other party tries to withdraw: refused; only the raising party may withdraw (FR-B-17).
+
+### UC-B13: Run scheduled jobs (core, iteration 2)
+| | |
+| :--- | :--- |
+| Module / Scope / Level | Borrowing lifecycle / CORE, M / Subfunction |
+| Primary actor | Scheduler (an external schedule calling the system, ADR-0012) |
+| Stakeholders | **Lenders and borrowers:** requests do not hang, reminders arrive once, overdue items are escalated. **Moderators:** escalations arrive with evidence. **Platform:** no duplicate state changes or messages. |
+| Pre-conditions | The job token is valid. The timers are set in the versioned configuration (`scheduler_b13`). |
+| Post-conditions | Every due item is handled exactly once: its lifecycle event appended, its notification sent, its run recorded. A rerun changes nothing. |
+
+| # | Scheduler | System |
+| :-: | :--- | :--- |
+| 1 | Calls the job endpoint (every 15 minutes) | Checks the token; takes the job lock |
+| 2 | | For each job (request expiry, no-show, handover and return reminders, overdue escalation, confirmation reminder, listing expiry, embedding backfill, population baseline), finds the items due at the current time |
+| 3 | | Claims each item once in the job-run record (job name and due key) |
+| 4 | | Applies the job's command through the lifecycle service, so the transition table, guards and audit apply as for a user: T15, T19, T24, I01, I02, I06; or the listing, embedding or baseline update |
+| 5 | | Sends each notification once (unique dedupe key) |
+| 6 | | Records the run as succeeded and releases the lock; returns a report of what ran, what was skipped and what failed |
+
+**Extensions**
+- 1a. Token missing or wrong: 401, nothing runs, the attempt is logged.
+- 1b. Another run holds the lock: this run returns at once ("already running").
+- 3a. The item was already claimed by an earlier run: skipped (NFR-R-05).
+- 4a. The command is refused because the state changed (for example the borrower started the return): recorded as failed and retried on the next run, up to three attempts; the refusal itself is audited.
+- 4b. The schedule ran late: jobs act on what is due now, so they are only delayed; events keep the database's own timestamps.
+- *a. Demo or test: the job service accepts a supplied "now" only when a demo flag is set; in normal running it uses the clock.
+
+### UC-D1: Submit review and rating (core, iteration 2)
+| | |
+| :--- | :--- |
+| Module / Scope / Level | Trust, reputation & safety / CORE (iteration 2), M / User goal |
+| Primary actor | Member who was a party to a completed loan (borrower or lender). Secondary: manipulation checks (D3/4/5), moderator |
+| Stakeholders | **Reviewer:** records their experience. **Reviewee:** is not reviewed in retaliation. **Community:** reviews are honest signals. **Moderator:** flagged reviews can be checked. |
+| Pre-conditions | The loan is COMPLETED (database `review_guard`); the actor is its borrower or lender; the actor has not reviewed this loan yet (`review_once_uq`); the review window is open. |
+| Post-conditions | One review is stored with a rating per dimension and an optional comment; the reviewee is notified. Reviews feed only the manipulation signals; they never enter the trust estimate, which uses verified loan outcomes (decision D19). |
+
+| # | Member | System |
+| :-: | :--- | :--- |
+| 1 | Opens a completed loan and chooses "Review" | Checks eligibility; shows the dimensions for the reviewee's role (reviewing a borrower: return punctuality, item condition, communication; reviewing a lender: item as described, handover, communication) |
+| 2 | Rates each dimension (1 to 5) and may write a comment | Validates the ratings and screens the comment for contact details and addresses |
+| 3 | Submits | Stores the review (flags false). When the engine next assesses a request involving the reviewee, its retaliation check sets the review aside if it is negative (lowest rating at most 2) and follows, within the retaliation window, the reviewee's complaint about this reviewer on a loan whose return was confirmed; S4 sets aside near-identical text. A set-aside review is excluded from S1 and S4 and listed for a moderator; the engine does not write to `review` (D19). The reviewer is not told |
+| 4 | | Notifies the reviewee; the review appears on the reviewee's evidence screen (D2), a flagged review marked "under review" |
+
+**Extensions**
+- 1a. Not a party, loan not completed, or already reviewed: the option is not offered.
+- 1b. Review window closed: explain; nothing is stored.
+- 2a. A dimension is unrated: submission blocked.
+- 2b. The comment contains contact details or an address: asked to remove them (NFR-PR-01).
+- 3a. Editing within the edit window: the review is updated and the flags are recomputed; after the window it is read-only.
+- 4a. A moderator confirms a set-aside review with a reason, which sets `retaliation_flag` or `similarity_flag`, or clears it. Nobody is restricted by a flag alone.
+
+Window lengths (review window, edit window, retaliation window of 14 days in engine config 1.3.0) are configuration values settled in FR/NFR v1.4. The rating dimensions follow the overview's reputation dimensions and are confirmed in build A3.
+
+### UC-D2: View my evidence (trust profile) (core, iteration 2)
+| | |
+| :--- | :--- |
+| Module / Scope / Level | Trust, reputation & safety / CORE (iteration 2), M / User goal |
+| Primary actor | Member (their own profile only in iteration 2) |
+| Stakeholders | **Member:** understands what the platform knows about them and how to build evidence. **Platform:** never shows a single trust number or labels a person. |
+| Pre-conditions | The member is logged in. |
+| Post-conditions | The member's evidence is shown factor by factor, with confidence; nothing is changed. |
+
+| # | Member | System |
+| :-: | :--- | :--- |
+| 1 | Opens "My evidence" | Shows the evidence as a borrower and as a lender, separately |
+| 2 | Chooses a role | For each metric (on-time return, condition agreed, dispute-free): the verified loans counted, how recent they are, and the confidence in words with the 90% interval as a band; resolved disputes; the number of community members with paths to them. Never one combined score (FR-T-08, NFR-U-01) |
+| 3 | Opens a factor | Lists the member's own loans that contributed, with dates and outcomes |
+
+**Extensions**
+- 1a. No verified history: "Not enough verified history yet", explained as an absence of evidence, not a negative finding, with how evidence is built.
+- 2a. Fewer than the minimum effective observations for a metric (n_min, config): the detail is suppressed and shown as "too few loans to show".
+- 3a. An outcome is FLAGGED_FOR_REEVALUATION after a reversal: shown as "under review" and excluded from the counts.
+- *a. Manipulation signals about the member are not shown here; they are evidence for moderators, never accusations (FR-T-05).
 
 ### UC-D3/4/5: Assess transaction assurance
 | | |
@@ -265,8 +409,8 @@ Extension requests and reminders are events inside ACTIVE and do not change stat
 | # | Moderator | System |
 | :-: | :--- | :--- |
 | 1 | Opens the case | Shows the type-specific evidence trail (claims, photos, messages, timestamps, trust analysis, manipulation signals) and, for a hold, the hold reason |
-| 2 | Reviews; requests more information if needed | Notifies the parties and sets a response deadline |
-| 3 | Enters a decision and a reason | Validates that a reason exists, the moderator is authorised, and the decision is allowed for this hold reason |
+| 2 | Reviews; requests more information if needed, with a reason and the question | Stores the question, sets the case AWAITING_INFORMATION with a response deadline from the configuration, and notifies the party (C02; sequence g). An answer before the deadline, or the deadline passing (found by the scheduler), returns the case to OPEN (C03, C04) |
+| 3 | Enters a decision and a reason; for a dispute, also records where the item is (not handed over, with the borrower, returned, or lost) | Validates that a reason exists, the moderator is authorised, the decision is allowed for this hold reason, and the possession is allowed by the state in which the dispute was raised (ADR-0009) |
 | 4 | Confirms | Applies the state change, records the decision event, updates the evidence, notifies both parties |
 
 **Extensions**
@@ -275,8 +419,9 @@ Extension requests and reminders are events inside ACTIVE and do not change stat
 - 3b. Case involves a moderator: escalate to Admin.
 - 3c. Moderator chooses "safeguards imposed" for an engine-failure hold: not allowed, since no assessment exists; the options are retry (cleared) or restricted.
 - 4a. Another moderator decided first: show the current state, apply nothing.
-- 4b. A party appeals: a second moderator reviews.
-- 4c. Decision is reversed later: both decisions stay in the log and the affected evidence is flagged until re-evaluated (ES-11).
+- 4b. A party appeals within the appeal window (once per case): the case becomes APPEALED and a moderator other than the first decider (Admin if none) reviews it; the appeal is upheld (`APPEAL_UPHELD`, case DECIDED) or overturned (`APPEAL_OVERTURNED`, case REVERSED). The first decision is never edited (C08 to C10; sequence h).
+- 4c. Decision is reversed later by an authorised moderator or admin with a reason (`REVERSAL`): both decisions stay in the log, the loan is not rewound, and the outcomes that came from the reversed decision are flagged FLAGGED_FOR_REEVALUATION, so the next assessment of either party no longer counts them; trust edges are refreshed (C11; ES-11).
+- 3d. Dispute: a possession that the stored previous state does not allow (for example "returned" for a dispute raised in ACCEPTED) is not offered (ADR-0009).
 - 4d. A cleared request is held again by the re-run assessment (for example, manipulation risk): it re-enters HELD_FOR_REVIEW with the new hold reason.
 
 ### UC-I6: View audit logs
@@ -291,14 +436,38 @@ Extension requests and reminders are events inside ACTIVE and do not change stat
 | # | Admin | System |
 | :-: | :--- | :--- |
 | 1 | Opens the audit log | Shows recent events: actor, timestamp, previous and new state, evidence, authorisation |
-| 2 | Filters by actor, user, transaction, date or event type | Returns matching events |
-| 3 | Opens an event | Shows full details and related events |
+| 2 | Filters by actor, user, transaction, case, date range, action or event type, and result (accepted or rejected) | Returns matching events, newest first, with sensitive fields masked |
+| 3 | Opens an event | Shows full details and related events, and the result of the integrity check for its hash chain |
+| 4 | | Writes the view itself to the audit log (who looked, at what filter, when) |
 
 **Extensions**
 - 1a. No matching results: empty state.
 - 3a. Event contains sensitive data: mask it per privacy rules.
 - 3b. Pattern detected (e.g. one moderator's decisions concentrated on the same users): highlight it (supports the moderator-misuse case).
-- 3c. Integrity check fails for an entry: show a tamper warning.
+- 3c. Integrity check fails for an entry: show a tamper warning (the hash chain of `audit_log` or of the transaction's events does not verify) and keep showing the entry.
+- 3d. Masking: e-mail, phone, free-text statements and reasons are masked by default; unmasking one entry needs a stated purpose and is itself logged.
+- *a. A moderator opens the log: only entries for their own community's cases are shown (NFR-S-03).
+
+### UC-A1: Register (enabling, iteration 2; the OTP part of UC-A9 in iteration 3)
+| | |
+| :--- | :--- |
+| Module / Scope / Level | Accounts & communities / ENAB, M / User goal |
+| Primary actor | Guest |
+| Stakeholders | **Guest:** a quick start without exposing personal data. **Platform:** no duplicate or fake accounts, no identifier leaks. **Residents:** members are accountable. |
+| Pre-conditions | The guest is not logged in. |
+| Post-conditions | **Success:** account in PENDING_VERIFICATION with `terms_accepted_at` recorded; the member can request to join a community (A3). **Failure:** no account; a generic message. |
+
+| # | Guest | System |
+| :-: | :--- | :--- |
+| 1 | Opens "Create account" | Shows the form, the terms and the privacy notice (what is stored, approximate location only, no CNIC) |
+| 2 | Enters display name, e-mail and password; accepts the terms | Validates the fields and the password rules |
+| 3 | Submits | Creates the account (PENDING_VERIFICATION), stores a salted password hash and the acceptance time; signs the member in |
+
+**Extensions**
+- 2a. Terms not accepted: the account is not created.
+- 3a. The e-mail is already registered: the same generic message as a success ("check your e-mail"); nothing reveals which identifier matched (FR-A-01).
+- 3b. Too many attempts from one device or network: temporary refusal (FR-A-03, iteration 3).
+- *a. In iteration 2 the OTP step of A9 is not built. The account can join a community, and the community verification (A3) is what lets it borrow; this is disclosed in the report as a scope note.
 
 ### UC-A3: Select neighbourhood and request community membership (core, iteration 2)
 | | |
@@ -348,6 +517,27 @@ Extension requests and reminders are events inside ACTIVE and do not change stat
 - 4a. Another moderator decided first: show current state. 4b. Not authorised for this community: deny and log. 4c. Applicant withdrew or was suspended: not applied.
 - 4d. Applicant disputes a rejection: resubmits with new evidence (A3).
 
+### UC-G3: Receive in-app notifications (enabling, iteration 2; in-app channel only)
+| | |
+| :--- | :--- |
+| Module / Scope / Level | Communication & notifications / ENAB, M / User goal |
+| Primary actor | Member. Secondary: the modules that notify (M1, M3, M9 and the scheduler) |
+| Stakeholders | **Member:** learns of requests, decisions and deadlines in time. **Modules:** one way to tell people. **Platform:** no duplicates, no location in messages. |
+| Pre-conditions | The member is logged in. |
+| Post-conditions | The member sees each notification once; read ones are marked. |
+
+| # | Member | System |
+| :-: | :--- | :--- |
+| 1 | | A module calls `notify(user, type, payload, dedupe_key)`; the system stores it once per member and key |
+| 2 | Opens the app or returns to it | Polls for unread notifications and shows the count on the bell |
+| 3 | Opens the inbox | Lists notifications newest first, each linking to its request, case or membership |
+| 4 | Opens one | Marks it read and opens the linked screen |
+
+**Extensions**
+- 1a. The same notification arrives twice (for example a retried job): the second is ignored (unique key).
+- 1b. A payload would contain a location or an address: refused by the database (NFR-PR-01).
+- *a. E-mail and push channels, preferences and quiet hours (G4): iteration 3.
+
 ---
 
 ## Appendix A: Changes from earlier drafts
@@ -394,6 +584,29 @@ Extension requests and reminders are events inside ACTIVE and do not change stat
 | D11, ADR-0008 | Sparse history without community support is INSUFFICIENT_EVIDENCE; community paths lift it to REVIEW_RECOMMENDED: D3 ext 1a, 3b |
 | N-7 | Resolved by A5 rule R4: B5 ext 5c, D3 ext 5b |
 | D12 | An open dispute gives ACTIVE_DISPUTE and the request still reaches the lender: D3 ext 5a |
+
+**v1.4 draft (iteration 2, DA-02; Student 3 sections, 2026-11-07, drafted with Claude Code, review pending)**
+
+| # | Change |
+| :-: | :--- |
+| DA-02 | D1 (submit review) and D2 (view my evidence) promoted to core and dressed; Appendix B rows kept for reference |
+| ADR-0009 (proposed) | B12 post-condition and steps 6 to 7; I4 step 3 and ext 3d: the dispute closes by the item's possession (T25a/b/c) |
+| ADR-0014 (proposed) | B12 step 3 and ext 3a, 3b: uploads checked, metadata stripped, stored through the storage port |
+| DA-07 | I4 step 2 (C02 to C04), ext 4b (appeal, C08 to C10) and 4c (reversal, C11) in build detail |
+| DA-02 | I6 steps 2 to 4 and ext 3c, 3d, *a: filters, masking, integrity check, views logged, community scope |
+| DA-20 | B3 (search) and B4 (item details and lender evidence) dressed for Module 4 in iteration 2 |
+| Open | Review, edit and appeal window values are proposed in FR/NFR v1.4 Part D (DA-03) |
+
+**v1.4 draft (iteration 2, DA-02; Student 1 sections, 2026-11-12, drafted with Claude Code, review pending)**
+
+| # | Change |
+| :-: | :--- |
+| DA-02 | A1 dressed for iteration 2; the OTP step of A9 stays in iteration 3 and is disclosed (FR-A-01, FR-A-02) |
+| ADR-0015 (proposed) | §2 event types; B6 extension 3b expanded into the counter-offer flow (I07, I08, T29) |
+| DA-02 | B8 extensions 1a and *a expanded: extensions, reminders, the overdue limit and the automatic dispute (FR-B-14) |
+| DA-02 | B13 dressed (was brief in Appendix B, issue N-3; FR-B-18, NFR-R-05, ADR-0012) |
+| DA-02 | G3 dressed for the in-app channel (FR-C-02 in-app part, ADR-0013); e-mail and push stay in iteration 3 |
+| ADR-0009 (proposed) | §2 exits from DISPUTED by item possession (T25a, T25b, T25c), matching Student 3's B12 and I4 changes |
 
 ## Appendix B: Remaining use cases (brief)
 

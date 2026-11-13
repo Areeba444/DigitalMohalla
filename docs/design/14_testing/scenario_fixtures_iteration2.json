@@ -1,0 +1,413 @@
+{
+  "metadata": {
+    "suite_name": "Digital Mohalla iteration 2 scenario fixtures, ES-07 to ES-12 (SYNTHETIC)",
+    "config_version": "1.3.0-iteration1-draft",
+    "as_of": "2026-10-01T08:00:00+00:00",
+    "generated_by": "14_testing/generate_fixtures_iteration2.py (real engine, no hand-typed numbers)",
+    "spec": "14_testing/Scenario_Specifications_ES07_ES12.md",
+    "owners": "Student 3 (DA-04); review: Student 2"
+  },
+  "fixtures": {
+    "ES-07": {
+      "name": "Conflicting condition reports at return",
+      "evidence": {
+        "history_ages_days": [
+          15,
+          30,
+          45,
+          60,
+          75,
+          90,
+          105,
+          120
+        ],
+        "all_on_time": true,
+        "value_band": "LOW"
+      },
+      "steps": {
+        "without_dispute": {
+          "direct_evidence": {
+            "alpha": 7.223,
+            "beta": 1.0,
+            "mean": 0.8784,
+            "lower_90": 0.6605,
+            "upper_90": 0.9929,
+            "n_eff": 6.223,
+            "direct_event_count": 8,
+            "request_similarity": 1.0
+          },
+          "manipulation_level": 1,
+          "rule_fired": "R7",
+          "state": "SUFFICIENT_EVIDENCE",
+          "decision": "PROCEED",
+          "hold_reason": null,
+          "lifecycle_state": "ASSESSED",
+          "safeguards": [
+            "standard_return_reminder"
+          ],
+          "explanation": "Sufficient verified evidence for this request. Direct evidence: 8 verified loan(s), weighted for recency and similarity to 6.2 effective outcomes; estimated on-time return 0.88 with a 90% interval of 0.66 to 0.99. Community paths from the lender: none found. Manipulation checks: no notable signals (level 1 of 4). Decision support, not a guarantee."
+        },
+        "while_dispute_open": {
+          "direct_evidence": {
+            "alpha": 7.223,
+            "beta": 1.0,
+            "mean": 0.8784,
+            "lower_90": 0.6605,
+            "upper_90": 0.9929,
+            "n_eff": 6.223,
+            "direct_event_count": 8,
+            "request_similarity": 1.0
+          },
+          "manipulation_level": 1,
+          "rule_fired": "R1",
+          "state": "ACTIVE_DISPUTE",
+          "decision": "ESCALATE",
+          "hold_reason": null,
+          "lifecycle_state": "ASSESSED",
+          "safeguards": [],
+          "explanation": "A dispute involving a party is still open. Direct evidence: 8 verified loan(s), weighted for recency and similarity to 6.2 effective outcomes; estimated on-time return 0.88 with a 90% interval of 0.66 to 0.99. Community paths from the lender: none found. An open dispute must be resolved first. Manipulation checks: no notable signals (level 1 of 4). Decision support, not a guarantee."
+        },
+        "after_resolution": {
+          "direct_evidence": {
+            "alpha": 8.2153,
+            "beta": 1.0,
+            "mean": 0.8915,
+            "lower_90": 0.6944,
+            "upper_90": 0.9938,
+            "n_eff": 7.2153,
+            "direct_event_count": 9,
+            "request_similarity": 1.0
+          },
+          "manipulation_level": 1,
+          "rule_fired": "R6_DISPUTE",
+          "state": "REVIEW_RECOMMENDED",
+          "decision": "PROCEED_WITH_SAFEGUARDS",
+          "hold_reason": null,
+          "lifecycle_state": "ASSESSED",
+          "safeguards": [
+            "condition_photos_checklist",
+            "deposit_record",
+            "explicit_return_reminder"
+          ],
+          "explanation": "Review recommended before lending. Direct evidence: 9 verified loan(s), weighted for recency and similarity to 7.2 effective outcomes; estimated on-time return 0.89 with a 90% interval of 0.69 to 0.99. Community paths from the lender: none found. Resolved disputes in the last 12 months: 1. Manipulation checks: no notable signals (level 1 of 4). Decision support, not a guarantee."
+        }
+      },
+      "resolution": {
+        "stage": "RETURN_INITIATED",
+        "reason": "CONDITION_MISMATCH",
+        "at_fault": "borrower",
+        "possession": "RETURNED",
+        "returned_on_time": true,
+        "resolved_days_ago": 2
+      }
+    },
+    "ES-08": {
+      "name": "Failure to return",
+      "evidence": {
+        "history_ages_days": [
+          30,
+          60,
+          90,
+          120,
+          150,
+          180
+        ],
+        "all_on_time": true,
+        "value_band": "MEDIUM"
+      },
+      "steps": {
+        "while_dispute_open": {
+          "direct_evidence": {
+            "alpha": 5.0829,
+            "beta": 1.0,
+            "mean": 0.8356,
+            "lower_90": 0.5547,
+            "upper_90": 0.99,
+            "n_eff": 4.0829,
+            "direct_event_count": 6,
+            "request_similarity": 1.0
+          },
+          "manipulation_level": 1,
+          "rule_fired": "R1",
+          "state": "ACTIVE_DISPUTE",
+          "decision": "ESCALATE",
+          "hold_reason": null,
+          "lifecycle_state": "ASSESSED",
+          "safeguards": [],
+          "explanation": "A dispute involving a party is still open. Direct evidence: 6 verified loan(s), weighted for recency and similarity to 4.1 effective outcomes; estimated on-time return 0.84 with a 90% interval of 0.55 to 0.99. Community paths from the lender: none found. An open dispute must be resolved first. Manipulation checks: no notable signals (level 1 of 4). Decision support, not a guarantee."
+        },
+        "after_resolution": {
+          "direct_evidence": {
+            "alpha": 5.0829,
+            "beta": 1.9923,
+            "mean": 0.7184,
+            "lower_90": 0.4245,
+            "upper_90": 0.9385,
+            "n_eff": 5.0752,
+            "direct_event_count": 7,
+            "request_similarity": 1.0
+          },
+          "manipulation_level": 1,
+          "rule_fired": "R6_DISPUTE",
+          "state": "REVIEW_RECOMMENDED",
+          "decision": "PROCEED_WITH_SAFEGUARDS",
+          "hold_reason": null,
+          "lifecycle_state": "ASSESSED",
+          "safeguards": [
+            "condition_photos_checklist",
+            "deposit_record",
+            "explicit_return_reminder"
+          ],
+          "explanation": "Review recommended before lending. Direct evidence: 7 verified loan(s), weighted for recency and similarity to 5.1 effective outcomes; estimated on-time return 0.72 with a 90% interval of 0.42 to 0.94. Community paths from the lender: none found. Resolved disputes in the last 12 months: 1. Manipulation checks: no notable signals (level 1 of 4). Decision support, not a guarantee."
+        }
+      },
+      "resolution": {
+        "stage": "ACTIVE",
+        "reason": "NON_RETURN",
+        "at_fault": "borrower",
+        "possession": "LOST",
+        "resolved_days_ago": 2
+      }
+    },
+    "ES-09": {
+      "name": "Location mismatch (stored locality result CONFLICTING)",
+      "evidence": {
+        "history_ages_days": [
+          10,
+          50,
+          90,
+          130
+        ],
+        "all_on_time": true,
+        "value_band": "LOW"
+      },
+      "steps": {
+        "at_request": {
+          "lifecycle_state": "HELD_FOR_REVIEW",
+          "hold_reason": "locality_conflict",
+          "state": null,
+          "note": "the engine does not run before the locality hold is cleared"
+        },
+        "after_hold_cleared": {
+          "direct_evidence": {
+            "alpha": 4.1004,
+            "beta": 1.0,
+            "mean": 0.8039,
+            "lower_90": 0.4816,
+            "upper_90": 0.9876,
+            "n_eff": 3.1004,
+            "direct_event_count": 4,
+            "request_similarity": 1.0
+          },
+          "manipulation_level": 1,
+          "rule_fired": "R9",
+          "state": "REVIEW_RECOMMENDED",
+          "decision": "PROCEED_WITH_SAFEGUARDS",
+          "hold_reason": null,
+          "lifecycle_state": "ASSESSED",
+          "safeguards": [],
+          "explanation": "Review recommended before lending. Direct evidence: 4 verified loan(s), weighted for recency and similarity to 3.1 effective outcomes; estimated on-time return 0.80 with a 90% interval of 0.48 to 0.99. Community paths from the lender: none found. Manipulation checks: no notable signals (level 1 of 4). Decision support, not a guarantee."
+        }
+      }
+    },
+    "ES-10": {
+      "name": "Location-permission refusal (stored locality result INCONCLUSIVE), no history",
+      "evidence": {
+        "history_ages_days": [],
+        "value_band": "LOW"
+      },
+      "steps": {
+        "at_request": {
+          "lifecycle_state": "HELD_FOR_REVIEW",
+          "hold_reason": "locality_inconclusive",
+          "state": null,
+          "note": "the engine does not run before the locality hold is cleared"
+        },
+        "after_hold_cleared": {
+          "direct_evidence": {
+            "alpha": 1.0,
+            "beta": 1.0,
+            "mean": 0.5,
+            "lower_90": 0.05,
+            "upper_90": 0.95,
+            "n_eff": 0.0,
+            "direct_event_count": 0,
+            "request_similarity": 0.0
+          },
+          "manipulation_level": 1,
+          "rule_fired": "R3",
+          "state": "INSUFFICIENT_EVIDENCE",
+          "decision": "REQUEST_VERIFICATION",
+          "hold_reason": null,
+          "lifecycle_state": "ASSESSED",
+          "safeguards": [
+            "deposit_record",
+            "handover_photos",
+            "fixed_return_date"
+          ],
+          "explanation": "Insufficient verified history; lender review required. This is not a negative finding about the borrower. Direct evidence: no verified loans yet. Community paths from the lender: none found. Manipulation checks: no notable signals (level 1 of 4). Decision support, not a guarantee."
+        }
+      }
+    },
+    "ES-11": {
+      "name": "Moderator reversal",
+      "evidence": {
+        "history_ages_days": [
+          20,
+          40,
+          60,
+          80,
+          100
+        ],
+        "all_on_time": true,
+        "value_band": "LOW",
+        "disputed_loan": {
+          "stage": "ACTIVE",
+          "reason": "NON_RETURN",
+          "first_finding": "borrower",
+          "decided_days_ago": 30
+        }
+      },
+      "steps": {
+        "before_reversal": {
+          "direct_evidence": {
+            "alpha": 4.9921,
+            "beta": 1.8909,
+            "mean": 0.7253,
+            "lower_90": 0.4284,
+            "upper_90": 0.9439,
+            "n_eff": 4.883,
+            "direct_event_count": 6,
+            "request_similarity": 1.0
+          },
+          "manipulation_level": 1,
+          "rule_fired": "R6_DISPUTE",
+          "state": "REVIEW_RECOMMENDED",
+          "decision": "PROCEED_WITH_SAFEGUARDS",
+          "hold_reason": null,
+          "lifecycle_state": "ASSESSED",
+          "safeguards": [
+            "condition_photos_checklist",
+            "deposit_record",
+            "explicit_return_reminder"
+          ],
+          "explanation": "Review recommended before lending. Direct evidence: 6 verified loan(s), weighted for recency and similarity to 4.9 effective outcomes; estimated on-time return 0.73 with a 90% interval of 0.43 to 0.94. Community paths from the lender: none found. Resolved disputes in the last 12 months: 1. Manipulation checks: no notable signals (level 1 of 4). Decision support, not a guarantee."
+        },
+        "after_reversal": {
+          "direct_evidence": {
+            "alpha": 4.9921,
+            "beta": 1.0,
+            "mean": 0.8331,
+            "lower_90": 0.5488,
+            "upper_90": 0.9898,
+            "n_eff": 3.9921,
+            "direct_event_count": 5,
+            "request_similarity": 1.0
+          },
+          "manipulation_level": 1,
+          "rule_fired": "R6_DISPUTE",
+          "state": "REVIEW_RECOMMENDED",
+          "decision": "PROCEED_WITH_SAFEGUARDS",
+          "hold_reason": null,
+          "lifecycle_state": "ASSESSED",
+          "safeguards": [
+            "condition_photos_checklist",
+            "deposit_record",
+            "explicit_return_reminder"
+          ],
+          "explanation": "Review recommended before lending. Direct evidence: 5 verified loan(s), weighted for recency and similarity to 4.0 effective outcomes; estimated on-time return 0.83 with a 90% interval of 0.55 to 0.99. Community paths from the lender: none found. Resolved disputes in the last 12 months: 1. Manipulation checks: no notable signals (level 1 of 4). Decision support, not a guarantee."
+        },
+        "after_reversal_if_reversed_disputes_not_counted": {
+          "direct_evidence": {
+            "alpha": 4.9921,
+            "beta": 1.0,
+            "mean": 0.8331,
+            "lower_90": 0.5488,
+            "upper_90": 0.9898,
+            "n_eff": 3.9921,
+            "direct_event_count": 5,
+            "request_similarity": 1.0
+          },
+          "manipulation_level": 1,
+          "rule_fired": "R9",
+          "state": "REVIEW_RECOMMENDED",
+          "decision": "PROCEED_WITH_SAFEGUARDS",
+          "hold_reason": null,
+          "lifecycle_state": "ASSESSED",
+          "safeguards": [],
+          "explanation": "Review recommended before lending. Direct evidence: 5 verified loan(s), weighted for recency and similarity to 4.0 effective outcomes; estimated on-time return 0.83 with a 90% interval of 0.55 to 0.99. Community paths from the lender: none found. Manipulation checks: no notable signals (level 1 of 4). Decision support, not a guarantee."
+        }
+      }
+    },
+    "ES-12": {
+      "name": "Old history (six on-time loans, 18 to 24 months ago)",
+      "evidence": {
+        "history_ages_days": [
+          540,
+          576,
+          612,
+          648,
+          684,
+          720
+        ],
+        "all_on_time": true,
+        "value_band": "LOW"
+      },
+      "steps": {
+        "at_request": {
+          "direct_evidence": {
+            "alpha": 1.5453,
+            "beta": 1.0,
+            "mean": 0.6071,
+            "lower_90": 0.1439,
+            "upper_90": 0.9674,
+            "n_eff": 0.5453,
+            "direct_event_count": 6,
+            "request_similarity": 1.0
+          },
+          "manipulation_level": 1,
+          "rule_fired": "R6_SPARSE",
+          "state": "INSUFFICIENT_EVIDENCE",
+          "decision": "REQUEST_VERIFICATION",
+          "hold_reason": null,
+          "lifecycle_state": "ASSESSED",
+          "safeguards": [],
+          "explanation": "Not enough verified evidence to judge this request. Direct evidence: 6 verified loan(s), weighted for recency and similarity to 0.5 effective outcomes; estimated on-time return 0.61 with a 90% interval of 0.14 to 0.97. Community paths from the lender: none found. Manipulation checks: no notable signals (level 1 of 4). Decision support, not a guarantee."
+        }
+      }
+    },
+    "ES-12b": {
+      "name": "Sparse history (two recent on-time loans)",
+      "evidence": {
+        "history_ages_days": [
+          10,
+          20
+        ],
+        "all_on_time": true,
+        "value_band": "LOW"
+      },
+      "steps": {
+        "at_request": {
+          "direct_evidence": {
+            "alpha": 2.8881,
+            "beta": 1.0,
+            "mean": 0.7428,
+            "lower_90": 0.3544,
+            "upper_90": 0.9824,
+            "n_eff": 1.8881,
+            "direct_event_count": 2,
+            "request_similarity": 1.0
+          },
+          "manipulation_level": 1,
+          "rule_fired": "R6_SPARSE",
+          "state": "INSUFFICIENT_EVIDENCE",
+          "decision": "REQUEST_VERIFICATION",
+          "hold_reason": null,
+          "lifecycle_state": "ASSESSED",
+          "safeguards": [],
+          "explanation": "Not enough verified evidence to judge this request. Direct evidence: 2 verified loan(s), weighted for recency and similarity to 1.9 effective outcomes; estimated on-time return 0.74 with a 90% interval of 0.35 to 0.98. Community paths from the lender: none found. Manipulation checks: no notable signals (level 1 of 4). Decision support, not a guarantee."
+        }
+      }
+    }
+  }
+}

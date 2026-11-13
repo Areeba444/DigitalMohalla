@@ -318,5 +318,5 @@ def layer_diagram() -> Diagram:
 
 
 if __name__ == "__main__":
-    component_diagram().save(os.path.join(HERE, "component_diagram.drawio"))
-    layer_diagram().save(os.path.join(HERE, "layer_diagram.drawio"))
+    component_diagram().save(os.path.join(HERE, "archive_v1", "component_diagram_iteration1.drawio"))
+    layer_diagram().save(os.path.join(HERE, "archive_v1", "layer_diagram_iteration1.drawio"))

@@ -7,6 +7,7 @@
 **Owner:** Student 2 (A10)  
 **Version:** 1.2, 11 October 2026. v1.2 (notation review): both levels are redrawn in strict Gane & Sarson notation by `generate_dfd.py`: level 0 is a true context diagram (no data stores); level 1 balances level 0 (processes 9.0 and 10.0 carry the lender's decision and the administrator's flows; the administrator no longer writes straight into a store); store D5 makes the locality read explicit; the query flow DF-105 is merged into DF-106 (a DFD shows data, not requests). v1.0 (Student 2). v1.1 (integration): parameter values aligned with the engine config 1.1.0 (γ 0.7, ρ cap 0.6, divisors 3 and 2, 14-day retaliation window, the A5 thresholds, assurance states and rule names); the borrowing request carries no location and process 1.0 reads the stored A11 result (decision D13)  
 **Status:** Design baseline; awaiting A14 second-member review  
+**v1.3 (7 November 2026, DA-14, Student 3; drafted with Claude Code, disclosed in the AI usage log):** iteration 2 adds joining a community (processes 11.0 and 12.0, stores D6) inside an explicit privacy boundary, and reviews into detection (process 13.0, store D7). Level 0 gains DF-09 to DF-13 and balances level 1 again. See section 4.1.  
 **Traceability:** FR-T-01 through FR-T-10; FR-A-07, FR-A-08, FR-B-05, FR-B-07, FR-B-08, FR-B-09; ADR-0001, ADR-0003; NFR-PR-01, NFR-D-01, NFR-R-02, NFR-P-04; Overview §1, §5.1–§5.10
 
 ---
@@ -110,6 +111,36 @@ Every data flow in the Level 0 and Level 1 DFDs is cataloged below with its sour
 | **DF-130** | `Audit Events` | D1: Event Store | Process 10.0 | lifecycle events and audit entries for reports | **Internal Audit Trail** |
 | **DF-131** | `Booking and Closing Events` | Process 9.0 | D1: Event Store | `request_accepted`, `request_declined`, `transaction_closed` | **Immutable Audit Log** |
 | **DF-132** | `Held Status` | Process 1.0 | Borrower | `HELD_FOR_REVIEW` with plain-language reason (locality, engine failure) | **Borrower Notification** |
+
+
+### 4.1 Iteration 2 additions (v1.3, DA-14)
+
+| Data Flow ID | Flow Name | Source | Destination | Key Attributes / Payload | Security & Privacy Classification |
+|---|---|---|---|---|---|
+| **DF-09** | `Join Request` | Applicant | Process 0 | community, one optional coarse fix, optional invitation code | **Location in memory only**; level 0 view of DF-140 |
+| **DF-10** | `Join Request Status` | Process 0 | Applicant | PENDING, then APPROVED or REJECTED with reason | No location; level 0 view of DF-147 + DF-147B |
+| **DF-11** | `Review` | Borrower, Lender | Process 0 | transaction, ratings per dimension, optional comment | Only parties to a COMPLETED loan; level 0 view of DF-150 + DF-151 |
+| **DF-12** | `Membership Request for Decision` | Process 0 | Community moderator | minimal profile, coarse outcome, flags | Coarse only; level 0 view of DF-144 |
+| **DF-13** | `Membership Decision` | Community moderator | Process 0 | approve or reject, mandatory reason | Audit entry; level 0 view of DF-145 |
+| **DF-140** | `Coarse Fix and Invitation Code` | Applicant | Process 11.0 | one GPS fix with accuracy and mock flag; invitation code | **Exists only inside 11.0, in memory; never stored, logged or forwarded** (A11, D13) |
+| **DF-141** | `Coarse Locality Outcome` | Process 11.0 | D5: Locality Results | VERIFIED / INCONCLUSIVE / CONFLICTING, coarse geofence signal, flags, `valid_until` | Coarse only (`locality_rule_ck`) |
+| **DF-142** | `Join Request` | Process 11.0 | D6: Membership requests | user, community, status PENDING | No location |
+| **DF-143** | `Pending Request` | D6 | Process 12.0 | request, coarse outcome, flags | Moderator of this community only (NFR-S-03) |
+| **DF-144** | `Membership Queue` | Process 12.0 | Community moderator (*) | pending requests with evidence | Coarse only |
+| **DF-145** | `Membership Decision` | Community moderator (*) | Process 12.0 | approve, reject or request information; reason | Mandatory reason (FR-A-10) |
+| **DF-146** | `Decision Record` | Process 12.0 | D6 | APPROVED / REJECTED, `decided_at`; `MODERATOR_APPROVAL` locality result if the outcome was not VERIFIED | Applied only while undecided (FR-A-11) |
+| **DF-147** | `Request Status` | Process 11.0 | Applicant | PENDING, or an error for an unusable invitation code | No location echoed back |
+| **DF-147B** | `Decision Outcome` | Process 12.0 | Applicant | APPROVED, or REJECTED with reason | Notification (ADR-0013) |
+| **DF-150** | `Review` | Borrower (*) | Process 13.0 | ratings, comment | Party to a COMPLETED loan, once, within the edit window (FR-T-09) |
+| **DF-151** | `Review` | Lender | Process 13.0 | ratings, comment | As DF-150 |
+| **DF-152** | `Review and Flags` | Process 13.0 | D7: Reviews | review row, `retaliation_flag`, `similarity_flag` | Flags are internal; the reviewer is not told (D19) |
+| **DF-153** | `Reviews in the Window` | D7 | Process 5.0 | reviews of the subject in the 90-day window, with flags | Input to S1, S4 and the retaliation check; reviews never enter the trust estimate (D19) |
+
+**New stores.** D6: Membership requests and decisions (`membership`). D7: Reviews (`review`). D5 keeps only coarse outcomes (`locality_verification`); no store holds a coordinate.
+
+**Changed flow.** DF-109 now carries interaction history and complaints only; review texts reach process 5.0 from D7 through DF-153.
+
+**Balancing.** DF-09 = DF-140; DF-10 = DF-147 + DF-147B; DF-11 = DF-150 + DF-151; DF-12 = DF-144; DF-13 = DF-145. Entities marked * are drawn a second time on level 1 to avoid crossing lines (Gane & Sarson duplicate mark).
 
 ---
 

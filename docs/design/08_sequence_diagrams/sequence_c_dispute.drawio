@@ -7,7 +7,7 @@
         <mxCell id="sd3-53" parent="1" style="text;html=1;align=left;verticalAlign=middle;fontSize=15;fontStyle=1;" value="SD3 – Dispute: raise (B12), escalate with evidence trail (D6), moderator resolves (I4), or withdrawal" vertex="1">
           <mxGeometry height="26" width="1500" x="20" y="10" as="geometry" />
         </mxCell>
-        <mxCell id="sd3-54" parent="1" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;fillColor=#f8f8f8;strokeColor=#999999;fontSize=11;spacing=8;" value="Version 1.2  |  Date 2026-10-11, as-built labels 2026-10-14  |  Author: Student 3  |  Reviewed by: Fatima Khursheed, Areeba Javed (design gate A14)  |  Status: draft (integration 2026-10-11: Use Cases v1.3, ADR-0001 to 0005; transitions T23, T25, T26 of the A3 table)&lt;br&gt;Realises: UC-B12, UC-D6, UC-I4; FR-B-14 to FR-B-17, FR-T-10, FR-T-11, FR-M-05; ADR-0004&lt;br&gt;Package: Borrowing lifecycle, Trust, reputation &amp; safety, Administration &amp; moderation (EscalationCase) (mapped to code packages in A8)&lt;br&gt;Rationale: Shows the dispute from the raising party's first action to the moderator's decision, including the no-response case and withdrawal. The booking moves to DISPUTED, then to COMPLETED through dispute_resolved (moderator) or back to its previous state through dispute_withdrawn. The resolved outcome goes to the Assurance Engine as evidence, which is the learning loop.&lt;br&gt;Notation (UML): stick figure = actor outside the system; box = object lifeline; white bar = activation; solid line + filled head = synchronous call; dashed line + open head = reply; solid line + open head = asynchronous message; dashed line + open head labelled «create» = create message; U-shaped arrow = self message; rounded box on a lifeline = state invariant; [text] = guard; alt / opt / ref = interaction frames. Replies that carry no data are omitted. Grey = planned (iteration 2), not built in iteration 1." vertex="1">
+        <mxCell id="sd3-54" parent="1" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;fillColor=#f8f8f8;strokeColor=#999999;fontSize=11;spacing=8;" value="Version 1.3, 2026-11-13: dispute closes by item possession (ADR-0009); notifications built in iteration 2 (green)  |  v1.2  |  Date 2026-10-11, as-built labels 2026-10-14  |  Author: Student 3  |  Reviewed by: Fatima Khursheed, Areeba Javed (design gate A14)  |  Status: draft (integration 2026-10-11: Use Cases v1.3, ADR-0001 to 0005; transitions T23, T25, T26 of the A3 table)&lt;br&gt;Realises: UC-B12, UC-D6, UC-I4; FR-B-14 to FR-B-17, FR-T-10, FR-T-11, FR-M-05; ADR-0004&lt;br&gt;Package: Borrowing lifecycle, Trust, reputation &amp; safety, Administration &amp; moderation (EscalationCase) (mapped to code packages in A8)&lt;br&gt;Rationale: Shows the dispute from the raising party's first action to the moderator's decision, including the no-response case and withdrawal. The booking moves to DISPUTED, then to COMPLETED through dispute_resolved (moderator) or back to its previous state through dispute_withdrawn. The resolved outcome goes to the Assurance Engine as evidence, which is the learning loop.&lt;br&gt;Notation (UML): stick figure = actor outside the system; box = object lifeline; white bar = activation; solid line + filled head = synchronous call; dashed line + open head = reply; solid line + open head = asynchronous message; dashed line + open head labelled «create» = create message; U-shaped arrow = self message; rounded box on a lifeline = state invariant; [text] = guard; alt / opt / ref = interaction frames. Replies that carry no data are omitted. Green = added in iteration 2 (designed in iteration 1, built in iteration 2; the information request in detail is sequence (g))." vertex="1">
           <mxGeometry height="140" width="2200" x="20" y="44" as="geometry" />
         </mxCell>
         <mxCell id="sd3-55" parent="1" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;fontStyle=1;fontSize=12;fillColor=#dae8fc;strokeColor=#6c8ebf;" value="Borrower" vertex="1">
@@ -31,7 +31,7 @@
         <mxCell id="sd3-59" parent="1" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=0;dropTarget=0;collapsible=0;recursiveResize=0;outlineConnect=0;portConstraint=eastwest;size=40;fontStyle=1;fontSize=11;fillColor=#f5f5f5;strokeColor=#666666;" value=":BorrowingService" vertex="1">
           <mxGeometry height="2069" width="130" x="575" y="215" as="geometry" />
         </mxCell>
-        <mxCell id="sd3-60" parent="1" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=0;dropTarget=0;collapsible=0;recursiveResize=0;outlineConnect=0;portConstraint=eastwest;size=40;fontStyle=1;fontSize=11;fillColor=#fff2cc;strokeColor=#d6b656;" value=":Event Store" vertex="1">
+        <mxCell id="sd3-60" parent="1" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=0;dropTarget=0;collapsible=0;recursiveResize=0;outlineConnect=0;portConstraint=eastwest;size=40;fontStyle=1;fontSize=11;fillColor=#fff2cc;strokeColor=#d6b656;" value=":EventStore" vertex="1">
           <mxGeometry height="2069" width="130" x="875" y="215" as="geometry" />
         </mxCell>
         <mxCell id="sd3-61" parent="1" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=0;dropTarget=0;collapsible=0;recursiveResize=0;outlineConnect=0;portConstraint=eastwest;size=40;fontStyle=1;fontSize=11;fillColor=#e1d5e7;strokeColor=#9673a6;" value=":OutcomeWriter (M5)" vertex="1">
@@ -100,8 +100,8 @@
         <mxCell id="sd3-14" parent="1" style="rounded=1;arcSize=50;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=10;fontStyle=1;" value="DISPUTED" vertex="1">
           <mxGeometry height="26" width="120" x="580" y="426" as="geometry" />
         </mxCell>
-        <mxCell id="sd3-37" parent="1" style="rounded=1;arcSize=50;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=10;fontStyle=1;" value="COMPLETED" vertex="1">
-          <mxGeometry height="26" width="120" x="580" y="1564" as="geometry" />
+        <mxCell id="sd3-37" parent="1" style="rounded=1;arcSize=50;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=10;fontStyle=1;" value="COMPLETED | ACTIVE (by possession)" vertex="1">
+          <mxGeometry height="26" width="220" x="530" y="1564" as="geometry" />
         </mxCell>
         <mxCell id="sd3-47" parent="1" style="rounded=1;arcSize=50;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=10;fontStyle=1;" value="previous_state (RETURN_INITIATED)" vertex="1">
           <mxGeometry height="26" width="275" x="503" y="1978" as="geometry" />
@@ -144,13 +144,13 @@
             <mxPoint x="1506" y="612" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="sd3-19" edge="1" parent="1" style="html=1;verticalAlign=bottom;labelBackgroundColor=#ffffff;fontSize=11;rounded=0;endArrow=open;endFill=0;strokeColor=#9A9A9A;fontColor=#7A7A7A;" value="6: notify(new case in queue) &#8212; planned (it.2)">
+        <mxCell id="sd3-19" edge="1" parent="1" style="html=1;verticalAlign=bottom;labelBackgroundColor=#ffffff;fontSize=11;rounded=0;endArrow=open;endFill=0;strokeColor=#0A7A36;fontColor=#0A7A36;" value="6: notify(new case in queue)">
           <mxGeometry relative="1" as="geometry">
             <mxPoint x="1506" y="648" as="sourcePoint" />
             <mxPoint x="1830" y="648" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="sd3-20" edge="1" parent="1" style="html=1;verticalAlign=bottom;labelBackgroundColor=#ffffff;fontSize=11;rounded=0;endArrow=open;endFill=0;strokeColor=#9A9A9A;fontColor=#7A7A7A;" value="7: notify(dispute raised, respond with evidence) &#8212; planned (it.2)">
+        <mxCell id="sd3-20" edge="1" parent="1" style="html=1;verticalAlign=bottom;labelBackgroundColor=#ffffff;fontSize=11;rounded=0;endArrow=open;endFill=0;strokeColor=#0A7A36;fontColor=#0A7A36;" value="7: notify(dispute raised, respond with evidence)">
           <mxGeometry relative="1" as="geometry">
             <mxPoint x="634" y="698" as="sourcePoint" />
             <mxPoint x="100" y="698" as="targetPoint" />
@@ -162,13 +162,13 @@
             <mxPoint x="300" y="748" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="sd3-22" edge="1" parent="1" style="html=1;verticalAlign=bottom;labelBackgroundColor=#ffffff;fontSize=11;rounded=0;endArrow=block;endFill=1;strokeColor=#9A9A9A;fontColor=#7A7A7A;" value="9: respond(claim, photos)">
+        <mxCell id="sd3-22" edge="1" parent="1" style="html=1;verticalAlign=bottom;labelBackgroundColor=#ffffff;fontSize=11;rounded=0;endArrow=block;endFill=1;strokeColor=#0A7A36;fontColor=#0A7A36;" value="9: respond(claim, photos)">
           <mxGeometry relative="1" as="geometry">
             <mxPoint x="100" y="832" as="sourcePoint" />
             <mxPoint x="1494" y="832" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="sd3-23" edge="1" parent="1" style="html=1;verticalAlign=bottom;labelBackgroundColor=#ffffff;fontSize=11;rounded=0;dashed=1;endArrow=open;endFill=0;strokeColor=#9A9A9A;fontColor=#7A7A7A;" value="10: received">
+        <mxCell id="sd3-23" edge="1" parent="1" style="html=1;verticalAlign=bottom;labelBackgroundColor=#ffffff;fontSize=11;rounded=0;dashed=1;endArrow=open;endFill=0;strokeColor=#0A7A36;fontColor=#0A7A36;" value="10: received">
           <mxGeometry relative="1" as="geometry">
             <mxPoint x="1494" y="882" as="sourcePoint" />
             <mxPoint x="100" y="882" as="targetPoint" />
@@ -202,37 +202,37 @@
             <mxPoint x="1830" y="1126" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="sd3-29" edge="1" parent="1" style="html=1;verticalAlign=bottom;labelBackgroundColor=#ffffff;fontSize=11;rounded=0;endArrow=block;endFill=1;strokeColor=#9A9A9A;fontColor=#7A7A7A;" value="14: requestInfo(deadline)">
+        <mxCell id="sd3-29" edge="1" parent="1" style="html=1;verticalAlign=bottom;labelBackgroundColor=#ffffff;fontSize=11;rounded=0;endArrow=block;endFill=1;strokeColor=#0A7A36;fontColor=#0A7A36;" value="14: requestInfo(deadline)">
           <mxGeometry relative="1" as="geometry">
             <mxPoint x="1830" y="1210" as="sourcePoint" />
             <mxPoint x="1506" y="1210" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="sd3-30" edge="1" parent="1" style="html=1;verticalAlign=bottom;labelBackgroundColor=#ffffff;fontSize=11;rounded=0;endArrow=open;endFill=0;strokeColor=#9A9A9A;fontColor=#7A7A7A;" value="15: notify(more evidence by deadline) &#8212; planned (it.2)">
+        <mxCell id="sd3-30" edge="1" parent="1" style="html=1;verticalAlign=bottom;labelBackgroundColor=#ffffff;fontSize=11;rounded=0;endArrow=open;endFill=0;strokeColor=#0A7A36;fontColor=#0A7A36;" value="15: notify(more evidence by deadline)">
           <mxGeometry relative="1" as="geometry">
             <mxPoint x="1494" y="1260" as="sourcePoint" />
             <mxPoint x="100" y="1260" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="sd3-31" edge="1" parent="1" style="html=1;verticalAlign=bottom;labelBackgroundColor=#ffffff;fontSize=11;rounded=0;endArrow=open;endFill=0;strokeColor=#9A9A9A;fontColor=#7A7A7A;" value="16: notify(more evidence by deadline) &#8212; planned (it.2)">
+        <mxCell id="sd3-31" edge="1" parent="1" style="html=1;verticalAlign=bottom;labelBackgroundColor=#ffffff;fontSize=11;rounded=0;endArrow=open;endFill=0;strokeColor=#0A7A36;fontColor=#0A7A36;" value="16: notify(more evidence by deadline)">
           <mxGeometry relative="1" as="geometry">
             <mxPoint x="1494" y="1310" as="sourcePoint" />
             <mxPoint x="300" y="1310" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="sd3-32" edge="1" parent="1" style="html=1;verticalAlign=bottom;labelBackgroundColor=#ffffff;fontSize=11;rounded=0;dashed=1;endArrow=open;endFill=0;strokeColor=#9A9A9A;fontColor=#7A7A7A;" value="17: request sent">
+        <mxCell id="sd3-32" edge="1" parent="1" style="html=1;verticalAlign=bottom;labelBackgroundColor=#ffffff;fontSize=11;rounded=0;dashed=1;endArrow=open;endFill=0;strokeColor=#0A7A36;fontColor=#0A7A36;" value="17: request sent">
           <mxGeometry relative="1" as="geometry">
             <mxPoint x="1506" y="1360" as="sourcePoint" />
             <mxPoint x="1830" y="1360" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="sd3-34" edge="1" parent="1" style="html=1;verticalAlign=bottom;labelBackgroundColor=#ffffff;fontSize=11;strokeColor=#333333;rounded=0;endArrow=block;endFill=1;" value="18: decide(resolve, reason)">
+        <mxCell id="sd3-34" edge="1" parent="1" style="html=1;verticalAlign=bottom;labelBackgroundColor=#ffffff;fontSize=11;strokeColor=#333333;rounded=0;endArrow=block;endFill=1;" value="18: decide(resolve, reason, possession)">
           <mxGeometry relative="1" as="geometry">
             <mxPoint x="1830" y="1428" as="sourcePoint" />
             <mxPoint x="1506" y="1428" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="sd3-35" edge="1" parent="1" style="html=1;verticalAlign=bottom;labelBackgroundColor=#ffffff;fontSize=11;strokeColor=#333333;rounded=0;endArrow=block;endFill=1;" value="19: applyDecision(dispute_resolved)">
+        <mxCell id="sd3-35" edge="1" parent="1" style="html=1;verticalAlign=bottom;labelBackgroundColor=#ffffff;fontSize=11;strokeColor=#333333;rounded=0;endArrow=block;endFill=1;" value="19: applyDecision(dispute_resolved, possession)">
           <mxGeometry relative="1" as="geometry">
             <mxPoint x="1494" y="1478" as="sourcePoint" />
             <mxPoint x="646" y="1478" as="targetPoint" />
@@ -244,19 +244,19 @@
             <mxPoint x="934" y="1528" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="sd3-38" edge="1" parent="1" style="html=1;verticalAlign=bottom;labelBackgroundColor=#ffffff;fontSize=11;strokeColor=#333333;rounded=0;endArrow=open;endFill=0;" value="21: record_outcomes(dispute_resolved); refresh_trust_edges [same DB transaction]">
+        <mxCell id="sd3-38" edge="1" parent="1" style="html=1;verticalAlign=bottom;labelBackgroundColor=#ffffff;fontSize=11;strokeColor=#333333;rounded=0;endArrow=open;endFill=0;" value="21: record_outcomes(dispute_resolved, possession); refresh_trust_edges [same DB transaction]">
           <mxGeometry relative="1" as="geometry">
             <mxPoint x="646" y="1612" as="sourcePoint" />
             <mxPoint x="1220" y="1612" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="sd3-40" edge="1" parent="1" style="html=1;verticalAlign=bottom;labelBackgroundColor=#ffffff;fontSize=11;rounded=0;endArrow=open;endFill=0;strokeColor=#9A9A9A;fontColor=#7A7A7A;" value="22: notify(outcome and reason) &#8212; planned (it.2)">
+        <mxCell id="sd3-40" edge="1" parent="1" style="html=1;verticalAlign=bottom;labelBackgroundColor=#ffffff;fontSize=11;rounded=0;endArrow=open;endFill=0;strokeColor=#0A7A36;fontColor=#0A7A36;" value="22: notify(outcome and reason)">
           <mxGeometry relative="1" as="geometry">
             <mxPoint x="634" y="1662" as="sourcePoint" />
             <mxPoint x="300" y="1662" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="sd3-41" edge="1" parent="1" style="html=1;verticalAlign=bottom;labelBackgroundColor=#ffffff;fontSize=11;rounded=0;endArrow=open;endFill=0;strokeColor=#9A9A9A;fontColor=#7A7A7A;" value="23: notify(outcome and reason) &#8212; planned (it.2)">
+        <mxCell id="sd3-41" edge="1" parent="1" style="html=1;verticalAlign=bottom;labelBackgroundColor=#ffffff;fontSize=11;rounded=0;endArrow=open;endFill=0;strokeColor=#0A7A36;fontColor=#0A7A36;" value="23: notify(outcome and reason)">
           <mxGeometry relative="1" as="geometry">
             <mxPoint x="634" y="1712" as="sourcePoint" />
             <mxPoint x="100" y="1712" as="targetPoint" />
@@ -304,7 +304,7 @@
             <mxPoint x="646" y="2076" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="sd3-50" edge="1" parent="1" style="html=1;verticalAlign=bottom;labelBackgroundColor=#ffffff;fontSize=11;rounded=0;endArrow=open;endFill=0;strokeColor=#9A9A9A;fontColor=#7A7A7A;" value="30: notify(dispute withdrawn) &#8212; planned (it.2)">
+        <mxCell id="sd3-50" edge="1" parent="1" style="html=1;verticalAlign=bottom;labelBackgroundColor=#ffffff;fontSize=11;rounded=0;endArrow=open;endFill=0;strokeColor=#0A7A36;fontColor=#0A7A36;" value="30: notify(dispute withdrawn)">
           <mxGeometry relative="1" as="geometry">
             <mxPoint x="634" y="2126" as="sourcePoint" />
             <mxPoint x="100" y="2126" as="targetPoint" />
@@ -328,7 +328,7 @@
         <mxCell id="sd3-81" parent="1" style="text;html=1;align=left;verticalAlign=middle;fontSize=11;" value="[no response within the period (FR-B-17)] (it.2)" vertex="1">
           <mxGeometry height="18" width="256" x="82" y="924" as="geometry" />
         </mxCell>
-        <mxCell id="sd3-82" parent="1" style="text;html=1;align=left;verticalAlign=middle;fontSize=11;strokeColor=#9A9A9A;fontColor=#7A7A7A;" value="11: mark &quot;no response&quot;, pass on" vertex="1">
+        <mxCell id="sd3-82" parent="1" style="text;html=1;align=left;verticalAlign=middle;fontSize=11;strokeColor=#0A7A36;fontColor=#0A7A36;" value="11: mark &quot;no response&quot;, pass on" vertex="1">
           <mxGeometry height="18" width="196" x="1556" y="964" as="geometry" />
         </mxCell>
         <mxCell id="sd3-83" parent="1" style="text;html=1;align=left;verticalAlign=middle;fontSize=11;" value="[moderator resolves the case]" vertex="1">
@@ -346,8 +346,8 @@
         <mxCell id="sd3-15" parent="1" style="shape=note;whiteSpace=wrap;html=1;size=8;fillColor=#fffde7;strokeColor=#999999;fontSize=10;align=left;verticalAlign=top;spacing=4;" value="previous_state = RETURN_INITIATED is stored in the dispute_opened event (ADR-0004). The reason is in the event payload (ADR-0005); photos are attachments of the case statement." vertex="1">
           <mxGeometry height="68" width="290" x="1950" y="414" as="geometry" />
         </mxCell>
-        <mxCell id="sd3-39" parent="1" style="shape=note;whiteSpace=wrap;html=1;size=8;fillColor=#fffde7;strokeColor=#999999;fontSize=10;align=left;verticalAlign=top;spacing=4;" value="The resolved outcome is recorded as evidence for later assessments (FR-B-15, FR-T-11). Until now the disputed outcome was not counted (FR-T-03)." vertex="1">
-          <mxGeometry height="68" width="270" x="1950" y="1622" as="geometry" />
+        <mxCell id="sd3-39" parent="1" style="shape=note;whiteSpace=wrap;html=1;size=8;fillColor=#fffde7;strokeColor=#999999;fontSize=10;align=left;verticalAlign=top;spacing=4;" value="The resolved outcome is recorded as evidence for later assessments (FR-B-15, FR-T-11). Until now the disputed outcome was not counted (FR-T-03).&lt;br&gt;&lt;font color='#0A7A36'&gt;&lt;b&gt;Iteration 2 (ADR-0009):&lt;/b&gt; the moderator records where the item is. RETURNED or LOST &amp;#8594; COMPLETED (T25c), with the return outcome; LOST also fails the borrower's on-time return and condition and pauses the item. WITH_BORROWER &amp;#8594; ACTIVE (T25b), finding only, booking stays held. A dispute raised from ACCEPTED can only be NOT_HANDED_OVER &amp;#8594; NO_SHOW (T25a).&lt;/font&gt;" vertex="1">
+          <mxGeometry height="190" width="270" x="1950" y="1622" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>

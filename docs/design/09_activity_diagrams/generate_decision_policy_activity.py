@@ -30,10 +30,14 @@ RULE_X, RULE_W = 760, 300
 BUS = 1120
 
 
-def build() -> Diagram:
+def build(proposed_adr_0010: bool = False) -> Diagram:
+    """proposed_adr_0010: draw the rule order proposed in ADR-0010 (R4 before R3, review DM09), for review only;
+    the accepted v1.2 order stays the default until ADR-0010 is accepted and config, schema and code change."""
     d = Diagram("Decision policy activity (A5)", 1600, 1820)
+    version = ("v1.3 PROPOSED: R4 tested before R3 (ADR-0010 pending, DA-13, Student 3)" if proposed_adr_0010
+               else "v1.2")
     d.text("<b>Digital Mohalla &#8212; Decision policy (Algorithm 4) as a UML activity diagram</b> &#8212; design step "
-           "A5, Student 2, v1.2", 30, 10, 1400, 24, size=15, check=False)
+           f"A5, Student 2, {version}", 30, 10, 1400, 24, size=15, check=False)
     d.text("First matching rule wins. Thresholds from config 1.1.0-iteration1-draft (&#964;<sub>&#956;</sub> 0.75, "
            "&#964;<sub>L</sub> 0.60, n<sub>min</sub> 3, &#961;<sub>sup</sub> 0.3, similarity floor 0.5, value bands). "
            "Rule matrix: Decision_Policy_Activity_Diagram.md &#167;3.", 30, 34, 1400, 20, size=11, color="#4A5560",
@@ -75,6 +79,9 @@ def build() -> Diagram:
         ("R6_SPARSE", "[n<sub>eff</sub> &lt; 3 and &#961; &lt; 0.3]", "<b>R6_SPARSE</b> REQUEST_VERIFICATION &#8594;<br>"
          "INSUFFICIENT_EVIDENCE (ADR-0008)", "INS"),
     ]
+    if proposed_adr_0010:  # a high-value newcomer is held (FR-B-07) instead of reaching the lender as R3
+        i3, i4 = [k for k, row in enumerate(spine) if row[0] in ("R3", "R4")]
+        spine[i3], spine[i4] = spine[i4], spine[i3]
     prev = n["inputs"]
     y = 340
     rule_ids = {}
@@ -149,3 +156,4 @@ def build() -> Diagram:
 
 if __name__ == "__main__":
     build().save(os.path.join(HERE, "decision_policy_activity_diagram.drawio"))
+    build(proposed_adr_0010=True).save(os.path.join(HERE, "decision_policy_activity_diagram_proposed_ADR-0010.drawio"))

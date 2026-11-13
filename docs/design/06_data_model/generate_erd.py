@@ -237,4 +237,4 @@ if __name__ == "__main__":
     conn = psycopg2.connect(os.environ["DM_TEST_DSN"])
     with conn, conn.cursor() as cur:
         diagram = build(cur)
-    diagram.save(os.path.join(HERE, "er_diagram.drawio"))
+    diagram.save(os.path.join(HERE, "archive_v1", "er_diagram_iteration1.drawio"))

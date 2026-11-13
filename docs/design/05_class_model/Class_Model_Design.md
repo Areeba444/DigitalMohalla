@@ -3,8 +3,8 @@
 | Field | Value |
 |---|---|
 | Owner | Domain model: all three students. Class diagrams: each student their own packages (plan A7). Student 2 and Student 3 diagrams drafted during integration from their own artefacts; **owners to review** (A14) |
-| Version | Domain model 1.0 (baseline; decision D18), class diagrams 1.0 (Student 1, Student 2, Student 3); 11 October 2026 |
-| Files | `domain_model.drawio`, `class_diagram_s1.drawio`, `class_diagram_s2.drawio`, `class_diagram_s3.drawio`; generators `generate_class_model.py` (domain model, Student 1) and `generate_class_diagrams_s2_s3.py` (Students 2 and 3), sharing one class-drawing helper and one notation |
+| Version | Domain model 1.0 (baseline; decision D18), class diagrams 1.0 (Student 1, Student 2, Student 3); 11 October 2026. Student 3 class diagram 2.0 (iteration 2, DA-11), 7 November 2026, drafted with Claude Code, review by Student 1 pending |
+| Files | `domain_model.drawio`; **`class_diagram.drawio`, one class diagram of the whole system** since iteration 2 (13 November 2026), built by `generate_class_diagram.py` from the owners' sections (`generate_class_model.py` Student 1, `generate_class_diagrams_s2_s3.py` Student 2, `generate_class_diagram_s3.py` Student 3, `generate_class_diagrams_iteration2.py` iteration 2 packages of Students 1 and 2). The iteration 1 diagrams, one per student, are in `archive_v1/` |
 | Notation | UML 2.5 class diagrams: three compartments (name with optional «stereotype», attributes, operations) plus the FRs each class realises; ◆ composition, ◇ aggregation, solid line association with multiplicities, dashed open arrow dependency (with keyword), dashed hollow triangle realisation; packages as folders |
 | Author note | Drafted with Claude (GenAI); to be disclosed on Form 13 and in the AI usage log. |
 
@@ -65,19 +65,26 @@ The twelve classes the plan lists for A2 (User, Community, Membership, Item, Bor
 
 Trust and manipulation risk are separate attributes of AssessmentResult. A timeout raises EngineTimeout, which the lifecycle turns into an `engine_failure` hold. Iteration 2 adds three more SignalCheck realisations.
 
-## 4. Class diagram, Student 3 packages (A7)
+## 4. Class diagram, Student 3 packages (A7; v2.0 for iteration 2, DA-11)
+
+v2.0 (7 November 2026) adds what iteration 2 builds in Student 3's modules. Since 13 November 2026 it is Student 3's section of the whole-system `class_diagram.drawio`, where the iteration 2 additions are drawn green (the shared convention); the A7 version is `archive_v1/class_diagram_s3_iteration1.drawio`.
 
 | Class | Kind | FRs / NFRs it realises |
 |---|---|---|
-| IModeration, ICaseIntake | interfaces | FR-T-10, FR-T-11, FR-M-05 |
-| CaseService (realises both) | service | FR-T-10, FR-T-11, FR-B-17, UC-D6 2a |
+| IModeration, ICaseIntake | interfaces | FR-T-10, FR-T-11, FR-M-05; v2 adds request_information, file_appeal, decide_appeal, reverse |
+| CaseService (realises both) | service | FR-T-10, FR-T-11, FR-B-17, UC-D6 2a; v2: information requests with a deadline (C02, C03) and `expire_information(now)`, called by the scheduler's `run_due_jobs` (C04, ADR-0012) |
 | EvidenceTrailBuilder, EvidenceTrail | service, value | FR-T-10, NFR-PR-03 |
-| DecisionService, ModeratorDecision | service, entity | FR-T-11, FR-B-15, ADR-0003, ADR-0004, ES-11 |
-| EscalationCase, CaseStatement | entities | FR-T-10, FR-B-17; escalation-case state machine C01–C11 |
-| AuditLogService, AuditEntry | service, value | FR-M-05, NFR-S-05 |
-| ScenarioSuite, ScenarioFixture, ExpectedResult, ScenarioResult (Module 10) | service, values | NFR-Q-01, test suite 11 |
+| DecisionService, ModeratorDecision | service, entity | FR-T-11, FR-B-15, ADR-0003, ADR-0004, ES-11; v2: the item's possession, offered only when the stored previous state allows it (ADR-0009, proposed) |
+| AppealService {v2} | service | FR-T-11, UC-I4 4b, C08 to C10: one appeal per case within the appeal window, decided by a moderator other than the first |
+| ReversalService {v2} | service | FR-T-11, UC-I4 4c, C11, ES-11: never rewinds the loan; flags the affected outcomes through Student 2's IOutcomeFlags |
+| EscalationCase, CaseStatement | entities | FR-T-10, FR-B-17; escalation-case state machine C01 to C11 (v3.0). A moderator's question needs schema v2.4 (`case_statement.author_role` allows only the parties) |
+| AuditLogService, AuditEntry, AuditFilter | service, values | FR-M-05, NFR-S-05, NFR-S-03; v2: filters, masking by default, unmask with a purpose, concentration highlight (UC-I6 v1.4) |
+| StoragePort, LocalDiskStorage, ObjectStorage, AttachmentService, Attachment {v2} | interface, adapters, service, value | NFR-S-06, NFR-PR-01, FR-B-11, FR-B-16 (ADR-0014, proposed) |
+| SearchLogger, SearchLogEntry {v2} | service, value | FR-S-05, no location; the table itself is Student 1's (DA-23) |
+| ScenarioSuite, ScenarioFixture, ExpectedResult, ScenarioResult (Module 10) | service, values | NFR-Q-01 (13 scenarios; iteration 1 and 2 fixture files) |
+| SearchEvaluator, LabelSet {v2} | service, value | DA-25: precision@5, recall@10, NDCG@10, agreement between two labellers |
 
-Module 9 changes lifecycle state only through `ILifecycleCommands.apply_decision()`. The scenario suite tests the engine only through `IAssess`.
+Module 9 changes lifecycle state only through `ILifecycleCommands.apply_decision()`. The scenario suite tests the engine only through `IAssess`. Search and ranking belong to Students 1 and 2; Student 3 only logs and evaluates them, so the person scoring search is not its author.
 
 ## 5. Design reasoning
 

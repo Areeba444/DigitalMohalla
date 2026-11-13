@@ -21,7 +21,7 @@ LIFE = [  # key, label, x-centre, fill (None = actor)
     ("LOC", ":LocalityChecker<br>&#171;ILocality&#187; (M1)", 470, "#E3EEF9"),
     ("ENG", ":AssuranceFacade<br>&#171;IAssess&#187; (M5)", 690, "#FDEBDD"),
     ("DB", ":EventStore<br>(M3, PostgreSQL)", 900, "#E3EEF9"),
-    ("NOT", ":Notifier<br>&#171;stub&#187; (M7)", 1100, "#F2F2F2"),
+    ("NOT", ":NotificationService<br>&#171;INotify&#187; (M7)", 1100, "#FDEBDD"),
     ("L", "Lender", 1270, None),
     ("M", "Moderator", 1390, None),
 ]
