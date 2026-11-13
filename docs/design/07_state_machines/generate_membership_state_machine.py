@@ -21,7 +21,7 @@ C_A, C_M, C_S = "#1F5FA8", "#7B3FA0", "#5F6B76"
 
 ST = ("rounded=1;arcSize=24;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#2B3A4A;"
       "fontSize=12;fontColor=#1D1D1D;verticalAlign=middle;")
-ST_LIVE = ST + "fillColor=#EEF6EE;strokeColor=#2E7D32;strokeWidth=2;"
+ST_LIVE = ST + "fillColor=#EAF2FB;strokeColor=#1F5FA8;strokeWidth=2.5;"  # not green: green means added in iteration 2
 ST_TERM = ST + "strokeWidth=3;fillColor=#F4F6F8;"
 COMPOSITE = ("rounded=1;arcSize=2;whiteSpace=wrap;html=1;verticalAlign=top;align=left;spacingLeft=10;"
              "spacingTop=3;fontStyle=1;fontSize=13;fillColor=#F7F9FC;strokeColor=#7A8A9A;container=1;"
@@ -50,10 +50,11 @@ def state(d, name, x, y, w=220, h=56, style=ST, body="", parent=None):
 
 def membership() -> Diagram:
     d = Diagram("Membership (DA-08)", 1500, 940)
-    d.text("<b>Digital Mohalla &#8212; Membership state machine</b> (Membership, design artefact DA-08, v1.0, "
+    d.text("<b>Digital Mohalla &#8212; Membership state machine</b> (Membership, design artefact DA-08, v1.1, "
            "iteration 2)", 40, 12, 1100, 24, size=16, check=False)
     d.text("States are the six values of <i>membership_status</i> (schema v2.3). Sources: UC-A3, UC-A4, FR-A-08 to "
-           "FR-A-11, FR-M-01, locality design A11. Transition IDs M01&#8211;M08 are rows of the table in "
+           "FR-A-11, FR-M-01, locality design A11, schema v2.4 (community.join_policy). Transition IDs M01&#8211;M09 are "
+           "rows of the table in "
            "Membership_State_Machine.md.", 40, 36, 1300, 20, size=11, color="#4A5560", check=False)
 
     # undecided requests: decided_at IS NULL (membership_decided_ck)
@@ -103,6 +104,9 @@ def membership() -> Diagram:
       style=tr(C_M), exit=(1, 0.36), entry=(0, 40 / 96), label_dy=-30)
     E("REJECTED", "APPROVED", "decision_reversed [another moderator<br>or admin; reason] / both decisions<br>"
       "kept in the log (FR-A-11) &nbsp;<b>M08</b>", style=tr(C_M), exit=(0.5, 0), entry=(0.5, 1), label_dx=128)
+    E("PENDING", "APPROVED", "auto_approved [join_policy = OPEN;<br>locality outcome VERIFIED] / role := MEMBER;"
+      "<br>notify the moderators (UC-A3 4a) &nbsp;<b>M09</b>", style=tr(C_S, True), exit=(1, 45 / 118),
+      entry=(0, 100 / 126), points=[(700, 300), (700, 250)], label_x=-0.3, label_dy=40)
     E("WITHDRAWN", "fin_w", "", style=tr(C_S, True), exit=(0.5, 1), entry=(0.5, 0))
     E("REVOKED", "fin_r", "", style=tr(C_S, True), exit=(0.5, 1), entry=(0.5, 0))
 
@@ -114,14 +118,14 @@ def membership() -> Diagram:
            "&#8226; No column stores coordinates or an address (NFR-PR-01); locality_verification keeps<br>"
            "&nbsp;&nbsp;only the coarse outcome and signal.", 1100, 430, 380, 200, NOTE, id="note_db")
     d.node("<b>Open points (to settle in DA-03 / decision record)</b><br>&#8226; Open-join communities "
-           "(UC-A3 4a, issue I-10): schema v2.3 has no open-join<br>&nbsp;&nbsp;flag, so in iteration 2 a "
-           "moderator decides every request.<br>&#8226; Response deadline value for M02/M03 (DA-03).<br>"
+           "(UC-A3 4a, issue I-10): settled by schema v2.4,<br>&nbsp;&nbsp;community.join_policy; only a VERIFIED "
+           "result is approved by itself (M09).<br>&#8226; Response deadline value for M02/M03 (DA-03).<br>"
            "&#8226; Granting the MODERATOR role is an admin action (FR-M-01), not part of this machine.",
            1100, 650, 380, 120, NOTE, id="note_open")
     d.node("<b>Legend</b><br><span style='color:#1F5FA8'>&#9472;&#9472;&#9658;</span> applicant (member) &nbsp; "
            "<span style='color:#7B3FA0'>&#9472;&#9472;&#9658;</span> moderator or admin &nbsp; "
-           "<span style='color:#5F6B76'>- - &#9658;</span> completion<br>"
-           "event [guard] / effect; green border = live membership; bold border = final state.<br>"
+           "<span style='color:#5F6B76'>- - &#9658;</span> system or completion<br>"
+           "event [guard] / effect; blue border = live membership; bold border = final state.<br>"
            "Membership changes are not lifecycle events: each one is an audit_log entry (FR-M-05).",
            40, 820, 700, 72, LEGEND, id="legend")
     return d

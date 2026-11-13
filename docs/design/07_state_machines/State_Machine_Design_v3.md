@@ -7,7 +7,7 @@
 | Status | Draft for the iteration 2 design gate (10 November). ADR-0009 needs Minahil's sign-off; the three new event types (ADR-0015) need all three students (frozen event schema, FR-B-09) |
 | Replaces | `State_Machine_Design.md` v2.2 (lifecycle part), which stays as the iteration 1 baseline until the backend moves to v3 (build F1) |
 | Source of truth | `../_tools/lifecycle_model_v3.py` v3. The diagram, `transition_table_v3.csv`, `transition_table_v3.md`, `../14_testing/transition_test_matrix_v3.csv` and the `allowed_transition` rows in `../06_data_model/migration_0002_schema_v2_4.sql` are all generated from it or checked against it |
-| Files | `borrowing_lifecycle_state_machine_v3.drawio` (UML state machine), `generate_state_machine_v3.py`, `transition_table_v3.csv`, `transition_table_v3.md` |
+| Files | `borrowing_lifecycle_state_machine.drawio` (UML state machine), `generate_state_machine_v3.py`, `transition_table_v3.csv`, `transition_table_v3.md` |
 | GenAI | Drafted with Claude (Claude Code); decisions and review by the owner. To be logged in `docs/ai-usage-log.md` and on Form 13 |
 
 ## 1. What changed and why

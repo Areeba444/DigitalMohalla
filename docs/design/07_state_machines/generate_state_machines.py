@@ -233,6 +233,6 @@ def write_md(path):
 
 
 if __name__ == "__main__":
-    lifecycle().save(os.path.join(HERE, "borrowing_lifecycle_state_machine.drawio"))
+    lifecycle().save(os.path.join(HERE, "archive_v1", "borrowing_lifecycle_state_machine_iteration1.drawio"))
     write_csv(os.path.join(HERE, "transition_table.csv"))
     write_md(os.path.join(HERE, "transition_table.md"))

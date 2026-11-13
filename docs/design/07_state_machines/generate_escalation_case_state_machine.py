@@ -62,7 +62,7 @@ def escalation_case() -> Diagram:
                "assign a moderator<br>of the community (Admin if none, D6 2a); notify<br>"
                "trigger_attached / reuse this case, no duplicate (D6 1b)<br>"
                "escalated_to_admin [unresolvable, or a moderator is<br>a party] / assignee := Admin "
-               "(I4 3a, 3b) &nbsp;<b>C05</b>")
+               "(I4 3a, 3b) &nbsp;<b><font color='#0A7A36'>C05</font></b>")
     state(d, "AWAITING_INFORMATION", 100, 610, w=400, h=100, parent=U,
           body="entry / store the question; info_deadline := now +<br>response window (config); notify the "
                "party<br>(sequence g)")
@@ -95,7 +95,7 @@ def escalation_case() -> Diagram:
       "response &nbsp;<b>C04</b>", style=tr(C_S, True), exit=(0.85, 0), entry=(0.85, 1), label_dx=40,
       label_dy=48)
     E("OPEN", "DECIDED", "decision_recorded [authorised,<br>not a party, reason, allowed<br>for the hold reason (I4 3c);<br>"
-      "dispute: possession allowed by<br>the stored previous_state;<br>case still undecided] <b>C06</b>",
+      "dispute: possession allowed by<br>the stored previous_state;<br>case still undecided] <b><font color='#0A7A36'>C06</font></b>",
       style=tr(C_M), exit=(1, 0.5), entry=(0, 0.5), label_dy=-62)
     E("UNDECIDED", "WITHDRAWN", "the loan left the trigger state<br>without a decision: dispute_withdrawn,<br>"
       "request_cancelled, request_declined<br>(dates taken) / close &nbsp;<b>C07</b>", style=tr(C_S, True),
@@ -120,7 +120,7 @@ def escalation_case() -> Diagram:
     d.node("<b>Legend</b><br><span style='color:#00796B'>&#9472;&#9472;&#9658;</span> party &nbsp; "
            "<span style='color:#7B3FA0'>&#9472;&#9472;&#9658;</span> moderator or admin &nbsp; "
            "<span style='color:#5F6B76'>- - &#9658;</span> system or completion<br>event [guard] / effect; "
-           "bold border = final state. Case actions are not lifecycle events: each is an audit_log entry and the case "
+           "bold border = final state; <font color='#0A7A36'><b>green ID</b> = added or changed in iteration 2 (C05; C06 records possession, ADR-0009)</font>. Case actions are not lifecycle events: each is an audit_log entry and the case "
            "row keeps the status. The decision itself becomes one lifecycle event.", 50, 840, 520, 110, LEGEND,
            check=False)
     return d

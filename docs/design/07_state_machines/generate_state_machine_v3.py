@@ -3,7 +3,7 @@
     python generate_state_machine_v3.py
 
 Outputs (next to this file):
-    borrowing_lifecycle_state_machine_v3.drawio   UML state machine, BorrowingTransaction (14 states), v3
+    borrowing_lifecycle_state_machine.drawio   UML state machine, BorrowingTransaction (14 states), v3
     transition_table_v3.csv                       leaf-level (state x event -> next state) table = test matrix
     transition_table_v3.md                        the same table for reading
 
@@ -65,7 +65,7 @@ def lifecycle() -> Diagram:
            "iteration 2, DA-06, v3.0)", 40, 12, 1100, 24, size=16, check=False)
     d.text("States and event types: Use Cases v1.4 &#167;2, FR-B-08; HELD_FOR_REVIEW exits ADR-0003; DISPUTED exits "
            "ADR-0004 and ADR-0009 (by item possession); counter-offer ADR-0015; overlap constraint ADR-0002. "
-           "Transition IDs = rows of transition_table_v3.csv. <b>New or changed in v3: T25a, T25b, T25c, T29, I07, I08 (bold red IDs).</b>",
+           "Transition IDs = rows of transition_table_v3.csv. <b>New or changed in v3: T25a, T25b, T25c, T29, I07, I08 (bold green IDs = added or changed in iteration 2).</b>",
            40, 36, 1780, 20, size=11, color="#4A5560", check=False)
 
     # ---------------------------------------------------------------- PENDING composite
@@ -156,7 +156,7 @@ def lifecycle() -> Diagram:
       style=tr_style("P"), exit=((880 - 40) / 1360, 1), entry=(120 / 300, 0), label_dx=52)
     E("ACTIVE", "DISPUTED", "dispute_opened [overdue<br>limit] <b>T24</b> it.2",
       style=tr_style("S", True), exit=(200 / 240, 1), entry=(240 / 300, 0), label_x=0.62, label_dx=78)
-    NEW = "<b><font color='#B00020'>"
+    NEW = "<b><font color='#0A7A36'>"
     E("DISPUTED", "COMPLETED", f"dispute_resolved [moderator, reason;<br>possession = RETURNED | LOST]<br>"
       f"/ resolved outcome &#8594; engine {NEW}T25c</font></b>", style=tr_style("M"), exit=(0, 0.5), entry=(1, 0.5),
       label_dy=-28)
@@ -244,6 +244,6 @@ def write_md(path):
 
 
 if __name__ == "__main__":
-    lifecycle().save(os.path.join(HERE, "borrowing_lifecycle_state_machine_v3.drawio"))
+    lifecycle().save(os.path.join(HERE, "borrowing_lifecycle_state_machine.drawio"))
     write_csv(os.path.join(HERE, "transition_table_v3.csv"))
     write_md(os.path.join(HERE, "transition_table_v3.md"))
