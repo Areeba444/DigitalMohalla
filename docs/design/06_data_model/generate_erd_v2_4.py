@@ -1,7 +1,7 @@
-"""Builds er_diagram_v2_4.drawio from the live database catalogue (iteration 2, DA-09 and DA-23, Student 1).
+"""Builds er_diagram.drawio from the live database catalogue (iteration 2, DA-09 and DA-23, Student 1).
 
     set DM_TEST_DSN=postgresql://...      a database with schema.sql v2.3 and then migration_0002_schema_v2_4.sql loaded
-    python generate_erd_v2_4.py                reads the catalogue of schema "dm" -> er_diagram_v2_4.drawio
+    python generate_erd_v2_4.py                reads the catalogue of schema "dm" -> er_diagram.drawio
 
 Same notation and checks as the iteration 1 generator (../06_data_model/generate_erd.py). Tables are
 stacked per column in a fixed order instead of fixed y positions, because migration 0002 makes several tables taller.
@@ -283,4 +283,4 @@ if __name__ == "__main__":
     conn = psycopg2.connect(os.environ["DM_TEST_DSN"])
     with conn, conn.cursor() as cur:
         diagram = build(cur)
-    diagram.save(os.path.join(HERE, "er_diagram_v2_4.drawio"))
+    diagram.save(os.path.join(HERE, "er_diagram.drawio"))

@@ -6,7 +6,7 @@
 | Version | 2.4 draft, 3 November 2026 |
 | Status | Draft for the 10 November design gate. Needs all three signatures (frozen event schema, FR-B-09), then tag `schema-v2` |
 | Builds on | `../06_data_model/schema.sql` v2.3, which stays frozen as Alembic revision 0001 |
-| Files | `migration_0002_schema_v2_4.sql` (the change), `er_diagram_v2_4.drawio` and `generate_erd_v2_4.py`, `Data_Dictionary_v2_4.md` and `generate_data_dictionary_v2_4.py` |
+| Files | `migration_0002_schema_v2_4.sql` (the change), `er_diagram.drawio` and `generate_erd_v2_4.py`, `Data_Dictionary_v2_4.md` and `generate_data_dictionary_v2_4.py` |
 | GenAI | Drafted with Claude (Claude Code); decisions and review by the owner. Log in `docs/ai-usage-log.md` and on Form 13 |
 
 ## 1. Summary
