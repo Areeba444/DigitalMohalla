@@ -340,6 +340,8 @@ The screens are the team's wireframes in `13_wireframes/` (PNG files and `Wirefr
 | TC-128 | 22 | A moderator of community B decides a request for community A | 403; audit entry REJECTED | Not run | FR-A-10, NFR-S-03 |
 | TC-129 | 22 | A decision without a reason | Refused until a reason is given | Not run | FR-A-10 |
 | TC-130 | 22 | Two moderators approve the same request at the same moment | One decision applied; the other sees the current state; nothing applied twice | Not run | FR-A-11 |
+| TC-170 | 22 | A join request to an OPEN community with locality outcome VERIFIED | APPROVED by the system (M09), role MEMBER, audit entry; the community's moderators notified once | Not run | FR-A-09 |
+| TC-171 | 22 | A join request to an OPEN community with outcome INCONCLUSIVE, then one with CONFLICTING | Both stay PENDING in the moderator queue; neither is approved or rejected by the system | Not run | FR-A-08, FR-A-09 |
 | TC-131 | 23 | The same notification produced twice with the same dedupe key | One notification stored and shown | Not run | FR-C-02 |
 | TC-132 | 23 | Member A asks for member B's notifications | 403 or empty; never B's data | Not run | FR-C-02, NFR-S-03 |
 | TC-133 | 24 | A party reviews a COMPLETED loan; then tries again | First stored; second refused (one review per party) | Not run | FR-T-09 |
@@ -385,7 +387,7 @@ The screens are the team's wireframes in `13_wireframes/` (PNG files and `Wirefr
 | Requirement | Test cases |
 |---|---|
 | FR-A-07, FR-A-08, NFR-Q-04 | TC-119, TC-124 to TC-126 |
-| FR-A-09 to FR-A-11 | TC-127 to TC-130 |
+| FR-A-09 to FR-A-11 | TC-127 to TC-130, TC-170, TC-171 |
 | FR-B-18, NFR-R-05 | TC-120, TC-121, TC-168 |
 | FR-T-09 | TC-133 to TC-136 |
 | FR-T-11 (iteration 2) | TC-140 to TC-149 |
