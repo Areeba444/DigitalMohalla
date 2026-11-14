@@ -32,7 +32,7 @@ jobs:
     timeout-minutes: 25
     services:
       postgres:
-        image: postgres:16
+        image: pgvector/pgvector:pg16   # PostgreSQL 16 with pgvector, as on Neon (ADR-0016)
         env:
           POSTGRES_USER: postgres
           # throwaway container that exists only for this job; not a real secret
