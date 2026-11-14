@@ -15,7 +15,7 @@ keyword search reads the generated `search_tsv` column and needs nothing here.
 
 from collections.abc import Callable, Mapping
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import datetime, timedelta
 from typing import Any, Protocol
 from uuid import UUID
 
@@ -111,10 +111,12 @@ class ListingService:
         store: ListingStore,
         *,
         now: datetime,
+        default_expiry_days: float | None = None,
         on_saved: Callable[[UUID], None] | None = None,
     ) -> None:
         self.store = store
         self.now = now
+        self.default_expiry_days = default_expiry_days
         self.on_saved = on_saved or (lambda _item: None)
 
     def create(
@@ -129,6 +131,7 @@ class ListingService:
         fields["required_verification"] = self._category(fields["category_id"])["min_verification"]
         status = "PUBLISHED" if publish else "DRAFT"
         if publish:
+            self._default_end(fields, None)
             self._ready_to_publish(fields)
         item_id = self.store.insert(owner_id, community_id, status, fields)
         self.on_saved(item_id)
@@ -150,6 +153,7 @@ class ListingService:
             category = self._category(fields["category_id"])
             fields["required_verification"] = category["min_verification"]
         if target == "PUBLISHED":
+            self._default_end(fields, current.get("expires_at"))
             self._ready_to_publish({**current, **fields})
         self.store.update(item_id, target, fields)
         self.on_saved(item_id)
@@ -170,6 +174,14 @@ class ListingService:
         expires = fields.get("expires_at")
         if expires is not None and expires <= self.now:
             raise InvalidListing("the listing end date must be in the future")
+
+    def _default_end(self, fields: dict[str, Any], current_end: datetime | None) -> None:
+        """Publishing without a (future) end date sets one `listing_default_expiry_days` ahead, so
+        the listing-expiry job (ADR-0012) only ever reads `expires_at`."""
+        if "expires_at" in fields or self.default_expiry_days is None:
+            return
+        if current_end is None or current_end <= self.now:
+            fields["expires_at"] = self.now + timedelta(days=self.default_expiry_days)
 
     def _category(self, category_id: int) -> dict[str, Any]:
         category = self.store.category(category_id)

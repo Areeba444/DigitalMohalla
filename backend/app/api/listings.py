@@ -15,6 +15,7 @@ from sqlalchemy import Engine
 
 from app.api import schemas
 from app.api.deps import current_actor, get_engine
+from app.config.engine_config import load_engine_config
 from app.domain.lifecycle.service import Actor
 from app.domain.listings.service import ListingDraft, ListingService
 from app.infra.db.listings import PostgresListingStore
@@ -28,6 +29,11 @@ def listing_out(item: dict[str, Any], viewer: UUID) -> dict[str, Any]:
         "deposit_amount": float(item["deposit_amount"]),
         "is_yours": item["owner_id"] == viewer,
     }
+
+
+def _service(store: PostgresListingStore) -> ListingService:
+    days = load_engine_config().section("scheduler_b13")["listing_default_expiry_days"]
+    return ListingService(store, now=datetime.now(UTC), default_expiry_days=float(days))
 
 
 def _draft(body: schemas.ListingFields) -> ListingDraft:
@@ -60,7 +66,7 @@ def create_listing(
     engine: Engine = Depends(get_engine),
 ) -> schemas.ListingOut:
     with engine.begin() as conn:
-        item = ListingService(PostgresListingStore(conn), now=datetime.now(UTC)).create(
+        item = _service(PostgresListingStore(conn)).create(
             actor.user_id, body.community_id, _draft(body), publish=body.publish
         )
     return schemas.ListingOut(**listing_out(item, actor.user_id))
@@ -74,7 +80,7 @@ def update_listing(
     engine: Engine = Depends(get_engine),
 ) -> schemas.ListingOut:
     with engine.begin() as conn:
-        item = ListingService(PostgresListingStore(conn), now=datetime.now(UTC)).update(
+        item = _service(PostgresListingStore(conn)).update(
             actor.user_id, item_id, _draft(body), body.status
         )
     return schemas.ListingOut(**listing_out(item, actor.user_id))
