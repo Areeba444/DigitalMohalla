@@ -12,15 +12,16 @@
       "ES-13"
     ],
     "target_coverage": "7 of 13 scenarios for Mid-1 CI gate (NFR-Q-01)",
-    "config_version": "1.1.0-iteration1-draft",
+    "config_version": "1.3.2-iteration2-draft",
     "created_at": "2026-10-11T15:30:00Z",
-    "fixture_version": "1.1",
-    "updated_at": "2026-10-11T19:45:00Z",
+    "fixture_version": "1.2",
+    "updated_at": "2026-11-14T12:00:00Z",
     "owners": "Student 2 (inputs and expected results), Student 3 (scenario suite in CI)",
     "oracle": "14_testing/verify_fixtures.py recomputes every derived value; results in fixture_verification_results.md",
     "changelog": [
       "1.0 (2026-10-11, Student 2): ES-01 to ES-06 and ES-13.",
-      "1.1 (2026-10-11, integration): 90% intervals recomputed with the Beta quantile function (all six were off); ES-04 score corrected to 96.8 with S4 active (ADR-0007); ES-13 rebuilt from outcomes so that it is possible under ADR-0006 (thin history with other lenders, two community paths) and gains a counterfactual without paths (ADR-0008); verification levels use the schema values (D14); policy unit fixtures added for test suites 9 and 12."
+      "1.1 (2026-10-11, integration): 90% intervals recomputed with the Beta quantile function (all six were off); ES-04 score corrected to 96.8 with S4 active (ADR-0007); ES-13 rebuilt from outcomes so that it is possible under ADR-0006 (thin history with other lenders, two community paths) and gains a counterfactual without paths (ADR-0008); verification levels use the schema values (D14); policy unit fixtures added for test suites 9 and 12.",
+      "1.2 (2026-11-14, Student 2, build A1): PU-04 follows engine config 1.3.1 (R4 before R3, ADR-0010 proposed, review DM09): a high-value newcomer is held for a moderator. Fixture config_version set to 1.3.1; the oracle recomputes every value under it. No other fixture changes."
     ]
   },
   "fixtures": [
@@ -623,8 +624,8 @@
     },
     {
       "scenario_id": "PU-04",
-      "name": "No verified history on a high-value item: INSUFFICIENT_EVIDENCE, not held (FR-T-02 precedence)",
-      "note": "R3 precedes R4: a newcomer is never held for lack of history; the lender sees the high-value safeguards",
+      "name": "No verified history on a high-value item: held for a moderator (R4 before R3, ADR-0010 proposed, FR-B-07)",
+      "note": "Changed in fixture 1.2 (engine config 1.3.1, review DM09): R4 now precedes R3, so a high-value request from a newcomer with no community support is held (high_value_low_confidence) instead of reaching the lender as INSUFFICIENT_EVIDENCE. The explanation still says no history is not a negative finding. Was R3 / INSUFFICIENT_EVIDENCE / ASSESSED in fixture 1.1",
       "transaction_context": {
         "item_id": "item_pu-04",
         "item_value_pkr": 30000,
@@ -656,11 +657,12 @@
         "corroborated": false
       },
       "expected_result": {
-        "rule_fired": "R3",
-        "decision": "REQUEST_VERIFICATION",
-        "state": "INSUFFICIENT_EVIDENCE",
-        "escalate": false,
-        "lifecycle_state": "ASSESSED"
+        "rule_fired": "R4",
+        "decision": "RESTRICT_HIGH_VALUE",
+        "state": "REVIEW_RECOMMENDED",
+        "escalate": true,
+        "lifecycle_state": "HELD_FOR_REVIEW",
+        "hold_reason": "high_value_low_confidence"
       }
     },
     {

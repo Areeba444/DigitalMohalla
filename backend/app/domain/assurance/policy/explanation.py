@@ -88,6 +88,11 @@ def build_explanation(
         parts.append("This is not a negative finding about the borrower.")
     else:
         parts.append(_STATE[state])
+        if rule == "R4" and direct_event_count == 0:  # high-value newcomer held first (ADR-0010)
+            parts.append(
+                "No verified history is not a negative finding about the borrower; a moderator "
+                "checks high-value requests before they reach the lender."
+            )
     if direct_event_count == 0:
         parts.append("Direct evidence: no verified loans yet.")
     else:

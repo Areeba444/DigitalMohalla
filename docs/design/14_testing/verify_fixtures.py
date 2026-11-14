@@ -158,9 +158,10 @@ def manipulation(signals, weights, guard):
 
 
 # --------------------------------------------------------------------------- Algorithm 4 (decision table)
+# In the order decide() tests them (config rule_order; R4 before R3 since config 1.3.1, ADR-0010 proposed)
 RULES = {"R1": ("ESCALATE", "ACTIVE_DISPUTE", None), "R2": ("ESCALATE", "REVIEW_RECOMMENDED", "manipulation_risk"),
-         "R3": ("REQUEST_VERIFICATION", "INSUFFICIENT_EVIDENCE", None),
          "R4": ("RESTRICT_HIGH_VALUE", "REVIEW_RECOMMENDED", "high_value_low_confidence"),
+         "R3": ("REQUEST_VERIFICATION", "INSUFFICIENT_EVIDENCE", None),
          "R5": ("REQUEST_VERIFICATION", "REVIEW_RECOMMENDED", None),
          "R6_DISPUTE": ("PROCEED_WITH_SAFEGUARDS", "REVIEW_RECOMMENDED", None),
          "R6_SPARSE": ("REQUEST_VERIFICATION", "INSUFFICIENT_EVIDENCE", None),
@@ -169,16 +170,17 @@ RULES = {"R1": ("ESCALATE", "ACTIVE_DISPUTE", None), "R2": ("ESCALATE", "REVIEW_
 
 
 def decide(direct, rho, level, ctx, th, similarity_floor):
-    """First match wins (Algorithm doc §6 as amended by ADR-0007, ADR-0008 and decision D12)."""
+    """First match wins (Algorithm doc §6 as amended by ADR-0007, ADR-0008, decision D12 and, from
+    engine config 1.3.1, ADR-0010 (proposed): R4 is checked before R3, so a high-value newcomer is held)."""
     if ctx["open_dispute"]:
         return "R1"
     if level == 4:
         return "R2"
-    if direct["direct_event_count"] == 0 and rho < th["rho_sup_indirect_support_threshold"]:
-        return "R3"
     if ctx["is_high_value"] and (ctx["request_similarity"] < similarity_floor
                                  or direct["lower_90"] < th["tau_L_lower_bound_threshold"]):
         return "R4"
+    if direct["direct_event_count"] == 0 and rho < th["rho_sup_indirect_support_threshold"]:
+        return "R3"
     if level == 3:
         return "R5"
     if ctx["resolved_disputes_12m"] > 0:

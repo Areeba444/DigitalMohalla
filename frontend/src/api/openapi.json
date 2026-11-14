@@ -68,6 +68,7 @@
     "/api/v1/items/{item_id}": {
       "get": {
         "summary": "Get Item",
+        "description": "B4: the listing (drafts and paused listings only for their owner) and its booked dates.",
         "operationId": "get_item_api_v1_items__item_id__get",
         "security": [
           {
@@ -93,6 +94,59 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ItemOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "summary": "Update Listing",
+        "operationId": "update_listing_api_v1_items__item_id__patch",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "item_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Item Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ListingUpdateIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ListingOut"
                 }
               }
             }
@@ -238,6 +292,47 @@
                   },
                   "type": "array",
                   "title": "Response Browse Items Api V1 Items Get"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      },
+      "post": {
+        "summary": "Create Listing",
+        "operationId": "create_listing_api_v1_items_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ListingCreateIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ListingOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
                 }
               }
             }
@@ -999,6 +1094,515 @@
           }
         }
       }
+    },
+    "/api/v1/notifications": {
+      "get": {
+        "summary": "Inbox",
+        "operationId": "inbox_api_v1_notifications_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "unread",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "default": false,
+              "title": "Unread"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 200,
+              "minimum": 1,
+              "default": 50,
+              "title": "Limit"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InboxOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/notifications/read": {
+      "post": {
+        "summary": "Mark Read",
+        "operationId": "mark_read_api_v1_notifications_read_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "anyOf": [
+                  {
+                    "$ref": "#/components/schemas/MarkReadIn"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "title": "Body"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MarkReadOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/communities": {
+      "get": {
+        "summary": "Communities",
+        "operationId": "communities_api_v1_communities_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "query",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "maxLength": 80
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Query"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/CommunityListOut"
+                  },
+                  "title": "Response Communities Api V1 Communities Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/communities/{community_id}/join": {
+      "post": {
+        "summary": "Join",
+        "operationId": "join_api_v1_communities__community_id__join_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "community_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Community Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/JoinIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JoinOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/communities/{community_id}/invitations": {
+      "post": {
+        "summary": "Invite",
+        "operationId": "invite_api_v1_communities__community_id__invitations_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "community_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Community Id"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvitationOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/moderation/memberships": {
+      "get": {
+        "summary": "Membership Queue",
+        "operationId": "membership_queue_api_v1_moderation_memberships_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/MembershipQueueOut"
+                  },
+                  "type": "array",
+                  "title": "Response Membership Queue Api V1 Moderation Memberships Get"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/moderation/memberships/{membership_id}/decision": {
+      "post": {
+        "summary": "Decide Membership",
+        "operationId": "decide_membership_api_v1_moderation_memberships__membership_id__decision_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "membership_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Membership Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MembershipDecisionIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MembershipDecisionOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/categories": {
+      "get": {
+        "summary": "Categories",
+        "operationId": "categories_api_v1_categories_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/CategoryOut"
+                  },
+                  "type": "array",
+                  "title": "Response Categories Api V1 Categories Get"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/me/items": {
+      "get": {
+        "summary": "My Listings",
+        "operationId": "my_listings_api_v1_me_items_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/MyListingOut"
+                  },
+                  "type": "array",
+                  "title": "Response My Listings Api V1 Me Items Get"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/moderation/cases/{case_id}/information-requests": {
+      "post": {
+        "summary": "Request Information",
+        "operationId": "request_information_api_v1_moderation_cases__case_id__information_requests_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "case_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Case Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InformationRequestIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InformationRequestedOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/cases/{case_id}/statements": {
+      "post": {
+        "summary": "Add Statement",
+        "operationId": "add_statement_api_v1_cases__case_id__statements_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "case_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Case Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StatementIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StatementCreatedOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -1223,6 +1827,18 @@
               }
             ],
             "title": "Closed At"
+          },
+          "info_deadline": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Info Deadline"
           }
         },
         "type": "object",
@@ -1323,6 +1939,34 @@
         "title": "CaseQueueOut",
         "description": "One row of the moderator queue (W6): no names or ids of the people involved."
       },
+      "CategoryOut": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "is_restricted": {
+            "type": "boolean",
+            "title": "Is Restricted"
+          },
+          "min_verification": {
+            "type": "string",
+            "title": "Min Verification"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "is_restricted",
+          "min_verification"
+        ],
+        "title": "CategoryOut"
+      },
       "ChecklistIn": {
         "properties": {
           "checklist": {
@@ -1405,6 +2049,65 @@
           "state"
         ],
         "title": "CommandOut"
+      },
+      "CommunityListOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "join_code": {
+            "type": "string",
+            "title": "Join Code"
+          },
+          "rules": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Rules"
+          },
+          "join_policy": {
+            "type": "string",
+            "title": "Join Policy"
+          },
+          "member_count": {
+            "type": "integer",
+            "title": "Member Count"
+          },
+          "methods": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Methods"
+          },
+          "has_boundary": {
+            "type": "boolean",
+            "title": "Has Boundary"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "join_code",
+          "rules",
+          "join_policy",
+          "member_count",
+          "methods",
+          "has_boundary"
+        ],
+        "title": "CommunityListOut"
       },
       "CommunityOut": {
         "properties": {
@@ -1695,6 +2398,24 @@
             },
             "type": "array",
             "title": "Available Actions"
+          },
+          "information_request": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/InformationRequestOut"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "statements": {
+            "items": {
+              "$ref": "#/components/schemas/StatementOut"
+            },
+            "type": "array",
+            "title": "Statements",
+            "default": []
           }
         },
         "type": "object",
@@ -1772,6 +2493,42 @@
         ],
         "title": "EventOut"
       },
+      "FixIn": {
+        "properties": {
+          "lat": {
+            "type": "number",
+            "maximum": 90.0,
+            "minimum": -90.0,
+            "title": "Lat"
+          },
+          "lng": {
+            "type": "number",
+            "maximum": 180.0,
+            "minimum": -180.0,
+            "title": "Lng"
+          },
+          "accuracy_m": {
+            "type": "number",
+            "maximum": 100000.0,
+            "minimum": 0.0,
+            "title": "Accuracy M"
+          },
+          "mock_provider": {
+            "type": "boolean",
+            "title": "Mock Provider",
+            "default": false
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "lat",
+          "lng",
+          "accuracy_m"
+        ],
+        "title": "FixIn",
+        "description": "One-time device fix. Evaluated in memory by the LocalityVerifier and then dropped: it is\nnever stored, logged or returned (NFR-PR-01, sequence (d))."
+      },
       "HTTPValidationError": {
         "properties": {
           "detail": {
@@ -1785,6 +2542,122 @@
         "type": "object",
         "title": "HTTPValidationError"
       },
+      "InboxOut": {
+        "properties": {
+          "unread_count": {
+            "type": "integer",
+            "title": "Unread Count"
+          },
+          "notifications": {
+            "items": {
+              "$ref": "#/components/schemas/NotificationOut"
+            },
+            "type": "array",
+            "title": "Notifications"
+          }
+        },
+        "type": "object",
+        "required": [
+          "unread_count",
+          "notifications"
+        ],
+        "title": "InboxOut"
+      },
+      "InformationRequestIn": {
+        "properties": {
+          "to": {
+            "type": "string",
+            "enum": [
+              "BORROWER",
+              "LENDER",
+              "BOTH"
+            ],
+            "title": "To"
+          },
+          "question": {
+            "type": "string",
+            "maxLength": 1000,
+            "title": "Question"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "to",
+          "question"
+        ],
+        "title": "InformationRequestIn"
+      },
+      "InformationRequestOut": {
+        "properties": {
+          "to": {
+            "type": "string",
+            "title": "To"
+          },
+          "question": {
+            "type": "string",
+            "title": "Question"
+          },
+          "deadline": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Deadline"
+          }
+        },
+        "type": "object",
+        "required": [
+          "to",
+          "question",
+          "deadline"
+        ],
+        "title": "InformationRequestOut",
+        "description": "The moderator's latest question (sequence (g)); `to` is BORROWER, LENDER or BOTH."
+      },
+      "InformationRequestedOut": {
+        "properties": {
+          "case_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Case Id"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "deadline": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Deadline"
+          }
+        },
+        "type": "object",
+        "required": [
+          "case_id",
+          "status",
+          "deadline"
+        ],
+        "title": "InformationRequestedOut"
+      },
+      "InvitationOut": {
+        "properties": {
+          "code": {
+            "type": "string",
+            "title": "Code"
+          },
+          "expires_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Expires At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "code",
+          "expires_at"
+        ],
+        "title": "InvitationOut",
+        "description": "The code is shown once; only its hash is stored."
+      },
       "ItemOut": {
         "properties": {
           "id": {
@@ -1796,6 +2669,40 @@
             "type": "string",
             "title": "Title"
           },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
+          "category_id": {
+            "type": "integer",
+            "title": "Category Id"
+          },
+          "category_name": {
+            "type": "string",
+            "title": "Category Name"
+          },
+          "community_name": {
+            "type": "string",
+            "title": "Community Name"
+          },
+          "condition": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Condition"
+          },
           "value_band": {
             "type": "string",
             "title": "Value Band"
@@ -1803,6 +2710,67 @@
           "deposit_amount": {
             "type": "number",
             "title": "Deposit Amount"
+          },
+          "usage_terms": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Usage Terms"
+          },
+          "handover_method": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Handover Method"
+          },
+          "search_terms": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Search Terms"
+          },
+          "required_verification": {
+            "type": "string",
+            "title": "Required Verification"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "expires_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Expires At"
+          },
+          "owner_name": {
+            "type": "string",
+            "title": "Owner Name"
+          },
+          "is_yours": {
+            "type": "boolean",
+            "title": "Is Yours"
           },
           "booked_periods": {
             "items": {
@@ -1816,11 +2784,82 @@
         "required": [
           "id",
           "title",
+          "description",
+          "category_id",
+          "category_name",
+          "community_name",
+          "condition",
           "value_band",
           "deposit_amount",
+          "usage_terms",
+          "handover_method",
+          "search_terms",
+          "required_verification",
+          "status",
+          "expires_at",
+          "owner_name",
+          "is_yours",
           "booked_periods"
         ],
-        "title": "ItemOut"
+        "title": "ItemOut",
+        "description": "GET /items/{id}: the listing plus the dates already booked (B4, B5 step 1)."
+      },
+      "JoinIn": {
+        "properties": {
+          "fix": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/FixIn"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "permission_refused": {
+            "type": "boolean",
+            "title": "Permission Refused",
+            "default": false
+          },
+          "invitation_code": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 32
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Invitation Code"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "JoinIn"
+      },
+      "JoinOut": {
+        "properties": {
+          "membership_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Membership Id"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "locality": {
+            "$ref": "#/components/schemas/LocalityOut"
+          }
+        },
+        "type": "object",
+        "required": [
+          "membership_id",
+          "status",
+          "locality"
+        ],
+        "title": "JoinOut"
       },
       "LenderRequestOut": {
         "properties": {
@@ -1876,6 +2915,474 @@
         ],
         "title": "LenderRequestOut"
       },
+      "ListingCreateIn": {
+        "properties": {
+          "title": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 120
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Title"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 4000
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
+          "category_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Category Id"
+          },
+          "condition": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "NEW",
+                  "GOOD",
+                  "FAIR",
+                  "WORN"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Condition"
+          },
+          "value_band": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "LOW",
+                  "MEDIUM",
+                  "HIGH"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Value Band"
+          },
+          "deposit_amount": {
+            "anyOf": [
+              {
+                "type": "number",
+                "maximum": 10000000.0,
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Deposit Amount"
+          },
+          "usage_terms": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 2000
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Usage Terms"
+          },
+          "handover_method": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 200
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Handover Method"
+          },
+          "search_terms": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 300
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Search Terms"
+          },
+          "expires_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Expires At"
+          },
+          "community_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Community Id"
+          },
+          "publish": {
+            "type": "boolean",
+            "title": "Publish",
+            "default": false
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "community_id"
+        ],
+        "title": "ListingCreateIn"
+      },
+      "ListingOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
+          "category_id": {
+            "type": "integer",
+            "title": "Category Id"
+          },
+          "category_name": {
+            "type": "string",
+            "title": "Category Name"
+          },
+          "community_name": {
+            "type": "string",
+            "title": "Community Name"
+          },
+          "condition": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Condition"
+          },
+          "value_band": {
+            "type": "string",
+            "title": "Value Band"
+          },
+          "deposit_amount": {
+            "type": "number",
+            "title": "Deposit Amount"
+          },
+          "usage_terms": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Usage Terms"
+          },
+          "handover_method": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Handover Method"
+          },
+          "search_terms": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Search Terms"
+          },
+          "required_verification": {
+            "type": "string",
+            "title": "Required Verification"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "expires_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Expires At"
+          },
+          "owner_name": {
+            "type": "string",
+            "title": "Owner Name"
+          },
+          "is_yours": {
+            "type": "boolean",
+            "title": "Is Yours"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "title",
+          "description",
+          "category_id",
+          "category_name",
+          "community_name",
+          "condition",
+          "value_band",
+          "deposit_amount",
+          "usage_terms",
+          "handover_method",
+          "search_terms",
+          "required_verification",
+          "status",
+          "expires_at",
+          "owner_name",
+          "is_yours"
+        ],
+        "title": "ListingOut",
+        "description": "A listing as its owner or a member sees it. The owner is named, never identified by id."
+      },
+      "ListingUpdateIn": {
+        "properties": {
+          "title": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 120
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Title"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 4000
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
+          "category_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Category Id"
+          },
+          "condition": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "NEW",
+                  "GOOD",
+                  "FAIR",
+                  "WORN"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Condition"
+          },
+          "value_band": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "LOW",
+                  "MEDIUM",
+                  "HIGH"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Value Band"
+          },
+          "deposit_amount": {
+            "anyOf": [
+              {
+                "type": "number",
+                "maximum": 10000000.0,
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Deposit Amount"
+          },
+          "usage_terms": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 2000
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Usage Terms"
+          },
+          "handover_method": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 200
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Handover Method"
+          },
+          "search_terms": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 300
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Search Terms"
+          },
+          "expires_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Expires At"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "DRAFT",
+                  "PUBLISHED",
+                  "PAUSED"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Status"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "ListingUpdateIn"
+      },
+      "LocalityOut": {
+        "properties": {
+          "outcome": {
+            "type": "string",
+            "enum": [
+              "VERIFIED",
+              "INCONCLUSIVE",
+              "CONFLICTING"
+            ],
+            "title": "Outcome"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message"
+          },
+          "invitation_used": {
+            "type": "boolean",
+            "title": "Invitation Used"
+          }
+        },
+        "type": "object",
+        "required": [
+          "outcome",
+          "message",
+          "invitation_used"
+        ],
+        "title": "LocalityOut",
+        "description": "The outcome in neutral words; never a rejection (FR-A-08)."
+      },
       "LoginIn": {
         "properties": {
           "email": {
@@ -1894,6 +3401,185 @@
           "password"
         ],
         "title": "LoginIn"
+      },
+      "MarkReadIn": {
+        "properties": {
+          "ids": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "type": "array",
+                "maxItems": 200
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ids"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "MarkReadIn",
+        "description": "`ids` omitted means \"mark everything read\"."
+      },
+      "MarkReadOut": {
+        "properties": {
+          "marked": {
+            "type": "integer",
+            "title": "Marked"
+          }
+        },
+        "type": "object",
+        "required": [
+          "marked"
+        ],
+        "title": "MarkReadOut"
+      },
+      "MembershipDecisionIn": {
+        "properties": {
+          "kind": {
+            "type": "string",
+            "enum": [
+              "APPROVED",
+              "REJECTED",
+              "INFO_REQUESTED",
+              "REVERSED"
+            ],
+            "title": "Kind"
+          },
+          "reason": {
+            "type": "string",
+            "maxLength": 1000,
+            "title": "Reason"
+          },
+          "reverses_decision_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reverses Decision Id"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "kind",
+          "reason"
+        ],
+        "title": "MembershipDecisionIn"
+      },
+      "MembershipDecisionOut": {
+        "properties": {
+          "membership_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Membership Id"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          }
+        },
+        "type": "object",
+        "required": [
+          "membership_id",
+          "status"
+        ],
+        "title": "MembershipDecisionOut"
+      },
+      "MembershipQueueOut": {
+        "properties": {
+          "membership_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Membership Id"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "requested_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Requested At"
+          },
+          "community_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Community Id"
+          },
+          "community_name": {
+            "type": "string",
+            "title": "Community Name"
+          },
+          "applicant_name": {
+            "type": "string",
+            "title": "Applicant Name"
+          },
+          "locality_outcome": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Locality Outcome"
+          },
+          "boundary_signal": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Boundary Signal"
+          },
+          "invitation_used": {
+            "type": "boolean",
+            "title": "Invitation Used"
+          },
+          "permission_refused": {
+            "type": "boolean",
+            "title": "Permission Refused"
+          },
+          "mock_provider_detected": {
+            "type": "boolean",
+            "title": "Mock Provider Detected"
+          },
+          "duplicate_suspected": {
+            "type": "boolean",
+            "title": "Duplicate Suspected"
+          }
+        },
+        "type": "object",
+        "required": [
+          "membership_id",
+          "status",
+          "requested_at",
+          "community_id",
+          "community_name",
+          "applicant_name",
+          "locality_outcome",
+          "boundary_signal",
+          "invitation_used",
+          "permission_refused",
+          "mock_provider_detected",
+          "duplicate_suspected"
+        ],
+        "title": "MembershipQueueOut"
       },
       "ModeratorCaseOut": {
         "properties": {
@@ -1973,6 +3659,24 @@
             },
             "type": "array",
             "title": "Decisions"
+          },
+          "information_request": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/InformationRequestOut"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "statements": {
+            "items": {
+              "$ref": "#/components/schemas/StatementOut"
+            },
+            "type": "array",
+            "title": "Statements",
+            "default": []
           }
         },
         "type": "object",
@@ -1992,6 +3696,58 @@
         ],
         "title": "ModeratorCaseOut",
         "description": "UC-D6 evidence trail for the moderator (W7)."
+      },
+      "MyListingOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "value_band": {
+            "type": "string",
+            "title": "Value Band"
+          },
+          "deposit_amount": {
+            "type": "number",
+            "title": "Deposit Amount"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "condition": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Condition"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Updated At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "title",
+          "value_band",
+          "deposit_amount",
+          "status",
+          "condition",
+          "updated_at"
+        ],
+        "title": "MyListingOut"
       },
       "MyRequestOut": {
         "properties": {
@@ -2068,6 +3824,51 @@
           "assurance_state"
         ],
         "title": "MyRequestOut"
+      },
+      "NotificationOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "type": {
+            "type": "string",
+            "title": "Type"
+          },
+          "payload": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Payload"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "read_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Read At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "type",
+          "payload",
+          "created_at",
+          "read_at"
+        ],
+        "title": "NotificationOut",
+        "description": "One in-app notification. The app writes the sentence from `type` and `payload`."
       },
       "PathOut": {
         "properties": {
@@ -2311,6 +4112,76 @@
           "available_actions"
         ],
         "title": "RequestOut"
+      },
+      "StatementCreatedOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "case_status": {
+            "type": "string",
+            "title": "Case Status"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "case_status"
+        ],
+        "title": "StatementCreatedOut"
+      },
+      "StatementIn": {
+        "properties": {
+          "statement": {
+            "type": "string",
+            "maxLength": 2000,
+            "title": "Statement"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "statement"
+        ],
+        "title": "StatementIn"
+      },
+      "StatementOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "author_role": {
+            "type": "string",
+            "title": "Author Role"
+          },
+          "author_name": {
+            "type": "string",
+            "title": "Author Name"
+          },
+          "statement": {
+            "type": "string",
+            "title": "Statement"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "author_role",
+          "author_name",
+          "statement",
+          "created_at"
+        ],
+        "title": "StatementOut",
+        "description": "A party's response on a case. The author is named and given by role, never by id."
       },
       "TokenOut": {
         "properties": {

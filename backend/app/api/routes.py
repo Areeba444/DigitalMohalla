@@ -4,20 +4,26 @@ Errors: 401 not logged in, 403 not allowed, 404 unknown id, 409 invalid transiti
 dates taken, 422 invalid input. Every state-changing call is one command and one DB transaction.
 """
 
+from datetime import UTC, datetime
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy import Engine
 
 from app.api import schemas
+from app.api.cases import case_extras
 from app.api.deps import Commands, current_actor, get_commands, get_engine
 from app.api.evidence import assessment_out, intermediaries
+from app.api.listings import listing_out
 from app.config.settings import get_settings
 from app.domain.accounts.auth import InvalidCredentials, create_token
 from app.domain.lifecycle.service import Actor, BorrowingService, CommandResult
+from app.domain.listings.service import ListingService
 from app.domain.moderation.decisions import Decision
 from app.infra.db.evidence import PostgresEvidenceSource
+from app.infra.db.listings import PostgresListingStore
 from app.infra.db.users import authenticate
+from app.infra.eventstore.postgres import PostgresLifecycleStore
 
 router = APIRouter(prefix="/api/v1")
 
@@ -52,19 +58,14 @@ def login(body: schemas.LoginIn, engine: Engine = Depends(get_engine)) -> schema
 def get_item(
     item_id: UUID,
     actor: Actor = Depends(current_actor),
-    commands: Commands = Depends(get_commands),
+    engine: Engine = Depends(get_engine),
 ) -> schemas.ItemOut:
-    def read(svc: BorrowingService) -> schemas.ItemOut:
-        item = svc.store.item(item_id)
-        return schemas.ItemOut(
-            id=item["id"],
-            title=item["title"],
-            value_band=item["value_band"],
-            deposit_amount=float(item["deposit_amount"]),
-            booked_periods=svc.store.booked_periods(item_id),
-        )
-
-    return commands.run(read)
+    """B4: the listing (drafts and paused listings only for their owner) and its booked dates."""
+    with engine.connect() as conn:
+        listings = ListingService(PostgresListingStore(conn), now=datetime.now(UTC))
+        item = listings.get(actor.user_id, item_id)
+        booked = PostgresLifecycleStore(conn).booked_periods(item_id)
+    return schemas.ItemOut(**listing_out(item, actor.user_id), booked_periods=booked)
 
 
 @router.post("/requests", response_model=schemas.CommandOut, status_code=201)
@@ -315,6 +316,7 @@ def dispute_trail(
         events=[schemas.EventOut(**e) for e in found["events"]],
         assessment=assessment_out(assessment, names) if assessment else None,
         available_actions=found["actions"],
+        **case_extras(engine, case["id"]),
     )
 
 
@@ -361,6 +363,7 @@ def moderator_case(
         events=[schemas.EventOut(**e) for e in found["events"]],
         assessment=assessment_out(assessment, names) if assessment else None,
         decisions=[schemas.DecisionOut(**d) for d in found["decisions"]],
+        **case_extras(engine, case_id),
     )
 
 

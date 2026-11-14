@@ -167,7 +167,7 @@ class PostgresLifecycleStore:
                 text(
                     "SELECT id, transaction_id, trigger_type::text AS trigger_type, "
                     "dispute_reason::text AS dispute_reason, hold_reason::text AS hold_reason, "
-                    "raised_by, status::text AS status, priority, reason, opened_at, closed_at "
+                    "raised_by, status::text AS status, priority, reason, opened_at, closed_at, info_deadline "
                     "FROM escalation_case WHERE id = :id"
                 ),
                 {"id": case_id},
@@ -266,7 +266,7 @@ class PostgresLifecycleStore:
                 text(
                     "SELECT id, trigger_type::text AS trigger_type, dispute_reason::text AS dispute_reason, "
                     "hold_reason::text AS hold_reason, raised_by, status::text AS status, priority, reason, "
-                    "opened_at, closed_at FROM escalation_case WHERE transaction_id = :id "
+                    "opened_at, closed_at, info_deadline FROM escalation_case WHERE transaction_id = :id "
                     "AND (NOT :only_open OR status IN ('OPEN', 'AWAITING_INFORMATION')) "
                     "ORDER BY opened_at DESC LIMIT 1"
                 ),

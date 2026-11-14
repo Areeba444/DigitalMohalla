@@ -19,9 +19,11 @@ from hypothesis import strategies as st
 
 from app.config.engine_config import load_engine_config
 from app.domain.assurance.policy.decision import (
+    DEFAULT_RULE_ORDER,
     RULES,
     PolicyInputs,
     PolicyThresholds,
+    check_rule_order,
     decide,
     safeguards_for,
 )
@@ -179,5 +181,48 @@ def test_every_input_gets_one_well_formed_decision(x: PolicyInputs) -> None:  # 
     if d.decision == "RESTRICT_HIGH_VALUE":  # no restriction without human review
         assert d.escalate and x.value_band == "HIGH"
     if x.direct_event_count == 0 and x.rho < TH.rho_sup and not x.open_dispute and x.risk_level < 4:
-        # zero history is INSUFFICIENT_EVIDENCE, not a negative finding, even for a high-value item
-        assert (d.rule, d.state) == ("R3", "INSUFFICIENT_EVIDENCE")
+        if x.value_band != "HIGH":
+            # zero history is INSUFFICIENT_EVIDENCE, not a negative finding
+            assert (d.rule, d.state) == ("R3", "INSUFFICIENT_EVIDENCE")
+        elif x.request_similarity < TH.similarity_floor or x.lower_90 < TH.tau_l:
+            # config 1.3.1 checks R4 first: a high-value newcomer is held for a person (DM09)
+            assert (d.rule, d.escalate) == ("R4", True)
+
+
+# ----------------------------------------------------------------------------- R4 before R3 (A1)
+def newcomer(band: str) -> PolicyInputs:
+    """Zero direct history, no community support (rho 0), no dispute, no manipulation."""
+    return PolicyInputs(0.5, 0.05, 0.0, 0, 0.0, 1, band, False, 0, True, 1.0)
+
+
+def test_high_value_newcomer_is_held_for_a_moderator() -> None:  # DM09 combined case, ADR-0010
+    assert TH.rule_order.index("R4") < TH.rule_order.index("R3")  # config 1.3.1
+    d = decide(newcomer("HIGH"), TH)
+    assert (d.rule, d.state, d.decision) == ("R4", "REVIEW_RECOMMENDED", "RESTRICT_HIGH_VALUE")
+    assert (d.escalate, d.hold_reason) == (True, "high_value_low_confidence")
+
+
+@pytest.mark.parametrize("band", ["LOW", "MEDIUM"])
+def test_ordinary_value_newcomer_still_gets_r3_and_is_not_held(band: str) -> None:
+    d = decide(newcomer(band), TH)
+    assert (d.rule, d.state, d.escalate) == ("R3", "INSUFFICIENT_EVIDENCE", False)
+
+
+def test_the_iteration_1_order_still_gives_r3_for_the_same_case() -> None:
+    old = PolicyThresholds(TH.tau_mu, TH.tau_l, TH.n_min, TH.rho_sup, TH.similarity_floor)
+    assert old.rule_order == DEFAULT_RULE_ORDER
+    assert decide(newcomer("HIGH"), old).rule == "R3"  # what config 1.3.0 did (review DM09)
+
+
+@pytest.mark.parametrize(
+    "order",
+    [
+        ["R2", "R1", "R3", "R4", "R5", "R6_DISPUTE", "R6_SPARSE", "R7", "R8", "R9"],  # R1 not first
+        ["R1", "R2", "R3", "R4", "R5", "R6_DISPUTE", "R6_SPARSE", "R7", "R9", "R8"],  # R9 not last
+        ["R1", "R2", "R3", "R5", "R6_DISPUTE", "R6_SPARSE", "R7", "R8", "R9"],  # R4 missing
+        ["R1", "R2", "R3", "R3", "R4", "R5", "R6_DISPUTE", "R6_SPARSE", "R7", "R8", "R9"],
+    ],
+)
+def test_a_malformed_rule_order_is_refused(order: list[str]) -> None:
+    with pytest.raises(ValueError, match="rule_order"):
+        check_rule_order(order)

@@ -196,6 +196,45 @@ class CaseOut(BaseModel):
     reason: str
     opened_at: datetime
     closed_at: datetime | None = None
+    info_deadline: datetime | None = None  # set while AWAITING_INFORMATION; kept after (C04)
+
+
+class InformationRequestOut(BaseModel):
+    """The moderator's latest question (sequence (g)); `to` is BORROWER, LENDER or BOTH."""
+
+    to: str
+    question: str
+    deadline: datetime
+
+
+class StatementOut(BaseModel):
+    """A party's response on a case. The author is named and given by role, never by id."""
+
+    id: UUID
+    author_role: str
+    author_name: str
+    statement: str
+    created_at: datetime
+
+
+class InformationRequestIn(StrictIn):
+    to: Literal["BORROWER", "LENDER", "BOTH"]
+    question: str = Field(max_length=1000)
+
+
+class InformationRequestedOut(BaseModel):
+    case_id: UUID
+    status: str
+    deadline: datetime
+
+
+class StatementIn(StrictIn):
+    statement: str = Field(max_length=2000)
+
+
+class StatementCreatedOut(BaseModel):
+    id: UUID
+    case_status: str
 
 
 class DisputeTrailOut(BaseModel):
@@ -213,6 +252,8 @@ class DisputeTrailOut(BaseModel):
     events: list[EventOut]
     assessment: AssessmentOut | None
     available_actions: list[str]
+    information_request: InformationRequestOut | None = None
+    statements: list[StatementOut] = []
 
 
 class DecisionIn(StrictIn):
@@ -266,6 +307,8 @@ class ModeratorCaseOut(BaseModel):
     events: list[EventOut]
     assessment: AssessmentOut | None
     decisions: list[DecisionOut]
+    information_request: InformationRequestOut | None = None
+    statements: list[StatementOut] = []
 
 
 class LenderRequestOut(BaseModel):
@@ -277,9 +320,177 @@ class LenderRequestOut(BaseModel):
     requested_period: str
 
 
-class ItemOut(BaseModel):
+class ListingFields(StrictIn):
+    """Fields a lender sets on a listing (UC-B1, W22). Omitted fields are left unchanged on an edit."""
+
+    title: str | None = Field(default=None, max_length=120)
+    description: str | None = Field(default=None, max_length=4000)
+    category_id: int | None = None
+    condition: Literal["NEW", "GOOD", "FAIR", "WORN"] | None = None
+    value_band: Literal["LOW", "MEDIUM", "HIGH"] | None = None
+    deposit_amount: float | None = Field(default=None, ge=0, le=10_000_000)
+    usage_terms: str | None = Field(default=None, max_length=2000)
+    handover_method: str | None = Field(default=None, max_length=200)
+    search_terms: str | None = Field(default=None, max_length=300)
+    expires_at: datetime | None = None
+
+
+class ListingCreateIn(ListingFields):
+    community_id: UUID
+    publish: bool = False  # false saves a draft
+
+
+class ListingUpdateIn(ListingFields):
+    status: Literal["DRAFT", "PUBLISHED", "PAUSED"] | None = None
+
+
+class CategoryOut(BaseModel):
+    id: int
+    name: str
+    is_restricted: bool
+    min_verification: str
+
+
+class ListingOut(BaseModel):
+    """A listing as its owner or a member sees it. The owner is named, never identified by id."""
+
+    id: UUID
+    title: str
+    description: str | None
+    category_id: int
+    category_name: str
+    community_name: str
+    condition: str | None
+    value_band: str
+    deposit_amount: float
+    usage_terms: str | None
+    handover_method: str | None
+    search_terms: str | None
+    required_verification: str
+    status: str
+    expires_at: datetime | None
+    owner_name: str
+    is_yours: bool
+
+
+class MyListingOut(BaseModel):
     id: UUID
     title: str
     value_band: str
     deposit_amount: float
+    status: str
+    condition: str | None
+    updated_at: datetime
+
+
+class ItemOut(ListingOut):
+    """GET /items/{id}: the listing plus the dates already booked (B4, B5 step 1)."""
+
     booked_periods: list[str]
+
+
+# ----------------------------------------------------------------------------- notifications (G3)
+class NotificationOut(BaseModel):
+    """One in-app notification. The app writes the sentence from `type` and `payload`."""
+
+    id: UUID
+    type: str
+    payload: dict[str, Any]
+    created_at: datetime
+    read_at: datetime | None
+
+
+class InboxOut(BaseModel):
+    unread_count: int
+    notifications: list[NotificationOut]
+
+
+class MarkReadIn(StrictIn):
+    """`ids` omitted means "mark everything read"."""
+
+    ids: list[UUID] | None = Field(default=None, max_length=200)
+
+
+class MarkReadOut(BaseModel):
+    marked: int
+
+
+# ----------------------------------------------------------------------------- membership (A3, A4)
+class CommunityListOut(BaseModel):
+    id: UUID
+    name: str
+    join_code: str
+    rules: str | None
+    join_policy: str
+    member_count: int
+    methods: list[str]
+    has_boundary: bool
+
+
+class FixIn(StrictIn):
+    """One-time device fix. Evaluated in memory by the LocalityVerifier and then dropped: it is
+    never stored, logged or returned (NFR-PR-01, sequence (d))."""
+
+    lat: float = Field(ge=-90, le=90)
+    lng: float = Field(ge=-180, le=180)
+    accuracy_m: float = Field(ge=0, le=100_000)
+    mock_provider: bool = False
+
+
+class JoinIn(StrictIn):
+    fix: FixIn | None = None
+    permission_refused: bool = False
+    invitation_code: str | None = Field(default=None, max_length=32)
+
+    @model_validator(mode="after")
+    def _fix_or_refusal(self) -> "JoinIn":
+        if self.permission_refused and self.fix is not None:
+            raise ValueError("send either a fix or permission_refused, not both")
+        return self
+
+
+class LocalityOut(BaseModel):
+    """The outcome in neutral words; never a rejection (FR-A-08)."""
+
+    outcome: Literal["VERIFIED", "INCONCLUSIVE", "CONFLICTING"]
+    message: str
+    invitation_used: bool
+
+
+class JoinOut(BaseModel):
+    membership_id: UUID
+    status: str
+    locality: LocalityOut
+
+
+class InvitationOut(BaseModel):
+    """The code is shown once; only its hash is stored."""
+
+    code: str
+    expires_at: datetime
+
+
+class MembershipQueueOut(BaseModel):
+    membership_id: UUID
+    status: str
+    requested_at: datetime
+    community_id: UUID
+    community_name: str
+    applicant_name: str
+    locality_outcome: str | None
+    boundary_signal: str | None  # coarse INSIDE / NEAR_BOUNDARY / OUTSIDE / UNAVAILABLE only
+    invitation_used: bool
+    permission_refused: bool
+    mock_provider_detected: bool
+    duplicate_suspected: bool
+
+
+class MembershipDecisionIn(StrictIn):
+    kind: Literal["APPROVED", "REJECTED", "INFO_REQUESTED", "REVERSED"]
+    reason: str = Field(max_length=1000)
+    reverses_decision_id: UUID | None = None
+
+
+class MembershipDecisionOut(BaseModel):
+    membership_id: UUID
+    status: str

@@ -45,14 +45,18 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Get Item */
+        /**
+         * Get Item
+         * @description B4: the listing (drafts and paused listings only for their owner) and its booked dates.
+         */
         get: operations["get_item_api_v1_items__item_id__get"];
         put?: never;
         post?: never;
         delete?: never;
         options?: never;
         head?: never;
-        patch?: never;
+        /** Update Listing */
+        patch: operations["update_listing_api_v1_items__item_id__patch"];
         trace?: never;
     };
     "/api/v1/requests": {
@@ -100,7 +104,8 @@ export interface paths {
         /** Browse Items */
         get: operations["browse_items_api_v1_items_get"];
         put?: never;
-        post?: never;
+        /** Create Listing */
+        post: operations["create_listing_api_v1_items_post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -346,6 +351,193 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/notifications": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Inbox */
+        get: operations["inbox_api_v1_notifications_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/notifications/read": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Mark Read */
+        post: operations["mark_read_api_v1_notifications_read_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/communities": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Communities */
+        get: operations["communities_api_v1_communities_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/communities/{community_id}/join": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Join */
+        post: operations["join_api_v1_communities__community_id__join_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/communities/{community_id}/invitations": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Invite */
+        post: operations["invite_api_v1_communities__community_id__invitations_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/moderation/memberships": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Membership Queue */
+        get: operations["membership_queue_api_v1_moderation_memberships_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/moderation/memberships/{membership_id}/decision": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Decide Membership */
+        post: operations["decide_membership_api_v1_moderation_memberships__membership_id__decision_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/categories": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Categories */
+        get: operations["categories_api_v1_categories_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/me/items": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** My Listings */
+        get: operations["my_listings_api_v1_me_items_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/moderation/cases/{case_id}/information-requests": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Request Information */
+        post: operations["request_information_api_v1_moderation_cases__case_id__information_requests_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/cases/{case_id}/statements": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Add Statement */
+        post: operations["add_statement_api_v1_cases__case_id__statements_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -433,6 +625,8 @@ export interface components {
             opened_at: string;
             /** Closed At */
             closed_at?: string | null;
+            /** Info Deadline */
+            info_deadline?: string | null;
         };
         /**
          * CaseQueueOut
@@ -471,6 +665,17 @@ export interface components {
             /** State */
             state: string | null;
         };
+        /** CategoryOut */
+        CategoryOut: {
+            /** Id */
+            id: number;
+            /** Name */
+            name: string;
+            /** Is Restricted */
+            is_restricted: boolean;
+            /** Min Verification */
+            min_verification: string;
+        };
         /** ChecklistIn */
         ChecklistIn: {
             /** Checklist */
@@ -495,6 +700,28 @@ export interface components {
             message?: string | null;
             /** Hold Reason */
             hold_reason?: string | null;
+        };
+        /** CommunityListOut */
+        CommunityListOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Name */
+            name: string;
+            /** Join Code */
+            join_code: string;
+            /** Rules */
+            rules: string | null;
+            /** Join Policy */
+            join_policy: string;
+            /** Member Count */
+            member_count: number;
+            /** Methods */
+            methods: string[];
+            /** Has Boundary */
+            has_boundary: boolean;
         };
         /**
          * CommunityOut
@@ -605,6 +832,12 @@ export interface components {
             assessment: components["schemas"]["AssessmentOut"] | null;
             /** Available Actions */
             available_actions: string[];
+            information_request?: components["schemas"]["InformationRequestOut"] | null;
+            /**
+             * Statements
+             * @default []
+             */
+            statements: components["schemas"]["StatementOut"][];
         };
         /** EventOut */
         EventOut: {
@@ -626,12 +859,93 @@ export interface components {
             /** Config Version */
             config_version?: string | null;
         };
+        /**
+         * FixIn
+         * @description One-time device fix. Evaluated in memory by the LocalityVerifier and then dropped: it is
+         *     never stored, logged or returned (NFR-PR-01, sequence (d)).
+         */
+        FixIn: {
+            /** Lat */
+            lat: number;
+            /** Lng */
+            lng: number;
+            /** Accuracy M */
+            accuracy_m: number;
+            /**
+             * Mock Provider
+             * @default false
+             */
+            mock_provider: boolean;
+        };
         /** HTTPValidationError */
         HTTPValidationError: {
             /** Detail */
             detail?: components["schemas"]["ValidationError"][];
         };
-        /** ItemOut */
+        /** InboxOut */
+        InboxOut: {
+            /** Unread Count */
+            unread_count: number;
+            /** Notifications */
+            notifications: components["schemas"]["NotificationOut"][];
+        };
+        /** InformationRequestIn */
+        InformationRequestIn: {
+            /**
+             * To
+             * @enum {string}
+             */
+            to: "BORROWER" | "LENDER" | "BOTH";
+            /** Question */
+            question: string;
+        };
+        /**
+         * InformationRequestOut
+         * @description The moderator's latest question (sequence (g)); `to` is BORROWER, LENDER or BOTH.
+         */
+        InformationRequestOut: {
+            /** To */
+            to: string;
+            /** Question */
+            question: string;
+            /**
+             * Deadline
+             * Format: date-time
+             */
+            deadline: string;
+        };
+        /** InformationRequestedOut */
+        InformationRequestedOut: {
+            /**
+             * Case Id
+             * Format: uuid
+             */
+            case_id: string;
+            /** Status */
+            status: string;
+            /**
+             * Deadline
+             * Format: date-time
+             */
+            deadline: string;
+        };
+        /**
+         * InvitationOut
+         * @description The code is shown once; only its hash is stored.
+         */
+        InvitationOut: {
+            /** Code */
+            code: string;
+            /**
+             * Expires At
+             * Format: date-time
+             */
+            expires_at: string;
+        };
+        /**
+         * ItemOut
+         * @description GET /items/{id}: the listing plus the dates already booked (B4, B5 step 1).
+         */
         ItemOut: {
             /**
              * Id
@@ -640,12 +954,60 @@ export interface components {
             id: string;
             /** Title */
             title: string;
+            /** Description */
+            description: string | null;
+            /** Category Id */
+            category_id: number;
+            /** Category Name */
+            category_name: string;
+            /** Community Name */
+            community_name: string;
+            /** Condition */
+            condition: string | null;
             /** Value Band */
             value_band: string;
             /** Deposit Amount */
             deposit_amount: number;
+            /** Usage Terms */
+            usage_terms: string | null;
+            /** Handover Method */
+            handover_method: string | null;
+            /** Search Terms */
+            search_terms: string | null;
+            /** Required Verification */
+            required_verification: string;
+            /** Status */
+            status: string;
+            /** Expires At */
+            expires_at: string | null;
+            /** Owner Name */
+            owner_name: string;
+            /** Is Yours */
+            is_yours: boolean;
             /** Booked Periods */
             booked_periods: string[];
+        };
+        /** JoinIn */
+        JoinIn: {
+            fix?: components["schemas"]["FixIn"] | null;
+            /**
+             * Permission Refused
+             * @default false
+             */
+            permission_refused: boolean;
+            /** Invitation Code */
+            invitation_code?: string | null;
+        };
+        /** JoinOut */
+        JoinOut: {
+            /**
+             * Membership Id
+             * Format: uuid
+             */
+            membership_id: string;
+            /** Status */
+            status: string;
+            locality: components["schemas"]["LocalityOut"];
         };
         /** LenderRequestOut */
         LenderRequestOut: {
@@ -668,12 +1030,199 @@ export interface components {
             /** Requested Period */
             requested_period: string;
         };
+        /** ListingCreateIn */
+        ListingCreateIn: {
+            /** Title */
+            title?: string | null;
+            /** Description */
+            description?: string | null;
+            /** Category Id */
+            category_id?: number | null;
+            /** Condition */
+            condition?: ("NEW" | "GOOD" | "FAIR" | "WORN") | null;
+            /** Value Band */
+            value_band?: ("LOW" | "MEDIUM" | "HIGH") | null;
+            /** Deposit Amount */
+            deposit_amount?: number | null;
+            /** Usage Terms */
+            usage_terms?: string | null;
+            /** Handover Method */
+            handover_method?: string | null;
+            /** Search Terms */
+            search_terms?: string | null;
+            /** Expires At */
+            expires_at?: string | null;
+            /**
+             * Community Id
+             * Format: uuid
+             */
+            community_id: string;
+            /**
+             * Publish
+             * @default false
+             */
+            publish: boolean;
+        };
+        /**
+         * ListingOut
+         * @description A listing as its owner or a member sees it. The owner is named, never identified by id.
+         */
+        ListingOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Title */
+            title: string;
+            /** Description */
+            description: string | null;
+            /** Category Id */
+            category_id: number;
+            /** Category Name */
+            category_name: string;
+            /** Community Name */
+            community_name: string;
+            /** Condition */
+            condition: string | null;
+            /** Value Band */
+            value_band: string;
+            /** Deposit Amount */
+            deposit_amount: number;
+            /** Usage Terms */
+            usage_terms: string | null;
+            /** Handover Method */
+            handover_method: string | null;
+            /** Search Terms */
+            search_terms: string | null;
+            /** Required Verification */
+            required_verification: string;
+            /** Status */
+            status: string;
+            /** Expires At */
+            expires_at: string | null;
+            /** Owner Name */
+            owner_name: string;
+            /** Is Yours */
+            is_yours: boolean;
+        };
+        /** ListingUpdateIn */
+        ListingUpdateIn: {
+            /** Title */
+            title?: string | null;
+            /** Description */
+            description?: string | null;
+            /** Category Id */
+            category_id?: number | null;
+            /** Condition */
+            condition?: ("NEW" | "GOOD" | "FAIR" | "WORN") | null;
+            /** Value Band */
+            value_band?: ("LOW" | "MEDIUM" | "HIGH") | null;
+            /** Deposit Amount */
+            deposit_amount?: number | null;
+            /** Usage Terms */
+            usage_terms?: string | null;
+            /** Handover Method */
+            handover_method?: string | null;
+            /** Search Terms */
+            search_terms?: string | null;
+            /** Expires At */
+            expires_at?: string | null;
+            /** Status */
+            status?: ("DRAFT" | "PUBLISHED" | "PAUSED") | null;
+        };
+        /**
+         * LocalityOut
+         * @description The outcome in neutral words; never a rejection (FR-A-08).
+         */
+        LocalityOut: {
+            /**
+             * Outcome
+             * @enum {string}
+             */
+            outcome: "VERIFIED" | "INCONCLUSIVE" | "CONFLICTING";
+            /** Message */
+            message: string;
+            /** Invitation Used */
+            invitation_used: boolean;
+        };
         /** LoginIn */
         LoginIn: {
             /** Email */
             email: string;
             /** Password */
             password: string;
+        };
+        /**
+         * MarkReadIn
+         * @description `ids` omitted means "mark everything read".
+         */
+        MarkReadIn: {
+            /** Ids */
+            ids?: string[] | null;
+        };
+        /** MarkReadOut */
+        MarkReadOut: {
+            /** Marked */
+            marked: number;
+        };
+        /** MembershipDecisionIn */
+        MembershipDecisionIn: {
+            /**
+             * Kind
+             * @enum {string}
+             */
+            kind: "APPROVED" | "REJECTED" | "INFO_REQUESTED" | "REVERSED";
+            /** Reason */
+            reason: string;
+            /** Reverses Decision Id */
+            reverses_decision_id?: string | null;
+        };
+        /** MembershipDecisionOut */
+        MembershipDecisionOut: {
+            /**
+             * Membership Id
+             * Format: uuid
+             */
+            membership_id: string;
+            /** Status */
+            status: string;
+        };
+        /** MembershipQueueOut */
+        MembershipQueueOut: {
+            /**
+             * Membership Id
+             * Format: uuid
+             */
+            membership_id: string;
+            /** Status */
+            status: string;
+            /**
+             * Requested At
+             * Format: date-time
+             */
+            requested_at: string;
+            /**
+             * Community Id
+             * Format: uuid
+             */
+            community_id: string;
+            /** Community Name */
+            community_name: string;
+            /** Applicant Name */
+            applicant_name: string;
+            /** Locality Outcome */
+            locality_outcome: string | null;
+            /** Boundary Signal */
+            boundary_signal: string | null;
+            /** Invitation Used */
+            invitation_used: boolean;
+            /** Permission Refused */
+            permission_refused: boolean;
+            /** Mock Provider Detected */
+            mock_provider_detected: boolean;
+            /** Duplicate Suspected */
+            duplicate_suspected: boolean;
         };
         /**
          * ModeratorCaseOut
@@ -705,6 +1254,35 @@ export interface components {
             assessment: components["schemas"]["AssessmentOut"] | null;
             /** Decisions */
             decisions: components["schemas"]["DecisionOut"][];
+            information_request?: components["schemas"]["InformationRequestOut"] | null;
+            /**
+             * Statements
+             * @default []
+             */
+            statements: components["schemas"]["StatementOut"][];
+        };
+        /** MyListingOut */
+        MyListingOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Title */
+            title: string;
+            /** Value Band */
+            value_band: string;
+            /** Deposit Amount */
+            deposit_amount: number;
+            /** Status */
+            status: string;
+            /** Condition */
+            condition: string | null;
+            /**
+             * Updated At
+             * Format: date-time
+             */
+            updated_at: string;
         };
         /** MyRequestOut */
         MyRequestOut: {
@@ -732,6 +1310,30 @@ export interface components {
             counterpart_name: string;
             /** Assurance State */
             assurance_state: string | null;
+        };
+        /**
+         * NotificationOut
+         * @description One in-app notification. The app writes the sentence from `type` and `payload`.
+         */
+        NotificationOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Type */
+            type: string;
+            /** Payload */
+            payload: {
+                [key: string]: unknown;
+            };
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /** Read At */
+            read_at: string | null;
         };
         /**
          * PathOut
@@ -824,6 +1426,43 @@ export interface components {
              * @default []
              */
             moderator_safeguards: unknown[];
+        };
+        /** StatementCreatedOut */
+        StatementCreatedOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Case Status */
+            case_status: string;
+        };
+        /** StatementIn */
+        StatementIn: {
+            /** Statement */
+            statement: string;
+        };
+        /**
+         * StatementOut
+         * @description A party's response on a case. The author is named and given by role, never by id.
+         */
+        StatementOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Author Role */
+            author_role: string;
+            /** Author Name */
+            author_name: string;
+            /** Statement */
+            statement: string;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
         };
         /** TokenOut */
         TokenOut: {
@@ -943,6 +1582,41 @@ export interface operations {
             };
         };
     };
+    update_listing_api_v1_items__item_id__patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                item_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ListingUpdateIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ListingOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     my_requests_api_v1_requests_get: {
         parameters: {
             query?: never;
@@ -1043,6 +1717,39 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["BrowseItemOut"][];
+                };
+            };
+        };
+    };
+    create_listing_api_v1_items_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ListingCreateIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ListingOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
                 };
             };
         };
@@ -1512,6 +2219,333 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["CommandOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    inbox_api_v1_notifications_get: {
+        parameters: {
+            query?: {
+                unread?: boolean;
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["InboxOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    mark_read_api_v1_notifications_read_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["MarkReadIn"] | null;
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MarkReadOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    communities_api_v1_communities_get: {
+        parameters: {
+            query?: {
+                query?: string | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CommunityListOut"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    join_api_v1_communities__community_id__join_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                community_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["JoinIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["JoinOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    invite_api_v1_communities__community_id__invitations_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                community_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["InvitationOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    membership_queue_api_v1_moderation_memberships_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MembershipQueueOut"][];
+                };
+            };
+        };
+    };
+    decide_membership_api_v1_moderation_memberships__membership_id__decision_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                membership_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["MembershipDecisionIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MembershipDecisionOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    categories_api_v1_categories_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CategoryOut"][];
+                };
+            };
+        };
+    };
+    my_listings_api_v1_me_items_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MyListingOut"][];
+                };
+            };
+        };
+    };
+    request_information_api_v1_moderation_cases__case_id__information_requests_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                case_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["InformationRequestIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["InformationRequestedOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    add_statement_api_v1_cases__case_id__statements_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                case_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["StatementIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StatementCreatedOut"];
                 };
             };
             /** @description Validation Error */

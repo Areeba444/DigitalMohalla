@@ -156,7 +156,8 @@ def test_ui_endpoints_names_actions_and_lists(client: TestClient, world: World) 
 
     browse = client.get("/api/v1/items", headers=borrower).json()
     assert item in [i["id"] for i in browse]
-    assert not client.get("/api/v1/items", headers=lender).json()  # owner sees none of own items
+    shown = {i["id"] for i in client.get("/api/v1/items", headers=lender).json()}
+    assert not shown & {str(i) for i in world.items}  # an owner never sees their own items
 
     txn = client.post(
         "/api/v1/requests",
