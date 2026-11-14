@@ -222,6 +222,54 @@ export default function Profile() {
         </Pressable>
       </Card>
 
+      {/* Community Directory & Verification links (W9 & W10) */}
+      <Card style={{ gap: 10 }}>
+        <SectionLabel>My Community</SectionLabel>
+        <Pressable
+          accessibilityRole="button"
+          onPress={() => router.push('/community/join')}
+          style={({ pressed }) => ({
+            flexDirection: 'row',
+            alignItems: 'center',
+            gap: 12,
+            padding: 12,
+            borderRadius: theme.radius.sm,
+            backgroundColor: theme.colors.surface2,
+            opacity: pressed ? 0.75 : 1,
+          })}>
+          <Icon name="location_city" size={20} color={theme.colors.primary} />
+          <View style={{ flex: 1, gap: 2 }}>
+            <Text style={{ fontFamily: theme.fonts.bold, fontSize: 14, color: theme.colors.text }}>
+              Community directory
+            </Text>
+            <Caption>Switch or join a new mohalla</Caption>
+          </View>
+          <Icon name="chevron_right" size={18} color={theme.colors.textSecondary} />
+        </Pressable>
+
+        <Pressable
+          accessibilityRole="button"
+          onPress={() => router.push('/community/verify')}
+          style={({ pressed }) => ({
+            flexDirection: 'row',
+            alignItems: 'center',
+            gap: 12,
+            padding: 12,
+            borderRadius: theme.radius.sm,
+            backgroundColor: theme.colors.surface2,
+            opacity: pressed ? 0.75 : 1,
+          })}>
+          <Icon name="my_location" size={20} color={theme.colors.accent} />
+          <View style={{ flex: 1, gap: 2 }}>
+            <Text style={{ fontFamily: theme.fonts.bold, fontSize: 14, color: theme.colors.text }}>
+              Verify neighbourhood locality
+            </Text>
+            <Caption>One-time boundary check or invite code</Caption>
+          </View>
+          <Icon name="chevron_right" size={18} color={theme.colors.textSecondary} />
+        </Pressable>
+      </Card>
+
       {waiting > 0 ? (
         <Card>
           <SectionLabel>Moderation</SectionLabel>

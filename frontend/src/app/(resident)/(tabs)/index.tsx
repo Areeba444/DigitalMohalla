@@ -96,21 +96,45 @@ export default function Home() {
         <Stat icon="task_alt" value={done.length} label="Completed" />
       </View>
 
-      {/* Quick-action row */}
-      <View style={{ flexDirection: 'row', gap: 10 }}>
-        <Button
-          label="Share an item"
-          icon="add_circle"
-          variant="outline"
-          onPress={() => router.navigate('/item/create')}
-        />
-        <Button
-          label="Notifications"
-          icon="notifications"
-          variant="outline"
-          onPress={() => router.navigate('/notifications')}
-        />
-      </View>
+      {/* Primary quick action */}
+      <Pressable
+        accessibilityRole="button"
+        accessibilityLabel="Share an item with your neighbours"
+        onPress={() => router.navigate('/item/create')}
+        style={({ pressed }) => ({
+          flexDirection: 'row',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          paddingHorizontal: 16,
+          paddingVertical: 14,
+          borderRadius: theme.radius.lg,
+          backgroundColor: theme.colors.surface,
+          borderWidth: 1.5,
+          borderColor: theme.colors.primary,
+          boxShadow: theme.shadow.card,
+          opacity: pressed ? 0.85 : 1,
+        })}>
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+          <View
+            style={{
+              width: 40,
+              height: 40,
+              borderRadius: 20,
+              backgroundColor: theme.colors.primarySoft,
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}>
+            <Icon name="add_circle" size={24} color={theme.colors.primary} />
+          </View>
+          <View style={{ gap: 2 }}>
+            <Text style={{ fontFamily: theme.fonts.bold, fontSize: 16, color: theme.colors.text }}>
+              Share an item
+            </Text>
+            <Caption>List a tool or household item for neighbours</Caption>
+          </View>
+        </View>
+        <Icon name="arrow_forward" size={20} color={theme.colors.primary} />
+      </Pressable>
 
       {requests.isLoading ? <Loading /> : null}
       {requests.error ? (

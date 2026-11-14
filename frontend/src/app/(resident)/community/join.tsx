@@ -11,6 +11,7 @@ import { useState } from 'react';
 import { Text, View } from 'react-native';
 
 import {
+  BackButton,
   Body,
   Button,
   Caption,
@@ -92,8 +93,16 @@ export default function JoinCommunity() {
   const selectedCommunity = mockCommunities.find((c) => c.id === selected);
   const needsCode = selectedCommunity?.requires_code;
 
+  function handleSelect(c: MockCommunity) {
+    setSelected(c.id);
+    if (!c.requires_code) {
+      router.push({ pathname: '/community/verify', params: { communityId: c.id, communityName: c.name } });
+    }
+  }
+
   return (
     <Screen title="Choose your community" subtitle="Your neighbourhood in Digital Mohalla">
+      <BackButton />
       <Field icon="search" value={query} onChangeText={setQuery} placeholder="Search by name or sector" />
 
       {filtered.length === 0 ? (
@@ -108,7 +117,7 @@ export default function JoinCommunity() {
             key={c.id}
             community={c}
             selected={selected === c.id}
-            onSelect={() => setSelected(c.id)}
+            onSelect={() => handleSelect(c)}
           />
         ))
       )}

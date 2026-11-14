@@ -6,6 +6,7 @@
  * - Privacy banner uses neutral INFO tone, never warning/red (zero GPS stored is a feature, not a risk).
  * - Inline field-level validation — errors appear below each field, not as a modal.
  */
+import { router } from 'expo-router';
 import { useState } from 'react';
 import { Text, View } from 'react-native';
 
@@ -46,11 +47,10 @@ export default function Register() {
   async function handleSubmit() {
     setError(null);
     setSubmitting(true);
-    // Stub: replace with real useRegister() mutation when backend ready
-    await new Promise((r) => setTimeout(r, 800));
+    // Stub: simulate registration success and continue to community onboarding
+    await new Promise((r) => setTimeout(r, 600));
     setSubmitting(false);
-    // On success: router.replace('/(resident)/community/join')
-    setError('Registration is not yet connected to the backend (design phase).');
+    router.replace('/community/join');
   }
 
   return (
