@@ -211,46 +211,57 @@ export default function SettingsScreen() {
       {/* Theme / Appearance Selection */}
       <Card style={{ gap: 10 }}>
         <SectionLabel>Appearance Theme</SectionLabel>
-        <View style={{ flexDirection: 'row', gap: 12 }}>
-          {themes.map((t) => {
-            const selected = theme.name === t.name;
-            const color = t.name === 'terracotta' ? '#C1623F' : '#4A7C59';
-            return (
-              <Pressable
-                key={t.name}
-                accessibilityRole="radio"
-                accessibilityLabel={`${t.label} theme`}
-                accessibilityState={{ selected }}
-                onPress={() => setTheme(t.name)}
-                style={({ pressed }) => ({
-                  flex: 1,
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  gap: 10,
-                  padding: 12,
-                  borderRadius: theme.radius.md,
-                  borderWidth: 2,
-                  borderColor: selected ? theme.colors.primary : theme.colors.border,
-                  backgroundColor: selected ? theme.colors.primarySoft : theme.colors.surface,
-                  opacity: pressed ? 0.8 : 1,
-                })}>
-                <View
-                  style={{
-                    width: 24,
-                    height: 24,
-                    borderRadius: 12,
-                    backgroundColor: color,
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                  }}>
-                  {selected ? <Icon name="check" size={14} color="#fff" /> : null}
-                </View>
-                <Text style={{ fontFamily: theme.fonts.bold, fontSize: 14, color: theme.colors.text }}>
-                  {t.label}
-                </Text>
-              </Pressable>
-            );
-          })}
+        {/* 2×2 grid so all four themes fit nicely on mobile */}
+        <View style={{ gap: 10 }}>
+          {[themes.slice(0, 2), themes.slice(2, 4)].map((row, rowIdx) => (
+            <View key={rowIdx} style={{ flexDirection: 'row', gap: 10 }}>
+              {row.map((t) => {
+                const selected = theme.name === t.name;
+                return (
+                  <Pressable
+                    key={t.name}
+                    accessibilityRole="radio"
+                    accessibilityLabel={`${t.label} theme`}
+                    accessibilityState={{ selected }}
+                    onPress={() => setTheme(t.name)}
+                    style={({ pressed }) => ({
+                      flex: 1,
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                      gap: 10,
+                      paddingHorizontal: 12,
+                      paddingVertical: 14,
+                      borderRadius: theme.radius.md,
+                      borderWidth: 2,
+                      borderColor: selected ? theme.colors.primary : theme.colors.border,
+                      backgroundColor: selected ? theme.colors.primarySoft : theme.colors.surface,
+                      opacity: pressed ? 0.8 : 1,
+                    })}>
+                    {/* Swatch uses each theme's own primary colour */}
+                    <View
+                      style={{
+                        width: 26,
+                        height: 26,
+                        borderRadius: 13,
+                        backgroundColor: t.colors.primary,
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                      }}>
+                      {selected ? <Icon name="check" size={14} color={t.colors.onPrimary} /> : null}
+                    </View>
+                    <View style={{ flex: 1 }}>
+                      <Text style={{ fontFamily: theme.fonts.bold, fontSize: 13, color: theme.colors.text }}>
+                        {t.label}
+                      </Text>
+                      <Text style={{ fontFamily: theme.fonts.regular, fontSize: 11, color: theme.colors.textMuted }}>
+                        {t.tagline}
+                      </Text>
+                    </View>
+                  </Pressable>
+                );
+              })}
+            </View>
+          ))}
         </View>
       </Card>
 
