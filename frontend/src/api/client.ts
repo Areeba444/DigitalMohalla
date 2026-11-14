@@ -7,9 +7,40 @@ import type { paths } from './schema';
 
 export const API_URL = process.env.EXPO_PUBLIC_API_URL ?? 'http://localhost:8000';
 const TOKEN_KEY = 'dm-token';
+const USER_KEY = 'dm-user';
+
+export type StoredUser = { email?: string; name?: string };
 
 // Login token: session storage on web (cleared when the tab closes), secure store on Android.
 let memoryToken: string | null = null;
+let memoryUser: StoredUser | null = null;
+
+export async function loadUser(): Promise<StoredUser | null> {
+  try {
+    const raw =
+      Platform.OS === 'web'
+        ? window.sessionStorage.getItem(USER_KEY)
+        : await SecureStore.getItemAsync(USER_KEY);
+    memoryUser = raw ? JSON.parse(raw) : null;
+  } catch {
+    memoryUser = null;
+  }
+  return memoryUser;
+}
+
+export async function saveUser(user: StoredUser | null): Promise<void> {
+  memoryUser = user;
+  try {
+    const raw = user ? JSON.stringify(user) : null;
+    if (Platform.OS === 'web') {
+      if (raw) window.sessionStorage.setItem(USER_KEY, raw);
+      else window.sessionStorage.removeItem(USER_KEY);
+    } else if (raw) await SecureStore.setItemAsync(USER_KEY, raw);
+    else await SecureStore.deleteItemAsync(USER_KEY);
+  } catch {
+    /* ignore */
+  }
+}
 
 export async function loadToken(): Promise<string | null> {
   try {
