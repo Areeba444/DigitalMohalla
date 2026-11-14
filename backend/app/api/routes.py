@@ -371,5 +371,7 @@ def decide_case(
     actor: Actor = Depends(current_actor),
     commands: Commands = Depends(get_commands),
 ) -> schemas.CommandOut:
-    decision = Decision(body.kind, body.reason, tuple(body.safeguards), body.at_fault)
+    decision = Decision(
+        body.kind, body.reason, tuple(body.safeguards), body.at_fault, body.possession
+    )
     return _out(commands.run(lambda svc: svc.decide(actor, case_id, decision)))
