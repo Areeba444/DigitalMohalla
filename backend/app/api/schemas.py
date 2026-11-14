@@ -494,3 +494,24 @@ class MembershipDecisionIn(StrictIn):
 class MembershipDecisionOut(BaseModel):
     membership_id: UUID
     status: str
+
+
+# ----------------------------------------------------------------------------- scheduler (B13)
+class JobRunIn(StrictIn):
+    """`as_of` is honoured only when the API runs with DEMO_CLOCK on (ADR-0012 point 5)."""
+
+    as_of: datetime | None = None
+
+
+class JobCountsOut(BaseModel):
+    job: str
+    ran: int
+    skipped: int
+    failed: int
+    errors: list[str]
+
+
+class JobReportOut(BaseModel):
+    now: datetime
+    lock_acquired: bool
+    jobs: list[JobCountsOut]

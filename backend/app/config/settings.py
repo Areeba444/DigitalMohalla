@@ -22,6 +22,12 @@ class Settings(BaseSettings):
     # any localhost port is also allowed by default, because Expo moves to another port when 8081
     # is busy; set to an empty string in deployment and list real origins in cors_origins
     cors_origin_regex: str = r"^http://(localhost|127\.0\.0\.1)(:\d+)?$"
+    # ADR-0012: the token GitHub Actions sends to POST /internal/jobs/run; unset means the endpoint
+    # answers 503. A Render environment variable and a GitHub secret, never in the repository.
+    job_token: str | None = None
+    # ADR-0012 point 5: only when true may a jobs call pass `as_of` (a demo or test clock). Off in
+    # normal running, so nobody can make the scheduler act as if it were later than it is.
+    demo_clock: bool = False
 
 
 @lru_cache
