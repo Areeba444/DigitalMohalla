@@ -9,6 +9,7 @@ dependencies = [
     "argon2-cffi>=25.1.0",
     "fastapi>=0.143.2",
     "numpy>=2.5.4",
+    "pillow>=11",
     "psycopg[binary]>=3.3.6",
     "pydantic>=2.14.3",
     "pydantic-settings>=2.16.0",
@@ -55,4 +56,4 @@ strict = true
 files = ["app/domain"]
 
 [tool.ruff.lint.flake8-bugbear]
-extend-immutable-calls = ["fastapi.Depends", "fastapi.Query"]
+extend-immutable-calls = ["fastapi.Depends", "fastapi.Query", "fastapi.File", "fastapi.Form"]
