@@ -214,6 +214,7 @@ def write_tables(w: World, out: Path) -> dict[str, int]:
             "category_id",
             "title",
             "description",
+            "condition",
             "value_band",
             "deposit_amount",
             "required_verification",
@@ -227,7 +228,10 @@ def write_tables(w: World, out: Path) -> dict[str, int]:
                 "community_id": uid("community", it.community),
                 "category_id": cat_id[it.category],
                 "title": it.title,
-                "description": None,
+                # schema v2.4 (item_published_complete_ck): a published listing has a description
+                # and a condition. Plain synthetic text; the search catalogue (DA-25) is separate.
+                "description": f"{it.title}, in working order. Synthetic listing.",
+                "condition": "GOOD",
                 "value_band": it.band,
                 "deposit_amount": it.deposit,
                 "required_verification": "COMMUNITY_VERIFIED",

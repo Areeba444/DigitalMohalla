@@ -97,13 +97,15 @@ def test_open_loans_and_open_disputes_have_no_outcomes(engine: Engine) -> None:
         n = c.execute(
             text(
                 "SELECT count(*) FROM outcome o JOIN borrowing_transaction t ON t.id = o.transaction_id "
-                "WHERE t.current_state NOT IN ('COMPLETED')"
+                "WHERE t.current_state NOT IN ('COMPLETED', 'NO_SHOW')"
             )
         ).scalar_one()
         disputed = c.execute(
             text("SELECT count(*) FROM borrowing_transaction WHERE current_state = 'DISPUTED'")
         ).scalar_one()
     assert disputed >= 1  # the dataset has open disputes (ES-03b, ES-07, ES-08)
+    # A dispute raised before handover and resolved NOT_HANDED_OVER ends NO_SHOW and keeps its
+    # at-fault finding as evidence (ADR-0009); every loan that is still open has no outcome.
     assert n == 0
 
 

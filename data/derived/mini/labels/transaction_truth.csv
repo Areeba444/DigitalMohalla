@@ -40,7 +40,7 @@ adff2913-b0f0-5c26-8bf8-d24eac5bced8,T0038,es05,completed,COMPLETED,,false,false
 a610b215-914f-535c-9f6e-54598cea4cfc,T0039,es05,completed,COMPLETED,,false,false,,false
 eddddcf7-df91-5d77-be35-9500d8e8c942,T0040,es05,completed,COMPLETED,,false,false,,false
 cc35c827-0cb3-5229-b692-d388cc64466b,T0041,es05_confirmed_loan,completed,COMPLETED,,false,false,,false
-fabfda8e-0a8e-599a-a1e5-cf3c145275f9,T0042,es05_complaint,completed,COMPLETED,,false,true,lender,false
+fabfda8e-0a8e-599a-a1e5-cf3c145275f9,T0042,es05_complaint,completed,NO_SHOW,,false,true,lender,false
 05533649-0594-53e8-9bf4-ff50b1e0a0c5,T0043,request_under_test,pending,LOCALITY_CHECKED,,false,false,,true
 896f046d-d1f6-5818-9297-68ae16cb9623,T0044,,completed,COMPLETED,,false,false,,false
 b983142e-80bb-5eb7-a569-3b6d45121b6e,T0045,,completed,COMPLETED,,false,false,,false
