@@ -5,10 +5,10 @@
  *                  Warm clay primary, forest-green accent, Fraunces serif headlines (team design system).
  * - creamGreen:    the illustrated houses under a sky (assets/images/themes/cream-green.jpg).
  *                  Cream paper, sage/moss primary, slate text, sky accent, Plus Jakarta Sans headlines.
- * - alpineMeadow:  mountain goat on alpine rocks (assets/images/themes/option3.jpeg).
- *                  Off-white base, olive-green primary, steel-blue accent, mauve secondary.
- * - highPeak:      panoramic mountain ridge (assets/images/themes/option4.jpeg).
- *                  Light lavender base, slate-blue primary, rust/burgundy accent, sage secondary.
+ * - stonyBlue:     mountain goat on alpine rocks (assets/images/themes/option3.jpeg).
+ *                  Warm cream base, steel-blue primary (#608FA3), dusty-plum accent (#895377).
+ * - ridgeline:     panoramic mountain ridge (assets/images/themes/option4.jpeg).
+ *                  Soft lavender base, indigo-slate primary (#536299), deep-rust accent (#7C3539).
  *
  * ─── HOW TO EXPERIMENT WITH COLORS ──────────────────────────────────────────
  * Edit the hex values directly in the `colors` block of any theme below.
@@ -212,132 +212,154 @@ export const creamGreen: Theme = {
   },
 };
 
-// ─── Theme 3: Alpine Meadow ──────────────────────────────────────────────────
-// Inspired by the mountain-goat palette (option3.jpeg):
-//   Off-white base  · Olive green primary  · Steel blue accent  · Mauve secondary
+// ─── Theme 3: Stony Blue ─────────────────────────────────────────────────────
+// Exact palette from option3.jpeg:
+//   #EFE9E7 warm cream  ·  #BCCC83 lime-sage  ·  #608FA3 steel-blue
+//   #895377 dusty plum  ·  #55565B charcoal
+//
+// Design rationale:
+//   Primary  → #608FA3 steel-blue   — calm, trustworthy, great WCAG contrast on cream
+//   Accent   → #895377 dusty plum   — warm complement to blue, used for highlights
+//   BG       → #EFE9E7 warm cream   — the lightest chip, airy and clean
+//   #BCCC83 (lime-sage) → reserved for success / positive states only
+//   #55565B  → body text
 // ─────────────────────────────────────────────────────────────────────────────
-export const alpineMeadow: Theme = {
-  name: 'alpine-meadow',
-  label: 'Alpine Meadow',
-  tagline: 'Fresh heights, grounded roots',
+export const stonyBlue: Theme = {
+  name: 'stony-blue',
+  label: 'Stony Blue',
+  tagline: 'Still waters, sure footing',
   colors: {
     // ── Backgrounds ──────────────────────────────────────────────────────────
-    bg: '#F4F1EC',           // warm off-white  (matches palette chip 1)
-    surface: '#FDFCF9',      // near-white card surface
-    surface2: '#EAE6DE',     // subtle warm grey for inputs / chips
-    glass: 'rgba(253, 252, 249, 0.82)',
+    bg:       '#EFE9E7',              // exact palette chip 1 — warm cream
+    surface:  '#FDFAF9',             // lightest card white with warm cast
+    surface2: '#E4DDD9',             // slightly deeper cream for inputs/chips
+    glass:    'rgba(253,250,249,0.82)',
     // ── Text ─────────────────────────────────────────────────────────────────
-    text: '#1C1E1A',         // near-black with green undertone
-    textSecondary: '#50584C',
-    textMuted: '#7F8A78',
+    text:          '#2A2B2F',        // deeper than #55565B — crisp on cream bg
+    textSecondary: '#55565B',        // exact palette chip 5
+    textMuted:     '#8E9094',        // lightened charcoal for placeholders
     // ── Borders ──────────────────────────────────────────────────────────────
-    border: '#D8D3C8',
-    hairline: 'rgba(28, 30, 26, 0.08)',
-    // ── Primary — olive green (palette chip 2: #8A9E4E approx) ───────────────
-    primary: '#7A9140',      // deep olive — CTA buttons, active tab
-    primaryDeep: '#5F7030',  // pressed / darker shade
-    primarySoft: '#E8EDD8',  // faint tint — avatar bg, selected chip
-    onPrimary: '#FFFFFF',
-    // ── Accent — steel / muted teal-blue (palette chip 3) ────────────────────
-    accent: '#4A7E96',       // steel blue — icons, links, info
-    accentSoft: '#DDF0F5',
+    border:   '#D5CEC9',
+    hairline: 'rgba(42,43,47,0.08)',
+    // ── Primary — steel blue ─────────────────────────────────────────────────
+    primary:     '#608FA3',          // exact palette chip 3
+    primaryDeep: '#477284',          // 15 % darker — pressed state
+    primarySoft: '#DFF0F6',          // very light blue tint — avatar bg, chips
+    onPrimary:   '#FFFFFF',
+    // ── Accent — dusty plum ──────────────────────────────────────────────────
+    accent:     '#895377',           // exact palette chip 4
+    accentSoft: '#F3E8F0',           // faint plum tint
     // ── Semantic tones ───────────────────────────────────────────────────────
-    success: tone('#5C8C3E', '#E8F4E0', '#BFD9A8'),
-    warning: tone('#9A6B10', '#FBF3E0', '#EAD39C'),
-    danger:  tone('#A8322C', '#FCEDEC', '#F2B8B5'),
-    info:    tone('#4A7E96', '#E0EFF5', '#B8D6E5'),
-    neutral: tone('#50584C', '#EAE6DE', '#CFC9BC'),
+    // success reuses lime-sage (#BCCC83) — the only right spot for it
+    success: tone('#5C7A30', '#EDF3DC', '#BCCC83'),
+    warning: tone('#8A6010', '#FBF3E0', '#EAD39C'),
+    danger:  tone('#A0302A', '#FCEDEC', '#F2B8B5'),
+    info:    tone('#608FA3', '#DFF0F6', '#AED2E0'),
+    neutral: tone('#55565B', '#E4DDD9', '#CFC6C0'),
   },
   state: {
-    SUFFICIENT_EVIDENCE:   tone('#5C8C3E', '#E8F4E0', '#BFD9A8'),
-    REVIEW_RECOMMENDED:    tone('#9A6B10', '#FBF3E0', '#EAD39C'),
-    INSUFFICIENT_EVIDENCE: tone('#4A7E96', '#E0EFF5', '#B8D6E5'),
-    ACTIVE_DISPUTE:        tone('#A8322C', '#FCEDEC', '#F2B8B5'),
+    SUFFICIENT_EVIDENCE:   tone('#5C7A30', '#EDF3DC', '#BCCC83'),
+    REVIEW_RECOMMENDED:    tone('#8A6010', '#FBF3E0', '#EAD39C'),
+    INSUFFICIENT_EVIDENCE: tone('#608FA3', '#DFF0F6', '#AED2E0'),
+    ACTIVE_DISPUTE:        tone('#A0302A', '#FCEDEC', '#F2B8B5'),
   },
   hero: {
     image: require('../../assets/images/themes/option3.jpeg'),
+    // Dark-blue scrim matches the steel-blue primary family
     scrim:
-      'linear-gradient(180deg, rgba(20,24,18,0.10) 0%, rgba(20,24,18,0.26) 40%, rgba(20,24,18,0.88) 100%)',
-    text: '#F8F6F0',
-    textSoft: 'rgba(240, 238, 230, 0.88)',
-    button: 'linear-gradient(135deg, #96AA52 0%, #7A9140 50%, #60741E 100%)',
+      'linear-gradient(180deg, rgba(22,38,52,0.08) 0%, rgba(22,38,52,0.28) 45%, rgba(22,38,52,0.92) 100%)',
+    text:     '#F5F0EE',
+    textSoft: 'rgba(240,232,228,0.88)',
+    // Gradient runs from a lighter tint of primary to primaryDeep
+    button:   'linear-gradient(135deg, #72A4BA 0%, #608FA3 50%, #477284 100%)',
     statusBar: 'light',
-    position: 'top',
+    position:  'top',
   },
   shadow: {
-    card:  '0px 6px 20px rgba(40, 54, 24, 0.08)',
-    float: '0px 14px 36px rgba(40, 54, 24, 0.20)',
+    card:  '0px 6px 20px rgba(96,143,163,0.12)',
+    float: '0px 14px 36px rgba(96,143,163,0.24)',
   },
   radius: { sm: 12, md: 18, lg: 26, xl: 32, pill: 9999 },
   fonts: {
-    display: 'PlusJakartaSans_800ExtraBold',
+    display:    'PlusJakartaSans_800ExtraBold',
     displayAlt: 'PlusJakartaSans_800ExtraBold',
     ...jakarta,
   },
 };
 
-// ─── Theme 4: High Peak ──────────────────────────────────────────────────────
-// Inspired by the panoramic mountain ridge palette (option4.jpeg):
-//   Lavender-grey base  · Slate-blue primary  · Rust/burgundy accent  · Sage secondary
+// ─── Theme 4: Ridgeline ───────────────────────────────────────────────────────
+// Exact palette from option4.jpeg:
+//   #536299 indigo-slate  ·  #6D6F61 army-olive  ·  #7C3539 deep rust
+//   #73708D muted lavender  ·  #C5C4D4 soft lavender
+//
+// Design rationale:
+//   Primary  → #536299 indigo-slate  — rich, modern, high contrast against lavender bg
+//   Accent   → #7C3539 deep rust     — warm-cool split-complementary pair, used for
+//                                       accents, icons, links — creates instant visual drama
+//   BG       → lightened from #C5C4D4 — airy lavender without feeling heavy
+//   #73708D  → textMuted / subtle ui (muted lavender)
+//   #6D6F61  → textSecondary (earthy olive — grounds the palette)
 // ─────────────────────────────────────────────────────────────────────────────
-export const highPeak: Theme = {
-  name: 'high-peak',
-  label: 'High Peak',
-  tagline: 'Bold summits, steady paths',
+export const ridgeline: Theme = {
+  name: 'ridgeline',
+  label: 'Ridgeline',
+  tagline: 'Bold heights, quiet confidence',
   colors: {
     // ── Backgrounds ──────────────────────────────────────────────────────────
-    bg: '#EDEEF4',           // soft lavender-grey (palette chip 5)
-    surface: '#F7F8FC',      // near-white with cool tint
-    surface2: '#E0E2EC',     // muted blue-grey for inputs / chips
-    glass: 'rgba(247, 248, 252, 0.84)',
+    bg:       '#ECEBF2',              // lightened #C5C4D4 — soft lavender
+    surface:  '#F6F5FA',             // near-white with cool-lavender cast
+    surface2: '#DFDEEb',             // muted blue-grey for inputs/chips
+    glass:    'rgba(246,245,250,0.84)',
     // ── Text ─────────────────────────────────────────────────────────────────
-    text: '#1A1C28',         // deep blue-black
-    textSecondary: '#4A4E6A',
-    textMuted: '#7A7F9A',
+    text:          '#1C1D2A',        // deep blue-black — maximum contrast
+    textSecondary: '#4E5050',        // close to #6D6F61 — earthy olive-grey
+    textMuted:     '#73708D',        // exact palette chip 4 — muted lavender
     // ── Borders ──────────────────────────────────────────────────────────────
-    border: '#CBCEDC',
-    hairline: 'rgba(26, 28, 40, 0.09)',
-    // ── Primary — slate blue (palette chip 1: #4A5696 approx) ────────────────
-    primary: '#4A5696',      // slate blue — CTA buttons, active tab
-    primaryDeep: '#363E78',  // pressed / darker shade
-    primarySoft: '#DDE0F2',  // faint tint — avatar bg, selected chip
-    onPrimary: '#FFFFFF',
-    // ── Accent — rust / burgundy (palette chip 3: #883038 approx) ────────────
-    accent: '#8B3038',       // warm rust-red — highlights, links
-    accentSoft: '#F5E0E2',
+    border:   '#C8C7D4',
+    hairline: 'rgba(28,29,42,0.09)',
+    // ── Primary — indigo slate ───────────────────────────────────────────────
+    primary:     '#536299',          // exact palette chip 1
+    primaryDeep: '#3D4A7A',          // 15 % darker — pressed state
+    primarySoft: '#DDE0F0',          // very light indigo tint
+    onPrimary:   '#FFFFFF',
+    // ── Accent — deep rust ───────────────────────────────────────────────────
+    accent:     '#7C3539',           // exact palette chip 3 — the warm spark
+    accentSoft: '#F4E0E1',           // faint rust tint — badge bgs, soft pills
     // ── Semantic tones ───────────────────────────────────────────────────────
-    success: tone('#4A7A44', '#E4F2E2', '#B8D9B4'),
-    warning: tone('#8A6010', '#F9F0DC', '#E6CC96'),
-    danger:  tone('#8B3038', '#FCEDEE', '#F2B8BC'),
-    info:    tone('#4A5696', '#DDE0F2', '#B4BAE0'),
-    neutral: tone('#4A4E6A', '#E0E2EC', '#C2C6D8'),
+    success: tone('#3E7044', '#E2F0E4', '#B4D6B8'),
+    warning: tone('#7A5C10', '#F7EED8', '#DFC988'),
+    danger:  tone('#7C3539', '#F4E0E1', '#E8AAAC'),
+    info:    tone('#536299', '#DDE0F0', '#AAAEC8'),
+    neutral: tone('#4E5050', '#DFDEEb', '#C4C3CE'),
   },
   state: {
-    SUFFICIENT_EVIDENCE:   tone('#4A7A44', '#E4F2E2', '#B8D9B4'),
-    REVIEW_RECOMMENDED:    tone('#8A6010', '#F9F0DC', '#E6CC96'),
-    INSUFFICIENT_EVIDENCE: tone('#4A5696', '#DDE0F2', '#B4BAE0'),
-    ACTIVE_DISPUTE:        tone('#8B3038', '#FCEDEE', '#F2B8BC'),
+    SUFFICIENT_EVIDENCE:   tone('#3E7044', '#E2F0E4', '#B4D6B8'),
+    REVIEW_RECOMMENDED:    tone('#7A5C10', '#F7EED8', '#DFC988'),
+    INSUFFICIENT_EVIDENCE: tone('#536299', '#DDE0F0', '#AAAEC8'),
+    ACTIVE_DISPUTE:        tone('#7C3539', '#F4E0E1', '#E8AAAC'),
   },
   hero: {
     image: require('../../assets/images/themes/option4.jpeg'),
+    // Deep indigo scrim — matches the primary family, looks stunning on the mountain photo
     scrim:
-      'linear-gradient(180deg, rgba(26,28,40,0.08) 0%, rgba(26,28,40,0.24) 40%, rgba(26,28,40,0.90) 100%)',
-    text: '#F4F5FA',
-    textSoft: 'rgba(234, 236, 248, 0.88)',
-    button: 'linear-gradient(135deg, #5A69AE 0%, #4A5696 50%, #363E78 100%)',
+      'linear-gradient(180deg, rgba(28,30,52,0.06) 0%, rgba(28,30,52,0.22) 40%, rgba(28,30,52,0.92) 100%)',
+    text:     '#F2F2F8',
+    textSoft: 'rgba(224,224,238,0.88)',
+    // Button gradient across the full indigo range
+    button:   'linear-gradient(135deg, #6475AD 0%, #536299 50%, #3D4A7A 100%)',
     statusBar: 'light',
-    position: 'center',
+    position:  'center',
   },
   shadow: {
-    card:  '0px 6px 20px rgba(26, 28, 72, 0.09)',
-    float: '0px 14px 36px rgba(26, 28, 72, 0.22)',
+    card:  '0px 6px 20px rgba(83,98,153,0.12)',
+    float: '0px 14px 36px rgba(83,98,153,0.26)',
   },
   radius: { sm: 12, md: 18, lg: 26, xl: 32, pill: 9999 },
   fonts: {
-    display: 'PlusJakartaSans_800ExtraBold',
+    display:    'PlusJakartaSans_800ExtraBold',
     displayAlt: 'PlusJakartaSans_800ExtraBold',
     ...jakarta,
   },
 };
 
-export const themes: Theme[] = [terracotta, creamGreen, alpineMeadow, highPeak];
+export const themes: Theme[] = [terracotta, creamGreen, stonyBlue, ridgeline];
