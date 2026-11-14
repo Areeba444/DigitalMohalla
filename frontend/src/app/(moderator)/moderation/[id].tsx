@@ -1,4 +1,4 @@
-// W7: case adjudication (UC-I4 1-4, 3c, 4a; FR-T-11; ADR-0003, ADR-0004; NFR-U-01; TC-107).
+// W7: case adjudication (UC-I4 1-4, 3c, 4a; FR-T-11; ADR-0003, ADR-0004, ADR-0009; NFR-U-01; TC-107).
 import { useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
 import { Text, View } from 'react-native';
@@ -20,10 +20,20 @@ import {
   Field,
   lifecycleLabel,
   Loading,
+  PossessionRadio,
   Screen,
   SectionLabel,
 } from '@/components/ui';
-import { caseCode, decisionOptions, HOLD_LABEL, isDispute, type DecisionOption } from '@/lib/moderation';
+import {
+  caseCode,
+  decisionOptions,
+  disputeStage,
+  HOLD_LABEL,
+  isDispute,
+  possessionOptions,
+  type DecisionOption,
+  type Possession,
+} from '@/lib/moderation';
 import { formatTime } from '@/lib/format';
 import { useTheme } from '@/theme/ThemeProvider';
 
@@ -86,13 +96,19 @@ function DecisionForm({ c, onDone }: { c: ModeratorCase; onDone: () => void }) {
   const decide = useDecide(c.case.id);
   const options = decisionOptions(c.state, c.hold_reason);
   const [choice, setChoice] = useState<DecisionOption | null>(null);
+  const [possession, setPossession] = useState<Possession | null>(null);
+  const dispute = c.state === 'DISPUTED';
+  const where = dispute ? possessionOptions(disputeStage(c.events)) : [];
   const [reason, setReason] = useState('');
   const [safeguards, setSafeguards] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [conflict, setConflict] = useState(false);
   const lines = safeguards.split('\n').map((s) => s.trim()).filter(Boolean);
   const ready =
-    choice !== null && reason.trim().length > 0 && (choice.kind !== 'SAFEGUARDS_IMPOSED' || lines.length > 0);
+    choice !== null &&
+    reason.trim().length > 0 &&
+    (choice.kind !== 'SAFEGUARDS_IMPOSED' || lines.length > 0) &&
+    (!dispute || possession !== null); // ADR-0009: a dispute closes only with the item's possession
   if (options.length === 0) return null;
   return (
     <Card>
@@ -103,6 +119,23 @@ function DecisionForm({ c, onDone }: { c: ModeratorCase; onDone: () => void }) {
         ))}
       </View>
       {choice ? <Caption>{choice.help}</Caption> : null}
+      {dispute ? (
+        <>
+          <SectionLabel>Where is the item now?</SectionLabel>
+          <View accessibilityRole="radiogroup" style={{ gap: 8 }}>
+            {where.map((o) => (
+              <PossessionRadio
+                key={o.value}
+                icon={o.icon}
+                label={o.label}
+                description={o.description}
+                selected={possession === o.value}
+                onPress={() => setPossession(o.value)}
+              />
+            ))}
+          </View>
+        </>
+      ) : null}
       {choice?.kind === 'SAFEGUARDS_IMPOSED' ? (
         <Field
           label="Safeguards for the lender (one per line)"
@@ -141,6 +174,7 @@ function DecisionForm({ c, onDone }: { c: ModeratorCase; onDone: () => void }) {
               reason: reason.trim(),
               safeguards: choice.kind === 'SAFEGUARDS_IMPOSED' ? lines : [],
               at_fault: choice.at_fault ?? null,
+              ...(dispute ? { possession } : {}),
             },
             {
               onSuccess: onDone,

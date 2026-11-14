@@ -146,7 +146,7 @@ describe('TC-106 W6 moderator queue', () => {
 });
 
 // ----------------------------------------------------------------------------- TC-107
-const caseView = (state: string, holdReason: string | null, status = 'OPEN') => ({
+const caseView = (state: string, holdReason: string | null, status = 'OPEN', disputedFrom = 'ACTIVE') => ({
   case: {
     id: 'abcd0000-0000-0000-0000-000000000000',
     trigger_type: state === 'DISPUTED' ? 'DISPUTE' : 'ENGINE_FAILURE',
@@ -167,6 +167,9 @@ const caseView = (state: string, holdReason: string | null, status = 'OPEN') => 
   requested_period: '["2026-10-23 00:00:00+00","2026-10-26 00:00:00+00")',
   reports: [],
   events: [
+    ...(state === 'DISPUTED'
+      ? [{ stream_seq: 3, event_type: 'dispute_opened', previous_state: disputedFrom, new_state: 'DISPUTED', occurred_at: '2026-10-13T08:00:02Z', authorisation: 'party:lender' }]
+      : []),
     { stream_seq: 2, event_type: 'locality_checked', previous_state: 'REQUEST_CREATED', new_state: 'LOCALITY_CHECKED', occurred_at: '2026-10-13T08:00:01Z', authorisation: 'system:engine' },
     { stream_seq: 1, event_type: 'request_created', previous_state: null, new_state: 'REQUEST_CREATED', occurred_at: '2026-10-13T08:00:00Z', authorisation: 'party:borrower' },
   ],
@@ -188,11 +191,29 @@ describe('TC-107 W7 case adjudication', () => {
     await fireEvent.press(screen.getByRole('button', { name: 'Lender at fault' }));
     expect(screen.getByRole('button', { name: 'Confirm decision' })).toBeDisabled(); // no reason yet
     await fireEvent.changeText(screen.getByLabelText('Reason (required, kept in the record)'), 'Listing was wrong.');
+    // ADR-0009 (DM14): still blocked until the moderator says where the item is
+    expect(screen.getByRole('button', { name: 'Confirm decision' })).toBeDisabled();
+    await fireEvent.press(screen.getByRole('radio', { name: 'Item still with borrower' }));
     await fireEvent.press(screen.getByRole('button', { name: 'Confirm decision' }));
     expect(mockDecide).toHaveBeenCalledWith(
-      { kind: 'DISPUTE_RESOLVED', reason: 'Listing was wrong.', safeguards: [], at_fault: 'lender' },
+      {
+        kind: 'DISPUTE_RESOLVED',
+        reason: 'Listing was wrong.',
+        safeguards: [],
+        at_fault: 'lender',
+        possession: 'WITH_BORROWER',
+      },
       expect.anything(),
     );
+  });
+
+  test('a dispute raised before handover offers only "never handed over"', async () => {
+    mockCase = caseView('DISPUTED', null, 'OPEN', 'ACCEPTED');
+    await render(<CaseScreen />);
+    expect(screen.getByRole('radio', { name: 'Never handed over' })).toBeOnTheScreen();
+    for (const label of ['Item returned to lender', 'Item still with borrower', 'Item lost']) {
+      expect(screen.queryByRole('radio', { name: label })).toBeNull();
+    }
   });
 
   test('an engine-failure hold never offers safeguards', async () => {
