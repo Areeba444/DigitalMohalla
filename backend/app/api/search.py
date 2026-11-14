@@ -20,10 +20,13 @@ from app.api import schemas
 from app.api.deps import current_actor, get_engine
 from app.config.engine_config import load_engine_config
 from app.domain.lifecycle.service import Actor
+from app.domain.search.embedding import ModelUnavailable, to_pgvector
 from app.domain.search.log import SearchLogger
 from app.domain.search.service import PAGE_SIZE, SearchFilters, SearchResult, SearchService
+from app.infra.db.embeddings import table_exists
 from app.infra.db.search import PostgresSearchStore
 from app.infra.db.search_log import PostgresSearchLogStore
+from app.infra.embedding import get_embedder
 
 router = APIRouter(prefix="/api/v1")
 log = logging.getLogger(__name__)
@@ -39,7 +42,23 @@ def search_service(conn: Connection) -> SearchService:
         PostgresSearchStore(conn),
         min_relevance=float(retrieval["min_relevance"]),
         candidate_pool=int(retrieval["candidate_pool"]),
+        semantic_weight=float(retrieval["relevance_mix"]["semantic"]),
+        keyword_weight=float(retrieval["relevance_mix"]["keyword"]),
     )
+
+
+def query_vector(conn: Connection, q: str) -> tuple[str | None, str | None]:
+    """(vector, model) for meaning-based search, or (None, None) to stay keyword-only: no
+    words, no model configured, no pgvector table, or the model failed (FR-S-02, A9)."""
+    embedder = get_embedder()
+    if not q.strip() or embedder is None or not table_exists(conn):
+        return None, None
+    try:
+        [vector] = embedder.embed([q.strip()])
+        return to_pgvector(vector), embedder.model_name
+    except ModelUnavailable as exc:
+        log.warning("meaning-based search failed for one query, keyword-only: %s", exc)
+        return None, None
 
 
 def _log(
@@ -107,7 +126,10 @@ def search(
     filters = SearchFilters(category, community, _day(from_), _day(to), max_deposit, condition)
     started = time.perf_counter()
     with engine.connect() as conn:
-        found = search_service(conn).search(actor.user_id, q, filters, sort, page)
+        vector, model = query_vector(conn, q)
+        found = search_service(conn).search(
+            actor.user_id, q, filters, sort, page, query_vector=vector, model=model
+        )
     latency_ms = int((time.perf_counter() - started) * 1000)
     query_id = _log(engine, actor, q, filters, sort, found, latency_ms, page)
     return schemas.SearchOut(

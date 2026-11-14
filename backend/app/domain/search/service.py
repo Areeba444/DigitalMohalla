@@ -18,8 +18,11 @@ Relevance in keyword mode is the keyword score divided by the best one in this r
 relevance (then newest), evidence (the lender's verified loans as a lender, then relevance), newest.
 Each result carries a short reason line in plain words, never a number (FR-S-01, NFR-U-01).
 
-A9 adds the meaning-based half: the same query with a vector distance, and HYBRID mode. A10 adds the
-re-ranking of Algorithm 5. Until then the mode is KEYWORD_ONLY.
+A9 adds the meaning-based half (HYBRID mode): the same eligibility and filters with the exact cosine
+similarity to the query vector; candidates are the top N by meaning, relevance is
+0.7 * meaning + 0.3 * keywords (config), and an item found by meaning alone gets the reason "Similar
+in meaning to your search". With no model, no pgvector or a failing model, search stays
+KEYWORD_ONLY (FR-S-02). A10 adds the re-ranking of Algorithm 5 on top.
 """
 
 import re
@@ -56,10 +59,19 @@ class SearchResult:
 
 class SearchStore(Protocol):
     def candidates(
-        self, member: UUID, words: list[str], text_query: str, f: SearchFilters, limit: int
+        self,
+        member: UUID,
+        words: list[str],
+        text_query: str,
+        f: SearchFilters,
+        limit: int,
+        vector: str | None = None,
+        model: str | None = None,
     ) -> list[dict[str, Any]]:
         """Eligible, filtered items with: keyword (raw score), in_title, in_terms, in_description,
-        fuzzy (title similarity), lender_loans, same_community, created_at and listing fields."""
+        fuzzy (title similarity), lender_loans, same_community, created_at and listing fields. With
+        a query vector (A9): the top `limit` by meaning, with `semantic` (cosine similarity, 0 for
+        an item not embedded yet) and `keyword_match`."""
         ...
 
 
@@ -73,7 +85,9 @@ def reason_line(c: dict[str, Any], words: list[str]) -> str:
     """Where the words matched, in plain words. No score is ever shown."""
     if not words:
         return "Listed in your community"
-    if c["in_title"]:
+    if c.get("keyword_match") is False:
+        reason = "Similar in meaning to your search"
+    elif c["in_title"]:
         reason = "Matches your words in the title"
     elif c["in_terms"]:
         reason = "Matches another name for this item"
@@ -85,14 +99,34 @@ def reason_line(c: dict[str, Any], words: list[str]) -> str:
 
 
 class SearchService:
-    def __init__(self, store: SearchStore, *, min_relevance: float, candidate_pool: int) -> None:
+    def __init__(
+        self,
+        store: SearchStore,
+        *,
+        min_relevance: float,
+        candidate_pool: int,
+        semantic_weight: float = 0.7,
+        keyword_weight: float = 0.3,
+    ) -> None:
         self.store = store
         self.min_relevance = min_relevance
         self.pool = candidate_pool
+        self.w_sem = semantic_weight
+        self.w_kw = keyword_weight
 
     def search(
-        self, member: UUID, q: str, filters: SearchFilters, sort: str = "relevance", page: int = 1
+        self,
+        member: UUID,
+        q: str,
+        filters: SearchFilters,
+        sort: str = "relevance",
+        page: int = 1,
+        query_vector: str | None = None,
+        model: str | None = None,
     ) -> SearchResult:
+        """Keyword-only, or HYBRID when a query vector (pgvector text form) and its model are given
+        (A9): candidates are the top N by meaning and relevance mixes meaning and keywords
+        (ranking_alg5.retrieval.relevance_mix)."""
         if sort not in SORTS:
             raise InvalidSearch(f"sort must be one of {', '.join(SORTS)}")
         if (filters.start is None) != (filters.end is None):
@@ -102,20 +136,38 @@ class SearchService:
         if page < 1:
             raise InvalidSearch("page starts at 1")
         words = query_words(q)
-        rows = self.store.candidates(member, words, " | ".join(words), filters, self.pool)
-        best = max((r["keyword"] for r in rows), default=0.0)
+        hybrid = bool(words and query_vector and model)
+        rows = self.store.candidates(
+            member,
+            words,
+            " | ".join(words),
+            filters,
+            self.pool,
+            query_vector if hybrid else None,
+            model if hybrid else None,
+        )
+        best = max((r["keyword"] for r in rows if r.get("keyword_match", True)), default=0.0)
         results = []
         for r in rows:
-            relevance = (r["keyword"] / best) if words and best > 0 else 1.0
+            matched = r.get("keyword_match", True)
+            kw = (r["keyword"] / best) if words and best > 0 and matched else 0.0
+            if hybrid:
+                sem = min(1.0, max(0.0, r["semantic"]))
+                relevance = self.w_sem * sem + self.w_kw * kw
+                parts = {"semantic": round(sem, 4), "keyword": round(kw, 4)}
+            else:
+                relevance = kw if words else 1.0
+                parts = {"keyword": round(kw, 4)}
             if words and relevance < self.min_relevance:
                 continue
+            parts["relevance"] = round(relevance, 4)
             results.append(
                 {
                     **r,
                     "relevance": relevance,
                     "reason": reason_line(r, words),
                     "available": True if filters.start else None,
-                    "score_parts": {"keyword": round(relevance, 4)},
+                    "score_parts": parts,
                 }
             )
         key = {
@@ -125,4 +177,5 @@ class SearchService:
         }[sort]
         results.sort(key=key)
         start = (page - 1) * PAGE_SIZE
-        return SearchResult("KEYWORD_ONLY", results[start : start + PAGE_SIZE], len(results))
+        mode = "HYBRID" if hybrid else "KEYWORD_ONLY"
+        return SearchResult(mode, results[start : start + PAGE_SIZE], len(results))
