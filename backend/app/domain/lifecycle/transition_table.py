@@ -1,7 +1,9 @@
 """The borrowing lifecycle's transition table (design step A3), as plain data with no I/O.
 
-`transition_leaves.csv` is generated from the design's single source of truth
-(docs/design/_tools/lifecycle_model.py, `leaf_rows()`): 34 valid (state, event, next state) rows.
+`transition_leaves.csv` is generated from the design's single source of truth, lifecycle v3
+(docs/design/_tools/lifecycle_model_v3.py, `leaf_rows()`, exported by export_transition_leaves.py):
+39 valid (state, event, next state) rows. `dispute_resolved` has three targets (NO_SHOW, ACTIVE,
+COMPLETED); the item's possession recorded by the moderator picks one (ADR-0009).
 The same table is enforced by the database (`allowed_transition`); an integration test checks that the
 two copies are identical, so they cannot drift apart. This module lets the service reject an invalid
 move early, and lets suite 1 (transition matrix) run without a database.

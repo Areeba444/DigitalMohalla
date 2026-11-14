@@ -1,7 +1,8 @@
 """Test suite 1 (transition matrix), domain half: every (state, event) pair of the design's oracle.
 
-The oracle is docs/design/14_testing/transition_test_matrix.csv, generated from the same lifecycle
-model as the table under test. 294 pairs: 31 valid, 263 must be rejected (FR-B-08, NFR-R-02).
+The oracle is docs/design/14_testing/transition_test_matrix_v3.csv, generated from the same lifecycle
+model (v3, iteration 2) as the table under test. 336 pairs: 34 valid, 302 must be rejected (FR-B-08,
+NFR-R-02). v3 adds the counter-offer events (ADR-0015) and the dispute exits by possession (ADR-0009).
 """
 
 import csv
@@ -11,7 +12,9 @@ import pytest
 
 from app.domain.lifecycle.transition_table import TransitionTable
 
-MATRIX = Path(__file__).resolve().parents[3] / "docs/design/14_testing/transition_test_matrix.csv"
+MATRIX = (
+    Path(__file__).resolve().parents[3] / "docs/design/14_testing/transition_test_matrix_v3.csv"
+)
 TABLE = TransitionTable.load()
 
 
@@ -22,9 +25,9 @@ def matrix_rows() -> list[dict[str, str]]:
 
 def test_matrix_has_expected_shape() -> None:
     rows = matrix_rows()
-    assert len(rows) == 294
-    assert sum(r["expected"] == "VALID" for r in rows) == 31
-    assert len(TABLE.transitions) == 34
+    assert len(rows) == 336
+    assert sum(r["expected"] == "VALID" for r in rows) == 34
+    assert len(TABLE.transitions) == 39
 
 
 @pytest.mark.parametrize("row", matrix_rows(), ids=lambda r: r["case"])
@@ -44,6 +47,17 @@ def test_next_state_is_none_for_invalid_and_ambiguous_pairs() -> None:
         TABLE.next_state("HELD_FOR_REVIEW", "hold_cleared") is None
     )  # ambiguous: needs hold reason
     assert TABLE.next_state("ASSESSED", "request_accepted") == "ACCEPTED"
+
+
+def test_dispute_resolution_has_three_exits_by_possession() -> None:  # ADR-0009, T25a/b/c
+    assert {t.to_state for t in TABLE.lookup("DISPUTED", "dispute_resolved")} == {
+        "NO_SHOW",
+        "ACTIVE",
+        "COMPLETED",
+    }
+    assert (
+        TABLE.next_state("DISPUTED", "dispute_resolved") is None
+    )  # ambiguous: needs the possession
 
 
 def test_disputes_cannot_start_from_returned() -> None:  # decision D4, TC-05

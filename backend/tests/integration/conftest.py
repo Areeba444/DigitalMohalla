@@ -107,9 +107,10 @@ def world(engine: Engine) -> World:
         cat = one("INSERT INTO category (name) VALUES ('Tools') RETURNING id")
         items = [
             one(
-                "INSERT INTO item (owner_id, community_id, category_id, title, value_band, "
-                "deposit_amount, status) "
-                "VALUES (:o, :c, :cat, :t, 'LOW', 0, 'PUBLISHED') RETURNING id",
+                "INSERT INTO item (owner_id, community_id, category_id, title, description, "
+                "condition, value_band, deposit_amount, status) "
+                "VALUES (:o, :c, :cat, :t, 'Synthetic test item in good order.', 'GOOD', "
+                "'LOW', 0, 'PUBLISHED') RETURNING id",
                 o=lender,
                 c=community,
                 cat=cat,
