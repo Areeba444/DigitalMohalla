@@ -526,9 +526,21 @@ class BorrowingService:
             "assessment": self.store.latest_assessment(txn_id),
             "details": self.store.details(txn_id),
             "reports": reports,
-            "actions": available_actions(view.state, role, reports, raised_by),
+            "actions": available_actions(view.state, role, reports, raised_by)
+            + self._review_action(view, role, actor),
             "moderator_safeguards": self.store.imposed_safeguards(txn_id),
         }
+
+    def _review_action(self, view: TransactionView, role: str | None, actor: Actor) -> list[str]:
+        """FR-B-15: completion unlocks the review, once per party (ReviewService checks the
+        windows and answers 409 when one has closed)."""
+        if (
+            view.state == "COMPLETED"
+            and role
+            and not self.store.has_reviewed(view.id, actor.user_id)
+        ):
+            return ["review"]
+        return []
 
     def my_requests(self, actor: Actor) -> list[dict[str, Any]]:
         return self.store.list_for_member(actor.user_id)

@@ -541,3 +541,19 @@ class CounterOfferIn(StrictIn):
 
     def period(self) -> str:
         return f"[{self.start_date}T00:00:00+00,{self.end_date}T00:00:00+00)"
+
+
+# ----------------------------------------------------------------------------- reviews (D1)
+class ReviewIn(StrictIn):
+    """One rating per dimension of the other party's role (config `reviews_d1.dimensions`)."""
+
+    ratings: dict[str, int]
+    comment: str | None = Field(default=None, max_length=1000)
+
+
+class ReviewOut(BaseModel):
+    """The review was stored. Flags are not returned to the reviewer (sequence (f))."""
+
+    id: UUID
+    reviewee_role: str
+    editable_until: datetime

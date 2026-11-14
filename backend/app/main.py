@@ -14,6 +14,7 @@ from app.api import (
     listings,
     membership,
     notifications,
+    reviews,
 )
 from app.api.deps import default_assessor
 from app.api.routes import router
@@ -31,6 +32,7 @@ from app.domain.membership.locality import InvalidInvitation
 from app.domain.membership.service import InvalidMembershipInput
 from app.domain.moderation.cases import InvalidCaseInput
 from app.domain.moderation.decisions import InvalidDecision
+from app.domain.reviews.service import InvalidReview
 from app.infra.db.session import make_engine
 
 
@@ -68,6 +70,7 @@ def create_app(engine: Engine | None = None, assess: IAssess | None = None) -> F
     app.add_exception_handler(InvalidInvitation, _refusal(422))
     app.add_exception_handler(InvalidListing, _refusal(422))
     app.add_exception_handler(InvalidCaseInput, _refusal(422))
+    app.add_exception_handler(InvalidReview, _refusal(422))
     app.add_exception_handler(InvalidMembershipInput, _refusal(422))
     app.add_exception_handler(StreamNotFound, _refusal(404))
     for conflict in (InvalidTransition, StaleCommand, DatesTaken):
@@ -81,6 +84,7 @@ def create_app(engine: Engine | None = None, assess: IAssess | None = None) -> F
     app.include_router(jobs.router)
     app.include_router(extensions.router)
     app.include_router(counter_offer.router)
+    app.include_router(reviews.router)
     return app
 
 
