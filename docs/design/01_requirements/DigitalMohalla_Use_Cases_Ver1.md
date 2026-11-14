@@ -490,7 +490,7 @@ Window lengths (review window, edit window, retaliation window of 14 days in eng
 - 3b. Boundary or inaccurate GPS: inconclusive, send to moderator review.
 - 3c. Evidence conflicts with the claimed community: flag for review, no automatic rejection (ES-09).
 - 3d. Invitation code invalid, expired or used: error, retry.
-- 4a. Open-join community: approve automatically, notify moderators (what evidence this leaves is open, I-10).
+- 4a. Open-join community (`join_policy` OPEN, schema v2.4): approve automatically only when the locality outcome is VERIFIED, and notify the community's moderators (membership M09). The coarse locality result is stored as for any join. INCONCLUSIVE or CONFLICTING outcomes stay PENDING for a moderator (ext 3a to 3c), so open-join never skips the locality check (I-10 settled).
 - 4b. Duplicate request or membership: block and show status.
 - 4c. Community closed or full: suggest others. 4d. Duplicate account suspected: attach the flag.
 
