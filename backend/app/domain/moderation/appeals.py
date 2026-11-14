@@ -138,7 +138,8 @@ class AppealService:
         if case["status"] != "APPEALED":
             raise InvalidTransition(f"this case is {case['status'].lower()}, not under appeal")
         first = self.store.appealed_decision(case_id)
-        assert first is not None  # an APPEALED case always has one
+        if first is None:  # cannot happen for an APPEALED case; refuse rather than guess
+            raise InvalidTransition("this case has no decision to appeal")
         if first["decided_by"] == actor_id:
             self._refuse(actor_id, case_id, "decide_appeal", "same moderator as the first decision")
             raise NotAuthorised("a second moderator must decide the appeal, not the first decider")
