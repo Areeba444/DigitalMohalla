@@ -2,19 +2,20 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "config_metadata": {
     "config_name": "digital_mohalla_assurance_engine_config",
-    "config_version": "1.3.1-iteration2-draft",
+    "config_version": "1.3.2-iteration2-draft",
     "status": "initial_hypothesis_unvalidated",
     "created_at": "2026-10-11T15:20:00Z",
     "module": "Module 5: Trust, Safety and Assurance Engine",
     "author": "Student 2 (Trust & Assurance Lead)",
     "description": "Baseline operational and algorithmic parameters for Digital Mohalla's assurance pipeline. Every threshold and weight represents an initial experimental hypothesis to be evaluated via time-ordered holdout testing (Overview §5, NFR-D-01, FR-B-09).",
-    "updated_at": "2026-11-14T12:00:00Z",
+    "updated_at": "2026-11-15T12:00:00Z",
     "changelog": [
       "1.0.0-iteration1-draft (2026-10-11, Student 2): initial parameter set.",
       "1.2.0-iteration1-draft (2026-10-13, Student 2): similarity weighting defined (team decision D17): value band 0.4, category 0.4, duration 0.2; band closeness 1.0 same, 0.5 adjacent, 0.0 two apart; duration closeness shorter / longer; the 0.5 floor applies to each outcome's weight. No other value changed.",
       "1.1.0-iteration1-draft (2026-10-11, integration): s4_review_similarity active in iteration 1 (ADR-0007); rule R6_SPARSE uses rho_sup (ADR-0008); locality_a11 parameters added so one versioned file holds every parameter (NFR-D-01). No numeric value changed.",
       "1.3.0-iteration1-draft (2026-10-13, Student 2, decisions D18 and D19): S1 measures mutual reviews among the subject's rating partners (s1_min_out_degree replaced by s1_min_partners, same value 3); S4 uses character 3-gram TF-IDF over the subject's received reviews (s4_char_ngram, s4_min_reviews); retaliation check: a review counts as negative when its lowest rating is at most retaliation_negative_rating_max. No other value changed.",
-      "1.3.1-iteration2-draft (2026-11-14, Student 2, build A1, ADR-0010 proposed, review DM09): rule_order checks R4 before R3, so a HIGH-value request from a borrower with no history and rho below rho_sup is held for a moderator (high_value_low_confidence) as FR-B-07 says, instead of reaching the lender as INSUFFICIENT_EVIDENCE. The engine now follows rule_order from this file. No other value changed; config 1.4.0 (DA-15) adds the remaining iteration 2 parameters when their features are built."
+      "1.3.1-iteration2-draft (2026-11-14, Student 2, build A1, ADR-0010 proposed, review DM09): rule_order checks R4 before R3, so a HIGH-value request from a borrower with no history and rho below rho_sup is held for a moderator (high_value_low_confidence) as FR-B-07 says, instead of reaching the lender as INSUFFICIENT_EVIDENCE. The engine now follows rule_order from this file. No other value changed; config 1.4.0 (DA-15) adds the remaining iteration 2 parameters when their features are built.",
+      "1.3.2-iteration2-draft (2026-11-15, Student 1, build F4 groundwork): scheduler_b13 timers copied unchanged from design config 1.4.0 (ADR-0012), because M2 (party response deadline), F4 and F5 read them. Timers only; no trust, detection or policy value changed, so every assessment is the same as under 1.3.1."
     ]
   },
   "trust_estimation_alg1": {
@@ -246,5 +247,22 @@
     "max_open_invites": 3,
     "validity_days": 365,
     "source": "12_locality/Locality_Design_A11.md §3.3"
+  },
+  "scheduler_b13": {
+    "status": "initial_hypothesis_unvalidated",
+    "owner": "Student 1 (Module 3, ADR-0012)",
+    "run_interval_minutes": 15,
+    "request_response_window_hours": 72,
+    "handover_grace_hours": 24,
+    "return_reminder_before_due_hours": 24,
+    "overdue_limit_hours": 72,
+    "min_reminders_before_escalation": 2,
+    "confirmation_reminder_hours": 24,
+    "dispute_window_days": 7,
+    "party_response_deadline_hours": 72,
+    "listing_default_expiry_days": 60,
+    "max_attempts": 3,
+    "source": "FR-B-10, B-12, B-14, B-16, B-17, B-18; Test Plan gap UI-5; State_Machine_Design_v3.md §4",
+    "rationale": "Starting values for a neighbourhood loan of a few days; they are timers, not trust parameters, but live in the same versioned file so every value is traceable (NFR-D-01)."
   }
 }
