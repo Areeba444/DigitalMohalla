@@ -104,7 +104,7 @@ def main() -> None:
             conn.execute(text("DROP TABLE IF EXISTS public.alembic_version"))
         config = Config(str(BACKEND / "alembic.ini"))
         config.set_main_option("script_location", str(BACKEND / "alembic"))
-        with engine.begin() as conn:
+        with engine.connect() as conn:  # no outer transaction: each revision commits
             config.attributes["connection"] = conn
             command.upgrade(config, "head")
     with engine.begin() as conn:

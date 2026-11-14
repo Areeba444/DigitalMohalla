@@ -81,7 +81,7 @@ def reset_schema(engine: Engine) -> None:
         c.execute(text("DROP TABLE IF EXISTS public.alembic_version"))
     cfg = Config(str(BACKEND / "alembic.ini"))
     cfg.set_main_option("script_location", str(BACKEND / "alembic"))
-    with engine.begin() as c:
+    with engine.connect() as c:  # no outer transaction: each revision commits (alembic/env.py)
         cfg.attributes["connection"] = c
         command.upgrade(cfg, "head")
 

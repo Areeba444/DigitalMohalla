@@ -52,7 +52,7 @@ def engine() -> Iterator[Engine]:
         conn.execute(text("DROP TABLE IF EXISTS public.alembic_version"))
     cfg = Config(str(BACKEND / "alembic.ini"))
     cfg.set_main_option("script_location", str(BACKEND / "alembic"))
-    with eng.begin() as conn:
+    with eng.connect() as conn:  # no outer transaction: each revision commits (alembic/env.py)
         cfg.attributes["connection"] = conn
         command.upgrade(cfg, "head")
     yield eng
