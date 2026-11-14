@@ -176,6 +176,22 @@ def max_cosine(texts: Sequence[str], n: int) -> float:
     return best
 
 
+def max_cosine_to(text: str, others: Sequence[str], n: int) -> float:
+    """Highest cosine similarity between `text` and any of `others`, with the same TF-IDF weighting
+    as `max_cosine` computed over all the texts together (used when a review is submitted, A3)."""
+    docs = [_grams(t, n) for t in (text, *others)]
+    df = Counter(g for d in docs for g in d)
+    big_n = len(docs)
+    vecs = [{g: c * (math.log((1 + big_n) / (1 + df[g])) + 1) for g, c in d.items()} for d in docs]
+    norms = [math.sqrt(sum(v * v for v in vec.values())) for vec in vecs]
+    best = 0.0
+    for j in range(1, big_n):
+        if norms[0] and norms[j]:
+            dot = sum(v * vecs[j].get(g, 0.0) for g, v in vecs[0].items())
+            best = max(best, dot / (norms[0] * norms[j]))
+    return best
+
+
 def review_similarity(texts: Sequence[str], p: ManipulationParams) -> Signal:
     weight = p.weights[S4]
     texts = [t for t in texts if t and t.strip()]
