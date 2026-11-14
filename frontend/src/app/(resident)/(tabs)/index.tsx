@@ -1,5 +1,5 @@
 import { router } from 'expo-router';
-import { ScrollView, Text, View } from 'react-native';
+import { Pressable, ScrollView, Text, View } from 'react-native';
 
 import { useItems, useMyRequests } from '@/api/hooks';
 import { ItemTile } from '@/components/ItemCard';
@@ -9,7 +9,6 @@ import {
   Caption,
   EmptyState,
   ErrorText,
-  HeaderAvatar,
   HeroScreen,
   Icon,
   type IconName,
@@ -74,7 +73,14 @@ export default function Home() {
                 Digital Mohalla
               </Text>
             </View>
-            <HeaderAvatar onPress={() => router.navigate('/profile')} />
+            {/* Notification bell */}
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel="Notifications"
+              onPress={() => router.navigate('/notifications')}
+              style={{ padding: 4 }}>
+              <Icon name="notifications" size={22} color={theme.hero.text} />
+            </Pressable>
           </View>
           <View style={{ gap: 6 }}>
             <SectionLabel color={theme.hero.textSoft}>Your neighbourhood</SectionLabel>
@@ -88,6 +94,22 @@ export default function Home() {
         <Stat icon="notifications_active" value={waiting.length} label="Waiting for you" />
         <Stat icon="handshake" value={onLoan.length} label="In progress" />
         <Stat icon="task_alt" value={done.length} label="Completed" />
+      </View>
+
+      {/* Quick-action row */}
+      <View style={{ flexDirection: 'row', gap: 10 }}>
+        <Button
+          label="Share an item"
+          icon="add_circle"
+          variant="outline"
+          onPress={() => router.navigate('/item/create')}
+        />
+        <Button
+          label="Notifications"
+          icon="notifications"
+          variant="outline"
+          onPress={() => router.navigate('/notifications')}
+        />
       </View>
 
       {requests.isLoading ? <Loading /> : null}

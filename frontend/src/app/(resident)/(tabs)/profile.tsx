@@ -1,5 +1,5 @@
 import { router } from 'expo-router';
-import { Image } from 'expo-image';
+import { useState } from 'react';
 import { Pressable, Text, View } from 'react-native';
 
 import { useModerationQueue } from '@/api/hooks';
@@ -34,73 +34,194 @@ const PROMISES: [IconName, string][] = [
   ['history', 'Every loan step is recorded and cannot be edited.'],
 ];
 
-function ThemeOption({ name }: { name: string }) {
+/** Compact theme picker — icon button opens a small inline picker with two colour dots. */
+function CompactThemePicker() {
   const { theme, themes, setTheme } = useTheme();
-  const t = themes.find((x) => x.name === name);
-  if (!t) return null;
-  const selected = theme.name === t.name;
+  const [open, setOpen] = useState(false);
+
+  // Representative swatch colours per theme
+  const swatches: Record<string, string> = {
+    terracotta: '#C1623F',
+    creamgreen: '#4A7C59',
+  };
+
   return (
-    <Pressable
-      accessibilityRole="radio"
-      accessibilityLabel={`${t.label} theme`}
-      accessibilityState={{ selected }}
-      onPress={() => setTheme(t.name)}
-      style={({ pressed }) => ({
-        flex: 1,
-        borderRadius: theme.radius.md,
-        overflow: 'hidden',
-        borderWidth: 2.5,
-        borderColor: selected ? theme.colors.primary : theme.colors.hairline,
-        backgroundColor: t.colors.surface,
-        opacity: pressed ? 0.9 : 1,
-      })}>
-      <Image source={t.hero.image} contentFit="cover" contentPosition="top" style={{ height: 96 }} />
-      <View style={{ padding: 10, gap: 6 }}>
-        <View style={{ flexDirection: 'row', gap: 4 }}>
-          {[t.colors.primary, t.colors.accent, t.colors.bg].map((c) => (
-            <View key={c} style={{ width: 16, height: 16, borderRadius: 8, backgroundColor: c, borderWidth: 1, borderColor: t.colors.border }} />
-          ))}
-        </View>
-        <Text style={{ fontFamily: t.fonts.bold, fontSize: 15, color: t.colors.text }}>{t.label}</Text>
-        <Text style={{ fontFamily: t.fonts.regular, fontSize: 12, color: t.colors.textSecondary }}>{t.tagline}</Text>
-      </View>
-      {selected ? (
+    <View style={{ position: 'relative' }}>
+      <Pressable
+        accessibilityRole="button"
+        accessibilityLabel="Choose theme"
+        onPress={() => setOpen((v) => !v)}
+        style={({ pressed }) => ({
+          width: 36,
+          height: 36,
+          borderRadius: 18,
+          alignItems: 'center',
+          justifyContent: 'center',
+          backgroundColor: theme.colors.surface,
+          borderWidth: 1,
+          borderColor: theme.colors.border,
+          opacity: pressed ? 0.7 : 1,
+        })}>
+        <Icon name="palette" size={20} color={theme.colors.textSecondary} />
+      </Pressable>
+
+      {open ? (
         <View
           style={{
             position: 'absolute',
-            top: 8,
-            right: 8,
-            width: 26,
-            height: 26,
-            borderRadius: 13,
-            alignItems: 'center',
-            justifyContent: 'center',
-            backgroundColor: theme.colors.primary,
+            top: 44,
+            right: 0,
+            flexDirection: 'row',
+            gap: 10,
+            padding: 12,
+            borderRadius: theme.radius.md,
+            backgroundColor: theme.colors.surface,
+            borderWidth: 1,
+            borderColor: theme.colors.border,
+            zIndex: 100,
+            shadowColor: '#000',
+            shadowOpacity: 0.1,
+            shadowRadius: 8,
+            shadowOffset: { width: 0, height: 2 },
+            elevation: 4,
           }}>
-          <Icon name="check" size={18} color={theme.colors.onPrimary} />
+          {themes.map((t) => {
+            const selected = theme.name === t.name;
+            const color = swatches[t.name] ?? t.colors.primary;
+            return (
+              <Pressable
+                key={t.name}
+                accessibilityRole="radio"
+                accessibilityLabel={`${t.label} theme`}
+                accessibilityState={{ selected }}
+                onPress={() => { setTheme(t.name); setOpen(false); }}
+                style={({ pressed }) => ({
+                  alignItems: 'center',
+                  gap: 6,
+                  opacity: pressed ? 0.75 : 1,
+                })}>
+                <View
+                  style={{
+                    width: 32,
+                    height: 32,
+                    borderRadius: 16,
+                    backgroundColor: color,
+                    borderWidth: selected ? 3 : 1.5,
+                    borderColor: selected ? theme.colors.text : theme.colors.border,
+                  }}>
+                  {selected ? (
+                    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+                      <Icon name="check" size={16} color="#fff" />
+                    </View>
+                  ) : null}
+                </View>
+                <Text style={{ fontFamily: theme.fonts.regular, fontSize: 11, color: theme.colors.textSecondary }}>
+                  {t.label}
+                </Text>
+              </Pressable>
+            );
+          })}
         </View>
       ) : null}
-    </Pressable>
+    </View>
   );
 }
 
 export default function Profile() {
-  const { theme, themes } = useTheme();
+  const { theme } = useTheme();
   const { signOut } = useAuth();
   const queue = useModerationQueue();
   const waiting = queue.data?.length ?? 0;
+
+  // Mock user stats — wired to real API in Part B
+  const mockStats: { icon: IconName; value: number; label: string }[] = [
+    { icon: 'handshake', value: 3, label: 'Loans made' },
+    { icon: 'inventory_2', value: 2, label: 'Items shared' },
+    { icon: 'task_alt', value: 5, label: 'Completed' },
+  ];
+
   return (
     <HeroScreen
       tabs
       height={190}
       hero={
-        <View style={{ flex: 1, justifyContent: 'flex-end', gap: 4 }}>
-          <SectionLabel color={theme.hero.textSoft}>Profile</SectionLabel>
-          <Title size={30} color={theme.hero.text} style={{ fontFamily: theme.fonts.displayAlt }}>
-            You and your evidence
-          </Title>
+        <View style={{ flex: 1, justifyContent: 'space-between' }}>
+          {/* Theme picker in top-right of hero */}
+          <View style={{ flexDirection: 'row', justifyContent: 'flex-end' }}>
+            <CompactThemePicker />
+          </View>
+          <View style={{ gap: 4 }}>
+            <SectionLabel color={theme.hero.textSoft}>Profile</SectionLabel>
+            <Title size={30} color={theme.hero.text} style={{ fontFamily: theme.fonts.displayAlt }}>
+              You and your evidence
+            </Title>
+          </View>
         </View>
       }>
+
+      {/* User identity + stats card */}
+      <Card style={{ gap: 14 }}>
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 14 }}>
+          <View
+            style={{
+              width: 60,
+              height: 60,
+              borderRadius: 30,
+              backgroundColor: theme.colors.primarySoft,
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}>
+            <Text style={{ fontFamily: theme.fonts.black, fontSize: 24, color: theme.colors.primary }}>
+              A
+            </Text>
+          </View>
+          <View style={{ flex: 1, gap: 2 }}>
+            <Text style={{ fontFamily: theme.fonts.bold, fontSize: 18, color: theme.colors.text }}>
+              Areeba K.
+            </Text>
+            <Caption>Member of Gulberg Mohalla</Caption>
+          </View>
+        </View>
+
+        {/* Stats row */}
+        <View style={{ flexDirection: 'row', gap: 10 }}>
+          {mockStats.map(({ icon, value, label }) => (
+            <View
+              key={label}
+              style={{
+                flex: 1,
+                alignItems: 'center',
+                gap: 4,
+                padding: 10,
+                borderRadius: theme.radius.sm,
+                backgroundColor: theme.colors.accentSoft,
+              }}>
+              <Icon name={icon} size={18} color={theme.colors.accent} />
+              <Text style={{ fontFamily: theme.fonts.black, fontSize: 20, color: theme.colors.text }}>{value}</Text>
+              <Caption style={{ textAlign: 'center', fontSize: 11 }}>{label}</Caption>
+            </View>
+          ))}
+        </View>
+
+        {/* My Evidence link */}
+        <Pressable
+          accessibilityRole="button"
+          onPress={() => router.push('/profile/evidence')}
+          style={({ pressed }) => ({
+            flexDirection: 'row',
+            alignItems: 'center',
+            gap: 10,
+            padding: 12,
+            borderRadius: theme.radius.sm,
+            backgroundColor: theme.colors.surface2,
+            opacity: pressed ? 0.75 : 1,
+          })}>
+          <Icon name="visibility" size={18} color={theme.colors.primary} />
+          <Body style={{ flex: 1, fontSize: 14 }}>View my evidence profile</Body>
+          <Icon name="chevron_right" size={18} color={theme.colors.textSecondary} />
+        </Pressable>
+      </Card>
+
       {waiting > 0 ? (
         <Card>
           <SectionLabel>Moderation</SectionLabel>
@@ -110,14 +231,6 @@ export default function Profile() {
           <Button label="Open the triage queue" icon="gavel" onPress={() => router.push('/moderation')} />
         </Card>
       ) : null}
-      <Card>
-        <SectionLabel>Appearance</SectionLabel>
-        <View accessibilityRole="radiogroup" style={{ flexDirection: 'row', gap: 12 }}>
-          {themes.map((t) => (
-            <ThemeOption key={t.name} name={t.name} />
-          ))}
-        </View>
-      </Card>
 
       <Card>
         <SectionLabel>How Digital Mohalla works</SectionLabel>

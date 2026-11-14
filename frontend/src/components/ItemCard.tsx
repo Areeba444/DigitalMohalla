@@ -11,7 +11,7 @@ export const BAND_LABEL: Record<string, string> = {
   HIGH: 'High value',
 };
 
-const open = (id: string) => router.push({ pathname: '/item/[id]', params: { id } });
+const open = (id: string) => router.push({ pathname: '/item/detail/[id]', params: { id } });
 
 /** Photo-left row (HCI analysis C5: the listing pattern residents know from OLX). */
 export function ItemRow({ item, reasons }: { item: BrowseItem; reasons?: string[] }) {

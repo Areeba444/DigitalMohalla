@@ -4,7 +4,7 @@ import { ScrollView } from 'react-native';
 
 import { useMyRequests } from '@/api/hooks';
 import { RequestCard } from '@/components/RequestCard';
-import { Button, Chip, EmptyState, ErrorText, HeaderAvatar, Loading, Screen } from '@/components/ui';
+import { Button, Chip, EmptyState, ErrorText, Loading, Screen } from '@/components/ui';
 import { isClosed, needsYou } from '@/lib/requests';
 
 const SEGMENTS = [
@@ -30,8 +30,7 @@ export default function Activity() {
     <Screen
       title="Activity"
       subtitle="Everything you borrowed or lent"
-      tabs
-      right={<HeaderAvatar onPress={() => router.navigate('/profile')} />}>
+      tabs>
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}
