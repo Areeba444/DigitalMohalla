@@ -894,15 +894,25 @@ class _Timeline:
     def _resolve(
         self, t_open: datetime, dp: DisputePlan, stage_outcomes: dict[tuple[str, str], bool]
     ) -> None:
-        """Moderator resolves (or leaves open). Outcomes follow the fault found."""
+        """Moderator resolves (or leaves open). Outcomes follow the fault found.
+
+        Schema v2.4 (ADR-0009): the decision records where the item is, and that picks the end state.
+        A dispute raised before handover (ACCEPTED) closes NOT_HANDED_OVER -> NO_SHOW; one raised later
+        closes RETURNED -> COMPLETED, or LOST -> COMPLETED for a non-return."""
         if dp.resolve_after_days is None:
             return
+        if dp.stage == "ACCEPTED":
+            possession, end_state = "NOT_HANDED_OVER", "NO_SHOW"
+        elif dp.reason == "NON_RETURN":
+            possession, end_state = "LOST", "COMPLETED"
+        else:
+            possession, end_state = "RETURNED", "COMPLETED"
         t_res = t_open + timedelta(days=dp.resolve_after_days, hours=self.rng.uniform(0, 8))
 
         def eff(ev: dict[str, Any]) -> None:
             w = self.w
             case = w._open_case_of_txn[self.alias]
-            res = {"at_fault": dp.fault}
+            res = {"at_fault": dp.fault, "possession": possession}
             dec = w.decide(
                 case,
                 "DISPUTE_RESOLVED",
@@ -922,7 +932,9 @@ class _Timeline:
             results[("LENDER", "CONDITION_AGREED")] = not lender_bad
             results[("LENDER", "DISPUTE_FREE")] = not lender_bad
             rows = w.emit_outcomes(self.txn, ev, results)
-            if self.p.auto_reviews:
+            if (
+                self.p.auto_reviews and end_state == "COMPLETED"
+            ):  # reviews need COMPLETED (review_guard)
                 w.auto_reviews(self.txn, ev["t"], self.rng)
             if dp.reversal_after_days is not None:
                 t_rev = ev["t"] + timedelta(days=dp.reversal_after_days)
@@ -938,7 +950,14 @@ class _Timeline:
                     for r in rows:
                         r["status"], r["flagged_by"] = "FLAGGED_FOR_REEVALUATION", rev["alias"]
 
-        self.add("dispute_resolved", "COMPLETED", t_res, "moderator", effect=eff)
+        self.add(
+            "dispute_resolved",
+            end_state,
+            t_res,
+            "moderator",
+            {"decision": "DISPUTE_RESOLVED", "possession": possession},  # replay needs it (FR-B-09)
+            effect=eff,
+        )
 
     def _dispute_at_handover(self, start: datetime, dp: DisputePlan) -> Txn:
         rng = self.rng

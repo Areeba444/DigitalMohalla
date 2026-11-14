@@ -52,7 +52,7 @@ def engine() -> Iterator[Engine]:
         conn.execute(text("DROP TABLE IF EXISTS public.alembic_version"))
     cfg = Config(str(BACKEND / "alembic.ini"))
     cfg.set_main_option("script_location", str(BACKEND / "alembic"))
-    with eng.begin() as conn:
+    with eng.connect() as conn:  # no outer transaction: each revision commits (alembic/env.py)
         cfg.attributes["connection"] = conn
         command.upgrade(cfg, "head")
     yield eng
@@ -107,9 +107,10 @@ def world(engine: Engine) -> World:
         cat = one("INSERT INTO category (name) VALUES ('Tools') RETURNING id")
         items = [
             one(
-                "INSERT INTO item (owner_id, community_id, category_id, title, value_band, "
-                "deposit_amount, status) "
-                "VALUES (:o, :c, :cat, :t, 'LOW', 0, 'PUBLISHED') RETURNING id",
+                "INSERT INTO item (owner_id, community_id, category_id, title, description, "
+                "condition, value_band, deposit_amount, status) "
+                "VALUES (:o, :c, :cat, :t, 'Synthetic test item in good order.', 'GOOD', "
+                "'LOW', 0, 'PUBLISHED') RETURNING id",
                 o=lender,
                 c=community,
                 cat=cat,

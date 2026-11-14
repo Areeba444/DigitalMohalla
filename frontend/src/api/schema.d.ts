@@ -536,6 +536,8 @@ export interface components {
             safeguards?: string[];
             /** At Fault */
             at_fault?: ("borrower" | "lender" | "none") | null;
+            /** Possession */
+            possession?: ("NOT_HANDED_OVER" | "WITH_BORROWER" | "RETURNED" | "LOST") | null;
         };
         /** DecisionOut */
         DecisionOut: {

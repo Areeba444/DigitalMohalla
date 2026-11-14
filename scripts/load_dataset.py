@@ -3,6 +3,11 @@
     cd backend
     uv run python ../scripts/load_dataset.py ../data/derived/standard --reset
 
+For the local app (DM18, a demo that can be rebuilt after a reset), load into the development database
+and give every synthetic user the throwaway demo password of seed_demo.py so they can log in:
+
+    uv run python ../scripts/load_dataset.py ../data/derived/standard --reset --allow-non-test         --url "$DATABASE_URL" --demo-logins
+
 By default it only touches a database whose name ends in `_test`, and `--reset` drops and rebuilds
 schema `dm` from the Alembic migration first. The target URL is $TEST_DATABASE_URL or --url.
 
@@ -35,6 +40,7 @@ from alembic.config import Config  # noqa: E402
 from sqlalchemy import Engine, make_url, text  # noqa: E402
 
 from alembic import command  # noqa: E402
+from app.domain.accounts.auth import hash_password  # noqa: E402
 from app.domain.lifecycle.aggregate import BorrowingTransaction  # noqa: E402
 from app.domain.lifecycle.transition_table import TransitionTable  # noqa: E402
 from app.infra.db.session import make_engine  # noqa: E402
@@ -81,9 +87,25 @@ def reset_schema(engine: Engine) -> None:
         c.execute(text("DROP TABLE IF EXISTS public.alembic_version"))
     cfg = Config(str(BACKEND / "alembic.ini"))
     cfg.set_main_option("script_location", str(BACKEND / "alembic"))
-    with engine.begin() as c:
+    with engine.connect() as c:  # no outer transaction: each revision commits (alembic/env.py)
         cfg.attributes["connection"] = c
         command.upgrade(cfg, "head")
+
+
+DEMO_PASSWORD = "demo-password-synthetic"  # noqa: S105 - same throwaway local value as seed_demo.py
+
+
+def set_demo_logins(engine: Engine) -> int:
+    """Give every SYNTHETIC user the demo password (the datasets carry no password hashes).
+
+    Only rows flagged is_synthetic are touched, and only when --demo-logins is passed."""
+    with engine.begin() as c:
+        return c.execute(
+            text(
+                "UPDATE app_user SET password_hash = :h WHERE is_synthetic AND password_hash IS NULL"
+            ),
+            {"h": hash_password(DEMO_PASSWORD)},
+        ).rowcount
 
 
 def csv_rows(path: Path) -> int:
@@ -228,6 +250,11 @@ def main() -> int:
     ap.add_argument(
         "--verify-only", action="store_true", help="do not load; only verify what is there"
     )
+    ap.add_argument(
+        "--demo-logins",
+        action="store_true",
+        help="after loading, set the throwaway demo password on every synthetic user (local demos)",
+    )
     a = ap.parse_args()
     if not a.url:
         print("set TEST_DATABASE_URL or pass --url", file=sys.stderr)
@@ -245,6 +272,10 @@ def main() -> int:
             reset_schema(engine)
         counts = load(engine, a.folder)
         print("loaded:", ", ".join(f"{k} {v}" for k, v in counts.items()))
+        if a.demo_logins:
+            print(
+                f"demo logins set for {set_demo_logins(engine)} synthetic users (see DEMO_PASSWORD)"
+            )
     problems = verify(engine, a.folder)
     for p in problems:
         print("PROBLEM:", p)

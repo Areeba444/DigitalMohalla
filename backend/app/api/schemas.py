@@ -222,6 +222,8 @@ class DecisionIn(StrictIn):
     reason: str = Field(min_length=1, max_length=1000)
     safeguards: list[str] = Field(default_factory=list, max_length=10)
     at_fault: Literal["borrower", "lender", "none"] | None = None
+    # disputes only: where the item is now (ADR-0009); it decides how the loan ends
+    possession: Literal["NOT_HANDED_OVER", "WITH_BORROWER", "RETURNED", "LOST"] | None = None
 
 
 class DecisionOut(BaseModel):

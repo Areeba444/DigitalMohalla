@@ -78,15 +78,16 @@ def seed(conn: Connection) -> None:
     for title, band, deposit in ITEMS:
         conn.execute(
             text(
-                "INSERT INTO item (owner_id, community_id, category_id, title, value_band, "
-                "deposit_amount, status) VALUES (:o, :c, :cat, :t, CAST(:b AS value_band), :d, "
-                "'PUBLISHED')"
+                "INSERT INTO item (owner_id, community_id, category_id, title, description, "
+                "condition, value_band, deposit_amount, status) VALUES (:o, :c, :cat, :t, :desc, "
+                "'GOOD', CAST(:b AS value_band), :d, 'PUBLISHED')"
             ),
             {
                 "o": ids["lender@example.test"],
                 "c": community,
                 "cat": category,
                 "t": title,
+                "desc": f"{title}, in good working order (synthetic demo listing).",
                 "b": band,
                 "d": deposit,
             },
@@ -104,7 +105,7 @@ def main() -> None:
             conn.execute(text("DROP TABLE IF EXISTS public.alembic_version"))
         config = Config(str(BACKEND / "alembic.ini"))
         config.set_main_option("script_location", str(BACKEND / "alembic"))
-        with engine.begin() as conn:
+        with engine.connect() as conn:  # no outer transaction: each revision commits
             config.attributes["connection"] = conn
             command.upgrade(config, "head")
     with engine.begin() as conn:
