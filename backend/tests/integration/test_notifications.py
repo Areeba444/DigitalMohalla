@@ -56,10 +56,11 @@ def test_tc153_member_reads_and_marks_only_their_own(conn: Connection, world: Wo
     lender_id = conn.execute(
         text("SELECT id FROM notification WHERE dedupe_key = 'tc153:l'")
     ).scalar_one()
-    assert [r["type"] for r in n.inbox(world.borrower, unread_only=True)] == ["mine"]
+    mine = [r["type"] for r in n.inbox(world.borrower, unread_only=True, limit=200)]
+    assert "mine" in mine and "theirs" not in mine  # other tests may have told this member too
     assert n.mark_read(world.borrower, [lender_id]) == 0  # someone else's: nothing happens
     assert n.unread_count(world.lender) >= 1
-    assert n.mark_read(world.borrower, None) == 1
+    assert n.mark_read(world.borrower, None) == len(mine)
     assert n.inbox(world.borrower, unread_only=True) == []
 
 
