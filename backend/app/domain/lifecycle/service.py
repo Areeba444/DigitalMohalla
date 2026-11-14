@@ -36,6 +36,7 @@ from app.domain.lifecycle.ports import (
 )
 from app.domain.lifecycle.transition_table import TransitionTable
 from app.domain.moderation.decisions import Decision, InvalidDecision, plan
+from app.domain.notifications.notify import INotify, NullNotifier
 
 SYSTEM_AUTH = "system:borrowing-service"
 _LOCALITY_HOLD = {"INCONCLUSIVE": "locality_inconclusive", "CONFLICTING": "locality_conflict"}
@@ -67,8 +68,10 @@ class BorrowingService:
         config_version: str,
         engine_timeout_ms: int = 2000,
         table: TransitionTable | None = None,
+        notifier: INotify | None = None,
     ) -> None:
         self.store = store
+        self.notifier: INotify = notifier or NullNotifier()
         self.engine = engine
         self.audit = audit
         self.config_version = config_version
@@ -126,6 +129,8 @@ class BorrowingService:
         self._system_event(
             txn_id, "assessment_generated", "ASSESSED", {}, refs, result.config_version
         )
+        # FR-B-06: the lender hears about the request once it is assessed (never while held)
+        self._tell(view.lender_id, "request_received", txn_id, "request_received")
         return CommandResult(txn_id, "ASSESSED", None, None, assessment_id)
 
     def _run_engine(self, view: TransactionView) -> AssessmentResult:
@@ -183,7 +188,9 @@ class BorrowingService:
                 self._party_event(actor, view, "request_accepted", "LENDER")
         except DatesTaken:
             self._system_event(txn_id, "request_declined", "DECLINED", {"reason": "dates_taken"})
+            self._tell(view.borrower_id, "request_declined", txn_id, "request_declined")
             return CommandResult(txn_id, "DECLINED", "dates taken")
+        self._tell(view.borrower_id, "request_accepted", txn_id, "request_accepted")
         return CommandResult(txn_id, "ACCEPTED")
 
     def decline_overlapping(self, accepted_txn_id: UUID) -> list[UUID]:
@@ -208,6 +215,7 @@ class BorrowingService:
         view = self._precheck(actor, txn_id, "request_declined", "LENDER")
         payload = {"reason": reason} if reason else {}
         self._party_event(actor, view, "request_declined", "LENDER", payload)
+        self._tell(view.borrower_id, "request_declined", txn_id, "request_declined")
         return CommandResult(txn_id, "DECLINED")
 
     def cancel(self, actor: Actor, txn_id: UUID) -> CommandResult:
@@ -582,6 +590,24 @@ class BorrowingService:
             if not isinstance(exc, DatesTaken):
                 self._reject(actor, view.id, event_type, str(exc))
             raise
+
+    def _tell(
+        self,
+        user_id: UUID,
+        type_: str,
+        txn_id: UUID,
+        key: str,
+        extra: Mapping[str, Any] | None = None,
+    ) -> bool:
+        """In-app notification about a loan (ADR-0013). The dedupe key is `<transaction>:<key>`, so
+        the same news reaches a person once however often the command or job runs."""
+        details = self.store.details(txn_id)
+        payload = {
+            "transaction_id": str(txn_id),
+            "item_title": details["item_title"],
+            **(extra or {}),
+        }
+        return self.notifier.notify(user_id, type_, payload, f"{txn_id}:{key}")
 
     def _reject(self, actor: Actor, txn_id: UUID, action: str, reason: str) -> None:
         self.audit.record_rejection(

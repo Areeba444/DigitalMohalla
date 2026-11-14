@@ -63,6 +63,36 @@ def test_tc153_member_reads_and_marks_only_their_own(conn: Connection, world: Wo
     assert n.inbox(world.borrower, unread_only=True) == []
 
 
+def test_tc154_lender_told_once_on_assessment_and_borrower_told_the_answer(
+    client: TestClient,  # noqa: F811
+    world: World,
+) -> None:
+    borrower = login(client, "borrower@example.test")
+    lender = login(client, "lender@example.test")
+    before = client.get("/api/v1/notifications?unread=true", headers=lender).json()
+    created = client.post(
+        "/api/v1/requests",
+        json={"item_id": str(world.items[16]), **dates(40, 2)},
+        headers=borrower,
+    )
+    assert created.status_code == 201, created.text
+    assert created.json()["state"] == "ASSESSED"
+    txn = created.json()["transaction_id"]
+
+    inbox = client.get("/api/v1/notifications?unread=true", headers=lender).json()
+    about = [n for n in inbox["notifications"] if n["payload"].get("transaction_id") == txn]
+    assert [n["type"] for n in about] == ["request_received"]
+    assert about[0]["payload"]["item_title"] == "Synthetic item 16"
+    assert inbox["unread_count"] == before["unread_count"] + 1
+
+    assert client.post(f"/api/v1/requests/{txn}/accept", headers=lender).status_code == 200
+    told = client.get("/api/v1/notifications", headers=borrower).json()["notifications"]
+    assert ["request_accepted"] == [
+        n["type"] for n in told if n["payload"].get("transaction_id") == txn
+    ]
+    client.post(f"/api/v1/requests/{txn}/cancel", headers=borrower)  # tidy: frees nothing held
+
+
 def test_tc155_mark_read_through_the_api(client: TestClient, world: World) -> None:  # noqa: F811
     lender = login(client, "lender@example.test")
     marked = client.post("/api/v1/notifications/read", json={}, headers=lender)

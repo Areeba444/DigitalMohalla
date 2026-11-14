@@ -14,6 +14,7 @@ from app.domain.assurance.engine import AssuranceEngine
 from app.domain.lifecycle.ports import IAssess
 from app.domain.lifecycle.service import Actor, BorrowingService
 from app.infra.db.evidence import PostgresEvidenceSource
+from app.infra.db.notifications import PostgresNotifier
 from app.infra.eventstore.postgres import PostgresAuditLog, PostgresLifecycleStore
 
 T = TypeVar("T")
@@ -38,6 +39,7 @@ class Commands:
                 PostgresAuditLog(self.engine),
                 config_version=self.config_version,
                 engine_timeout_ms=self.timeout_ms,
+                notifier=PostgresNotifier(conn),
             )
             return fn(service)
 
