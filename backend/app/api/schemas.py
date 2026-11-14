@@ -515,3 +515,11 @@ class JobReportOut(BaseModel):
     now: datetime
     lock_acquired: bool
     jobs: list[JobCountsOut]
+
+
+# ----------------------------------------------------------------------------- extensions (B8 1a)
+class ExtensionIn(StrictIn):
+    """The borrower asks to return later: the new last day, exclusive like `end_date` of a request."""
+
+    new_due_date: date
+    reason: str | None = Field(default=None, max_length=500)
