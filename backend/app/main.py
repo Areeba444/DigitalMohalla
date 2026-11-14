@@ -6,7 +6,15 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from sqlalchemy import Engine
 
-from app.api import cases, extensions, jobs, listings, membership, notifications
+from app.api import (
+    cases,
+    counter_offer,
+    extensions,
+    jobs,
+    listings,
+    membership,
+    notifications,
+)
 from app.api.deps import default_assessor
 from app.api.routes import router
 from app.config.settings import get_settings
@@ -72,6 +80,7 @@ def create_app(engine: Engine | None = None, assess: IAssess | None = None) -> F
     app.include_router(cases.router)
     app.include_router(jobs.router)
     app.include_router(extensions.router)
+    app.include_router(counter_offer.router)
     return app
 
 

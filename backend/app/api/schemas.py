@@ -523,3 +523,21 @@ class ExtensionIn(StrictIn):
 
     new_due_date: date
     reason: str | None = Field(default=None, max_length=500)
+
+
+# ----------------------------------------------------------------------------- counter-offer (B6 3b)
+class CounterOfferIn(StrictIn):
+    """Other dates the lender offers (ADR-0015); same date rules as a request."""
+
+    start_date: date
+    end_date: date
+    message: str | None = Field(default=None, max_length=500)
+
+    @model_validator(mode="after")
+    def _dates_in_order(self) -> "CounterOfferIn":
+        if self.end_date <= self.start_date:
+            raise ValueError("end_date must be after start_date")
+        return self
+
+    def period(self) -> str:
+        return f"[{self.start_date}T00:00:00+00,{self.end_date}T00:00:00+00)"
