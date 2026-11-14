@@ -538,10 +538,326 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/internal/jobs/run": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Run Due Jobs */
+        post: operations["run_due_jobs_api_v1_internal_jobs_run_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/transactions/{txn_id}/extension": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Request Extension */
+        post: operations["request_extension_api_v1_transactions__txn_id__extension_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/transactions/{txn_id}/extension/approve": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Approve Extension */
+        post: operations["approve_extension_api_v1_transactions__txn_id__extension_approve_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/transactions/{txn_id}/extension/decline": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Decline Extension */
+        post: operations["decline_extension_api_v1_transactions__txn_id__extension_decline_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/requests/{txn_id}/counter-offer": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Counter Offer */
+        post: operations["counter_offer_api_v1_requests__txn_id__counter_offer_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/requests/{txn_id}/counter-offer/accept": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Accept Counter Offer */
+        post: operations["accept_counter_offer_api_v1_requests__txn_id__counter_offer_accept_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/requests/{txn_id}/counter-offer/decline": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Decline Counter Offer */
+        post: operations["decline_counter_offer_api_v1_requests__txn_id__counter_offer_decline_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/transactions/{txn_id}/review": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Submit Review */
+        post: operations["submit_review_api_v1_transactions__txn_id__review_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/cases/{case_id}/appeal": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** File Appeal */
+        post: operations["file_appeal_api_v1_cases__case_id__appeal_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/moderation/cases/{case_id}/appeal-decision": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Decide Appeal */
+        post: operations["decide_appeal_api_v1_moderation_cases__case_id__appeal_decision_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/moderation/decisions/{decision_id}/reversal": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Reverse Decision */
+        post: operations["reverse_decision_api_v1_moderation_decisions__decision_id__reversal_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/items/{item_id}/photos": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Add Item Photo */
+        post: operations["add_item_photo_api_v1_items__item_id__photos_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/transactions/{txn_id}/photos": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Add Loan Photo */
+        post: operations["add_loan_photo_api_v1_transactions__txn_id__photos_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/attachments/{attachment_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Attachment Url */
+        get: operations["attachment_url_api_v1_attachments__attachment_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/search/{query_id}/clicks": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Record Click
+         * @description UC-B3 step 6: the member opened a shown result. 404 for someone else's search or an item
+         *     that was not shown.
+         */
+        post: operations["record_click_api_v1_search__query_id__clicks_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/search": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Search */
+        get: operations["search_api_v1_search_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        /**
+         * AppealDecidedOut
+         * @description The new decision; `flagged_outcomes` counts the loan outcomes now under re-evaluation.
+         */
+        AppealDecidedOut: {
+            /**
+             * Decision Id
+             * Format: uuid
+             */
+            decision_id: string;
+            /** Status */
+            status: string;
+            /** Flagged Outcomes */
+            flagged_outcomes: number;
+        };
+        /** AppealDecisionIn */
+        AppealDecisionIn: {
+            /**
+             * Result
+             * @enum {string}
+             */
+            result: "UPHELD" | "OVERTURNED";
+            /** Reason */
+            reason: string;
+        };
+        /** AppealFiledOut */
+        AppealFiledOut: {
+            /**
+             * Case Id
+             * Format: uuid
+             */
+            case_id: string;
+            /** Status */
+            status: string;
+        };
+        /** AppealIn */
+        AppealIn: {
+            /** Reason */
+            reason: string;
+        };
         /** AssessmentOut */
         AssessmentOut: {
             /** Assurance State */
@@ -577,6 +893,30 @@ export interface components {
              * @default 1
              */
             manipulation_level: number;
+        };
+        /**
+         * AttachmentOut
+         * @description A stored photo. `url` is a short-lived signed link, never a public address.
+         */
+        AttachmentOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Url */
+            url: string;
+            /** Expires At */
+            expires_at: number;
+            /** Mime Type */
+            mime_type: string;
+        };
+        /** AttachmentUrlOut */
+        AttachmentUrlOut: {
+            /** Url */
+            url: string;
+            /** Expires At */
+            expires_at: number;
         };
         /** BrowseItemOut */
         BrowseItemOut: {
@@ -687,6 +1027,22 @@ export interface components {
             /** Notes */
             notes?: string | null;
         };
+        /** ClickIn */
+        ClickIn: {
+            /**
+             * Item Id
+             * Format: uuid
+             */
+            item_id: string;
+        };
+        /** ClickOut */
+        ClickOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+        };
         /** CommandOut */
         CommandOut: {
             /**
@@ -748,6 +1104,24 @@ export interface components {
             notes?: string | null;
         };
         /**
+         * CounterOfferIn
+         * @description Other dates the lender offers (ADR-0015); same date rules as a request.
+         */
+        CounterOfferIn: {
+            /**
+             * Start Date
+             * Format: date
+             */
+            start_date: string;
+            /**
+             * End Date
+             * Format: date
+             */
+            end_date: string;
+            /** Message */
+            message?: string | null;
+        };
+        /**
          * DecisionIn
          * @description UC-I4: the decision, its mandatory reason (FR-T-11), and what it needs.
          */
@@ -768,6 +1142,11 @@ export interface components {
         };
         /** DecisionOut */
         DecisionOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
             /** Decider Role */
             decider_role: string;
             /** Kind */
@@ -858,6 +1237,19 @@ export interface components {
             authorisation: string;
             /** Config Version */
             config_version?: string | null;
+        };
+        /**
+         * ExtensionIn
+         * @description The borrower asks to return later: the new last day, exclusive like `end_date` of a request.
+         */
+        ExtensionIn: {
+            /**
+             * New Due Date
+             * Format: date
+             */
+            new_due_date: string;
+            /** Reason */
+            reason?: string | null;
         };
         /**
          * FixIn
@@ -986,6 +1378,47 @@ export interface components {
             is_yours: boolean;
             /** Booked Periods */
             booked_periods: string[];
+        };
+        /**
+         * ItemPhotoForm
+         * @description Multipart body: the file and nothing else. Unknown fields are refused (TC-60).
+         */
+        ItemPhotoForm: {
+            /** File */
+            file: string;
+        };
+        /** JobCountsOut */
+        JobCountsOut: {
+            /** Job */
+            job: string;
+            /** Ran */
+            ran: number;
+            /** Skipped */
+            skipped: number;
+            /** Failed */
+            failed: number;
+            /** Errors */
+            errors: string[];
+        };
+        /** JobReportOut */
+        JobReportOut: {
+            /**
+             * Now
+             * Format: date-time
+             */
+            now: string;
+            /** Lock Acquired */
+            lock_acquired: boolean;
+            /** Jobs */
+            jobs: components["schemas"]["JobCountsOut"][];
+        };
+        /**
+         * JobRunIn
+         * @description `as_of` is honoured only when the API runs with DEMO_CLOCK on (ADR-0012 point 5).
+         */
+        JobRunIn: {
+            /** As Of */
+            as_of?: string | null;
         };
         /** JoinIn */
         JoinIn: {
@@ -1130,6 +1563,16 @@ export interface components {
             expires_at?: string | null;
             /** Status */
             status?: ("DRAFT" | "PUBLISHED" | "PAUSED") | null;
+        };
+        /** LoanPhotoForm */
+        LoanPhotoForm: {
+            /** File */
+            file: string;
+            /**
+             * Purpose
+             * @enum {string}
+             */
+            purpose: "HANDOVER" | "RETURN" | "DISPUTE";
         };
         /**
          * LocalityOut
@@ -1364,6 +1807,16 @@ export interface components {
              * Format: date-time
              */
             created_at: string;
+            /**
+             * Photos
+             * @default 0
+             */
+            photos: number;
+            /**
+             * Reduced Evidence
+             * @default true
+             */
+            reduced_evidence: boolean;
         };
         /** RequestIn */
         RequestIn: {
@@ -1426,6 +1879,82 @@ export interface components {
              * @default []
              */
             moderator_safeguards: unknown[];
+        };
+        /**
+         * ReviewIn
+         * @description One rating per dimension of the other party's role (config `reviews_d1.dimensions`).
+         */
+        ReviewIn: {
+            /** Ratings */
+            ratings: {
+                [key: string]: number;
+            };
+            /** Comment */
+            comment?: string | null;
+        };
+        /**
+         * ReviewOut
+         * @description The review was stored. Flags are not returned to the reviewer (sequence (f)).
+         */
+        ReviewOut: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Reviewee Role */
+            reviewee_role: string;
+            /**
+             * Editable Until
+             * Format: date-time
+             */
+            editable_until: string;
+        };
+        /** SearchOut */
+        SearchOut: {
+            /** Query Id */
+            query_id: string | null;
+            /**
+             * Mode
+             * @enum {string}
+             */
+            mode: "HYBRID" | "KEYWORD_ONLY";
+            /** Total */
+            total: number;
+            /** Results */
+            results: components["schemas"]["SearchResultOut"][];
+        };
+        /**
+         * SearchResultOut
+         * @description One result: the listing, whether it is in the member's community, and a reason line in
+         *     plain words. Scores are kept for evaluation and never returned (FR-S-01, NFR-U-01).
+         */
+        SearchResultOut: {
+            /**
+             * Item Id
+             * Format: uuid
+             */
+            item_id: string;
+            /** Title */
+            title: string;
+            /** Condition */
+            condition: string | null;
+            /** Value Band */
+            value_band: string;
+            /** Deposit Amount */
+            deposit_amount: number;
+            /** Category Name */
+            category_name: string;
+            /** Community Name */
+            community_name: string;
+            /** Owner Name */
+            owner_name: string;
+            /** Same Community */
+            same_community: boolean;
+            /** Available */
+            available: boolean | null;
+            /** Reason */
+            reason: string;
         };
         /** StatementCreatedOut */
         StatementCreatedOut: {
@@ -2546,6 +3075,554 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["StatementCreatedOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    run_due_jobs_api_v1_internal_jobs_run_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["JobRunIn"] | null;
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["JobReportOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    request_extension_api_v1_transactions__txn_id__extension_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                txn_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ExtensionIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CommandOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    approve_extension_api_v1_transactions__txn_id__extension_approve_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                txn_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CommandOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    decline_extension_api_v1_transactions__txn_id__extension_decline_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                txn_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["DeclineIn"] | null;
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CommandOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    counter_offer_api_v1_requests__txn_id__counter_offer_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                txn_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CounterOfferIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CommandOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    accept_counter_offer_api_v1_requests__txn_id__counter_offer_accept_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                txn_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CommandOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    decline_counter_offer_api_v1_requests__txn_id__counter_offer_decline_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                txn_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CommandOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    submit_review_api_v1_transactions__txn_id__review_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                txn_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ReviewIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReviewOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    file_appeal_api_v1_cases__case_id__appeal_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                case_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AppealIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AppealFiledOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    decide_appeal_api_v1_moderation_cases__case_id__appeal_decision_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                case_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AppealDecisionIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AppealDecidedOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    reverse_decision_api_v1_moderation_decisions__decision_id__reversal_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                decision_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AppealIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AppealDecidedOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    add_item_photo_api_v1_items__item_id__photos_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                item_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/x-www-form-urlencoded": components["schemas"]["ItemPhotoForm"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AttachmentOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    add_loan_photo_api_v1_transactions__txn_id__photos_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                txn_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/x-www-form-urlencoded": components["schemas"]["LoanPhotoForm"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AttachmentOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    attachment_url_api_v1_attachments__attachment_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                attachment_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AttachmentUrlOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    record_click_api_v1_search__query_id__clicks_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                query_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ClickIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ClickOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    search_api_v1_search_get: {
+        parameters: {
+            query?: {
+                q?: string;
+                category?: number | null;
+                community?: string | null;
+                from?: string | null;
+                to?: string | null;
+                max_deposit?: number | null;
+                condition?: ("NEW" | "GOOD" | "FAIR" | "WORN") | null;
+                sort?: "relevance" | "evidence" | "newest";
+                page?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SearchOut"];
                 };
             };
             /** @description Validation Error */
