@@ -21,8 +21,6 @@ from app.infra.db.session import make_engine
 
 BACKEND = Path(__file__).resolve().parents[2]
 
-pytest_plugins = ["tests.integration.search_world"]  # fixture `s` for suites 29, 30
-
 
 @dataclass
 class World:
@@ -133,3 +131,7 @@ def conn(engine: Engine) -> Iterator[Connection]:
     finally:
         outer.rollback()
         connection.close()
+
+
+# The search suites (29, 30) share one synthetic search community for the whole session.
+from tests.integration.search_world import s  # noqa: E402, F401
