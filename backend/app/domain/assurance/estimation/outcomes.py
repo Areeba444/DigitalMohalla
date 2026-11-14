@@ -13,6 +13,10 @@ Plain-language rules (D11):
     DISPUTE_FREE; "no fault" counts as success for both parties.
   * A metric that does not apply is not recorded at all (a missing outcome is not a failure):
     on-time return when the item never changed hands, or when the dispute was not about the return.
+  * Item possession (ADR-0009, schema v2.4): LOST fails the borrower's on-time return and condition;
+    WITH_BORROWER records only the finding, because the loan goes on and its return is judged when
+    it happens. The later close of such a loan then records only the on-time return, so the
+    finding is not counted twice.
 Pure functions, no I/O (A8 layer rules).
 """
 
@@ -22,6 +26,7 @@ from typing import Literal
 Role = Literal["BORROWER", "LENDER"]
 Metric = Literal["ON_TIME_RETURN", "CONDITION_AGREED", "DISPUTE_FREE"]
 Fault = Literal["borrower", "lender", "none"]
+Possession = Literal["NOT_HANDED_OVER", "WITH_BORROWER", "RETURNED", "LOST"]
 
 DISPUTE_STAGES = ("ACCEPTED", "ACTIVE", "RETURN_INITIATED")
 FAULTS = ("borrower", "lender", "none")
@@ -36,9 +41,14 @@ class OutcomeRecord:
 
 @dataclass(frozen=True)
 class ClosedLoan:
-    """A loan that ended with `transaction_closed`."""
+    """A loan that ended with `transaction_closed`.
+
+    after_dispute: an earlier dispute on this loan was resolved WITH_BORROWER and already recorded
+    the finding (ADR-0009), so the close adds only the on-time return.
+    """
 
     returned_on_time: bool
+    after_dispute: bool = False
 
 
 @dataclass(frozen=True)
@@ -49,15 +59,20 @@ class ResolvedDispute:
     reason: the dispute reason (DAMAGE, NON_RETURN, CONDITION_MISMATCH, NO_SHOW, OTHER).
     at_fault: what the moderator found, from the decision's `resolved_outcome`.
     returned_on_time: whether `return_initiated` was on time; known only at stage RETURN_INITIATED.
+    possession: where the item is, from the decision (ADR-0009); None for decisions made before
+    schema v2.4, which are treated as before.
     """
 
     stage: str
     reason: str
     at_fault: Fault
     returned_on_time: bool | None = None
+    possession: Possession | None = None
 
 
 def outcomes_for_closed_loan(loan: ClosedLoan) -> list[OutcomeRecord]:
+    if loan.after_dispute:
+        return [OutcomeRecord("BORROWER", "ON_TIME_RETURN", loan.returned_on_time)]
     return [
         OutcomeRecord("BORROWER", "ON_TIME_RETURN", loan.returned_on_time),
         OutcomeRecord("BORROWER", "CONDITION_AGREED", True),
@@ -75,7 +90,16 @@ def outcomes_for_resolved_dispute(d: ResolvedDispute) -> list[OutcomeRecord]:
     borrower_ok = d.at_fault != "borrower"
     lender_ok = d.at_fault != "lender"
     out: list[OutcomeRecord] = []
-    if d.stage == "RETURN_INITIATED":
+    if d.possession == "LOST":  # the item never came back: a failed return whatever the stage
+        out.append(OutcomeRecord("BORROWER", "ON_TIME_RETURN", False))
+        out.append(OutcomeRecord("BORROWER", "CONDITION_AGREED", False))
+        out.append(OutcomeRecord("BORROWER", "DISPUTE_FREE", borrower_ok))
+        out.append(OutcomeRecord("LENDER", "CONDITION_AGREED", lender_ok))
+        out.append(OutcomeRecord("LENDER", "DISPUTE_FREE", lender_ok))
+        return out
+    if d.possession == "WITH_BORROWER":
+        pass  # the loan goes on; its return is judged when it happens (ADR-0009)
+    elif d.stage == "RETURN_INITIATED":
         if d.returned_on_time is None:
             raise ValueError("a dispute at return needs the return time")
         out.append(OutcomeRecord("BORROWER", "ON_TIME_RETURN", d.returned_on_time))

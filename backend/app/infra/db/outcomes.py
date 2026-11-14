@@ -63,8 +63,12 @@ def outcomes_for_event(conn: Connection, event_id: int) -> list[OutcomeRecord]:
     if e is None:
         return []
     if e["event_type"] == "transaction_closed":
+        earlier = _last_before(conn, e["stream_id"], e["stream_seq"], "dispute_resolved")
         return outcomes_for_closed_loan(
-            ClosedLoan(returned_on_time=e["payload"].get("outcome") == "on_time")
+            ClosedLoan(
+                returned_on_time=e["payload"].get("outcome") == "on_time",
+                after_dispute=earlier is not None,  # resolved WITH_BORROWER earlier (ADR-0009)
+            )
         )
     if e["event_type"] != "dispute_resolved":
         return []
@@ -72,10 +76,14 @@ def outcomes_for_event(conn: Connection, event_id: int) -> list[OutcomeRecord]:
     if opened is None:
         raise MissingFinding(f"event {event_id}: dispute_resolved without dispute_opened")
     decision_id = (e["evidence_refs"] or {}).get("decision_id")
-    at_fault = conn.execute(
-        text("SELECT resolved_outcome ->> 'at_fault' FROM moderator_decision WHERE id::text = :d"),
+    found = conn.execute(
+        text(
+            "SELECT resolved_outcome ->> 'at_fault', resolved_outcome ->> 'possession' "
+            "FROM moderator_decision WHERE id::text = :d"
+        ),
         {"d": decision_id},
-    ).scalar_one_or_none()
+    ).first()
+    at_fault, possession = (found[0], found[1]) if found else (None, None)
     if at_fault is None:
         raise MissingFinding(f"event {event_id}: the decision does not record who was at fault")
     on_time: bool | None = None
@@ -92,6 +100,7 @@ def outcomes_for_event(conn: Connection, event_id: int) -> list[OutcomeRecord]:
             reason=(opened["payload"] or {}).get("reason", ""),
             at_fault=at_fault,
             returned_on_time=on_time,
+            possession=possession,
         )
     )
 
