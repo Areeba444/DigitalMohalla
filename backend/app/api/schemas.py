@@ -603,3 +603,28 @@ class AttachmentOut(BaseModel):
 class AttachmentUrlOut(BaseModel):
     url: str
     expires_at: int
+
+
+# ----------------------------------------------------------------------------- search (B3)
+class SearchResultOut(BaseModel):
+    """One result: the listing, whether it is in the member's community, and a reason line in
+    plain words. Scores are kept for evaluation and never returned (FR-S-01, NFR-U-01)."""
+
+    item_id: UUID
+    title: str
+    condition: str | None
+    value_band: str
+    deposit_amount: float
+    category_name: str
+    community_name: str
+    owner_name: str
+    same_community: bool
+    available: bool | None  # true when dates were given (booked items are filtered out)
+    reason: str
+
+
+class SearchOut(BaseModel):
+    query_id: UUID | None  # set when the search is logged (FR-S-05)
+    mode: Literal["HYBRID", "KEYWORD_ONLY"]
+    total: int
+    results: list[SearchResultOut]
