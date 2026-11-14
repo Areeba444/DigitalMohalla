@@ -144,3 +144,19 @@ def test_no_number_stands_alone_and_there_is_no_trust_score() -> None:
         assert "score" not in text.lower()
         for m in re.finditer(r"\d+\.\d+", text):
             assert text[: m.start()].split()[-1].lstrip("(") in labels, (m.group(), text)
+
+
+def test_high_value_newcomer_held_is_still_told_no_history_is_not_negative() -> None:  # ADR-0010
+    text = explain(
+        rule="R4",
+        state="REVIEW_RECOMMENDED",
+        mean=0.5,
+        lower_90=0.05,
+        upper_90=0.95,
+        n_eff=0.0,
+        direct_event_count=0,
+        is_high_value=True,
+    )
+    assert "not a negative finding" in text
+    assert "moderator checks high-value requests" in text
+    assert "no verified loans yet" in text

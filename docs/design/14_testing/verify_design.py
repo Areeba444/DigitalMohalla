@@ -158,9 +158,13 @@ def c05():
     tests = read(os.path.join(ROOT, "06_data_model", "test_schema.py"))
     in_tests = re.findall(r'"(R[0-9][A-Z_]*)": \(', tests)
     out = []
-    for name, got in (("schema.sql", in_sql), ("test_schema.py", in_tests), ("verify_fixtures.py", list(vf.RULES))):
-        if got != order:
-            out.append(f"{name} rules {got} differ from config rule_order {order}")
+    # schema.sql and test_schema.py map each rule to its outcome, so only the set of rules must agree;
+    # the oracle tests the rules in order, so its order must equal the config's rule_order.
+    for name, got in (("schema.sql", in_sql), ("test_schema.py", in_tests)):
+        if sorted(got) != sorted(order):
+            out.append(f"{name} rules {sorted(got)} differ from config rule_order {sorted(order)}")
+    if list(vf.RULES) != order:
+        out.append(f"verify_fixtures.py rule order {list(vf.RULES)} differs from config rule_order {order}")
     holds = {r: h for r, (_, _, h) in vf.RULES.items() if h}
     if holds != cfg["decision_policy_alg4"]["hold_rules"]:
         out.append(f"hold rules differ: oracle {holds} vs config {cfg['decision_policy_alg4']['hold_rules']}")

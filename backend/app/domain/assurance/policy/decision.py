@@ -1,16 +1,18 @@
 """Decision policy and assurance-state mapping (Algorithm 4; FR-T-01, FR-T-06; ADR-0007, ADR-0008, D12).
 
-Plain-language note: the first rule whose condition holds decides. An open dispute always wins
-(R1); a corroborated manipulation finding holds the request for a moderator (R2); a newcomer with no
-community support is INSUFFICIENT_EVIDENCE, never a negative finding (R3); a high-value request on
-weak or dissimilar evidence is held for a moderator (R4, nobody is restricted without a human);
+Plain-language note: the first rule whose condition holds decides, in the order the config gives
+(`decision_policy_alg4.rule_order`). An open dispute always wins (R1); a corroborated manipulation
+finding holds the request for a moderator (R2); a high-value request on weak or dissimilar evidence
+is held for a moderator (R4, nobody is restricted without a human), and since config 1.3.1 this is
+checked before R3, so a high-value newcomer is held too (ADR-0010 proposed, review DM09, FR-B-07);
+a newcomer with no community support is INSUFFICIENT_EVIDENCE, never a negative finding (R3);
 strong evidence proceeds (R7, R8); anything else reaches the lender as REVIEW_RECOMMENDED (R9).
 Indirect evidence on its own can never give SUFFICIENT_EVIDENCE: R7 and R8 need n_eff >= n_min from
 the borrower's own outcomes. Thresholds come from engine.json; the rule table and its outputs are the
 design (Algorithm doc §6, the schema's assessment_rule_ck). Pure, no I/O.
 """
 
-from collections.abc import Mapping
+from collections.abc import Callable, Mapping
 from dataclasses import dataclass
 from typing import Any
 
@@ -63,6 +65,10 @@ def safeguards_for(rule: str, value_band: str) -> list[dict[str, str]]:
     return []
 
 
+# Iteration 1 order (config 1.3.0). Config 1.3.1 moves R4 before R3.
+DEFAULT_RULE_ORDER = ("R1", "R2", "R3", "R4", "R5", "R6_DISPUTE", "R6_SPARSE", "R7", "R8", "R9")
+
+
 @dataclass(frozen=True)
 class PolicyThresholds:
     tau_mu: float
@@ -70,6 +76,7 @@ class PolicyThresholds:
     n_min: float
     rho_sup: float
     similarity_floor: float
+    rule_order: tuple[str, ...] = DEFAULT_RULE_ORDER
 
     @classmethod
     def from_config(cls, cfg_data: Mapping[str, Any]) -> "PolicyThresholds":
@@ -83,7 +90,16 @@ class PolicyThresholds:
             similarity_floor=float(
                 cfg_data["trust_estimation_alg1"]["similarity_weighting"]["similarity_floor"]
             ),
+            rule_order=check_rule_order(cfg_data["decision_policy_alg4"]["rule_order"]),
         )
+
+
+def check_rule_order(order: Any) -> tuple[str, ...]:
+    """Every rule exactly once, R1 first (an open dispute always wins), R9 last (the fallback)."""
+    rules = tuple(str(r) for r in order)
+    if sorted(rules) != sorted(RULES) or rules[0] != "R1" or rules[-1] != "R9":
+        raise ValueError(f"rule_order must list every rule once, R1 first and R9 last: {rules}")
+    return rules
 
 
 @dataclass(frozen=True)
@@ -116,28 +132,24 @@ def decide(x: PolicyInputs, th: PolicyThresholds) -> PolicyDecision:
         raise ValueError("risk level must be 1 to 4")
     high = x.value_band == "HIGH"
     medium = x.value_band == "MEDIUM"
-    if x.open_dispute:
-        rule = "R1"
-    elif x.risk_level == 4:
-        rule = "R2"
-    elif x.direct_event_count == 0 and x.rho < th.rho_sup:
-        rule = "R3"
-    elif high and (x.request_similarity < th.similarity_floor or x.lower_90 < th.tau_l):
-        rule = "R4"
-    elif x.risk_level == 3:
-        rule = "R5"
-    elif x.resolved_disputes_12m > 0:
-        rule = "R6_DISPUTE"
-    elif x.n_eff < th.n_min and x.rho < th.rho_sup:
-        rule = "R6_SPARSE"
-    else:
-        strong = x.mean >= th.tau_mu and x.lower_90 >= th.tau_l and x.n_eff >= th.n_min
-        if strong and x.risk_level == 1 and x.verification_ok and not medium and not high:
-            rule = "R7"
-        elif strong and x.risk_level <= 2 and x.verification_ok:
-            rule = "R8"
-        else:
-            rule = "R9"
+    strong = x.mean >= th.tau_mu and x.lower_90 >= th.tau_l and x.n_eff >= th.n_min
+    conditions: dict[str, Callable[[], bool]] = {
+        "R1": lambda: x.open_dispute,
+        "R2": lambda: x.risk_level == 4,
+        "R3": lambda: x.direct_event_count == 0 and x.rho < th.rho_sup,
+        "R4": lambda: (
+            high and (x.request_similarity < th.similarity_floor or x.lower_90 < th.tau_l)
+        ),
+        "R5": lambda: x.risk_level == 3,
+        "R6_DISPUTE": lambda: x.resolved_disputes_12m > 0,
+        "R6_SPARSE": lambda: x.n_eff < th.n_min and x.rho < th.rho_sup,
+        "R7": lambda: (
+            strong and x.risk_level == 1 and x.verification_ok and not medium and not high
+        ),
+        "R8": lambda: strong and x.risk_level <= 2 and x.verification_ok,
+        "R9": lambda: True,
+    }
+    rule = next(r for r in th.rule_order if conditions[r]())
     decision, state, hold = RULES[rule]
     return PolicyDecision(
         rule, decision, state, hold, hold is not None, safeguards_for(rule, x.value_band)
