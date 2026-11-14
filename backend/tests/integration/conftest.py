@@ -21,6 +21,8 @@ from app.infra.db.session import make_engine
 
 BACKEND = Path(__file__).resolve().parents[2]
 
+pytest_plugins = ["tests.integration.search_world"]  # fixture `s` for suites 29, 30
+
 
 @dataclass
 class World:

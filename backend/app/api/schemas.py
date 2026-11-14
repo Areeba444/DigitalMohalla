@@ -628,3 +628,11 @@ class SearchOut(BaseModel):
     mode: Literal["HYBRID", "KEYWORD_ONLY"]
     total: int
     results: list[SearchResultOut]
+
+
+class ClickIn(StrictIn):
+    item_id: UUID
+
+
+class ClickOut(BaseModel):
+    id: UUID
