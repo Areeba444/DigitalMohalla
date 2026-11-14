@@ -123,7 +123,7 @@ describe('Iteration 2 Screens (W8–W24) Render & NFR-U-01 Conformance', () => {
 
   test('W16 Evidence Profile: renders Beta credible interval bar, zero composite numbers', async () => {
     await render(<EvidenceProfileScreen />);
-    expect(screen.getByText('Areeba K.')).toBeOnTheScreen();
+    expect(screen.getByText(/Name not present in database|Areeba/i)).toBeOnTheScreen();
     expect(screen.getByText(/90% credible interval/i)).toBeOnTheScreen();
     expect(screen.getByLabelText(/90% credible interval from 0.72 to 0.95/i)).toBeOnTheScreen();
     assertNoSingleScore();

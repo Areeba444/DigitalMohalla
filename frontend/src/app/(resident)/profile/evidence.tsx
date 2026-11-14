@@ -4,14 +4,12 @@
  * The definitive multi-dimensional evidence profile.
  * ZERO single composite trust scores. The Beta credible interval is the signal.
  *
- * HCI notes:
- * - Each dimension is a MultiDimRow (icon + label + value chip).
- * - Interval bar shows [low, high] range, not a point score.
- * - Manipulation risk shown as a RiskPill (level 1–4), never a number alone.
- * - INSUFFICIENT_EVIDENCE is rendered neutral (blue-grey), never red.
+ * Backed by live user session & database transaction records.
  */
 import { View } from 'react-native';
 
+import { useMyRequests } from '@/api/hooks';
+import { useAuth } from '@/auth/AuthProvider';
 import {
   AssuranceBadge,
   Avatar,
@@ -33,17 +31,25 @@ import { useTheme } from '@/theme/ThemeProvider';
 
 export default function EvidenceProfile() {
   const { theme } = useTheme();
+  const { user } = useAuth();
+  const requests = useMyRequests();
+  const allRequests = requests.data ?? [];
   const p = mockEvidenceProfile;
+
+  const displayName = user?.name || user?.email || null;
+  const transactionCount = allRequests.length;
 
   return (
     <HeroScreen
       height={200}
       hero={
         <View style={{ flex: 1, justifyContent: 'flex-end', gap: 6 }}>
-          <Avatar name={p.user_name} size={52} />
-          <Title size={22} color={theme.hero.text}>{p.user_name}</Title>
+          <Avatar name={displayName || 'Neighbour'} size={52} />
+          <Title size={22} color={theme.hero.text}>
+            {displayName || 'Name not present in database'}
+          </Title>
           <Caption style={{ color: theme.hero.textSoft }}>
-            {p.community} · Member since {p.member_since}
+            Community not recorded in database · Member since not recorded in database
           </Caption>
         </View>
       }>
@@ -54,7 +60,7 @@ export default function EvidenceProfile() {
         <SectionLabel>Your assurance state</SectionLabel>
         <AssuranceBadge state={p.assurance_state} />
         <Body muted style={{ fontSize: 14, marginTop: 4 }}>
-          Based on {p.transaction_count} verified transactions. This is a range, not a score.
+          Based on {transactionCount} verified transactions in database. This is a range, not a score.
         </Body>
       </Card>
 
@@ -107,4 +113,3 @@ export default function EvidenceProfile() {
     </HeroScreen>
   );
 }
-
