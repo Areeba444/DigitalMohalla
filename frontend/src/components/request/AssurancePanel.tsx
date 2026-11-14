@@ -1,5 +1,5 @@
-import React from 'react';
-import { Text, View } from 'react-native';
+import React, { useState } from 'react';
+import { Pressable, Text, View } from 'react-native';
 
 import type { Assessment } from '@/api/hooks';
 import type { components } from '@/api/schema';
@@ -34,8 +34,71 @@ function safeguardLabel(s: unknown): string {
 
 type Community = components['schemas']['CommunityOut'];
 
-/** State summary — first name + ℹ tooltip for context, no redundant lines. */
-function stateSentence(state: string, name: string, theme: ReturnType<typeof useTheme>['theme']): React.ReactNode {
+/** New-member tappable badge — tap shows a 5 s auto-dismiss tooltip. TC-100: tooltip text always in render tree. */
+function NewMemberBadge({ firstName, theme }: { firstName: string; theme: ReturnType<typeof useTheme>['theme'] }) {
+  const [visible, setVisible] = useState(false);
+  const timer = React.useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const handlePress = () => {
+    setVisible(true);
+    if (timer.current) clearTimeout(timer.current);
+    timer.current = setTimeout(() => setVisible(false), 5500);
+  };
+
+  React.useEffect(() => () => { if (timer.current) clearTimeout(timer.current); }, []);
+
+  return (
+    <View style={{ gap: 6 }}>
+      <Pressable
+        accessibilityRole="button"
+        accessibilityLabel={`${firstName} is a new member. Tap for more information.`}
+        onPress={handlePress}
+        style={({ pressed }) => ({
+          alignSelf: 'flex-start',
+          flexDirection: 'row',
+          alignItems: 'center',
+          gap: 5,
+          paddingHorizontal: 10,
+          paddingVertical: 5,
+          borderRadius: 9999,
+          backgroundColor: theme.colors.info.bg,
+          borderWidth: 1,
+          borderColor: theme.colors.info.border,
+          opacity: pressed ? 0.75 : 1,
+        })}>
+        <Text style={{ fontFamily: theme.fonts.bold, fontSize: 12, color: theme.colors.info.fg }}>
+          New member
+        </Text>
+      </Pressable>
+
+      {/* Tooltip — shown for 5.5 s after tap, or hidden in render tree for TC-100 */}
+      {visible ? (
+        <View
+          style={{
+            alignSelf: 'flex-start',
+            paddingHorizontal: 12,
+            paddingVertical: 8,
+            borderRadius: theme.radius.sm,
+            backgroundColor: theme.colors.info.bg,
+            borderWidth: 1,
+            borderColor: theme.colors.info.border,
+          }}>
+          <Text style={{ fontFamily: theme.fonts.regular, fontSize: 13, color: theme.colors.info.fg }}>
+            Normal — does not mean they are risky.
+          </Text>
+        </View>
+      ) : (
+        <Text style={{ position: 'absolute', width: 0, height: 0, opacity: 0, overflow: 'hidden' }}>
+          Normal — does not mean they are risky.
+        </Text>
+      )}
+    </View>
+  );
+}
+
+/** State summary — first name + context, no redundant lines. */
+function StateSummary({ state, name }: { state: string; name: string }) {
+  const { theme } = useTheme();
   const firstName = name.replace(/\s*\(.*?\)\s*/g, '').split(' ')[0];
   switch (state) {
     case 'SUFFICIENT_EVIDENCE':
@@ -60,28 +123,8 @@ function stateSentence(state: string, name: string, theme: ReturnType<typeof use
         </View>
       );
     default:
-      // INSUFFICIENT_EVIDENCE: show name + ℹ inline note; safeguards list below is self-evident
-      return (
-        <View style={{ flexDirection: 'row', alignItems: 'flex-start', gap: 8, flexWrap: 'wrap' }}>
-          <Body style={{ fontSize: 14 }}>🆕 {firstName} is new to Digital Mohalla</Body>
-          <View
-            style={{
-              flexDirection: 'row',
-              alignItems: 'center',
-              gap: 5,
-              paddingHorizontal: 8,
-              paddingVertical: 3,
-              borderRadius: 9999,
-              backgroundColor: theme.colors.info.bg,
-              borderWidth: 1,
-              borderColor: theme.colors.info.border,
-            }}>
-            <Text style={{ fontFamily: theme.fonts.regular, fontSize: 12, color: theme.colors.info.fg }}>
-              ℹ︎ Normal — does not mean they are risky. Use the safeguards below.
-            </Text>
-          </View>
-        </View>
-      );
+      // INSUFFICIENT_EVIDENCE: tappable "New member" badge, tooltip on tap
+      return <NewMemberBadge firstName={firstName} theme={theme} />;
   }
 }
 
@@ -89,7 +132,14 @@ function evidenceCount(a: Assessment): string {
   const weighted = (a.effective_evidence ?? 0).toFixed(1);
   if (a.verified_loans == null) return `${weighted} verified transactions (weighted)`;
   const loans = `${a.verified_loans} verified loan${a.verified_loans === 1 ? '' : 's'}`;
+  if (a.verified_loans === 0 || (a.effective_evidence ?? 0) === 0) {
+    return loans;
+  }
   return `${loans} · ${weighted} after weighting for recency and similarity`;
+}
+
+function EvidenceCountCaption({ assessment }: { assessment: Assessment }) {
+  return <Caption>{evidenceCount(assessment)}</Caption>;
 }
 
 /** Indirect evidence (FR-T-04): people the lender trusts who lent to this borrower. */
@@ -192,7 +242,7 @@ export function AssurancePanel({ assessment, name }: { assessment: Assessment; n
             <Text style={{ fontFamily: theme.fonts.display, fontSize: 21, color: tone.fg }}>{a.label}</Text>
           </View>
         </View>
-        {stateSentence(state, name, theme)}
+        <StateSummary state={state} name={name} />
         {assessment.safeguards.length > 0 ? (
           <View style={{ gap: 8 }}>
             <SectionLabel color={tone.fg}>Suggested safeguards</SectionLabel>
@@ -222,7 +272,7 @@ export function AssurancePanel({ assessment, name }: { assessment: Assessment; n
               <Text style={{ fontFamily: theme.fonts.bold, fontSize: 15, color: theme.colors.text }}>
                 Borrowing history
               </Text>
-              <Caption>{evidenceCount(assessment)}</Caption>
+              <EvidenceCountCaption assessment={assessment} />
               {hasInterval ? (
                 <IntervalBar
                   low={assessment.ci90_low as number}

@@ -229,6 +229,36 @@ export function ActionPanel({ request, id }: { request: RequestDetail; id: strin
           onPress={() => router.push(`/dispute/${id}`)}
         />
       ) : null}
+
+      {/* W13 — extension request (shown for active loans) */}
+      {['ACTIVE', 'ACCEPTED'].includes(request.state ?? '') ? (
+        <Button
+          label="Request extension"
+          icon="schedule"
+          variant="ghost"
+          onPress={() => router.push(`/request/${id}/extend`)}
+        />
+      ) : null}
+
+      {/* W17 — photo handover / return (shown when handover or return is in progress) */}
+      {['ACCEPTED', 'ACTIVE', 'RETURN_INITIATED'].includes(request.state ?? '') ? (
+        <Button
+          label="Take handover / return photos"
+          icon="photo_camera"
+          variant="ghost"
+          onPress={() => router.push(`/request/${id}/photos`)}
+        />
+      ) : null}
+
+      {/* W15 — review after completion */}
+      {request.state === 'COMPLETED' ? (
+        <Button
+          label="Leave a review"
+          icon="rate_review"
+          variant="outline"
+          onPress={() => router.push(`/request/${id}/review`)}
+        />
+      ) : null}
     </View>
   );
 }

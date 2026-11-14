@@ -8,7 +8,6 @@
  * - ReasonLine per result explaining *why* it was surfaced (NFR-Q-05 transparency)
  * - Fairness rule: new lenders receive population baseline and are not penalized in rank
  */
-import { router } from 'expo-router';
 import { useState } from 'react';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 
@@ -22,7 +21,6 @@ import {
   EmptyState,
   ErrorText,
   Field,
-  HeaderAvatar,
   Icon,
   Loading,
   Screen,
@@ -82,8 +80,7 @@ export default function Browse() {
     <Screen
       title="Browse & Search"
       subtitle="Find tools and household goods nearby"
-      tabs
-      right={<HeaderAvatar onPress={() => router.navigate('/profile')} />}>
+      tabs>
       {/* Row 1: Search bar */}
       <Field
         icon="search"
