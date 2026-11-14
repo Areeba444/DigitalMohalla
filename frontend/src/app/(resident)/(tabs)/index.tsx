@@ -9,6 +9,7 @@ import {
   Caption,
   EmptyState,
   ErrorText,
+  HeaderAvatar,
   HeroScreen,
   Icon,
   type IconName,
@@ -66,11 +67,14 @@ export default function Home() {
       height={250}
       hero={
         <View style={{ flex: 1, justifyContent: 'space-between' }}>
-          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-            <Icon name="location_city" size={20} color={theme.hero.text} />
-            <Text style={{ fontFamily: theme.fonts.bold, fontSize: 14, color: theme.hero.text, letterSpacing: 0.4 }}>
-              Digital Mohalla
-            </Text>
+          <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+              <Icon name="location_city" size={20} color={theme.hero.text} />
+              <Text style={{ fontFamily: theme.fonts.bold, fontSize: 14, color: theme.hero.text, letterSpacing: 0.4 }}>
+                Digital Mohalla
+              </Text>
+            </View>
+            <HeaderAvatar onPress={() => router.navigate('/profile')} />
           </View>
           <View style={{ gap: 6 }}>
             <SectionLabel color={theme.hero.textSoft}>Your neighbourhood</SectionLabel>

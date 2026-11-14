@@ -900,6 +900,31 @@ export function Avatar({ name, size = 44 }: { name: string; size?: number }) {
   );
 }
 
+/** Tappable avatar for the top-right of a Screen header — links to Profile. */
+export function HeaderAvatar({ onPress }: { onPress: () => void }) {
+  const theme = useT();
+  return (
+    <Pressable
+      accessibilityRole="button"
+      accessibilityLabel="Your profile"
+      onPress={onPress}
+      style={({ pressed }) => ({
+        width: 36,
+        height: 36,
+        borderRadius: 18,
+        backgroundColor: theme.colors.primarySoft,
+        alignItems: 'center',
+        justifyContent: 'center',
+        borderWidth: 1.5,
+        borderColor: theme.colors.primary,
+        opacity: pressed ? 0.75 : 1,
+      })}>
+      <Icon name="person" size={20} color={theme.colors.primary} />
+    </Pressable>
+  );
+}
+
+
 const ITEM_ICONS: [RegExp, IconName][] = [
   [/drill|tool|hammer|wrench|saw|screw/i, 'handyman'],
   [/ladder|stair/i, 'stairs'],

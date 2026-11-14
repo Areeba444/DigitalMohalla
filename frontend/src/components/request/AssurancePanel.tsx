@@ -34,39 +34,52 @@ function safeguardLabel(s: unknown): string {
 
 type Community = components['schemas']['CommunityOut'];
 
-/** Bullet-point state summary — scannable, no wall of text. */
-function stateSentence(state: string, name: string): React.ReactNode {
+/** State summary — first name + ℹ tooltip for context, no redundant lines. */
+function stateSentence(state: string, name: string, theme: ReturnType<typeof useTheme>['theme']): React.ReactNode {
   const firstName = name.replace(/\s*\(.*?\)\s*/g, '').split(' ')[0];
   switch (state) {
     case 'SUFFICIENT_EVIDENCE':
       return (
         <View style={{ gap: 4 }}>
           <Body style={{ fontSize: 14 }}>✅ {firstName} has verified borrowing history</Body>
-          <Body style={{ fontSize: 14 }}>✅ Enough evidence for this type of item</Body>
-          <Body style={{ fontSize: 14, color: undefined }} muted>You still decide — this is guidance, not a guarantee</Body>
+          <Body style={{ fontSize: 14 }} muted>You still decide — this is guidance, not a guarantee</Body>
         </View>
       );
     case 'REVIEW_RECOMMENDED':
       return (
         <View style={{ gap: 4 }}>
           <Body style={{ fontSize: 14 }}>⚠️ {firstName}&apos;s history is limited or unusual for this item</Body>
-          <Body style={{ fontSize: 14 }}>👁 Worth checking the details below before deciding</Body>
-          <Body style={{ fontSize: 14 }} muted>You still decide</Body>
+          <Body style={{ fontSize: 14 }} muted>Worth checking the details below before deciding</Body>
         </View>
       );
     case 'ACTIVE_DISPUTE':
       return (
         <View style={{ gap: 4 }}>
           <Body style={{ fontSize: 14 }}>🚩 {firstName} has an unresolved dispute</Body>
-          <Body style={{ fontSize: 14 }}>⏳ A moderator is handling it</Body>
+          <Body style={{ fontSize: 14 }} muted>A moderator is reviewing before anything else happens</Body>
         </View>
       );
     default:
+      // INSUFFICIENT_EVIDENCE: show name + ℹ inline note; safeguards list below is self-evident
       return (
-        <View style={{ gap: 4 }}>
+        <View style={{ flexDirection: 'row', alignItems: 'flex-start', gap: 8, flexWrap: 'wrap' }}>
           <Body style={{ fontSize: 14 }}>🆕 {firstName} is new to Digital Mohalla</Body>
-          <Body style={{ fontSize: 14 }}>✓ This is normal for new members and does not mean they are risky</Body>
-          <Body style={{ fontSize: 14 }}>✓ Suggested safeguards are listed below</Body>
+          <View
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              gap: 5,
+              paddingHorizontal: 8,
+              paddingVertical: 3,
+              borderRadius: 9999,
+              backgroundColor: theme.colors.info.bg,
+              borderWidth: 1,
+              borderColor: theme.colors.info.border,
+            }}>
+            <Text style={{ fontFamily: theme.fonts.regular, fontSize: 12, color: theme.colors.info.fg }}>
+              ℹ︎ Normal — does not mean they are risky. Use the safeguards below.
+            </Text>
+          </View>
         </View>
       );
   }
@@ -176,11 +189,10 @@ export function AssurancePanel({ assessment, name }: { assessment: Assessment; n
             <Icon name={a.icon} size={26} color={tone.fg} />
           </View>
           <View style={{ flex: 1 }}>
-            <Caption style={{ color: tone.fg }}>About this request</Caption>
             <Text style={{ fontFamily: theme.fonts.display, fontSize: 21, color: tone.fg }}>{a.label}</Text>
           </View>
         </View>
-        {stateSentence(state, name)}
+        {stateSentence(state, name, theme)}
         {assessment.safeguards.length > 0 ? (
           <View style={{ gap: 8 }}>
             <SectionLabel color={tone.fg}>Suggested safeguards</SectionLabel>
