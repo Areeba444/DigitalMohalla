@@ -181,8 +181,12 @@ def test_every_input_gets_one_well_formed_decision(x: PolicyInputs) -> None:  # 
     if d.decision == "RESTRICT_HIGH_VALUE":  # no restriction without human review
         assert d.escalate and x.value_band == "HIGH"
     if x.direct_event_count == 0 and x.rho < TH.rho_sup and not x.open_dispute and x.risk_level < 4:
-        # zero history is INSUFFICIENT_EVIDENCE, not a negative finding, even for a high-value item
-        assert (d.rule, d.state) == ("R3", "INSUFFICIENT_EVIDENCE")
+        if x.value_band != "HIGH":
+            # zero history is INSUFFICIENT_EVIDENCE, not a negative finding
+            assert (d.rule, d.state) == ("R3", "INSUFFICIENT_EVIDENCE")
+        elif x.request_similarity < TH.similarity_floor or x.lower_90 < TH.tau_l:
+            # config 1.3.1 checks R4 first: a high-value newcomer is held for a person (DM09)
+            assert (d.rule, d.escalate) == ("R4", True)
 
 
 # ----------------------------------------------------------------------------- R4 before R3 (A1)
