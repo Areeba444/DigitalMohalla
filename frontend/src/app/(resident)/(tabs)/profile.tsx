@@ -11,6 +11,7 @@ import {
   Button,
   Caption,
   Card,
+  Collapsible,
   HeroScreen,
   Icon,
   type IconName,
@@ -155,9 +156,26 @@ export default function Profile() {
       height={190}
       hero={
         <View style={{ flex: 1, justifyContent: 'space-between' }}>
-          {/* Theme picker in top-right of hero */}
-          <View style={{ flexDirection: 'row', justifyContent: 'flex-end' }}>
+          {/* Theme picker & Settings button in top-right of hero */}
+          <View style={{ flexDirection: 'row', justifyContent: 'flex-end', gap: 8 }}>
             <CompactThemePicker />
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel="Settings"
+              onPress={() => router.push('/profile/settings' as any)}
+              style={({ pressed }) => ({
+                width: 36,
+                height: 36,
+                borderRadius: 18,
+                alignItems: 'center',
+                justifyContent: 'center',
+                backgroundColor: theme.colors.surface,
+                borderWidth: 1,
+                borderColor: theme.colors.border,
+                opacity: pressed ? 0.7 : 1,
+              })}>
+              <Icon name="settings" size={20} color={theme.colors.textSecondary} />
+            </Pressable>
           </View>
           <View style={{ gap: 4 }}>
             <SectionLabel color={theme.hero.textSoft}>Profile</SectionLabel>
@@ -240,6 +258,44 @@ export default function Profile() {
         </Pressable>
       </Card>
 
+      {/* Settings & FAQs Quick Link (inspired by reference design) */}
+      <Pressable
+        accessibilityRole="button"
+        onPress={() => router.push('/profile/settings' as any)}
+        style={({ pressed }) => ({
+          flexDirection: 'row',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          padding: 16,
+          borderRadius: theme.radius.md,
+          backgroundColor: theme.colors.surface,
+          borderWidth: 1,
+          borderColor: theme.colors.border,
+          boxShadow: theme.shadow.card,
+          opacity: pressed ? 0.85 : 1,
+        })}>
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+          <View
+            style={{
+              width: 38,
+              height: 38,
+              borderRadius: 19,
+              backgroundColor: theme.colors.primarySoft,
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}>
+            <Icon name="settings" size={20} color={theme.colors.primary} />
+          </View>
+          <View style={{ gap: 2 }}>
+            <Text style={{ fontFamily: theme.fonts.bold, fontSize: 15, color: theme.colors.text }}>
+              Settings & FAQs
+            </Text>
+            <Caption>Profile, change password, how it works & promises</Caption>
+          </View>
+        </View>
+        <Icon name="chevron_right" size={20} color={theme.colors.textMuted} />
+      </Pressable>
+
       {/* Community Directory & Verification links (W9 & W10) */}
       <Card style={{ gap: 10 }}>
         <SectionLabel>My Community</SectionLabel>
@@ -298,45 +354,52 @@ export default function Profile() {
         </Card>
       ) : null}
 
-      <Card>
-        <SectionLabel>How Digital Mohalla works</SectionLabel>
-        <Body muted style={{ fontSize: 13 }}>
-          Lenders see a summary of verified loans — not a score about you. It is one of four states:
-        </Body>
-        {Object.entries(ASSURANCE).map(([state, a]) => {
-          const tone = assuranceTone(theme, state);
-          return (
-            <View key={state} style={{ flexDirection: 'row', gap: 10, alignItems: 'flex-start' }}>
-              <View
-                style={{
-                  width: 34,
-                  height: 34,
-                  borderRadius: 10,
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  backgroundColor: tone.bg,
-                  borderWidth: 1,
-                  borderColor: tone.border,
-                }}>
-                <Icon name={a.icon} size={18} color={tone.fg} />
-              </View>
-              <View style={{ flex: 1, gap: 1 }}>
-                <Text style={{ fontFamily: theme.fonts.bold, fontSize: 14, color: tone.fg }}>{a.label}</Text>
-                <Caption style={{ color: theme.colors.textSecondary }}>{STATE_TEXT[state]}</Caption>
-              </View>
-            </View>
-          );
-        })}
-      </Card>
-
-      <Card>
-        <SectionLabel>Our promises</SectionLabel>
-        {PROMISES.map(([icon, text]) => (
-          <View key={icon} style={{ flexDirection: 'row', gap: 10, alignItems: 'center' }}>
-            <Icon name={icon} size={20} color={theme.colors.accent} />
-            <Body style={{ flex: 1, fontSize: 13 }}>{text}</Body>
+      {/* FAQs: How Digital Mohalla works & Our promises */}
+      <Card style={{ gap: 10 }}>
+        <Collapsible label="How Digital Mohalla works">
+          <Body muted style={{ fontSize: 13, marginBottom: 8, marginTop: 4 }}>
+            Lenders see a summary of verified loans — not a score about you. It is one of four states:
+          </Body>
+          <View style={{ gap: 8 }}>
+            {Object.entries(ASSURANCE).map(([state, a]) => {
+              const tone = assuranceTone(theme, state);
+              return (
+                <View key={state} style={{ flexDirection: 'row', gap: 10, alignItems: 'flex-start' }}>
+                  <View
+                    style={{
+                      width: 32,
+                      height: 32,
+                      borderRadius: 8,
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      backgroundColor: tone.bg,
+                      borderWidth: 1,
+                      borderColor: tone.border,
+                    }}>
+                    <Icon name={a.icon} size={16} color={tone.fg} />
+                  </View>
+                  <View style={{ flex: 1, gap: 1 }}>
+                    <Text style={{ fontFamily: theme.fonts.bold, fontSize: 13, color: tone.fg }}>{a.label}</Text>
+                    <Caption style={{ color: theme.colors.textSecondary }}>{STATE_TEXT[state]}</Caption>
+                  </View>
+                </View>
+              );
+            })}
           </View>
-        ))}
+        </Collapsible>
+
+        <View style={{ height: 1, backgroundColor: theme.colors.hairline }} />
+
+        <Collapsible label="Our privacy and security promises">
+          <View style={{ gap: 8, marginTop: 4 }}>
+            {PROMISES.map(([icon, text]) => (
+              <View key={icon} style={{ flexDirection: 'row', gap: 10, alignItems: 'center' }}>
+                <Icon name={icon} size={18} color={theme.colors.accent} />
+                <Body style={{ flex: 1, fontSize: 13 }}>{text}</Body>
+              </View>
+            ))}
+          </View>
+        </Collapsible>
       </Card>
 
       <Button label="Sign out" variant="outline" icon="logout" onPress={signOut} />
