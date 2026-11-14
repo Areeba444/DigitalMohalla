@@ -309,3 +309,84 @@ class MarkReadIn(StrictIn):
 
 class MarkReadOut(BaseModel):
     marked: int
+
+
+# ----------------------------------------------------------------------------- membership (A3, A4)
+class CommunityListOut(BaseModel):
+    id: UUID
+    name: str
+    join_code: str
+    rules: str | None
+    join_policy: str
+    member_count: int
+    methods: list[str]
+    has_boundary: bool
+
+
+class FixIn(StrictIn):
+    """One-time device fix. Evaluated in memory by the LocalityVerifier and then dropped: it is
+    never stored, logged or returned (NFR-PR-01, sequence (d))."""
+
+    lat: float = Field(ge=-90, le=90)
+    lng: float = Field(ge=-180, le=180)
+    accuracy_m: float = Field(ge=0, le=100_000)
+    mock_provider: bool = False
+
+
+class JoinIn(StrictIn):
+    fix: FixIn | None = None
+    permission_refused: bool = False
+    invitation_code: str | None = Field(default=None, max_length=32)
+
+    @model_validator(mode="after")
+    def _fix_or_refusal(self) -> "JoinIn":
+        if self.permission_refused and self.fix is not None:
+            raise ValueError("send either a fix or permission_refused, not both")
+        return self
+
+
+class LocalityOut(BaseModel):
+    """The outcome in neutral words; never a rejection (FR-A-08)."""
+
+    outcome: Literal["VERIFIED", "INCONCLUSIVE", "CONFLICTING"]
+    message: str
+    invitation_used: bool
+
+
+class JoinOut(BaseModel):
+    membership_id: UUID
+    status: str
+    locality: LocalityOut
+
+
+class InvitationOut(BaseModel):
+    """The code is shown once; only its hash is stored."""
+
+    code: str
+    expires_at: datetime
+
+
+class MembershipQueueOut(BaseModel):
+    membership_id: UUID
+    status: str
+    requested_at: datetime
+    community_id: UUID
+    community_name: str
+    applicant_name: str
+    locality_outcome: str | None
+    boundary_signal: str | None  # coarse INSIDE / NEAR_BOUNDARY / OUTSIDE / UNAVAILABLE only
+    invitation_used: bool
+    permission_refused: bool
+    mock_provider_detected: bool
+    duplicate_suspected: bool
+
+
+class MembershipDecisionIn(StrictIn):
+    kind: Literal["APPROVED", "REJECTED", "INFO_REQUESTED", "REVERSED"]
+    reason: str = Field(max_length=1000)
+    reverses_decision_id: UUID | None = None
+
+
+class MembershipDecisionOut(BaseModel):
+    membership_id: UUID
+    status: str

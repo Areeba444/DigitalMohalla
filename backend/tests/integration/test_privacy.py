@@ -29,7 +29,8 @@ FORBIDDEN_FIELD = re.compile(
     r"|phone|email|password",
     re.IGNORECASE,
 )
-ALLOWED_IDS = {"id", "item_id", "transaction_id"}  # the request, the item, a case; never a person
+# Record ids only: the request, the item, a case, a membership request, a community; never a person
+ALLOWED_IDS = {"id", "item_id", "transaction_id", "membership_id", "community_id"}
 EMAIL = re.compile(r"[\w.+-]+@[\w-]+\.[\w.]+")
 CNIC = re.compile(r"\b\d{5}-?\d{7}-?\d\b")
 COORDINATES = re.compile(r"-?\d{1,3}\.\d{4,}\s*,\s*-?\d{1,3}\.\d{4,}")
