@@ -19,19 +19,19 @@ import {
 } from '@/components/ui';
 import { useTheme } from '@/theme/ThemeProvider';
 
-// Plain-language meaning of each assurance state (HCI analysis, "Assurance Card - Detailed States").
+// Plain-language meaning of each assurance state — concise, one line each.
 const STATE_TEXT: Record<string, string> = {
-  SUFFICIENT_EVIDENCE: 'Verified loans like this one went well. The lender still decides.',
-  REVIEW_RECOMMENDED: 'Some evidence is mixed, old or unusual, so it is worth a closer look. This is normal.',
-  INSUFFICIENT_EVIDENCE: 'Too little verified history to judge yet. This is not a negative finding; the lender decides.',
-  ACTIVE_DISPUTE: 'A dispute is open, so a moderator reviews it before anything else happens.',
+  SUFFICIENT_EVIDENCE: 'Verified loans went well. The lender still decides.',
+  REVIEW_RECOMMENDED: 'History is mixed or old — worth a closer look. This is normal.',
+  INSUFFICIENT_EVIDENCE: 'Too little history yet. Not a negative finding; the lender decides.',
+  ACTIVE_DISPUTE: 'A dispute is open. A moderator reviews before anything else happens.',
 };
 
 const PROMISES: [IconName, string][] = [
-  ['lock', 'Only your neighbourhood is stored, never your exact location or address.'],
+  ['lock', 'Only your neighbourhood is stored — never your exact address.'],
   ['badge', 'No identity-card numbers are kept.'],
-  ['gavel', 'Nobody is restricted without a moderator decision and a recorded reason.'],
-  ['history', 'Every step of a loan is recorded and cannot be edited afterwards.'],
+  ['gavel', 'Nobody is restricted without a moderator decision on record.'],
+  ['history', 'Every loan step is recorded and cannot be edited.'],
 ];
 
 function ThemeOption({ name }: { name: string }) {
@@ -120,30 +120,29 @@ export default function Profile() {
       </Card>
 
       <Card>
-        <SectionLabel>How the evidence summary works</SectionLabel>
-        <Body muted>
-          When you ask to borrow, the lender sees a summary of verified evidence from earlier loans, not a
-          score about you. It is one of four states:
+        <SectionLabel>How Digital Mohalla works</SectionLabel>
+        <Body muted style={{ fontSize: 13 }}>
+          Lenders see a summary of verified loans — not a score about you. It is one of four states:
         </Body>
         {Object.entries(ASSURANCE).map(([state, a]) => {
           const tone = assuranceTone(theme, state);
           return (
-            <View key={state} style={{ flexDirection: 'row', gap: 12, alignItems: 'flex-start' }}>
+            <View key={state} style={{ flexDirection: 'row', gap: 10, alignItems: 'flex-start' }}>
               <View
                 style={{
-                  width: 38,
-                  height: 38,
-                  borderRadius: 12,
+                  width: 34,
+                  height: 34,
+                  borderRadius: 10,
                   alignItems: 'center',
                   justifyContent: 'center',
                   backgroundColor: tone.bg,
                   borderWidth: 1,
                   borderColor: tone.border,
                 }}>
-                <Icon name={a.icon} size={20} color={tone.fg} />
+                <Icon name={a.icon} size={18} color={tone.fg} />
               </View>
-              <View style={{ flex: 1, gap: 2 }}>
-                <Text style={{ fontFamily: theme.fonts.bold, fontSize: 15, color: tone.fg }}>{a.label}</Text>
+              <View style={{ flex: 1, gap: 1 }}>
+                <Text style={{ fontFamily: theme.fonts.bold, fontSize: 14, color: tone.fg }}>{a.label}</Text>
                 <Caption style={{ color: theme.colors.textSecondary }}>{STATE_TEXT[state]}</Caption>
               </View>
             </View>
@@ -154,9 +153,9 @@ export default function Profile() {
       <Card>
         <SectionLabel>Our promises</SectionLabel>
         {PROMISES.map(([icon, text]) => (
-          <View key={icon} style={{ flexDirection: 'row', gap: 12, alignItems: 'center' }}>
-            <Icon name={icon} size={22} color={theme.colors.accent} />
-            <Body style={{ flex: 1, fontSize: 14 }}>{text}</Body>
+          <View key={icon} style={{ flexDirection: 'row', gap: 10, alignItems: 'center' }}>
+            <Icon name={icon} size={20} color={theme.colors.accent} />
+            <Body style={{ flex: 1, fontSize: 13 }}>{text}</Body>
           </View>
         ))}
       </Card>
