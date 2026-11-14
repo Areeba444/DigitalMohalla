@@ -6,7 +6,7 @@ TC-219, input / expected / actual in each docstring. Time moves by passing `now`
 synthetic loans only.
 """
 
-from datetime import UTC, date, datetime, timedelta
+from datetime import UTC, date, datetime, time, timedelta
 
 from fastapi.testclient import TestClient
 from sqlalchemy import Engine, text
@@ -17,7 +17,8 @@ from tests.integration.test_api import client, dates, login  # noqa: F401 - shar
 
 
 def day(n: float) -> datetime:
-    return datetime.now(UTC).replace(hour=0, minute=0, second=0, microsecond=0) + timedelta(days=n)
+    """Midnight UTC of today + n days, counted like test_api.dates() (local date.today())."""
+    return datetime.combine(date.today(), time(0), tzinfo=UTC) + timedelta(days=n)
 
 
 def request(client: TestClient, world: World, item: int, start: int, length: int = 2) -> str:  # noqa: F811

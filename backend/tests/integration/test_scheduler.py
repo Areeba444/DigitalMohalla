@@ -8,7 +8,7 @@ never by backdating events (events keep their database timestamps).
 
 import threading
 from collections.abc import Iterator
-from datetime import UTC, datetime, timedelta
+from datetime import UTC, date, datetime, time, timedelta
 from uuid import UUID
 
 import pytest
@@ -39,7 +39,7 @@ def accepted_loan(client: TestClient, world: World, item: int, start: int) -> st
 
 
 def at_day(days: float) -> datetime:
-    base = datetime.now(UTC).replace(hour=0, minute=0, second=0, microsecond=0)
+    base = datetime.combine(date.today(), time(0), tzinfo=UTC)  # as test_api.dates() counts
     return base + timedelta(days=days)
 
 

@@ -3,6 +3,8 @@
 TC-220 to TC-224, input / expected / actual in each docstring. Synthetic loans on PostgreSQL.
 """
 
+from datetime import date
+
 from fastapi.testclient import TestClient
 from sqlalchemy import Engine, text
 
@@ -21,6 +23,7 @@ def assessed(client: TestClient, world: World, item: int, start: int) -> str:  #
 
 
 def row(engine: Engine, sql: str, **kw: object) -> tuple:  # type: ignore[type-arg]
+    kw.setdefault("today", date.today())  # day offsets as test_api.dates() counts them
     with engine.connect() as c:
         return tuple(c.execute(text(sql), kw).one())
 
@@ -66,7 +69,7 @@ def test_tc221_accepting_moves_the_dates_and_assesses_again(
     assert ok.status_code == 200 and ok.json()["state"] == "ASSESSED", ok.text
     start, length, assessments = row(
         engine,
-        "SELECT lower(requested_period)::date - current_date, "
+        "SELECT lower(requested_period)::date - CAST(:today AS date), "
         "upper(requested_period) - lower(requested_period), "
         "(SELECT count(*) FROM assessment a WHERE a.transaction_id = t.id) "
         "FROM borrowing_transaction t WHERE id = :t",
@@ -78,7 +81,7 @@ def test_tc221_accepting_moves_the_dates_and_assesses_again(
     )
     (booked,) = row(
         engine,
-        "SELECT lower(period)::date - current_date FROM booking WHERE transaction_id = :t",
+        "SELECT lower(period)::date - CAST(:today AS date) FROM booking WHERE transaction_id = :t",
         t=txn,
     )
     assert booked == 183
@@ -99,7 +102,7 @@ def test_tc222_declining_keeps_the_original_dates(
     assert client.post(url, headers=borrower).status_code == 409
     (start,) = row(
         engine,
-        "SELECT lower(requested_period)::date - current_date FROM borrowing_transaction WHERE id = :t",
+        "SELECT lower(requested_period)::date - CAST(:today AS date) FROM borrowing_transaction WHERE id = :t",
         t=txn,
     )
     assert start == 190
