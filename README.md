@@ -23,17 +23,20 @@ The technical core is a **trust and risk decision engine**. It estimates whether
 
 The free hosting plan sleeps when idle: open the health check link first and wait about a minute for it to answer, then open the web app.
 
-**Demo accounts** (all synthetic, all with the same password: `demo-password-synthetic`):
+**Demo accounts.** The live site and a local set-up both run on the synthetic **standard** dataset (`data/derived/standard`: 90 users, 3 communities, 108 items, 289 loans with their history). Every account uses the same password: **`demo-password-synthetic`**. Type the e-mail in; the quick-login buttons on the login screen belong to the old minimal seed.
 
-| Person | Email | What to try |
+| Person | E-mail | What to try |
 | :--- | :--- | :--- |
-| Bilal | `borrower@example.test` | Borrower: browse items, send a request, confirm handover, return, raise a dispute |
-| Chand | `borrower2@example.test` | Second borrower: request the same dates to see a date conflict |
-| Ayesha | `lender@example.test` | Lender: owns the items; sees each request with its evidence summary, accepts or declines, records handover and return checklists |
-| Dua | `moderator@example.test` | Community moderator: Profile, then **Open the triage queue** for disputes and holds; case view; decision with a reason |
-| Admin | `admin@example.test` | Platform admin: can also decide cases |
+| Hassan Hashmi | `es02-borrower@synthetic.invalid` | Reliable borrower with history (ES-02): browse items, request one, see SUFFICIENT_EVIDENCE |
+| Rizwan Javed | `es01-newcomer@synthetic.invalid` | Newcomer with no history (ES-01): a request shows "not enough history", never a negative finding |
+| Tahira Mirza | `es13-v@synthetic.invalid` | History with others but not this lender (ES-13): request the Mini Projector to see community paths |
+| Gulnaz Qureshi | `es07-borrower@synthetic.invalid` | Borrower in an open dispute (ES-07) |
+| Saima Khan | `cast-L2@synthetic.invalid` | Lender (owns the Rice Cooker and Juicer): sees requests with their evidence, accepts or declines, records handover and return |
+| Samina Siddiqui | `mod-g7@synthetic.invalid` | Moderator of Sector G-7 (all the accounts above are in G-7): triage queue, cases, decisions; a dispute is closed with where the item is |
+| Parveen Malik, Rozina Cheema | `mod-f10@synthetic.invalid`, `mod-e7@synthetic.invalid` | Moderators of Sectors F-10 and E-7 |
+| Mohsin Qureshi | `admin-1@synthetic.invalid` | Platform admin: can decide cases in any community |
 
-These are throwaway accounts for synthetic demo data only (`DEMO_PASSWORD` in `scripts/seed_demo.py`, which the live database was seeded with following `infra/deploy/README.md`). Never reuse this password anywhere real. A suggested walk-through is in [Try the loop](#try-the-loop).
+Every e-mail of the dataset is in `data/derived/standard/app_user.csv`, and which user belongs to which evaluation scenario is in `data/derived/standard/labels/scenario_manifest.csv`. The datasets carry no passwords: the loader sets this throwaway one with `--demo-logins` (`DEMO_PASSWORD` in `scripts/load_dataset.py`). It is for synthetic demo data only; never reuse it anywhere real. A suggested walk-through is in [Try the loop](#try-the-loop).
 
 ---
 
@@ -194,14 +197,16 @@ EXPO_PUBLIC_DEMO_PASSWORD=<the demo password from scripts/seed_demo.py>
 
 `EXPO_PUBLIC_DEMO_PASSWORD` only enables the quick "demo account" buttons on the login screen. It is a throwaway value for local synthetic users (see `DEMO_PASSWORD` in `scripts/seed_demo.py`). Leave it empty to hide those buttons.
 
-### 5.4 Create the schema and seed demo data
+### 5.4 Create the schema and load the synthetic data
 
 ```bash
 cd backend
-uv run python ../scripts/seed_demo.py --reset
+uv run python ../scripts/load_dataset.py ../data/derived/standard --reset --allow-non-test --url "<your DATABASE_URL>" --demo-logins
 ```
 
-`--reset` drops the `dm` schema, re-applies the migration and inserts 5 synthetic users (a lender, two borrowers, a moderator, an admin), 1 community and 3 items. To apply the migration without seeding use `uv run alembic upgrade head`.
+`--reset` drops the `dm` schema and re-applies every migration; the loader then copies the **standard** dataset (90 users, 3 communities, 108 items, 289 loans with their events, outcomes, trust edges, reviews and cases), checks it (it prints `verified`) and gives every synthetic user the demo password. This is the data the demo scenarios need (ES-01, ES-02, ES-13 and the others). The same command with the Neon `DATABASE_URL` from Render refills the live database (it wipes it first).
+
+For a tiny set-up without history, `uv run python ../scripts/seed_demo.py --reset` inserts only 5 users (`@example.test`), 1 community and 3 items. To apply the migrations without data use `uv run alembic upgrade head`.
 
 ## 6. Running the app
 
@@ -229,12 +234,12 @@ The very first bundle can take several minutes on a slow machine; later loads ar
 
 Use the demo accounts in [Quick check](#quick-check-live-demo-and-logins) (password `demo-password-synthetic`), locally or on the live site.
 
-1. Sign in as Bilal, **Browse items**, pick an item, **Send request**.
-2. Sign out, sign in as Ayesha. Open the request: you see the evidence summary (state, interval bar, verified loans, community paths, separate manipulation risk, safeguards). **Accept request**.
-3. Ayesha records the handover checklist. Bilal confirms receipt. Bilal starts the return, Ayesha records the return inspection, Bilal agrees. The request is **Completed**.
+1. Sign in as Hassan (`es02-borrower@synthetic.invalid`), **Browse items**, pick an item owned by Saima (for example the Juicer), **Send request**.
+2. Sign out, sign in as Saima (`cast-L2@synthetic.invalid`). Open the request: you see the evidence summary (state, interval bar, verified loans, community paths, separate manipulation risk, safeguards). **Accept request**.
+3. Saima records the handover checklist. Hassan confirms receipt. Hassan starts the return, Saima records the return inspection, Hassan agrees. The request is **Completed**.
 4. Open **History of this request** to see the event stream.
 5. Disputes: on an accepted or active loan, either party chooses **Raise a dispute**, picks a reason and submits. The loan is frozen until a moderator rules; the raising party can withdraw.
-6. Sign in as Dua (moderator), go to **Profile** and choose **Open the triage queue**: the queue lists open disputes and held requests for her community. Open a case, read the evidence trail and decide with a reason. A resolved dispute completes the loan and its outcome becomes evidence for the next assessment.
+6. Sign in as Samina (`mod-g7@synthetic.invalid`, moderator), go to **Profile** and choose **Open the triage queue**: the queue lists open disputes and held requests for her community. Open a case, read the evidence trail and decide with a reason. For a dispute she also records where the item is: never handed over (the loan ends as a no-show), still with the borrower (the loan goes on), returned or lost (the loan is completed). The resolved outcome becomes evidence for the next assessment.
 
 Two themes are available, Terracotta and Cream Green: switch them with the swatches on the login screen or under Profile, Appearance. The choice is remembered per browser.
 
@@ -255,7 +260,7 @@ uv run bandit -q -r app            # security scan
 
 PowerShell sets the variable with `$env:TEST_DATABASE_URL = "..."`.
 
-What the suite covers today (623 tests; 97% line coverage in CI): the 294-pair transition matrix, event replay, rejected-command audit, the full loop, locality and engine-failure holds, the no-double-booking race (5 simultaneous acceptances, exactly one wins), authorisation, the Beta posterior and its properties, k-hop search, manipulation checks, the decision rules, explanations, disputes and moderator decisions, the evaluation scenarios on fixtures and end to end, privacy checks and API fuzzing.
+What the suite covers today (699 tests): the 336-pair transition matrix (lifecycle v3), event replay, rejected-command audit, the full loop, locality and engine-failure holds, the no-double-booking race (5 simultaneous acceptances, exactly one wins), authorisation, the Beta posterior and its properties, k-hop search, manipulation checks, the decision rules, explanations, disputes and moderator decisions, the evaluation scenarios on fixtures and end to end, privacy checks and API fuzzing.
 
 ### Design checks
 
