@@ -81,13 +81,16 @@ class PostgresCaseStore:
         ).mappings()
         return [dict(r) for r in rows]
 
-    def overdue_information(self, now: datetime) -> list[dict[str, Any]]:
+    def overdue_information(
+        self, now: datetime, case_id: UUID | None = None
+    ) -> list[dict[str, Any]]:
         rows = self.conn.execute(
             text(
                 _CASE + "WHERE ec.status = 'AWAITING_INFORMATION' AND ec.info_deadline <= :now "
+                "AND (CAST(:c AS uuid) IS NULL OR ec.id = :c) "
                 "ORDER BY ec.info_deadline FOR UPDATE OF ec SKIP LOCKED"
             ),
-            {"now": now},
+            {"now": now, "c": case_id},
         ).mappings()
         return [dict(r) for r in rows]
 

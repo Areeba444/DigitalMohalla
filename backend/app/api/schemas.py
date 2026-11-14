@@ -126,6 +126,13 @@ class ReportOut(BaseModel):
     deposit_received: bool | None = None
     notes: str | None = None
     created_at: datetime
+    photos: int = 0
+    reduced_evidence: bool = True  # FR-B-11: a checklist without photos is marked as such
+
+    @model_validator(mode="after")
+    def _mark(self) -> "ReportOut":
+        self.reduced_evidence = self.photos == 0
+        return self
 
 
 class RequestOut(BaseModel):
@@ -268,6 +275,7 @@ class DecisionIn(StrictIn):
 
 
 class DecisionOut(BaseModel):
+    id: UUID  # needed to reverse it (POST /moderation/decisions/{id}/reversal)
     decider_role: str
     kind: str
     reason: str
@@ -494,3 +502,137 @@ class MembershipDecisionIn(StrictIn):
 class MembershipDecisionOut(BaseModel):
     membership_id: UUID
     status: str
+
+
+# ----------------------------------------------------------------------------- scheduler (B13)
+class JobRunIn(StrictIn):
+    """`as_of` is honoured only when the API runs with DEMO_CLOCK on (ADR-0012 point 5)."""
+
+    as_of: datetime | None = None
+
+
+class JobCountsOut(BaseModel):
+    job: str
+    ran: int
+    skipped: int
+    failed: int
+    errors: list[str]
+
+
+class JobReportOut(BaseModel):
+    now: datetime
+    lock_acquired: bool
+    jobs: list[JobCountsOut]
+
+
+# ----------------------------------------------------------------------------- extensions (B8 1a)
+class ExtensionIn(StrictIn):
+    """The borrower asks to return later: the new last day, exclusive like `end_date` of a request."""
+
+    new_due_date: date
+    reason: str | None = Field(default=None, max_length=500)
+
+
+# ----------------------------------------------------------------------------- counter-offer (B6 3b)
+class CounterOfferIn(StrictIn):
+    """Other dates the lender offers (ADR-0015); same date rules as a request."""
+
+    start_date: date
+    end_date: date
+    message: str | None = Field(default=None, max_length=500)
+
+    @model_validator(mode="after")
+    def _dates_in_order(self) -> "CounterOfferIn":
+        if self.end_date <= self.start_date:
+            raise ValueError("end_date must be after start_date")
+        return self
+
+    def period(self) -> str:
+        return f"[{self.start_date}T00:00:00+00,{self.end_date}T00:00:00+00)"
+
+
+# ----------------------------------------------------------------------------- reviews (D1)
+class ReviewIn(StrictIn):
+    """One rating per dimension of the other party's role (config `reviews_d1.dimensions`)."""
+
+    ratings: dict[str, int]
+    comment: str | None = Field(default=None, max_length=1000)
+
+
+class ReviewOut(BaseModel):
+    """The review was stored. Flags are not returned to the reviewer (sequence (f))."""
+
+    id: UUID
+    reviewee_role: str
+    editable_until: datetime
+
+
+# ----------------------------------------------------------------------------- appeals (I4 4b, 4c)
+class AppealIn(StrictIn):
+    reason: str = Field(max_length=1000)
+
+
+class AppealFiledOut(BaseModel):
+    case_id: UUID
+    status: str
+
+
+class AppealDecisionIn(StrictIn):
+    result: Literal["UPHELD", "OVERTURNED"]
+    reason: str = Field(max_length=1000)
+
+
+class AppealDecidedOut(BaseModel):
+    """The new decision; `flagged_outcomes` counts the loan outcomes now under re-evaluation."""
+
+    decision_id: UUID
+    status: str
+    flagged_outcomes: int
+
+
+# ----------------------------------------------------------------------------- photos (ADR-0014)
+class AttachmentOut(BaseModel):
+    """A stored photo. `url` is a short-lived signed link, never a public address."""
+
+    id: UUID
+    url: str
+    expires_at: int
+    mime_type: str
+
+
+class AttachmentUrlOut(BaseModel):
+    url: str
+    expires_at: int
+
+
+# ----------------------------------------------------------------------------- search (B3)
+class SearchResultOut(BaseModel):
+    """One result: the listing, whether it is in the member's community, and a reason line in
+    plain words. Scores are kept for evaluation and never returned (FR-S-01, NFR-U-01)."""
+
+    item_id: UUID
+    title: str
+    condition: str | None
+    value_band: str
+    deposit_amount: float
+    category_name: str
+    community_name: str
+    owner_name: str
+    same_community: bool
+    available: bool | None  # true when dates were given (booked items are filtered out)
+    reason: str
+
+
+class SearchOut(BaseModel):
+    query_id: UUID | None  # set when the search is logged (FR-S-05)
+    mode: Literal["HYBRID", "KEYWORD_ONLY"]
+    total: int
+    results: list[SearchResultOut]
+
+
+class ClickIn(StrictIn):
+    item_id: UUID
+
+
+class ClickOut(BaseModel):
+    id: UUID

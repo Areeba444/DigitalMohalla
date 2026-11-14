@@ -1,0 +1,171 @@
+item_key,need,category,title,description,search_terms,condition,value_band,deposit_amount,lender,lender_has_history,decoy,synthetic
+C001,holes_in_walls,tools,Hammer drill,"Corded hammer drill for brick and concrete walls, with masonry bits. Works well, light signs of use.",drill machine,GOOD,MEDIUM,1500,L10,False,NONE,True
+C002,holes_in_walls,tools,Older hammer drill,"Corded hammer drill for brick and concrete walls, with masonry bits. Works, but shows its age.",,FAIR,MEDIUM,1500,L01,True,NONE,True
+C003,holes_in_walls,tools,Nearly new hammer drill,"Corded hammer drill for brick and concrete walls, with masonry bits. Barely used.",drill machine,NEW,MEDIUM,1500,L16,False,NONE,True
+C004,holes_in_walls,tools,Cordless drill driver,"Battery drill and screwdriver for wood and light walls; two batteries. Works well, light signs of use.",,GOOD,MEDIUM,1200,L20,False,NONE,True
+C005,holes_in_walls,tools,Older cordless drill driver,"Battery drill and screwdriver for wood and light walls; two batteries. Works, but shows its age.",,FAIR,MEDIUM,1200,L06,True,NONE,True
+C006,holes_in_walls,tools,Nearly new cordless drill driver,Battery drill and screwdriver for wood and light walls; two batteries. Barely used.,,NEW,MEDIUM,1200,L12,False,NONE,True
+C007,holes_in_walls,tools,Masonry drill bit set,"Set of bits from 4 to 12 mm for drilling into brick. Works well, light signs of use.",,GOOD,LOW,0,L06,True,NONE,True
+C008,holes_in_walls,tools,Older masonry drill bit set,"Set of bits from 4 to 12 mm for drilling into brick. Works, but shows its age.",,FAIR,LOW,0,L15,False,NONE,True
+C009,holes_in_walls,tools,Nearly new masonry drill bit set,Set of bits from 4 to 12 mm for drilling into brick. Barely used.,,NEW,LOW,0,L07,True,NONE,True
+C010,reach_high,tools,Aluminium step ladder,"Folding step ladder, six steps, light enough to carry upstairs. Works well, light signs of use.",seerhi,GOOD,MEDIUM,1000,L04,True,NONE,True
+C011,reach_high,tools,Older aluminium step ladder,"Folding step ladder, six steps, light enough to carry upstairs. Works, but shows its age.",,FAIR,MEDIUM,1000,L02,True,NONE,True
+C012,reach_high,tools,Nearly new aluminium step ladder,"Folding step ladder, six steps, light enough to carry upstairs. Barely used.",seerhi,NEW,MEDIUM,1000,L08,True,NONE,True
+C013,reach_high,tools,Extension ladder,"Two-part ladder that reaches a first-floor window or a water tank. Works well, light signs of use.",lambi seerhi,GOOD,HIGH,3000,L17,False,NONE,True
+C014,reach_high,tools,Older extension ladder,"Two-part ladder that reaches a first-floor window or a water tank. Works, but shows its age.",,FAIR,HIGH,3000,L06,True,NONE,True
+C015,reach_high,tools,Nearly new extension ladder,Two-part ladder that reaches a first-floor window or a water tank. Barely used.,lambi seerhi,NEW,HIGH,3000,L05,True,NONE,True
+C016,reach_high,furniture,Sturdy step stool,"Two-step stool for shelves and fans; holds an adult. Works well, light signs of use.",,GOOD,LOW,0,L03,True,NONE,True
+C017,reach_high,furniture,Older sturdy step stool,"Two-step stool for shelves and fans; holds an adult. Works, but shows its age.",,FAIR,LOW,0,L18,False,NONE,True
+C018,reach_high,furniture,Nearly new sturdy step stool,Two-step stool for shelves and fans; holds an adult. Barely used.,,NEW,LOW,0,L16,False,NONE,True
+C019,ironing,appliances,Steam iron,"Steam iron with a non-stick plate, for shirts and suits. Works well, light signs of use.",istri,GOOD,LOW,300,L06,True,NONE,True
+C020,ironing,appliances,Older steam iron,"Steam iron with a non-stick plate, for shirts and suits. Works, but shows its age.",,FAIR,LOW,300,L17,False,NONE,True
+C021,ironing,appliances,Nearly new steam iron,"Steam iron with a non-stick plate, for shirts and suits. Barely used.",istri,NEW,LOW,300,L11,False,NONE,True
+C022,ironing,furniture,Ironing board,"Foldable ironing board with a heat-proof rest. Works well, light signs of use.",istri stand,GOOD,LOW,0,L11,False,NONE,True
+C023,ironing,furniture,Older ironing board,"Foldable ironing board with a heat-proof rest. Works, but shows its age.",,FAIR,LOW,0,L05,True,NONE,True
+C024,ironing,furniture,Nearly new ironing board,Foldable ironing board with a heat-proof rest. Barely used.,istri stand,NEW,LOW,0,L12,False,NONE,True
+C025,big_cooking,appliances,Large cooking pot for 40 people,"Heavy aluminium pot for dawat cooking, biryani or haleem. Works well, light signs of use.",degh,GOOD,MEDIUM,1000,L15,False,NONE,True
+C026,big_cooking,appliances,Older large cooking pot for 40 people,"Heavy aluminium pot for dawat cooking, biryani or haleem. Works, but shows its age.",,FAIR,MEDIUM,1000,L12,False,NONE,True
+C027,big_cooking,appliances,Nearly new large cooking pot for 40 people,"Heavy aluminium pot for dawat cooking, biryani or haleem. Barely used.",degh,NEW,MEDIUM,1000,L06,True,NONE,True
+C028,big_cooking,appliances,Medium cooking pot,"Steel pot with lid for family meals of ten. Works well, light signs of use.",degchi,GOOD,LOW,300,L18,False,NONE,True
+C029,big_cooking,appliances,Older medium cooking pot,"Steel pot with lid for family meals of ten. Works, but shows its age.",,FAIR,LOW,300,L02,True,NONE,True
+C030,big_cooking,appliances,Nearly new medium cooking pot,Steel pot with lid for family meals of ten. Barely used.,degchi,NEW,LOW,300,L20,False,NONE,True
+C031,big_cooking,appliances,Gas stove burner for outdoor cooking,"Single high-flame burner for big pots, needs a gas cylinder. Works well, light signs of use.",chulha,GOOD,MEDIUM,1500,L14,False,NONE,True
+C032,big_cooking,appliances,Older gas stove burner for outdoor cooking,"Single high-flame burner for big pots, needs a gas cylinder. Works, but shows its age.",,FAIR,MEDIUM,1500,L01,True,NONE,True
+C033,big_cooking,appliances,Nearly new gas stove burner for outdoor cooking,"Single high-flame burner for big pots, needs a gas cylinder. Barely used.",chulha,NEW,MEDIUM,1500,L12,False,NONE,True
+C034,serving,appliances,Serving dishes set,"Twelve steel serving dishes with lids for a dinner. Works well, light signs of use.",,GOOD,LOW,500,L18,False,NONE,True
+C035,serving,appliances,Older serving dishes set,"Twelve steel serving dishes with lids for a dinner. Works, but shows its age.",,FAIR,LOW,500,L10,False,NONE,True
+C036,serving,appliances,Nearly new serving dishes set,Twelve steel serving dishes with lids for a dinner. Barely used.,,NEW,LOW,500,L11,False,NONE,True
+C037,serving,furniture,Folding table,"Folding table that seats six, for guests or a stall. Works well, light signs of use.",,GOOD,MEDIUM,1000,L20,False,NONE,True
+C038,serving,furniture,Older folding table,"Folding table that seats six, for guests or a stall. Works, but shows its age.",,FAIR,MEDIUM,1000,L12,False,NONE,True
+C039,serving,furniture,Nearly new folding table,"Folding table that seats six, for guests or a stall. Barely used.",,NEW,MEDIUM,1000,L13,False,NONE,True
+C040,serving,furniture,"Plastic chairs, set of ten","Ten stackable chairs for guests on a roof or lawn. Works well, light signs of use.",kursiyan,GOOD,MEDIUM,1000,L11,False,NONE,True
+C041,serving,furniture,"Older plastic chairs, set of ten","Ten stackable chairs for guests on a roof or lawn. Works, but shows its age.",,FAIR,MEDIUM,1000,L03,True,NONE,True
+C042,serving,furniture,"Nearly new plastic chairs, set of ten",Ten stackable chairs for guests on a roof or lawn. Barely used.,kursiyan,NEW,MEDIUM,1000,L07,True,NONE,True
+C043,sleeping_guests,furniture,Folding cot,"Light folding bed for a guest, with a thin mattress. Works well, light signs of use.",charpai,GOOD,MEDIUM,1000,L04,True,NONE,True
+C044,sleeping_guests,furniture,Older folding cot,"Light folding bed for a guest, with a thin mattress. Works, but shows its age.",,FAIR,MEDIUM,1000,L02,True,NONE,True
+C045,sleeping_guests,furniture,Nearly new folding cot,"Light folding bed for a guest, with a thin mattress. Barely used.",charpai,NEW,MEDIUM,1000,L14,False,NONE,True
+C046,sleeping_guests,furniture,Floor mattress,"Single foam mattress, rolls up for storage. Works well, light signs of use.",gadda,GOOD,LOW,300,L04,True,NONE,True
+C047,sleeping_guests,furniture,Older floor mattress,"Single foam mattress, rolls up for storage. Works, but shows its age.",,FAIR,LOW,300,L15,False,NONE,True
+C048,sleeping_guests,furniture,Nearly new floor mattress,"Single foam mattress, rolls up for storage. Barely used.",gadda,NEW,LOW,300,L15,False,NONE,True
+C049,sleeping_guests,furniture,Warm quilt,"Heavy winter quilt with a clean cover. Works well, light signs of use.",razai,GOOD,LOW,300,L12,False,NONE,True
+C050,sleeping_guests,furniture,Older warm quilt,"Heavy winter quilt with a clean cover. Works, but shows its age.",,FAIR,LOW,300,L18,False,NONE,True
+C051,sleeping_guests,furniture,Nearly new warm quilt,Heavy winter quilt with a clean cover. Barely used.,razai,NEW,LOW,300,L04,True,NONE,True
+C052,cleaning,appliances,Vacuum cleaner,"Bagless vacuum with a hose for sofas and curtains. Works well, light signs of use.",,GOOD,MEDIUM,1500,L08,True,NONE,True
+C053,cleaning,appliances,Older vacuum cleaner,"Bagless vacuum with a hose for sofas and curtains. Works, but shows its age.",,FAIR,MEDIUM,1500,L04,True,NONE,True
+C054,cleaning,appliances,Nearly new vacuum cleaner,Bagless vacuum with a hose for sofas and curtains. Barely used.,,NEW,MEDIUM,1500,L04,True,NONE,True
+C055,cleaning,tools,Pressure washer,"Electric pressure washer for cars, gates and the porch. Works well, light signs of use.",,GOOD,HIGH,3000,L10,False,NONE,True
+C056,cleaning,tools,Older pressure washer,"Electric pressure washer for cars, gates and the porch. Works, but shows its age.",,FAIR,HIGH,3000,L20,False,NONE,True
+C057,cleaning,tools,Nearly new pressure washer,"Electric pressure washer for cars, gates and the porch. Barely used.",,NEW,HIGH,3000,L09,False,NONE,True
+C058,cleaning,tools,Long broom and dustpan,"Soft broom with a long handle and a dustpan. Works well, light signs of use.",jharu,GOOD,LOW,0,L20,False,NONE,True
+C059,cleaning,tools,Older long broom and dustpan,"Soft broom with a long handle and a dustpan. Works, but shows its age.",,FAIR,LOW,0,L12,False,NONE,True
+C060,cleaning,tools,Nearly new long broom and dustpan,Soft broom with a long handle and a dustpan. Barely used.,jharu,NEW,LOW,0,L01,True,NONE,True
+C061,cleaning,tools,Bucket and mop,"Bucket with a wringer and a cotton mop. Works well, light signs of use.",balti pocha,GOOD,LOW,0,L01,True,NONE,True
+C062,cleaning,tools,Older bucket and mop,"Bucket with a wringer and a cotton mop. Works, but shows its age.",,FAIR,LOW,0,L09,False,NONE,True
+C063,cleaning,tools,Nearly new bucket and mop,Bucket with a wringer and a cotton mop. Barely used.,balti pocha,NEW,LOW,0,L05,True,NONE,True
+C064,watering,outdoor,"Garden hose, 20 m","Hose with a spray nozzle for plants and washing a car. Works well, light signs of use.",pani ka pipe,GOOD,LOW,300,L10,False,NONE,True
+C065,watering,outdoor,"Older garden hose, 20 m","Hose with a spray nozzle for plants and washing a car. Works, but shows its age.",,FAIR,LOW,300,L10,False,NONE,True
+C066,watering,outdoor,"Nearly new garden hose, 20 m",Hose with a spray nozzle for plants and washing a car. Barely used.,pani ka pipe,NEW,LOW,300,L05,True,NONE,True
+C067,watering,outdoor,Watering can,"Ten-litre watering can for pots on a roof. Works well, light signs of use.",,GOOD,LOW,0,L19,False,NONE,True
+C068,watering,outdoor,Older watering can,"Ten-litre watering can for pots on a roof. Works, but shows its age.",,FAIR,LOW,0,L05,True,NONE,True
+C069,watering,outdoor,Nearly new watering can,Ten-litre watering can for pots on a roof. Barely used.,,NEW,LOW,0,L11,False,NONE,True
+C070,gardening,outdoor,Hand trowel and fork,"Small digging tools for pots and flower beds. Works well, light signs of use.",khurpa,GOOD,LOW,0,L05,True,NONE,True
+C071,gardening,outdoor,Older hand trowel and fork,"Small digging tools for pots and flower beds. Works, but shows its age.",,FAIR,LOW,0,L18,False,NONE,True
+C072,gardening,outdoor,Nearly new hand trowel and fork,Small digging tools for pots and flower beds. Barely used.,khurpa,NEW,LOW,0,L18,False,NONE,True
+C073,gardening,outdoor,Spade,"Full-size spade for digging and moving soil. Works well, light signs of use.",belcha,GOOD,LOW,300,L06,True,NONE,True
+C074,gardening,outdoor,Older spade,"Full-size spade for digging and moving soil. Works, but shows its age.",,FAIR,LOW,300,L11,False,NONE,True
+C075,gardening,outdoor,Nearly new spade,Full-size spade for digging and moving soil. Barely used.,belcha,NEW,LOW,300,L17,False,NONE,True
+C076,gardening,outdoor,Hedge shears,"Long blades for trimming hedges and bushes. Works well, light signs of use.",,GOOD,LOW,300,L12,False,NONE,True
+C077,gardening,outdoor,Older hedge shears,"Long blades for trimming hedges and bushes. Works, but shows its age.",,FAIR,LOW,300,L04,True,NONE,True
+C078,gardening,outdoor,Nearly new hedge shears,Long blades for trimming hedges and bushes. Barely used.,,NEW,LOW,300,L17,False,NONE,True
+C079,gardening,outdoor,Electric lawn mower,"Corded mower for a small lawn. Works well, light signs of use.",,GOOD,HIGH,3000,L15,False,NONE,True
+C080,gardening,outdoor,Older electric lawn mower,"Corded mower for a small lawn. Works, but shows its age.",,FAIR,HIGH,3000,L12,False,NONE,True
+C081,gardening,outdoor,Nearly new electric lawn mower,Corded mower for a small lawn. Barely used.,,NEW,HIGH,3000,L20,False,NONE,True
+C082,cutting_wood,tools,Hand saw,"Saw for wood planks and branches. Works well, light signs of use.",aari,GOOD,LOW,300,L10,False,NONE,True
+C083,cutting_wood,tools,Older hand saw,"Saw for wood planks and branches. Works, but shows its age.",,FAIR,LOW,300,L18,False,NONE,True
+C084,cutting_wood,tools,Nearly new hand saw,Saw for wood planks and branches. Barely used.,aari,NEW,LOW,300,L19,False,NONE,True
+C085,cutting_wood,tools,Electric jigsaw,"Jigsaw for curved cuts in wood and plywood. Works well, light signs of use.",,GOOD,MEDIUM,1500,L04,True,NONE,True
+C086,cutting_wood,tools,Older electric jigsaw,"Jigsaw for curved cuts in wood and plywood. Works, but shows its age.",,FAIR,MEDIUM,1500,L19,False,NONE,True
+C087,cutting_wood,tools,Nearly new electric jigsaw,Jigsaw for curved cuts in wood and plywood. Barely used.,,NEW,MEDIUM,1500,L13,False,NONE,True
+C088,fixing,tools,Claw hammer,"Steel hammer for nails and small repairs. Works well, light signs of use.",hathora,GOOD,LOW,0,L20,False,NONE,True
+C089,fixing,tools,Older claw hammer,"Steel hammer for nails and small repairs. Works, but shows its age.",,FAIR,LOW,0,L04,True,NONE,True
+C090,fixing,tools,Nearly new claw hammer,Steel hammer for nails and small repairs. Barely used.,hathora,NEW,LOW,0,L02,True,NONE,True
+C091,fixing,tools,Screwdriver set,"Twelve screwdrivers, flat and cross head. Works well, light signs of use.",pechkas,GOOD,LOW,0,L14,False,NONE,True
+C092,fixing,tools,Older screwdriver set,"Twelve screwdrivers, flat and cross head. Works, but shows its age.",,FAIR,LOW,0,L15,False,NONE,True
+C093,fixing,tools,Pliers and wire cutter,"Pliers set for wiring and small fixes. Works well, light signs of use.",plas,GOOD,LOW,0,L06,True,NONE,True
+C094,fixing,tools,Older pliers and wire cutter,"Pliers set for wiring and small fixes. Works, but shows its age.",plas,FAIR,LOW,0,L05,True,NONE,True
+C095,fixing,tools,Spanner set,"Open and ring spanners from 8 to 22 mm. Works well, light signs of use.",,GOOD,LOW,300,L07,True,NONE,True
+C096,fixing,tools,Older spanner set,"Open and ring spanners from 8 to 22 mm. Works, but shows its age.",pana,FAIR,LOW,300,L07,True,NONE,True
+C097,fixing,tools,Measuring tape and spirit level,"Five-metre tape and a level for hanging shelves straight. Works well, light signs of use.",,GOOD,LOW,0,L18,False,NONE,True
+C098,fixing,tools,Older measuring tape and spirit level,"Five-metre tape and a level for hanging shelves straight. Works, but shows its age.",,FAIR,LOW,0,L09,False,NONE,True
+C099,power,electronics,"Extension cord, 10 m","Four sockets with a switch, for outdoor events. Works well, light signs of use.",,GOOD,LOW,0,L14,False,NONE,True
+C100,power,electronics,"Older extension cord, 10 m","Four sockets with a switch, for outdoor events. Works, but shows its age.",,FAIR,LOW,0,L01,True,NONE,True
+C101,power,electronics,UPS battery backup,"Keeps a fan and lights on during load shedding for two hours. Works well, light signs of use.",,GOOD,HIGH,5000,L14,False,NONE,True
+C102,power,electronics,Older uPS battery backup,"Keeps a fan and lights on during load shedding for two hours. Works, but shows its age.",,FAIR,HIGH,5000,L04,True,NONE,True
+C103,power,electronics,Rechargeable emergency light,"LED light that lasts six hours during power cuts. Works well, light signs of use.",,GOOD,LOW,300,L09,False,NONE,True
+C104,power,electronics,Older rechargeable emergency light,"LED light that lasts six hours during power cuts. Works, but shows its age.",,FAIR,LOW,300,L07,True,NONE,True
+C105,cooling,appliances,Pedestal fan,"Standing fan with three speeds. Works well, light signs of use.",pankha,GOOD,LOW,500,L13,False,NONE,True
+C106,cooling,appliances,Older pedestal fan,"Standing fan with three speeds. Works, but shows its age.",pankha,FAIR,LOW,500,L01,True,NONE,True
+C107,cooling,appliances,Air cooler,"Water air cooler for one room. Works well, light signs of use.",,GOOD,MEDIUM,2000,L04,True,NONE,True
+C108,cooling,appliances,Older air cooler,"Water air cooler for one room. Works, but shows its age.",room cooler,FAIR,MEDIUM,2000,L18,False,NONE,True
+C109,baking,appliances,Electric oven,"Small oven for cakes and pizza. Works well, light signs of use.",,GOOD,MEDIUM,2000,L03,True,NONE,True
+C110,baking,appliances,Older electric oven,"Small oven for cakes and pizza. Works, but shows its age.",,FAIR,MEDIUM,2000,L18,False,NONE,True
+C111,baking,appliances,Hand mixer,"Two-speed mixer for cake batter and cream. Works well, light signs of use.",,GOOD,LOW,500,L07,True,NONE,True
+C112,baking,appliances,Older hand mixer,"Two-speed mixer for cake batter and cream. Works, but shows its age.",,FAIR,LOW,500,L20,False,NONE,True
+C113,baking,appliances,Cake tins and rolling pin,"Round and square tins with a wooden rolling pin. Works well, light signs of use.",,GOOD,LOW,0,L08,True,NONE,True
+C114,baking,appliances,Older cake tins and rolling pin,"Round and square tins with a wooden rolling pin. Works, but shows its age.",belan,FAIR,LOW,0,L20,False,NONE,True
+C115,kitchen_small,appliances,Blender,"Blender with a grinder jar for chutney and shakes. Works well, light signs of use.",,GOOD,LOW,500,L01,True,NONE,True
+C116,kitchen_small,appliances,Older blender,"Blender with a grinder jar for chutney and shakes. Works, but shows its age.",,FAIR,LOW,500,L09,False,NONE,True
+C117,kitchen_small,appliances,Pressure cooker,"Five-litre pressure cooker for daal and meat. Works well, light signs of use.",,GOOD,LOW,500,L05,True,NONE,True
+C118,kitchen_small,appliances,Older pressure cooker,"Five-litre pressure cooker for daal and meat. Works, but shows its age.",,FAIR,LOW,500,L14,False,NONE,True
+C119,kitchen_small,appliances,Flat griddle,"Heavy iron griddle for roti and paratha. Works well, light signs of use.",,GOOD,LOW,0,L15,False,NONE,True
+C120,kitchen_small,appliances,Older flat griddle,"Heavy iron griddle for roti and paratha. Works, but shows its age.",tawa,FAIR,LOW,0,L12,False,NONE,True
+C121,kitchen_small,appliances,Rice cooker,"Electric rice cooker for eight people. Works well, light signs of use.",,GOOD,LOW,500,L14,False,NONE,True
+C122,kitchen_small,appliances,Older rice cooker,"Electric rice cooker for eight people. Works, but shows its age.",,FAIR,LOW,500,L04,True,NONE,True
+C123,kids,sports,Children's bicycle,"Bicycle for ages six to nine, with training wheels. Works well, light signs of use.",cycle,GOOD,MEDIUM,1000,L06,True,NONE,True
+C124,kids,sports,Older children's bicycle,"Bicycle for ages six to nine, with training wheels. Works, but shows its age.",cycle,FAIR,MEDIUM,1000,L13,False,NONE,True
+C125,kids,furniture,Baby cot,"Wooden cot with sides for a baby. Works well, light signs of use.",,GOOD,MEDIUM,1500,L20,False,NONE,True
+C126,kids,furniture,Older baby cot,"Wooden cot with sides for a baby. Works, but shows its age.",jhoola,FAIR,MEDIUM,1500,L16,False,NONE,True
+C127,kids,media,Picture books set,"Ten picture books in English and Urdu for young children. Works well, light signs of use.",,GOOD,LOW,0,L01,True,NONE,True
+C128,kids,media,Older picture books set,"Ten picture books in English and Urdu for young children. Works, but shows its age.",,FAIR,LOW,0,L11,False,NONE,True
+C129,sports,sports,Cricket bat and ball,"Full-size bat, tape ball and stumps for street cricket. Works well, light signs of use.",,GOOD,LOW,300,L08,True,NONE,True
+C130,sports,sports,Older cricket bat and ball,"Full-size bat, tape ball and stumps for street cricket. Works, but shows its age.",,FAIR,LOW,300,L04,True,NONE,True
+C131,sports,sports,Badminton set,"Two rackets, shuttlecocks and a net. Works well, light signs of use.",,GOOD,LOW,300,L01,True,NONE,True
+C132,sports,sports,Older badminton set,"Two rackets, shuttlecocks and a net. Works, but shows its age.",,FAIR,LOW,300,L17,False,NONE,True
+C133,sports,sports,Football,"Size five football, inflated. Works well, light signs of use.",,GOOD,LOW,0,L04,True,NONE,True
+C134,sports,sports,Older football,"Size five football, inflated. Works, but shows its age.",,FAIR,LOW,0,L16,False,NONE,True
+C135,travel,outdoor,Large suitcase,"Hard suitcase with wheels for a long trip. Works well, light signs of use.",attachi,GOOD,MEDIUM,1000,L12,False,NONE,True
+C136,travel,outdoor,Older large suitcase,"Hard suitcase with wheels for a long trip. Works, but shows its age.",attachi,FAIR,MEDIUM,1000,L08,True,NONE,True
+C137,travel,outdoor,Camping tent for four,"Tent with poles and pegs for a family trip. Works well, light signs of use.",,GOOD,MEDIUM,1500,L18,False,NONE,True
+C138,travel,outdoor,Older camping tent for four,"Tent with poles and pegs for a family trip. Works, but shows its age.",,FAIR,MEDIUM,1500,L20,False,NONE,True
+C139,travel,outdoor,Cool box,"Insulated box that keeps drinks cold for a day. Works well, light signs of use.",,GOOD,LOW,300,L12,False,NONE,True
+C140,travel,outdoor,Older cool box,"Insulated box that keeps drinks cold for a day. Works, but shows its age.",,FAIR,LOW,300,L16,False,NONE,True
+C141,rain,outdoor,Large umbrella,"Wide umbrella for two people. Works well, light signs of use.",chhatri,GOOD,LOW,0,L01,True,NONE,True
+C142,rain,outdoor,Older large umbrella,"Wide umbrella for two people. Works, but shows its age.",chhatri,FAIR,LOW,0,L20,False,NONE,True
+C143,study,media,O-level physics books,"Textbook and past papers for O-level physics. Works well, light signs of use.",,GOOD,LOW,0,L08,True,NONE,True
+C144,study,media,Older o-level physics books,"Textbook and past papers for O-level physics. Works, but shows its age.",,FAIR,LOW,0,L14,False,NONE,True
+C145,study,electronics,Scientific calculator,"Calculator allowed in board exams. Works well, light signs of use.",,GOOD,LOW,300,L09,False,NONE,True
+C146,study,electronics,Older scientific calculator,"Calculator allowed in board exams. Works, but shows its age.",,FAIR,LOW,300,L01,True,NONE,True
+C147,event_sound,electronics,Bluetooth speaker,"Loud portable speaker for a small gathering. Works well, light signs of use.",,GOOD,MEDIUM,1500,L16,False,NONE,True
+C148,event_sound,electronics,Older bluetooth speaker,"Loud portable speaker for a small gathering. Works, but shows its age.",,FAIR,MEDIUM,1500,L11,False,NONE,True
+C149,event_sound,electronics,Projector,"Projector with an HDMI cable for a movie night. Works well, light signs of use.",,GOOD,HIGH,5000,L04,True,NONE,True
+C150,event_sound,electronics,Older projector,"Projector with an HDMI cable for a movie night. Works, but shows its age.",,FAIR,HIGH,5000,L15,False,NONE,True
+D01,holes_in_walls,tools,Hammer drill,"Corded hammer drill for brick and concrete walls, with masonry bits. Works well, light signs of use.",drill machine,GOOD,MEDIUM,1500,L09,False,OTHER_COMMUNITY,True
+D02,ironing,furniture,Ironing board,"Foldable ironing board with a heat-proof rest. Works well, light signs of use.",istri stand,GOOD,LOW,0,L07,False,OTHER_COMMUNITY,True
+D03,sleeping_guests,furniture,Folding cot,"Light folding bed for a guest, with a thin mattress. Works well, light signs of use.",charpai,GOOD,MEDIUM,1000,L02,False,OTHER_COMMUNITY,True
+D04,watering,outdoor,"Garden hose, 20 m","Hose with a spray nozzle for plants and washing a car. Works well, light signs of use.",pani ka pipe,GOOD,LOW,300,L08,False,OTHER_COMMUNITY,True
+D05,cutting_wood,tools,Electric jigsaw,"Jigsaw for curved cuts in wood and plywood. Works well, light signs of use.",,GOOD,MEDIUM,1500,L08,False,OTHER_COMMUNITY,True
+D06,power,electronics,UPS battery backup,"Keeps a fan and lights on during load shedding for two hours. Works well, light signs of use.",,GOOD,HIGH,5000,L09,False,OTHER_COMMUNITY,True
+D07,kitchen_small,appliances,Blender,"Blender with a grinder jar for chutney and shakes. Works well, light signs of use.",,GOOD,LOW,500,L03,False,OTHER_COMMUNITY,True
+D08,sports,sports,Cricket bat and ball,"Full-size bat, tape ball and stumps for street cricket. Works well, light signs of use.",,GOOD,LOW,300,L09,False,OTHER_COMMUNITY,True
+D09,study,media,O-level physics books,"Textbook and past papers for O-level physics. Works well, light signs of use.",,GOOD,LOW,0,L12,False,DRAFT,True
+D10,reach_high,tools,Aluminium step ladder,"Folding step ladder, six steps, light enough to carry upstairs. Works well, light signs of use.",seerhi,GOOD,MEDIUM,1000,L10,False,DRAFT,True
+D11,big_cooking,appliances,Gas stove burner for outdoor cooking,"Single high-flame burner for big pots, needs a gas cylinder. Works well, light signs of use.",chulha,GOOD,MEDIUM,1500,L06,False,DRAFT,True
+D12,cleaning,appliances,Vacuum cleaner,"Bagless vacuum with a hose for sofas and curtains. Works well, light signs of use.",,GOOD,MEDIUM,1500,L06,False,DRAFT,True
+D13,gardening,outdoor,Spade,"Full-size spade for digging and moving soil. Works well, light signs of use.",belcha,GOOD,LOW,300,L03,False,DRAFT,True
+D14,fixing,tools,Pliers and wire cutter,"Pliers set for wiring and small fixes. Works well, light signs of use.",plas,GOOD,LOW,0,L12,False,DRAFT,True
+D15,cooling,appliances,Air cooler,"Water air cooler for one room. Works well, light signs of use.",room cooler,GOOD,MEDIUM,2000,LBLOCK,False,BLOCKING_LENDER,True
+D16,kitchen_small,appliances,Rice cooker,"Electric rice cooker for eight people. Works well, light signs of use.",,GOOD,LOW,500,LBLOCK,False,BLOCKING_LENDER,True
+D17,travel,outdoor,Large suitcase,"Hard suitcase with wheels for a long trip. Works well, light signs of use.",attachi,GOOD,MEDIUM,1000,LBLOCK,False,BLOCKING_LENDER,True
+D18,event_sound,electronics,Projector,"Projector with an HDMI cable for a movie night. Works well, light signs of use.",,GOOD,HIGH,5000,LBLOCK,False,BLOCKING_LENDER,True
+D19,ironing,appliances,Steam iron,"Steam iron with a non-stick plate, for shirts and suits. Works well, light signs of use.",istri,GOOD,LOW,300,LBLOCK,False,BLOCKING_LENDER,True
+D20,serving,furniture,"Plastic chairs, set of ten","Ten stackable chairs for guests on a roof or lawn. Works well, light signs of use.",kursiyan,GOOD,MEDIUM,1000,LBLOCK,False,BLOCKING_LENDER,True

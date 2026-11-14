@@ -124,13 +124,16 @@ def assessment_hold(case: dict[str, str]) -> str:
 
 
 def test_tc38_dense_family_group_is_level_3_and_not_held(mini_db: Engine) -> None:
-    """C3: a family borrowing from one another produces S1 but distinct review texts, so one strong
-    signal is capped at level 3 (ADR-0007): extra verification is suggested, nobody is held."""
+    """C3: a family borrowing from one another produces S1 but distinct review texts. In iteration 1
+    that one strong signal scored 100 and was capped at level 3 (ADR-0007). With config 1.3.3 the
+    quiet signals count too (S3: old accounts), so the score itself stays below the level-4 edge
+    (DA-15 section 4): still level 3, extra verification suggested, nobody held, not corroborated."""
     case = manifest()["C3"]
     state, assessment, _, cases = send_request(mini_db, case, 50)
     assert (state, cases) == ("ASSESSED", [])
     assert assessment["manipulation_level"] == 3 and assessment["rule_fired"] == "R5"
-    assert "Only one signal is strong" in assessment["explanation"]
+    assert assessment["manipulation_risk"] < 60  # level 3 by score, not a capped 100
+    assert "partners reviewing one another" in assessment["explanation"]
     assert_no_verdict(assessment["explanation"])
 
 

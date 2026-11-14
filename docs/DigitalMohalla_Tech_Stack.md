@@ -253,6 +253,7 @@ Licences are the commonly published ones; confirm each at install time and recor
 | PyJWT | Tokens | MIT |
 | argon2-cffi | Password hashing | MIT |
 | python-multipart | Uploads | Apache-2.0 |
+| Pillow (13.0.0, added 2026-11-15 for M4) | Re-encodes uploaded photos so EXIF and GPS metadata cannot survive (ADR-0014, TC-59) | MIT-CMU (HPND) |
 | structlog | Logging | MIT / Apache-2.0 |
 | PostgreSQL | Database | PostgreSQL Licence |
 | React Native, Expo, Expo Router | Frontend | MIT |

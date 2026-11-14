@@ -1,0 +1,27 @@
+query_id,type,text,need
+Q01,exact,hammer drill,a hammer drill
+Q02,exact,steam iron,an iron for clothes
+Q03,exact,pressure cooker,a pressure cooker
+Q04,exact,folding table,a table that folds for guests
+Q05,exact,extension ladder,a tall ladder
+Q06,need,something to make holes in a brick wall,drilling into masonry
+Q07,need,keep the lights on during load shedding,backup power or light in a power cut
+Q08,need,cook for a big family dinner,large pots or burners for many guests
+Q09,need,guests are staying the night,somewhere for a guest to sleep
+Q10,need,trim the bushes in my garden,hedge or plant cutting tools
+Q11,need,clean the car and the porch,washing outdoor surfaces
+Q12,need,reach the ceiling fan to clean it,something to stand on to reach high
+Q13,need,it is very hot in my room,cooling a room
+Q14,roman_urdu,seerhi chahiye,a ladder
+Q15,roman_urdu,istri,an iron for clothes
+Q16,roman_urdu,degh for dawat,a very large cooking pot
+Q17,roman_urdu,charpai ya gadda,a bed or mattress for a guest
+Q18,roman_urdu,pani ka pipe,a garden hose
+Q19,misspelling,lader,a ladder
+Q20,misspelling,screw driver,screwdrivers
+Q21,misspelling,vaccum,a vacuum cleaner
+Q22,category,garden tools,any tool for gardening
+Q23,category,kitchen appliances for baking,anything for baking
+Q24,category,sports equipment for kids,sports or play items for children
+Q25,no_answer,car jack,lifting a car to change a tyre (nothing in the catalogue)
+Q26,no_answer,wedding dress,formal clothing (nothing in the catalogue)
