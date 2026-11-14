@@ -29,6 +29,14 @@ export const useItems = () =>
     queryFn: async () => unwrap(await api.GET(`${A}/items`)),
   });
 
+export const useItem = (id: string) =>
+  useQuery({
+    queryKey: ['item', id],
+    queryFn: async () =>
+      unwrap(await api.GET(`${A}/items/{item_id}`, { params: { path: { item_id: id } } })),
+    enabled: !!id,
+  });
+
 export const useRequest = (id: string) =>
   useQuery({
     queryKey: ['request', id],

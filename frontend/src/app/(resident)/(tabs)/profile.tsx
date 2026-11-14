@@ -2,7 +2,7 @@ import { router } from 'expo-router';
 import { useState } from 'react';
 import { Pressable, Text, View } from 'react-native';
 
-import { useModerationQueue } from '@/api/hooks';
+import { useModerationQueue, useMyRequests } from '@/api/hooks';
 import { useAuth } from '@/auth/AuthProvider';
 import {
   ASSURANCE,
@@ -129,15 +129,24 @@ function CompactThemePicker() {
 
 export default function Profile() {
   const { theme } = useTheme();
-  const { signOut } = useAuth();
+  const { user, signOut } = useAuth();
   const queue = useModerationQueue();
   const waiting = queue.data?.length ?? 0;
+  const requests = useMyRequests();
+  const allRequests = requests.data ?? [];
 
-  // Mock user stats — wired to real API in Part B
-  const mockStats: { icon: IconName; value: number; label: string }[] = [
-    { icon: 'handshake', value: 3, label: 'Loans made' },
-    { icon: 'inventory_2', value: 2, label: 'Items shared' },
-    { icon: 'task_alt', value: 5, label: 'Completed' },
+  // Live database stats
+  const loansMade = allRequests.filter((r) => r.your_role === 'LENDER').length;
+  const loansBorrowed = allRequests.filter((r) => r.your_role === 'BORROWER').length;
+  const completed = allRequests.filter((r) => r.state === 'COMPLETED').length;
+
+  const displayName = user?.name || user?.email || null;
+  const displayInitial = displayName ? displayName.charAt(0).toUpperCase() : '?';
+
+  const stats: { icon: IconName; value: number; label: string }[] = [
+    { icon: 'handshake', value: loansMade, label: 'Loans made' },
+    { icon: 'sync_alt', value: loansBorrowed, label: 'Borrowed' },
+    { icon: 'task_alt', value: completed, label: 'Completed' },
   ];
 
   return (
@@ -159,7 +168,7 @@ export default function Profile() {
         </View>
       }>
 
-      {/* User identity + stats card */}
+      {/* User identity + live database stats */}
       <Card style={{ gap: 14 }}>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 14 }}>
           <View
@@ -172,20 +181,26 @@ export default function Profile() {
               justifyContent: 'center',
             }}>
             <Text style={{ fontFamily: theme.fonts.black, fontSize: 24, color: theme.colors.primary }}>
-              A
+              {displayInitial}
             </Text>
           </View>
           <View style={{ flex: 1, gap: 2 }}>
-            <Text style={{ fontFamily: theme.fonts.bold, fontSize: 18, color: theme.colors.text }}>
-              Areeba K.
-            </Text>
-            <Caption>Member of Gulberg Mohalla</Caption>
+            {displayName ? (
+              <Text style={{ fontFamily: theme.fonts.bold, fontSize: 18, color: theme.colors.text }}>
+                {displayName}
+              </Text>
+            ) : (
+              <Text style={{ fontFamily: theme.fonts.medium, fontSize: 15, color: theme.colors.textMuted }}>
+                Name not present in database
+              </Text>
+            )}
+            <Caption>Community not present in database</Caption>
           </View>
         </View>
 
-        {/* Stats row */}
+        {/* Live database stats row */}
         <View style={{ flexDirection: 'row', gap: 10 }}>
-          {mockStats.map(({ icon, value, label }) => (
+          {stats.map(({ icon, value, label }) => (
             <View
               key={label}
               style={{
@@ -202,6 +217,9 @@ export default function Profile() {
             </View>
           ))}
         </View>
+        <Caption style={{ textAlign: 'center', fontSize: 11 }}>
+          Live statistics from your database transactions ({allRequests.length} total)
+        </Caption>
 
         {/* My Evidence link */}
         <Pressable
