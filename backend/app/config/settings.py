@@ -33,6 +33,9 @@ class Settings(BaseSettings):
     storage_dir: str | None = None
     upload_max_bytes: int = 5 * 1024 * 1024  # TC-85: larger files are refused with 422
     photo_url_ttl_seconds: int = 600  # signed links expire after ten minutes
+    # ADR-0016: the sentence-embedding model for meaning-based search, e.g.
+    # BAAI/bge-small-en-v1.5 (needs `uv sync --extra semantic`). Unset: keyword-only search.
+    embedding_model: str | None = None
 
 
 @lru_cache

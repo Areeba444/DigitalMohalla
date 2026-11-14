@@ -7,6 +7,8 @@ single late run still reminds first.
 """
 
 from app.domain.scheduler.runner import Job
+from app.infra.embedding import get_embedder
+from app.infra.jobs.embeddings import EmbeddingBackfill
 from app.infra.jobs.lifecycle import (
     ConfirmationReminder,
     HandoverReminder,
@@ -28,4 +30,5 @@ def default_jobs() -> list[Job]:
         ConfirmationReminder(),
         InformationDeadline(),
         ListingExpiry(),
+        EmbeddingBackfill(get_embedder()),  # A9: listings saved or edited since
     ]
