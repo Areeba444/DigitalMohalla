@@ -359,7 +359,8 @@ class PostgresLifecycleStore:
             text(
                 "SELECT DISTINCT ON (phase, reporter_role) phase::text AS phase, "
                 "reporter_role::text AS reporter_role, condition_agreed, checklist, "
-                "deposit_received, notes, created_at FROM condition_report "
+                "deposit_received, notes, created_at, (SELECT count(*) FROM attachment a "
+                "WHERE a.condition_report_id = condition_report.id) AS photos FROM condition_report "
                 "WHERE transaction_id = :id ORDER BY phase, reporter_role, created_at DESC, id DESC"
             ),
             {"id": transaction_id},

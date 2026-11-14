@@ -126,6 +126,13 @@ class ReportOut(BaseModel):
     deposit_received: bool | None = None
     notes: str | None = None
     created_at: datetime
+    photos: int = 0
+    reduced_evidence: bool = True  # FR-B-11: a checklist without photos is marked as such
+
+    @model_validator(mode="after")
+    def _mark(self) -> "ReportOut":
+        self.reduced_evidence = self.photos == 0
+        return self
 
 
 class RequestOut(BaseModel):
@@ -581,3 +588,18 @@ class AppealDecidedOut(BaseModel):
     decision_id: UUID
     status: str
     flagged_outcomes: int
+
+
+# ----------------------------------------------------------------------------- photos (ADR-0014)
+class AttachmentOut(BaseModel):
+    """A stored photo. `url` is a short-lived signed link, never a public address."""
+
+    id: UUID
+    url: str
+    expires_at: int
+    mime_type: str
+
+
+class AttachmentUrlOut(BaseModel):
+    url: str
+    expires_at: int

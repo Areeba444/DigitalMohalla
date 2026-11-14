@@ -16,6 +16,7 @@ from app.api import (
     membership,
     notifications,
     reviews,
+    uploads,
 )
 from app.api.deps import default_assessor
 from app.api.routes import router
@@ -34,6 +35,8 @@ from app.domain.membership.service import InvalidMembershipInput
 from app.domain.moderation.cases import InvalidCaseInput
 from app.domain.moderation.decisions import InvalidDecision
 from app.domain.reviews.service import InvalidReview
+from app.domain.uploads.policy import InvalidUpload
+from app.domain.uploads.storage import StorageUnavailable
 from app.infra.db.session import make_engine
 
 
@@ -72,6 +75,8 @@ def create_app(engine: Engine | None = None, assess: IAssess | None = None) -> F
     app.add_exception_handler(InvalidListing, _refusal(422))
     app.add_exception_handler(InvalidCaseInput, _refusal(422))
     app.add_exception_handler(InvalidReview, _refusal(422))
+    app.add_exception_handler(InvalidUpload, _refusal(422))
+    app.add_exception_handler(StorageUnavailable, _refusal(503))
     app.add_exception_handler(InvalidMembershipInput, _refusal(422))
     app.add_exception_handler(StreamNotFound, _refusal(404))
     for conflict in (InvalidTransition, StaleCommand, DatesTaken):
@@ -87,6 +92,7 @@ def create_app(engine: Engine | None = None, assess: IAssess | None = None) -> F
     app.include_router(counter_offer.router)
     app.include_router(reviews.router)
     app.include_router(appeals.router)
+    app.include_router(uploads.router)
     return app
 
 

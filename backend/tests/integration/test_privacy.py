@@ -38,6 +38,7 @@ ALLOWED_IDS = {
     "community_id",
     "category_id",
     "case_id",
+    "decision_id",
 }
 EMAIL = re.compile(r"[\w.+-]+@[\w-]+\.[\w.]+")
 CNIC = re.compile(r"\b\d{5}-?\d{7}-?\d\b")

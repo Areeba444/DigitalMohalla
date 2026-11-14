@@ -28,6 +28,11 @@ class Settings(BaseSettings):
     # ADR-0012 point 5: only when true may a jobs call pass `as_of` (a demo or test clock). Off in
     # normal running, so nobody can make the scheduler act as if it were later than it is.
     demo_clock: bool = False
+    # ADR-0014: photo storage. A directory means LocalDiskStorage (development and tests); unset
+    # means no storage, so uploads answer 503 and handover goes on checklist-only (FR-B-11).
+    storage_dir: str | None = None
+    upload_max_bytes: int = 5 * 1024 * 1024  # TC-85: larger files are refused with 422
+    photo_url_ttl_seconds: int = 600  # signed links expire after ten minutes
 
 
 @lru_cache
