@@ -6,6 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from sqlalchemy import Engine
 
+from app.api import notifications
 from app.api.deps import default_assessor
 from app.api.routes import router
 from app.config.settings import get_settings
@@ -57,6 +58,7 @@ def create_app(engine: Engine | None = None, assess: IAssess | None = None) -> F
         app.add_exception_handler(conflict, _refusal(409))
 
     app.include_router(router)
+    app.include_router(notifications.router)
     return app
 
 

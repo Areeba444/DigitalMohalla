@@ -283,3 +283,29 @@ class ItemOut(BaseModel):
     value_band: str
     deposit_amount: float
     booked_periods: list[str]
+
+
+# ----------------------------------------------------------------------------- notifications (G3)
+class NotificationOut(BaseModel):
+    """One in-app notification. The app writes the sentence from `type` and `payload`."""
+
+    id: UUID
+    type: str
+    payload: dict[str, Any]
+    created_at: datetime
+    read_at: datetime | None
+
+
+class InboxOut(BaseModel):
+    unread_count: int
+    notifications: list[NotificationOut]
+
+
+class MarkReadIn(StrictIn):
+    """`ids` omitted means "mark everything read"."""
+
+    ids: list[UUID] | None = Field(default=None, max_length=200)
+
+
+class MarkReadOut(BaseModel):
+    marked: int
