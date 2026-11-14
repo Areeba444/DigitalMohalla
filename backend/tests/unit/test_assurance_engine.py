@@ -80,6 +80,9 @@ class FakeSource:
     def complaints_by(self, user_id: UUID, since: datetime) -> list[Complaint]:
         return self.complaints
 
+    def account_context(self, user_id: UUID, since: datetime) -> tuple[None, None]:
+        return None, None  # S3 and S5 unavailable: the iteration 1 fixtures carry no such data
+
 
 def request(band: str = "LOW", category: int = 1, days: float = 3.0) -> AssessmentRequest:
     return AssessmentRequest(uuid4(), V, U, uuid4(), band, category, CFG.config_version, days)

@@ -11,6 +11,10 @@ Plain-language note.
   every loan both sides review each other, so it would flag ordinary members.
 - S4, similar review texts: the reviews the subject received in the window, as character 3-grams
   weighted by TF-IDF over those reviews; the highest cosine similarity between any two of them.
+- S2 rating velocity, S3 new-account activity and S5 invitation linkage (iteration 2, DA-15
+  section 4): a burst of ratings, many ratings for a very new account, and raters who joined
+  through the same invitations as the subject. A quiet signal counts as evidence of normal
+  behaviour, which is why the family group of iteration 1 falls from level 3 to level 2.
 - Each signal is scaled to 0..1, combined as a weighted mean over the signals that are available,
   and banded into levels 1 to 4. Level 4 needs two signals at 0.5 or more; otherwise it is level 3.
 - Retaliation check (D19): a low review posted within `retaliation_window_days` after the subject
@@ -32,6 +36,7 @@ from itertools import combinations
 from typing import Any
 
 S1, S4 = "s1_reciprocal_clustering", "s4_review_similarity"
+S2, S3, S5 = "s2_rating_velocity", "s3_new_account_activity", "s5_account_linkage"
 
 
 @dataclass(frozen=True)
@@ -69,6 +74,19 @@ class ManipulationParams:
     corroboration_min: float
     corroboration_count: int
     negative_rating_max: int
+    # iteration 2 (DA-15 section 4); defaults keep an iteration 1 config loadable
+    velocity_recent_days: float = 7.0
+    velocity_baseline_days: float = 83.0
+    new_account_age_days: float = 30.0
+    new_account_recent_days: float = 14.0
+    s2_base_ratio: float = 2.0
+    s2_range: float = 3.0
+    s2_min_recent: int = 3
+    s3_base_count: float = 3.0
+    s3_range: float = 7.0
+    s5_base_links: float = 2.0
+    s5_range: float = 8.0
+    s5_window_days: float = 90.0
 
     @classmethod
     def from_config(cls, section: Mapping[str, Any]) -> ManipulationParams:
@@ -79,7 +97,7 @@ class ManipulationParams:
             window_days=float(win["evaluation_window_days_W"]),
             retaliation_window_days=float(win["retaliation_window_days"]),
             weights={k: float(v) for k, v in sw["weights"].items()},
-            active=tuple(sw["iteration_1_active"]),
+            active=tuple(sw.get("iteration_2_active", sw["iteration_1_active"])),
             s1_min_ratio=float(b["s1_min_ratio"]),
             s1_range=float(b["s1_range"]),
             s1_min_partners=int(b["s1_min_partners"]),
@@ -95,7 +113,29 @@ class ManipulationParams:
             corroboration_min=float(guard["min_signal_threshold"]),
             corroboration_count=int(guard["required_corroborating_signals"]),
             negative_rating_max=int(section["retaliation_check"]["negative_rating_max"]),
+            **_iteration_2_params(section),
         )
+
+
+def _iteration_2_params(section: Mapping[str, Any]) -> dict[str, Any]:
+    """S2, S3 and S5 parameters, present from config 1.3.3 (copied from design config 1.4.0)."""
+    win, b = section["observation_windows"], section["signal_scaling_bounds"]
+    if "s2_base_ratio" not in b:
+        return {}
+    return {
+        "velocity_recent_days": float(win["velocity_recent_window_days"]),
+        "velocity_baseline_days": float(win["velocity_baseline_window_days"]),
+        "new_account_age_days": float(win["new_account_age_threshold_days"]),
+        "new_account_recent_days": float(win["new_account_recent_window_days"]),
+        "s2_base_ratio": float(b["s2_base_ratio"]),
+        "s2_range": float(b["s2_range"]),
+        "s2_min_recent": int(b["s2_min_recent"]),
+        "s3_base_count": float(b["s3_base_count"]),
+        "s3_range": float(b["s3_range"]),
+        "s5_base_links": float(b["s5_base_links"]),
+        "s5_range": float(b["s5_range"]),
+        "s5_window_days": float(section["s5_linkage"]["window_days"]),
+    }
 
 
 @dataclass(frozen=True)
@@ -202,6 +242,68 @@ def review_similarity(texts: Sequence[str], p: ManipulationParams) -> Signal:
     return Signal(S4, True, value, weight, f"closest two of {len(texts)} reviews {c:.2f} alike")
 
 
+# ----------------------------------------------------------------------------- S2, S3, S5
+def rating_velocity(
+    subject: str, reviews: Sequence[ReviewSnapshot], now: datetime, p: ManipulationParams
+) -> Signal:
+    """S2: ratings received per day in the last 7 days against the 83 days before. A sudden burst
+    of ratings is how a ring inflates a new reputation. Available with at least s2_min_recent."""
+    weight = p.weights[S2]
+    recent_from = now - timedelta(days=p.velocity_recent_days)
+    base_from = recent_from - timedelta(days=p.velocity_baseline_days)
+    received = [r.created_at for r in reviews if r.reviewee == subject]
+    recent = sum(recent_from <= t <= now for t in received)
+    base = sum(base_from <= t < recent_from for t in received)
+    if recent < p.s2_min_recent:
+        return Signal(S2, False, weight=weight, evidence=f"{recent} ratings in the last week")
+    recent_rate = recent / p.velocity_recent_days
+    base_rate = base / p.velocity_baseline_days
+    if base_rate == 0:
+        return Signal(S2, True, 1.0, weight, f"{recent} ratings in a week and none before")
+    ratio = recent_rate / base_rate
+    value = _clamp((ratio - p.s2_base_ratio) / p.s2_range)
+    return Signal(S2, True, value, weight, f"{recent} ratings in a week, {ratio:.1f}x the usual")
+
+
+def new_account_activity(
+    subject: str,
+    reviews: Sequence[ReviewSnapshot],
+    account_created: datetime | None,
+    now: datetime,
+    p: ManipulationParams,
+) -> Signal:
+    """S3: many ratings for a very new account. An account older than new_account_age_days scores
+    0 (a quiet signal is evidence of normal behaviour, DA-15 section 4)."""
+    weight = p.weights[S3]
+    if account_created is None:
+        return Signal(S3, False, weight=weight, evidence="account age unknown")
+    age = (now - account_created).total_seconds() / 86400
+    if age > p.new_account_age_days:
+        return Signal(S3, True, 0.0, weight, f"account {age:.0f} days old")
+    since = now - timedelta(days=p.new_account_recent_days)
+    n = sum(r.reviewee == subject and since <= r.created_at <= now for r in reviews)
+    value = _clamp((n - p.s3_base_count) / p.s3_range)
+    return Signal(S3, True, value, weight, f"account {age:.0f} days old with {n} recent ratings")
+
+
+def account_linkage(
+    subject: str,
+    reviews: Sequence[ReviewSnapshot],
+    linked: frozenset[str] | None,
+    p: ManipulationParams,
+) -> Signal:
+    """S5: raters linked to the subject through the invitation tree (invited by the same member,
+    or invited by the subject). Device and network data are not collected (FR-A-03 is iteration 3),
+    so S5 is available only when the subject joined through an invitation."""
+    weight = p.weights[S5]
+    if linked is None:
+        return Signal(S5, False, weight=weight, evidence="did not join through an invitation")
+    raters = {r.reviewer for r in reviews if r.reviewee == subject}
+    m = len(raters & linked)
+    value = _clamp((m - p.s5_base_links) / p.s5_range)
+    return Signal(S5, True, value, weight, f"{m} raters joined through the same invitations")
+
+
 # ----------------------------------------------------------------------------- retaliation
 def _negative(r: ReviewSnapshot, p: ManipulationParams) -> bool:
     return r.lowest_rating is not None and r.lowest_rating <= p.negative_rating_max
@@ -252,9 +354,14 @@ def assess_manipulation(
     complaints: Iterable[Complaint],
     now: datetime,
     p: ManipulationParams,
+    *,
+    account_created: datetime | None = None,
+    linked_accounts: frozenset[str] | None = None,
 ) -> ManipulationRisk:
     """`reviews` should reach back window_days + retaliation_window_days, so that a complaint made
-    by low review just before the window still counts for the retaliation check."""
+    by low review just before the window still counts for the retaliation check. Signals not listed
+    as active in the config, or without the data they need, are left out and the weights
+    renormalised (Algorithm 3)."""
     rs = list(reviews)
     flags = find_retaliation(subject, rs, complaints, p)
     set_aside = {f.review_id for f in flags}
@@ -262,12 +369,15 @@ def assess_manipulation(
     window = [r for r in rs if since <= r.created_at <= now and r.id not in set_aside]
     computed = {
         S1: partner_clustering(subject, window, p),
+        S2: rating_velocity(subject, window, now, p),
+        S3: new_account_activity(subject, window, account_created, now, p),
         S4: review_similarity([r.comment or "" for r in window if r.reviewee == subject], p),
+        S5: account_linkage(subject, window, linked_accounts, p),
     }
-    signals = [  # S2, S3 and S5 are designed but scheduled for iteration 2 (ADR-0007)
+    signals = [
         computed[name]
-        if name in computed
-        else Signal(name, False, weight=w, evidence="iteration 2")
+        if name in computed and name in p.active
+        else Signal(name, False, weight=w, evidence="not active in this config")
         for name, w in p.weights.items()
     ]
     score, level, corroborated, capped = combine(signals, p)
