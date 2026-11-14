@@ -55,7 +55,7 @@
   },
   "lifecycle_event.csv": {
    "rows": 1392,
-   "sha256": "4e273f3f7d47062b1a4272db44b82c61e7bd702f6bece33930411094708376c1"
+   "sha256": "a9d2e0e872106a13470e0786780e75f84cd8c7dd730e5f1a1967c751c3bd8506"
   },
   "locality_verification.csv": {
    "rows": 62,
