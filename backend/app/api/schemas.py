@@ -196,6 +196,45 @@ class CaseOut(BaseModel):
     reason: str
     opened_at: datetime
     closed_at: datetime | None = None
+    info_deadline: datetime | None = None  # set while AWAITING_INFORMATION; kept after (C04)
+
+
+class InformationRequestOut(BaseModel):
+    """The moderator's latest question (sequence (g)); `to` is BORROWER, LENDER or BOTH."""
+
+    to: str
+    question: str
+    deadline: datetime
+
+
+class StatementOut(BaseModel):
+    """A party's response on a case. The author is named and given by role, never by id."""
+
+    id: UUID
+    author_role: str
+    author_name: str
+    statement: str
+    created_at: datetime
+
+
+class InformationRequestIn(StrictIn):
+    to: Literal["BORROWER", "LENDER", "BOTH"]
+    question: str = Field(max_length=1000)
+
+
+class InformationRequestedOut(BaseModel):
+    case_id: UUID
+    status: str
+    deadline: datetime
+
+
+class StatementIn(StrictIn):
+    statement: str = Field(max_length=2000)
+
+
+class StatementCreatedOut(BaseModel):
+    id: UUID
+    case_status: str
 
 
 class DisputeTrailOut(BaseModel):
@@ -213,6 +252,8 @@ class DisputeTrailOut(BaseModel):
     events: list[EventOut]
     assessment: AssessmentOut | None
     available_actions: list[str]
+    information_request: InformationRequestOut | None = None
+    statements: list[StatementOut] = []
 
 
 class DecisionIn(StrictIn):
@@ -266,6 +307,8 @@ class ModeratorCaseOut(BaseModel):
     events: list[EventOut]
     assessment: AssessmentOut | None
     decisions: list[DecisionOut]
+    information_request: InformationRequestOut | None = None
+    statements: list[StatementOut] = []
 
 
 class LenderRequestOut(BaseModel):

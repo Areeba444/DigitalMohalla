@@ -11,6 +11,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy import Engine
 
 from app.api import schemas
+from app.api.cases import case_extras
 from app.api.deps import Commands, current_actor, get_commands, get_engine
 from app.api.evidence import assessment_out, intermediaries
 from app.api.listings import listing_out
@@ -315,6 +316,7 @@ def dispute_trail(
         events=[schemas.EventOut(**e) for e in found["events"]],
         assessment=assessment_out(assessment, names) if assessment else None,
         available_actions=found["actions"],
+        **case_extras(engine, case["id"]),
     )
 
 
@@ -361,6 +363,7 @@ def moderator_case(
         events=[schemas.EventOut(**e) for e in found["events"]],
         assessment=assessment_out(assessment, names) if assessment else None,
         decisions=[schemas.DecisionOut(**d) for d in found["decisions"]],
+        **case_extras(engine, case_id),
     )
 
 

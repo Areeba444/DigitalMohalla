@@ -14,7 +14,7 @@ from collections.abc import Mapping
 from concurrent.futures import ThreadPoolExecutor
 from concurrent.futures import TimeoutError as FutureTimeout
 from dataclasses import dataclass
-from typing import Any
+from typing import Any, Protocol
 from uuid import UUID
 
 from app.domain.lifecycle.actions import available_actions
@@ -37,6 +37,13 @@ from app.domain.lifecycle.ports import (
 from app.domain.lifecycle.transition_table import TransitionTable
 from app.domain.moderation.decisions import Decision, InvalidDecision, plan
 from app.domain.notifications.notify import INotify, NullNotifier
+
+
+class ICaseRouter(Protocol):
+    """Module 9: tells who must act on a newly opened case (FR-T-10, plan item M2)."""
+
+    def route_new_case(self, case_id: UUID) -> list[UUID]: ...
+
 
 SYSTEM_AUTH = "system:borrowing-service"
 _LOCALITY_HOLD = {"INCONCLUSIVE": "locality_inconclusive", "CONFLICTING": "locality_conflict"}
@@ -69,8 +76,10 @@ class BorrowingService:
         engine_timeout_ms: int = 2000,
         table: TransitionTable | None = None,
         notifier: INotify | None = None,
+        cases: ICaseRouter | None = None,
     ) -> None:
         self.store = store
+        self.cases = cases
         self.notifier: INotify = notifier or NullNotifier()
         self.engine = engine
         self.audit = audit
@@ -125,6 +134,7 @@ class BorrowingService:
                 refs,
                 result.config_version,
             )
+            self._route_case(txn_id)
             return CommandResult(txn_id, "HELD_FOR_REVIEW", None, result.hold_reason, assessment_id)
         self._system_event(
             txn_id, "assessment_generated", "ASSESSED", {}, refs, result.config_version
@@ -156,6 +166,7 @@ class BorrowingService:
     ) -> CommandResult:
         payload = {"hold_reason": reason, **(extra or {})}
         self._system_event(txn_id, "held_for_review", "HELD_FOR_REVIEW", payload)
+        self._route_case(txn_id)
         return CommandResult(txn_id, "HELD_FOR_REVIEW", None, reason)
 
     def _system_event(
@@ -355,6 +366,7 @@ class BorrowingService:
         view = self._precheck(actor, txn_id, "dispute_opened", role)
         payload = {"reason": reason, **({"description": description} if description else {})}
         self._party_event(actor, view, "dispute_opened", role, payload)
+        self._route_case(txn_id)
         return CommandResult(txn_id, "DISPUTED", "dispute raised; a moderator will review it")
 
     def withdraw_dispute(self, actor: Actor, txn_id: UUID) -> CommandResult:
@@ -590,6 +602,12 @@ class BorrowingService:
             if not isinstance(exc, DatesTaken):
                 self._reject(actor, view.id, event_type, str(exc))
             raise
+
+    def _route_case(self, txn_id: UUID) -> None:
+        """The database opened a case with the event (D6); tell its moderators, or the admins."""
+        case = self.store.open_case(txn_id)
+        if self.cases is not None and case is not None:
+            self.cases.route_new_case(case["id"])
 
     def _tell(
         self,

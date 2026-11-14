@@ -1,6 +1,7 @@
 """API dependencies: database engine, one-transaction-per-command, and the logged-in actor."""
 
 from collections.abc import Callable
+from datetime import UTC, datetime
 from typing import TypeVar
 
 from fastapi import Depends, HTTPException, Request
@@ -13,6 +14,8 @@ from app.domain.accounts.auth import InvalidCredentials, decode_token
 from app.domain.assurance.engine import AssuranceEngine
 from app.domain.lifecycle.ports import IAssess
 from app.domain.lifecycle.service import Actor, BorrowingService
+from app.domain.moderation.cases import CaseService
+from app.infra.db.cases import PostgresCaseStore
 from app.infra.db.evidence import PostgresEvidenceSource
 from app.infra.db.notifications import PostgresNotifier
 from app.infra.eventstore.postgres import PostgresAuditLog, PostgresLifecycleStore
@@ -30,6 +33,9 @@ class Commands:
         config = load_engine_config()
         self.config_version = config.config_version
         self.timeout_ms = int(config.section("decision_policy_alg4").get("engine_timeout_ms", 2000))
+        self.response_hours = float(
+            config.section("scheduler_b13")["party_response_deadline_hours"]
+        )
 
     def run(self, fn: Callable[[BorrowingService], T]) -> T:
         with self.engine.begin() as conn:
@@ -40,6 +46,12 @@ class Commands:
                 config_version=self.config_version,
                 engine_timeout_ms=self.timeout_ms,
                 notifier=PostgresNotifier(conn),
+                cases=CaseService(
+                    PostgresCaseStore(conn),
+                    now=datetime.now(UTC),
+                    response_hours=self.response_hours,
+                    notifier=PostgresNotifier(conn),
+                ),
             )
             return fn(service)
 
