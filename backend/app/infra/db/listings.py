@@ -6,11 +6,49 @@ from uuid import UUID
 
 from sqlalchemy import Connection, text
 
-_CASTS = {
-    "condition": "CAST(:condition AS item_condition)",
-    "value_band": "CAST(:value_band AS value_band)",
-    "required_verification": "CAST(:required_verification AS verification_level)",
-}
+# The listing columns an owner sets. Both statements are fixed text with bound parameters only.
+_COLUMNS = (
+    "title",
+    "description",
+    "category_id",
+    "condition",
+    "value_band",
+    "deposit_amount",
+    "usage_terms",
+    "handover_method",
+    "search_terms",
+    "expires_at",
+    "required_verification",
+)
+_INSERT = text(
+    "INSERT INTO item (owner_id, community_id, status, title, description, category_id, "
+    "condition, value_band, deposit_amount, usage_terms, handover_method, search_terms, "
+    "expires_at, required_verification) VALUES (:owner, :community, "
+    "CAST(:status AS item_status), :title, :description, :category_id, "
+    "CAST(:condition AS item_condition), CAST(:value_band AS value_band), "
+    "coalesce(:deposit_amount, 0), :usage_terms, :handover_method, :search_terms, :expires_at, "
+    "CAST(:required_verification AS verification_level)) RETURNING id"
+)
+_UPDATE = text(
+    "UPDATE item SET "
+    "title = CASE WHEN :set_title THEN :title ELSE title END, "
+    "description = CASE WHEN :set_description THEN :description ELSE description END, "
+    "category_id = CASE WHEN :set_category_id THEN :category_id ELSE category_id END, "
+    "condition = CASE WHEN :set_condition THEN CAST(:condition AS item_condition) "
+    " ELSE condition END, "
+    "value_band = CASE WHEN :set_value_band THEN CAST(:value_band AS value_band) "
+    " ELSE value_band END, "
+    "deposit_amount = CASE WHEN :set_deposit_amount THEN :deposit_amount "
+    " ELSE deposit_amount END, "
+    "usage_terms = CASE WHEN :set_usage_terms THEN :usage_terms ELSE usage_terms END, "
+    "handover_method = CASE WHEN :set_handover_method THEN :handover_method "
+    " ELSE handover_method END, "
+    "search_terms = CASE WHEN :set_search_terms THEN :search_terms ELSE search_terms END, "
+    "expires_at = CASE WHEN :set_expires_at THEN :expires_at ELSE expires_at END, "
+    "required_verification = CASE WHEN :set_required_verification "
+    " THEN CAST(:required_verification AS verification_level) ELSE required_verification END, "
+    "status = CAST(:status AS item_status), updated_at = now() WHERE id = :id"
+)
 
 
 class PostgresListingStore:
@@ -55,23 +93,16 @@ class PostgresListingStore:
     def insert(
         self, owner_id: UUID, community_id: UUID, status: str, fields: Mapping[str, Any]
     ) -> UUID:
-        names = list(fields)
-        values = [_CASTS.get(n, f":{n}") for n in names]
-        sql = (
-            f"INSERT INTO item (owner_id, community_id, status, {', '.join(names)}) "
-            f"VALUES (:owner, :community, CAST(:status AS item_status), {', '.join(values)}) "
-            "RETURNING id"
-        )
-        params = {**fields, "owner": owner_id, "community": community_id, "status": status}
-        return UUID(str(self.conn.execute(text(sql), params).scalar_one()))
+        params = {n: fields.get(n) for n in _COLUMNS}
+        params.update(owner=owner_id, community=community_id, status=status)
+        return UUID(str(self.conn.execute(_INSERT, params).scalar_one()))
 
     def update(self, item_id: UUID, status: str, fields: Mapping[str, Any]) -> None:
-        sets = [f"{n} = {_CASTS.get(n, f':{n}')}" for n in fields]
-        sets += ["status = CAST(:status AS item_status)", "updated_at = now()"]
-        self.conn.execute(
-            text(f"UPDATE item SET {', '.join(sets)} WHERE id = :id"),
-            {**fields, "status": status, "id": item_id},
-        )
+        """Only the given fields change: each column has a `set_<name>` flag (static SQL)."""
+        params: dict[str, Any] = {n: fields.get(n) for n in _COLUMNS}
+        params.update({f"set_{n}": n in fields for n in _COLUMNS})
+        params.update(status=status, id=item_id)
+        self.conn.execute(_UPDATE, params)
 
     def listing(self, item_id: UUID) -> dict[str, Any] | None:
         row = (

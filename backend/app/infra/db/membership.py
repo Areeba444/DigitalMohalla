@@ -57,7 +57,8 @@ class PostgresMembershipStore:
             "FROM app_user WHERE id = :u",
             u=user_id,
         )
-        assert row is not None, "a logged-in actor always has an account"
+        if row is None:  # a token for a deleted account
+            raise NotAuthorised("this account no longer exists")
         return row
 
     def live_membership(self, user_id: UUID, community_id: UUID) -> dict[str, Any] | None:
