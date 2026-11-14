@@ -6,7 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from sqlalchemy import Engine
 
-from app.api import membership, notifications
+from app.api import listings, membership, notifications
 from app.api.deps import default_assessor
 from app.api.routes import router
 from app.config.settings import get_settings
@@ -18,6 +18,7 @@ from app.domain.lifecycle.errors import (
     StreamNotFound,
 )
 from app.domain.lifecycle.ports import IAssess
+from app.domain.listings.service import InvalidListing
 from app.domain.membership.locality import InvalidInvitation
 from app.domain.membership.service import InvalidMembershipInput
 from app.domain.moderation.decisions import InvalidDecision
@@ -56,6 +57,7 @@ def create_app(engine: Engine | None = None, assess: IAssess | None = None) -> F
     app.add_exception_handler(NotAuthorised, _refusal(403))
     app.add_exception_handler(InvalidDecision, _refusal(422))
     app.add_exception_handler(InvalidInvitation, _refusal(422))
+    app.add_exception_handler(InvalidListing, _refusal(422))
     app.add_exception_handler(InvalidMembershipInput, _refusal(422))
     app.add_exception_handler(StreamNotFound, _refusal(404))
     for conflict in (InvalidTransition, StaleCommand, DatesTaken):
@@ -64,6 +66,7 @@ def create_app(engine: Engine | None = None, assess: IAssess | None = None) -> F
     app.include_router(router)
     app.include_router(notifications.router)
     app.include_router(membership.router)
+    app.include_router(listings.router)
     return app
 
 

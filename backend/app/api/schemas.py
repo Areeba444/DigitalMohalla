@@ -277,11 +277,72 @@ class LenderRequestOut(BaseModel):
     requested_period: str
 
 
-class ItemOut(BaseModel):
+class ListingFields(StrictIn):
+    """Fields a lender sets on a listing (UC-B1, W22). Omitted fields are left unchanged on an edit."""
+
+    title: str | None = Field(default=None, max_length=120)
+    description: str | None = Field(default=None, max_length=4000)
+    category_id: int | None = None
+    condition: Literal["NEW", "GOOD", "FAIR", "WORN"] | None = None
+    value_band: Literal["LOW", "MEDIUM", "HIGH"] | None = None
+    deposit_amount: float | None = Field(default=None, ge=0, le=10_000_000)
+    usage_terms: str | None = Field(default=None, max_length=2000)
+    handover_method: str | None = Field(default=None, max_length=200)
+    search_terms: str | None = Field(default=None, max_length=300)
+    expires_at: datetime | None = None
+
+
+class ListingCreateIn(ListingFields):
+    community_id: UUID
+    publish: bool = False  # false saves a draft
+
+
+class ListingUpdateIn(ListingFields):
+    status: Literal["DRAFT", "PUBLISHED", "PAUSED"] | None = None
+
+
+class CategoryOut(BaseModel):
+    id: int
+    name: str
+    is_restricted: bool
+    min_verification: str
+
+
+class ListingOut(BaseModel):
+    """A listing as its owner or a member sees it. The owner is named, never identified by id."""
+
+    id: UUID
+    title: str
+    description: str | None
+    category_id: int
+    category_name: str
+    community_name: str
+    condition: str | None
+    value_band: str
+    deposit_amount: float
+    usage_terms: str | None
+    handover_method: str | None
+    search_terms: str | None
+    required_verification: str
+    status: str
+    expires_at: datetime | None
+    owner_name: str
+    is_yours: bool
+
+
+class MyListingOut(BaseModel):
     id: UUID
     title: str
     value_band: str
     deposit_amount: float
+    status: str
+    condition: str | None
+    updated_at: datetime
+
+
+class ItemOut(ListingOut):
+    """GET /items/{id}: the listing plus the dates already booked (B4, B5 step 1)."""
+
     booked_periods: list[str]
 
 
