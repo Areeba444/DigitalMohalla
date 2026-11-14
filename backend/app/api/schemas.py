@@ -268,6 +268,7 @@ class DecisionIn(StrictIn):
 
 
 class DecisionOut(BaseModel):
+    id: UUID  # needed to reverse it (POST /moderation/decisions/{id}/reversal)
     decider_role: str
     kind: str
     reason: str
@@ -557,3 +558,26 @@ class ReviewOut(BaseModel):
     id: UUID
     reviewee_role: str
     editable_until: datetime
+
+
+# ----------------------------------------------------------------------------- appeals (I4 4b, 4c)
+class AppealIn(StrictIn):
+    reason: str = Field(max_length=1000)
+
+
+class AppealFiledOut(BaseModel):
+    case_id: UUID
+    status: str
+
+
+class AppealDecisionIn(StrictIn):
+    result: Literal["UPHELD", "OVERTURNED"]
+    reason: str = Field(max_length=1000)
+
+
+class AppealDecidedOut(BaseModel):
+    """The new decision; `flagged_outcomes` counts the loan outcomes now under re-evaluation."""
+
+    decision_id: UUID
+    status: str
+    flagged_outcomes: int

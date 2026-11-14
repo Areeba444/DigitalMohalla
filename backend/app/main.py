@@ -7,6 +7,7 @@ from fastapi.responses import JSONResponse
 from sqlalchemy import Engine
 
 from app.api import (
+    appeals,
     cases,
     counter_offer,
     extensions,
@@ -85,6 +86,7 @@ def create_app(engine: Engine | None = None, assess: IAssess | None = None) -> F
     app.include_router(extensions.router)
     app.include_router(counter_offer.router)
     app.include_router(reviews.router)
+    app.include_router(appeals.router)
     return app
 
 
