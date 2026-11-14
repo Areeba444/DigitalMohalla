@@ -118,3 +118,62 @@ def test_active_dispute_not_about_returning_records_no_on_time_outcome() -> None
 def test_impossible_inputs_are_refused_not_guessed(bad: ResolvedDispute) -> None:
     with pytest.raises(ValueError):
         outcomes_for_resolved_dispute(bad)
+
+
+# ----------------------------------------------------------------------------- item possession (ADR-0009)
+def test_lost_item_fails_the_borrower_on_return_and_condition() -> None:  # TC-143
+    out = as_dict(
+        outcomes_for_resolved_dispute(
+            ResolvedDispute("ACTIVE", "NON_RETURN", "borrower", possession="LOST")
+        )
+    )
+    assert out == {
+        ("BORROWER", "ON_TIME_RETURN"): False,
+        ("BORROWER", "CONDITION_AGREED"): False,
+        ("BORROWER", "DISPUTE_FREE"): False,
+        ("LENDER", "CONDITION_AGREED"): True,
+        ("LENDER", "DISPUTE_FREE"): True,
+    }
+
+
+def test_lost_after_return_initiated_ignores_the_return_time() -> None:
+    out = as_dict(
+        outcomes_for_resolved_dispute(
+            ResolvedDispute(
+                "RETURN_INITIATED", "DAMAGE", "none", returned_on_time=True, possession="LOST"
+            )
+        )
+    )
+    assert out[("BORROWER", "ON_TIME_RETURN")] is False
+    assert out[("BORROWER", "CONDITION_AGREED")] is False
+
+
+def test_item_still_with_the_borrower_records_only_the_finding() -> None:  # TC-141
+    out = as_dict(
+        outcomes_for_resolved_dispute(
+            ResolvedDispute(
+                "RETURN_INITIATED",
+                "CONDITION_MISMATCH",
+                "lender",
+                returned_on_time=True,
+                possession="WITH_BORROWER",
+            )
+        )
+    )
+    assert ("BORROWER", "ON_TIME_RETURN") not in out  # judged when the return happens
+    assert out[("LENDER", "DISPUTE_FREE")] is False
+
+
+def test_close_after_a_dispute_records_only_the_return() -> None:
+    out = as_dict(outcomes_for_closed_loan(ClosedLoan(returned_on_time=False, after_dispute=True)))
+    assert out == {("BORROWER", "ON_TIME_RETURN"): False}
+
+
+@pytest.mark.parametrize("possession", ["RETURNED", "NOT_HANDED_OVER", None])
+def test_returned_and_not_handed_over_keep_the_d11_rules(possession: str | None) -> None:
+    stage = "ACCEPTED" if possession == "NOT_HANDED_OVER" else "ACTIVE"
+    with_possession = outcomes_for_resolved_dispute(
+        ResolvedDispute(stage, "DAMAGE", "borrower", possession=possession)  # type: ignore[arg-type]
+    )
+    without = outcomes_for_resolved_dispute(ResolvedDispute(stage, "DAMAGE", "borrower"))
+    assert as_dict(with_possession) == as_dict(without)

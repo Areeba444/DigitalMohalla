@@ -6,7 +6,9 @@ import {
   caseTitle,
   decisionOptions,
   DISPUTE_REASONS,
+  disputeStage,
   filterQueue,
+  possessionOptions,
   priorityLabel,
 } from '@/lib/moderation';
 
@@ -79,4 +81,27 @@ test('age is shown in hours, then days', () => {
   expect(age('2026-10-14T10:10:00Z', now)).toBe('Opened just now');
   expect(age('2026-10-14T08:00:00Z', now)).toBe('Opened 2h ago');
   expect(age('2026-10-11T08:00:00Z', now)).toBe('Opened 3d ago');
+});
+
+describe('possession (ADR-0009, DM14)', () => {
+  const ev = (seq: number, type: string, prev: string | null) => ({
+    stream_seq: seq,
+    event_type: type,
+    previous_state: prev,
+  });
+
+  test('the stage is the state the latest dispute was raised from', () => {
+    expect(disputeStage([ev(1, 'request_created', null), ev(5, 'dispute_opened', 'ACTIVE')])).toBe('ACTIVE');
+    expect(
+      disputeStage([ev(3, 'dispute_opened', 'ACCEPTED'), ev(4, 'dispute_withdrawn', 'DISPUTED'), ev(6, 'dispute_opened', 'ACTIVE')]),
+    ).toBe('ACTIVE');
+    expect(disputeStage([ev(1, 'request_created', null)])).toBeNull();
+  });
+
+  test('only the possessions that fit the stage are offered', () => {
+    expect(possessionOptions('ACCEPTED').map((o) => o.value)).toEqual(['NOT_HANDED_OVER']);
+    expect(possessionOptions('ACTIVE').map((o) => o.value)).toEqual(['RETURNED', 'WITH_BORROWER', 'LOST']);
+    expect(possessionOptions('RETURN_INITIATED').map((o) => o.value)).toEqual(['RETURNED', 'WITH_BORROWER', 'LOST']);
+    expect(possessionOptions(null)).toEqual([]);
+  });
 });

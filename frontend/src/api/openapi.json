@@ -1498,6 +1498,23 @@
               }
             ],
             "title": "At Fault"
+          },
+          "possession": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "NOT_HANDED_OVER",
+                  "WITH_BORROWER",
+                  "RETURNED",
+                  "LOST"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Possession"
           }
         },
         "additionalProperties": false,

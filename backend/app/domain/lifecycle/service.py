@@ -392,7 +392,8 @@ class BorrowingService:
     # ------------------------------------------------------------------ I4: moderator decisions
     def decide(self, actor: Actor, case_id: UUID, decision: Decision) -> CommandResult:
         """UC-I4: record the decision with its reason, then apply it as one lifecycle event that
-        references it. A resolved dispute becomes trust evidence (FR-B-15); a cleared locality or
+        references it. A resolved dispute becomes trust evidence (FR-B-15) and ends where the item's
+        possession says (ADR-0009: NO_SHOW, back to ACTIVE, or COMPLETED); a cleared locality or
         engine-failure hold runs the assessment again (ADR-0003)."""
         case = self.store.case_by_id(case_id)
         if case is None:
@@ -403,8 +404,12 @@ class BorrowingService:
         if case["status"] not in ("OPEN", "AWAITING_INFORMATION"):
             self._reject(actor, txn_id, "decide_case", f"case already {case['status']}")
             raise InvalidTransition(f"this case is already {case['status'].lower()}")
+        stage = None
+        if view.state == "DISPUTED":  # the possession must fit the state the dispute came from
+            opened = self.store.last_event(txn_id, "dispute_opened")
+            stage = opened["previous_state"] if opened else None
         try:
-            p = plan(view.state, view.hold_reason, decision)
+            p = plan(view.state, view.hold_reason, decision, stage)
         except InvalidDecision as exc:
             self._reject(actor, txn_id, "decide_case", str(exc))
             raise
@@ -424,7 +429,11 @@ class BorrowingService:
                 p.new_state,
                 actor_id=actor.user_id,
                 authorisation=authorisation,
-                payload={"decision": decision.kind},
+                payload=(
+                    {"decision": decision.kind, "possession": decision.possession}
+                    if p.event_type == "dispute_resolved"  # replay needs it (FR-B-09, ADR-0009)
+                    else {"decision": decision.kind}
+                ),
                 evidence_refs={"decision_id": str(decision_id)},
             )
         except EventStoreError as exc:
@@ -433,7 +442,7 @@ class BorrowingService:
         if p.event_type == "dispute_resolved":
             self.store.record_outcomes(event_id)
             self.store.refresh_trust_edges(txn_id)
-            return CommandResult(txn_id, "COMPLETED", "dispute resolved")
+            return CommandResult(txn_id, p.new_state, "dispute resolved")
         if p.new_state == "LOCALITY_CHECKED":
             return self._assess(txn_id)
         return CommandResult(txn_id, p.new_state, f"decision recorded: {decision.kind.lower()}")

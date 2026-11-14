@@ -104,6 +104,7 @@ def test_tc53_resolved_dispute_completes_the_loan_and_becomes_evidence(
             "Handover photos show no crack; the return photos do.",
             (),
             "borrower",
+            "RETURNED",
         ),
     )
     assert result.state == "COMPLETED"
@@ -116,7 +117,8 @@ def test_tc53_resolved_dispute_completes_the_loan_and_becomes_evidence(
     assert case_of(conn, txn)["status"] == "DECIDED"
     [decision] = svc.moderator_case(moderator(world), case["id"])["decisions"]
     assert decision["kind"] == "DISPUTE_RESOLVED" and decision["resolved_outcome"] == {
-        "at_fault": "borrower"
+        "at_fault": "borrower",
+        "possession": "RETURNED",
     }
     outcomes = dict(
         conn.execute(

@@ -11,7 +11,7 @@
   },
   "borrowing_transaction.csv": {
    "rows": 193,
-   "sha256": "06a168bdbc3996981144fa527af1d7733339427113101950d56e4d748a90ff41"
+   "sha256": "ee3afc30cc25bfb4f7e80bb5be13a9340799502e1b8af6081dc439fefb62ec03"
   },
   "category.csv": {
    "rows": 7,
@@ -31,7 +31,7 @@
   },
   "item.csv": {
    "rows": 63,
-   "sha256": "027bbaaffc82c5dcefa7c232b490ff5ccb02c8c239ea71118485f6fd383597e5"
+   "sha256": "40ff785151018dcb39e369e417dfbc51f3ed4328d3b8c19341c17a818c49ba91"
   },
   "labels/item_value_pkr.csv": {
    "rows": 63,
@@ -47,7 +47,7 @@
   },
   "labels/transaction_truth.csv": {
    "rows": 193,
-   "sha256": "13e422496c6ce7c5c721ea231cd8e856170008c9793728adc54b2925d135683e"
+   "sha256": "6fef29a27eace27cc2ff506587b43c369623e31b1e3a3a3a451fdfa6a7aac8bf"
   },
   "labels/user_truth.csv": {
    "rows": 63,
@@ -55,7 +55,7 @@
   },
   "lifecycle_event.csv": {
    "rows": 1392,
-   "sha256": "3a8fa5579669db225bd10663005da16a28b9593fde25c7c98a108f59e2c69da4"
+   "sha256": "d5367eb3de9ad4a425e7ddb4589d8b726e2d809706796bfe0ddc1224061052e6"
   },
   "locality_verification.csv": {
    "rows": 62,
@@ -67,7 +67,7 @@
   },
   "moderator_decision.csv": {
    "rows": 7,
-   "sha256": "40ed005920401624a003c5748773c6e7bc6dc23b8429058122b528cb3008ae70"
+   "sha256": "31b29dc3ae55c7d17eb3293c555a6dd3045e931c1a7660c5697a647e5b944776"
   },
   "outcome.csv": {
    "rows": 813,

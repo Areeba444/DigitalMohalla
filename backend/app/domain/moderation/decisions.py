@@ -3,8 +3,12 @@
 Plain-language rules:
 - Every decision needs a reason (FR-T-11). It is recorded first, then applied as one lifecycle
   event that points to it; the database checks that pairing again.
-- A dispute (the loan is DISPUTED) can only be resolved, with a finding: the borrower was at fault,
-  the lender was, or nobody was. The loan ends COMPLETED and the finding becomes trust evidence.
+- A dispute (the loan is DISPUTED) can only be resolved, with a finding (the borrower was at fault,
+  the lender was, or nobody was) and the item's possession (ADR-0009, review DM14). Where the item is
+  decides how the loan ends: never handed over -> NO_SHOW (dates released); still with the borrower ->
+  back to ACTIVE (dates stay held, due date unchanged); returned or lost -> COMPLETED. Only the
+  possessions that fit the state the dispute was raised from are accepted, so an item the borrower
+  still has is never released. The finding becomes trust evidence.
 - A hold (the request is HELD_FOR_REVIEW) can be cleared, cleared with safeguards for the lender,
   or restricted (the request is declined; nobody is restricted without this human decision).
   Clearing a locality or engine-failure hold sends the request back to LOCALITY_CHECKED so the
@@ -21,6 +25,20 @@ from typing import Any
 from app.domain.lifecycle.errors import EventStoreError
 
 FAULTS = ("borrower", "lender", "none")
+POSSESSIONS = ("NOT_HANDED_OVER", "WITH_BORROWER", "RETURNED", "LOST")
+# Which possessions fit the state the dispute was opened from (ADR-0009 table; the database's
+# event_validate_v3 trigger checks the same rule again)
+POSSESSION_BY_STAGE = {
+    "ACCEPTED": ("NOT_HANDED_OVER",),
+    "ACTIVE": ("WITH_BORROWER", "RETURNED", "LOST"),
+    "RETURN_INITIATED": ("WITH_BORROWER", "RETURNED", "LOST"),
+}
+NEXT_STATE_BY_POSSESSION = {  # T25a, T25b, T25c
+    "NOT_HANDED_OVER": "NO_SHOW",
+    "WITH_BORROWER": "ACTIVE",
+    "RETURNED": "COMPLETED",
+    "LOST": "COMPLETED",
+}
 HOLD_KINDS = ("CLEARED", "SAFEGUARDS_IMPOSED", "RESTRICTED")
 REASSESS = ("locality_inconclusive", "locality_conflict", "engine_failure")
 
@@ -35,6 +53,7 @@ class Decision:
     reason: str
     safeguards: Sequence[str] = field(default_factory=tuple)
     at_fault: str | None = None
+    possession: str | None = None  # disputes only: where the item is now (ADR-0009)
 
 
 @dataclass(frozen=True)
@@ -45,8 +64,13 @@ class Plan:
     resolved_outcome: dict[str, Any] | None
 
 
-def plan(state: str | None, hold_reason: str | None, d: Decision) -> Plan:
-    """What applying `d` to a case whose transaction is in `state` means, or InvalidDecision."""
+def plan(
+    state: str | None, hold_reason: str | None, d: Decision, dispute_stage: str | None = None
+) -> Plan:
+    """What applying `d` to a case whose transaction is in `state` means, or InvalidDecision.
+
+    `dispute_stage` is the state the dispute was opened from (`previous_state` of `dispute_opened`);
+    it is needed only for a dispute, to check the possession (ADR-0009)."""
     if not d.reason or not d.reason.strip():
         raise InvalidDecision("a decision needs a reason (FR-T-11)")
     safeguards = [{"label": s.strip()} for s in d.safeguards if s and s.strip()]
@@ -59,13 +83,28 @@ def plan(state: str | None, hold_reason: str | None, d: Decision) -> Plan:
             )
         if safeguards:
             raise InvalidDecision("safeguards belong to holds, not to resolved disputes")
-        return Plan("dispute_resolved", "COMPLETED", [], {"at_fault": d.at_fault})
+        if d.possession not in POSSESSIONS:
+            raise InvalidDecision(
+                f"resolving a dispute needs the item's possession: one of {', '.join(POSSESSIONS)}"
+            )
+        allowed = POSSESSION_BY_STAGE.get(dispute_stage or "", ())
+        if d.possession not in allowed:
+            raise InvalidDecision(
+                f"possession {d.possession} does not fit a dispute raised from {dispute_stage}; "
+                f"allowed: {', '.join(allowed) or 'none'}"
+            )
+        return Plan(
+            "dispute_resolved",
+            NEXT_STATE_BY_POSSESSION[d.possession],
+            [],
+            {"at_fault": d.at_fault, "possession": d.possession},
+        )
     if state != "HELD_FOR_REVIEW":
         raise InvalidDecision(f"nothing to decide while the request is {state}")
     if d.kind not in HOLD_KINDS:
         raise InvalidDecision(f"a hold can be {', '.join(k.lower() for k in HOLD_KINDS)}")
-    if d.at_fault is not None:
-        raise InvalidDecision("a finding of fault belongs to disputes")
+    if d.at_fault is not None or d.possession is not None:
+        raise InvalidDecision("a finding of fault and the item's possession belong to disputes")
     if d.kind == "SAFEGUARDS_IMPOSED":
         if hold_reason == "engine_failure":
             raise InvalidDecision(

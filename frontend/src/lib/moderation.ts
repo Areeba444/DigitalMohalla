@@ -107,3 +107,57 @@ export function decisionOptions(state: string | null | undefined, holdReason?: s
   options.push({ key: 'restrict', label: 'Decline', help: 'The request is declined', kind: 'RESTRICTED' });
   return options;
 }
+
+export type Possession = NonNullable<DecisionIn['possession']>;
+type StageEvent = { event_type: string; previous_state: string | null; stream_seq: number };
+
+/** ADR-0009 (DM14): where the item is decides how a dispute ends. Each option lists the stages it fits. */
+export const POSSESSION_OPTIONS: {
+  value: Possession;
+  icon: 'check_circle' | 'person' | 'block' | 'report';
+  label: string;
+  description: string;
+  stages: string[];
+}[] = [
+  {
+    value: 'RETURNED',
+    icon: 'check_circle',
+    label: 'Item returned to lender',
+    description: 'The loan is completed and the dates are released.',
+    stages: ['ACTIVE', 'RETURN_INITIATED'],
+  },
+  {
+    value: 'WITH_BORROWER',
+    icon: 'person',
+    label: 'Item still with borrower',
+    description: 'The loan goes on; the dates stay held and the due date does not change.',
+    stages: ['ACTIVE', 'RETURN_INITIATED'],
+  },
+  {
+    value: 'NOT_HANDED_OVER',
+    icon: 'block',
+    label: 'Never handed over',
+    description: 'The loan ends as a no-show and the dates are released.',
+    stages: ['ACCEPTED'],
+  },
+  {
+    value: 'LOST',
+    icon: 'report',
+    label: 'Item lost',
+    description: 'The loan is completed as a failed return; the listing is paused for the lender.',
+    stages: ['ACTIVE', 'RETURN_INITIATED'],
+  },
+];
+
+/** The state the latest dispute was raised from (previous_state of dispute_opened), or null. */
+export function disputeStage(events: StageEvent[]): string | null {
+  const opened = events
+    .filter((e) => e.event_type === 'dispute_opened')
+    .sort((a, b) => b.stream_seq - a.stream_seq)[0];
+  return opened?.previous_state ?? null;
+}
+
+/** Only the possessions that fit the stage are offered; the server refuses the others too. */
+export function possessionOptions(stage: string | null) {
+  return POSSESSION_OPTIONS.filter((o) => stage !== null && o.stages.includes(stage));
+}

@@ -61,10 +61,15 @@ def run_migrations_online() -> None:
     and associate a connection with the context.
 
     """
+    # Each revision commits on its own (transaction_per_migration): schema v2.4 adds enum values in
+    # revision 0002 that revision 0003 uses, which PostgreSQL allows only after the adding transaction
+    # commits. Callers therefore hand in a plain connection (engine.connect()), not an open transaction.
     # Tests hand in an open connection so they can never migrate a database picked up from .env.
     existing = config.attributes.get("connection")
     if existing is not None:
-        context.configure(connection=existing, target_metadata=target_metadata)
+        context.configure(
+            connection=existing, target_metadata=target_metadata, transaction_per_migration=True
+        )
         with context.begin_transaction():
             context.run_migrations()
         return
@@ -76,7 +81,9 @@ def run_migrations_online() -> None:
     )
 
     with connectable.connect() as connection:
-        context.configure(connection=connection, target_metadata=target_metadata)
+        context.configure(
+            connection=connection, target_metadata=target_metadata, transaction_per_migration=True
+        )
 
         with context.begin_transaction():
             context.run_migrations()
