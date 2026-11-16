@@ -44,7 +44,9 @@ class CaseStore(Protocol):
 
     def insert_statement(self, case_id: UUID, author_id: UUID, role: str, text: str) -> UUID: ...
 
-    def overdue_information(self, now: datetime) -> list[dict[str, Any]]: ...
+    def overdue_information(
+        self, now: datetime, case_id: UUID | None = None
+    ) -> list[dict[str, Any]]: ...
 
     def information_request(self, case_id: UUID) -> dict[str, Any] | None:
         """The latest info_requested audit entry's value: to, question, deadline."""
@@ -161,10 +163,11 @@ class CaseService:
         return statement_id
 
     # ------------------------------------------------------------------ C04 (scheduler, F4)
-    def expire_information(self) -> int:
+    def expire_information(self, case_id: UUID | None = None) -> int:
         """Cases whose deadline passed go back to OPEN; the deadline stays as evidence of
-        non-response. A rerun finds none (idempotent, NFR-R-05); notices are deduplicated."""
-        expired = self.store.overdue_information(self.now)
+        non-response. A rerun finds none (idempotent, NFR-R-05); notices are deduplicated.
+        The job runner (F4) passes one `case_id` per claimed unit of work."""
+        expired = self.store.overdue_information(self.now, case_id)
         for case in expired:
             self.store.reopen(case["id"])
             deadline = case["info_deadline"].isoformat()

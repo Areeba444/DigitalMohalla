@@ -221,6 +221,9 @@ class RawEvidence:
     def complaints_by(self, user_id: UUID, since: datetime) -> list[Complaint]:
         return []
 
+    def account_context(self, user_id: UUID, since: datetime) -> tuple[None, None]:
+        return None, None  # S3 and S5 unavailable: the iteration 1 fixtures carry no such data
+
 
 U, A, B, V = uuid4(), uuid4(), uuid4(), uuid4()
 

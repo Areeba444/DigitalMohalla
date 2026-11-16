@@ -6,7 +6,19 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from sqlalchemy import Engine
 
-from app.api import cases, listings, membership, notifications
+from app.api import (
+    appeals,
+    cases,
+    counter_offer,
+    extensions,
+    jobs,
+    listings,
+    membership,
+    notifications,
+    reviews,
+    search,
+    uploads,
+)
 from app.api.deps import default_assessor
 from app.api.routes import router
 from app.config.settings import get_settings
@@ -23,6 +35,10 @@ from app.domain.membership.locality import InvalidInvitation
 from app.domain.membership.service import InvalidMembershipInput
 from app.domain.moderation.cases import InvalidCaseInput
 from app.domain.moderation.decisions import InvalidDecision
+from app.domain.reviews.service import InvalidReview
+from app.domain.search.service import InvalidSearch
+from app.domain.uploads.policy import InvalidUpload
+from app.domain.uploads.storage import StorageUnavailable
 from app.infra.db.session import make_engine
 
 
@@ -60,6 +76,10 @@ def create_app(engine: Engine | None = None, assess: IAssess | None = None) -> F
     app.add_exception_handler(InvalidInvitation, _refusal(422))
     app.add_exception_handler(InvalidListing, _refusal(422))
     app.add_exception_handler(InvalidCaseInput, _refusal(422))
+    app.add_exception_handler(InvalidReview, _refusal(422))
+    app.add_exception_handler(InvalidUpload, _refusal(422))
+    app.add_exception_handler(InvalidSearch, _refusal(422))
+    app.add_exception_handler(StorageUnavailable, _refusal(503))
     app.add_exception_handler(InvalidMembershipInput, _refusal(422))
     app.add_exception_handler(StreamNotFound, _refusal(404))
     for conflict in (InvalidTransition, StaleCommand, DatesTaken):
@@ -70,6 +90,13 @@ def create_app(engine: Engine | None = None, assess: IAssess | None = None) -> F
     app.include_router(membership.router)
     app.include_router(listings.router)
     app.include_router(cases.router)
+    app.include_router(jobs.router)
+    app.include_router(extensions.router)
+    app.include_router(counter_offer.router)
+    app.include_router(reviews.router)
+    app.include_router(appeals.router)
+    app.include_router(uploads.router)
+    app.include_router(search.router)
     return app
 
 

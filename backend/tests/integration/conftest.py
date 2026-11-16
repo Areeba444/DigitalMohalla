@@ -131,3 +131,7 @@ def conn(engine: Engine) -> Iterator[Connection]:
     finally:
         outer.rollback()
         connection.close()
+
+
+# The search suites (29, 30) share one synthetic search community for the whole session.
+from tests.integration.search_world import s  # noqa: E402, F401

@@ -1,0 +1,39 @@
+# Scheduled jobs (ADR-0012, FR-B-18): calls the deployed API's job endpoint every 15 minutes.
+#
+# The free Render service sleeps and runs no timers of its own, so this workflow is the clock. The
+# call also wakes the API. The endpoint is idempotent: a late, repeated or overlapping call never
+# does the same work twice (job_run claims and an advisory lock), so GitHub's occasional delay of a
+# few minutes only delays the jobs.
+#
+# Needs two repository settings (Settings > Secrets and variables > Actions):
+#   secret   JOB_TOKEN  the same value as the JOB_TOKEN environment variable on Render
+#   variable API_URL    e.g. https://digitalmohalla-api.onrender.com
+# Without them the workflow says so and stops without failing.
+
+name: Scheduled jobs
+
+on:
+  schedule:
+    - cron: "*/15 * * * *"   # every 15 minutes (scheduler_b13.run_interval_minutes)
+  workflow_dispatch: {}      # run by hand from the Actions tab
+
+permissions: {}
+
+jobs:
+  run-due-jobs:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Call POST /api/v1/internal/jobs/run
+        env:
+          JOB_TOKEN: ${{ secrets.JOB_TOKEN }}
+          API_URL: ${{ vars.API_URL }}
+        run: |
+          if [ -z "$JOB_TOKEN" ] || [ -z "$API_URL" ]; then
+            echo "::notice::JOB_TOKEN or API_URL is not set; nothing to call."
+            exit 0
+          fi
+          # the first call may take a minute while the free service wakes up
+          curl --fail-with-body --silent --show-error --retry 3 --retry-delay 20 --max-time 120 \
+            -X POST "$API_URL/api/v1/internal/jobs/run" \
+            -H "Authorization: Bearer $JOB_TOKEN" -H "Content-Type: application/json" -d '{}'

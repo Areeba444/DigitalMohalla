@@ -359,7 +359,8 @@ class PostgresLifecycleStore:
             text(
                 "SELECT DISTINCT ON (phase, reporter_role) phase::text AS phase, "
                 "reporter_role::text AS reporter_role, condition_agreed, checklist, "
-                "deposit_received, notes, created_at FROM condition_report "
+                "deposit_received, notes, created_at, (SELECT count(*) FROM attachment a "
+                "WHERE a.condition_report_id = condition_report.id) AS photos FROM condition_report "
                 "WHERE transaction_id = :id ORDER BY phase, reporter_role, created_at DESC, id DESC"
             ),
             {"id": transaction_id},
@@ -367,6 +368,15 @@ class PostgresLifecycleStore:
         return {(r["phase"], r["reporter_role"]): dict(r) for r in rows}
 
     # writes -----------------------------------------------------------------------------------
+    def has_reviewed(self, transaction_id: UUID, user_id: UUID) -> bool:
+        return (
+            self.conn.execute(
+                text("SELECT 1 FROM review WHERE transaction_id = :t AND reviewer_id = :u"),
+                {"t": transaction_id, "u": user_id},
+            ).first()
+            is not None
+        )
+
     def insert_assessment(self, transaction_id: UUID, result: AssessmentResult) -> UUID:
         return self.conn.execute(
             text(

@@ -58,6 +58,7 @@ def test_tc180_draft_then_publish_needs_description_and_condition(
     )
     assert done.status_code == 200, done.text
     assert (done.json()["status"], done.json()["search_terms"]) == ("PUBLISHED", "seedhi")
+    assert done.json()["expires_at"] is not None  # default end date set on publishing (ADR-0012)
     with engine.connect() as c:
         tsv = c.execute(
             text(

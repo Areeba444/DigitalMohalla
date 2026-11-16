@@ -2,7 +2,8 @@
 
 Pipeline (Algorithm doc §1): the borrower's verified outcomes (role BORROWER, metric ON_TIME_RETURN)
 -> recency- and similarity-weighted Beta posterior (B2) -> k-hop community paths from the lender (B3)
--> manipulation risk from the borrower's reviews (C1: S1, S4 and the retaliation check; Algorithm 3)
+-> manipulation risk from the borrower's reviews (S1 to S5 and the retaliation check; Algorithm 3,
+DA-15) with repeats with the same counterpart discounted in the posterior (pair-repeat discount)
 -> context (open or recent disputes, verification, value band) -> decision table R1 to R9 -> result.
 
 Data comes through `EvidenceSource`, so the engine itself does no I/O and is unit-tested with a fake.
@@ -29,6 +30,7 @@ from app.domain.assurance.estimation.posterior import (
     estimate,
     recency_weight,
 )
+from app.domain.assurance.estimation.repeat import RepeatParams, repeat_multipliers
 from app.domain.assurance.estimation.similarity import (
     LoanProfile,
     SimilarityParams,
@@ -54,6 +56,7 @@ class OutcomeSnapshot:
     category_id: int
     value_band: str
     duration_days: float
+    observer_id: str | None = None  # the counterpart who confirmed it (pair-repeat discount)
 
 
 class EvidenceSource(Protocol):
@@ -72,6 +75,12 @@ class EvidenceSource(Protocol):
     def reviews_since(self, since: datetime) -> list[ReviewSnapshot]: ...
 
     def complaints_by(self, user_id: UUID, since: datetime) -> list[Complaint]: ...
+    def account_context(
+        self, user_id: UUID, since: datetime
+    ) -> tuple[datetime | None, frozenset[str] | None]:
+        """(account created, accounts linked through the invitation tree since `since`, or None
+        when the user did not join through an invitation): inputs of S3 and S5."""
+        ...
 
 
 class AssuranceEngine:
@@ -85,6 +94,9 @@ class AssuranceEngine:
             self.estimator = EstimatorParams.from_config(config.section("trust_estimation_alg1"))
             self.sim = SimilarityParams.from_config(
                 config.section("trust_estimation_alg1")["similarity_weighting"]
+            )
+            self.repeat = RepeatParams.from_config(
+                config.section("trust_estimation_alg1").get("pair_repeat_discount")
             )
             self.khop = KHopParams.from_config(config.section("indirect_trust_alg2"))
             self.thresholds = PolicyThresholds.from_config(config.data)
@@ -109,13 +121,18 @@ class AssuranceEngine:
         wanted = LoanProfile(request.category_id, request.value_band, request.duration_days or 1.0)
         weighted: list[WeightedOutcome] = []
         history: list[tuple[float, float]] = []
-        for o in self.source.borrower_outcomes(request.borrower_id):
-            if o.status != "VALID":
-                continue
+        valid = [
+            o for o in self.source.borrower_outcomes(request.borrower_id) if o.status == "VALID"
+        ]
+        repeats = repeat_multipliers([(o.occurred_at, o.observer_id) for o in valid], self.repeat)
+        for o, repeat in zip(valid, repeats, strict=True):
             raw = similarity(
                 LoanProfile(o.category_id, o.value_band, o.duration_days), wanted, self.sim
             )
-            weighted.append(WeightedOutcome(o.occurred_at, o.success, floored(raw, self.sim)))
+            # Algorithm 1 (DA-15): recency x max(floor, similarity) x factor ^ repeats
+            weighted.append(
+                WeightedOutcome(o.occurred_at, o.success, floored(raw, self.sim) * repeat)
+            )
             age = max(0.0, (now - o.occurred_at).total_seconds() / 86400.0)
             history.append((recency_weight(age, self.estimator.half_life_days), raw))
         direct = estimate(weighted, self.estimator, now)
@@ -134,12 +151,17 @@ class AssuranceEngine:
         verified = self.source.verification_ok(request.borrower_id, request.item_id)
         mp = self.manipulation
         reach = now - timedelta(days=mp.window_days + mp.retaliation_window_days)
+        created, linked = self.source.account_context(
+            request.borrower_id, now - timedelta(days=mp.s5_window_days)
+        )
         risk = assess_manipulation(
             borrower,
             self.source.reviews_since(reach),
             self.source.complaints_by(request.borrower_id, reach),
             now,
             mp,
+            account_created=created,
+            linked_accounts=linked,
         )
         d = decide(
             PolicyInputs(

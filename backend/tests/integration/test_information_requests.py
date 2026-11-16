@@ -204,7 +204,11 @@ def test_tc196_case_without_a_moderator_goes_to_an_admin(
     active admins are told instead (UC-D6 2a, FR-T-10). Rolled back afterwards."""
     _, case_id = disputed_case(client, world, item=4, start=86)
     conn.execute(
-        text("UPDATE membership SET status = 'REVOKED' WHERE user_id = :u"), {"u": world.moderator}
+        text(
+            "UPDATE membership SET status = 'REVOKED' WHERE community_id = :c "
+            "AND role = 'MODERATOR'"  # every moderator, including any another suite added
+        ),
+        {"c": world.community},
     )
     svc = CaseService(
         PostgresCaseStore(conn),

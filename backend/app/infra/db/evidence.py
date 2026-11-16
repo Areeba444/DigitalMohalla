@@ -24,12 +24,13 @@ class PostgresEvidenceSource:
             rows = c.execute(
                 text(
                     "SELECT occurred_at, success, status::text, category_id, value_band::text, "
-                    "EXTRACT(EPOCH FROM loan_duration) / 86400.0 FROM outcome WHERE subject_id = :b "
+                    "EXTRACT(EPOCH FROM loan_duration) / 86400.0, observer_id::text "
+                    "FROM outcome WHERE subject_id = :b "
                     "AND subject_role = 'BORROWER' AND metric = 'ON_TIME_RETURN'"
                 ),
                 {"b": borrower_id},
             ).all()
-        return [OutcomeSnapshot(r[0], r[1], r[2], r[3], r[4], float(r[5])) for r in rows]
+        return [OutcomeSnapshot(r[0], r[1], r[2], r[3], r[4], float(r[5]), r[6]) for r in rows]
 
     def trust_graph(self) -> dict[str, dict[str, float]]:
         with self.db().connect() as c:
@@ -104,6 +105,47 @@ class PostgresEvidenceSource:
                 {"since": since},
             ).all()
         return [ReviewSnapshot(r[0], r[1], r[2], r[3], r[4], r[5], bool(r[6])) for r in rows]
+
+    def account_context(
+        self, user_id: UUID, since: datetime
+    ) -> tuple[datetime | None, frozenset[str] | None]:
+        """Account creation time (S3) and the invitation-tree links of S5 (DA-15 section 4):
+        accounts invited by the same inviter as the user, or invited by the user, whose invitation
+        was used since `since`. None for the links when the user never joined through an invitation.
+        """
+        with self.db().connect() as c:
+            created = c.execute(
+                text("SELECT created_at FROM app_user WHERE id = :u"), {"u": user_id}
+            ).scalar_one_or_none()
+            inviters = (
+                c.execute(
+                    text(
+                        "SELECT DISTINCT i.inviter_id FROM locality_verification lv "
+                        "JOIN membership m ON m.id = lv.membership_id "
+                        "JOIN invitation i ON i.id = lv.invitation_id WHERE m.user_id = :u"
+                    ),
+                    {"u": user_id},
+                )
+                .scalars()
+                .all()
+            )
+            if not inviters:
+                return created, None
+            linked = (
+                c.execute(
+                    text(
+                        "SELECT DISTINCT m.user_id::text FROM locality_verification lv "
+                        "JOIN membership m ON m.id = lv.membership_id "
+                        "JOIN invitation i ON i.id = lv.invitation_id "
+                        "WHERE m.user_id <> :u AND lv.checked_at >= :since "
+                        "AND (i.inviter_id = ANY(:inviters) OR i.inviter_id = :u)"
+                    ),
+                    {"u": user_id, "since": since, "inviters": list(inviters)},
+                )
+                .scalars()
+                .all()
+            )
+        return created, frozenset(linked)
 
     def complaints_by(self, user_id: UUID, since: datetime) -> list[Complaint]:
         """Disputes the user opened since `since`, against the other party of each loan."""
