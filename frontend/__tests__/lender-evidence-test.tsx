@@ -58,7 +58,9 @@ describe('TC-100 lender request with assurance summary', () => {
     await show('ES-02');
     const a = CASES['ES-02'].assessment!;
     expect(screen.getByText('Enough verified history')).toBeOnTheScreen();
-    expect(screen.getByText(/10 verified loans · 7\.1 after weighting/)).toBeOnTheScreen();
+    // the weighted count comes from the API fixture (4.9 since the pair-repeat discount, A4)
+    const weighted = a.effective_evidence!.toFixed(1);
+    expect(screen.getByText(`10 verified loans · ${weighted} after weighting`, { exact: false })).toBeOnTheScreen();
     expect(
       screen.getByLabelText(
         `90% credible interval from ${a.ci90_low!.toFixed(2)} to ${a.ci90_high!.toFixed(2)}`,
