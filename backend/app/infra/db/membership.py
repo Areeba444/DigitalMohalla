@@ -239,6 +239,16 @@ class PostgresMembershipStore:
             {"u": user_id, "l": level},
         )
 
+    def activate_account(self, user_id: UUID) -> None:
+        """PENDING_VERIFICATION -> ACTIVE (interim while OTP is not built, registration_a1)."""
+        self.conn.execute(
+            text(
+                "UPDATE app_user SET status = 'ACTIVE' "
+                "WHERE id = :u AND status = 'PENDING_VERIFICATION'"
+            ),
+            {"u": user_id},
+        )
+
     # decisions --------------------------------------------------------------------------------
     def insert_decision(
         self,

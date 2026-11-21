@@ -11,6 +11,7 @@ import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy import Engine, text
 
+from app.api import routes as api_routes
 from app.config.settings import get_settings
 from app.domain.accounts.auth import hash_password
 from app.domain.accounts.registration import GENERIC_REPLY
@@ -18,6 +19,13 @@ from app.domain.lifecycle.service import RESTRICTED_ITEM_MESSAGE
 from app.main import create_app
 from tests.integration.conftest import World
 from tests.integration.test_api import TEST_PASSWORD, dates, login
+
+
+def login_as(client: TestClient, email: str, password: str) -> dict[str, str]:
+    r = client.post("/api/v1/auth/login", json={"email": email, "password": password})
+    assert r.status_code == 200, r.text
+    return {"Authorization": f"Bearer {r.json()['access_token']}"}
+
 
 FORM = {
     "display_name": "Registration Synthetic",
@@ -65,10 +73,10 @@ def rows(engine: Engine, email: str) -> list[dict]:
         ]
 
 
-def test_tc170_registering_creates_a_pending_account_with_the_terms_time(
+def test_tc174_registering_creates_a_pending_account_with_the_terms_time(
     reg_client: TestClient, engine: Engine
 ) -> None:
-    email = "reg-tc170@example.test"
+    email = "reg-tc174@example.test"
     r = reg_client.post("/api/v1/auth/register", json={**FORM, "email": email})
     assert r.status_code == 202 and r.json() == {"message": GENERIC_REPLY}
     [row] = rows(engine, email)
@@ -78,10 +86,10 @@ def test_tc170_registering_creates_a_pending_account_with_the_terms_time(
     assert row["password_hash"].startswith("$argon2")
 
 
-def test_tc171_a_registered_email_gets_the_same_reply_and_no_second_account(
+def test_tc175_a_registered_email_gets_the_same_reply_and_no_second_account(
     reg_client: TestClient, engine: Engine
 ) -> None:
-    email = "reg-tc171@example.test"
+    email = "reg-tc175@example.test"
     first = reg_client.post("/api/v1/auth/register", json={**FORM, "email": email})
     again = reg_client.post(
         "/api/v1/auth/register",
@@ -101,10 +109,10 @@ def test_tc171_a_registered_email_gets_the_same_reply_and_no_second_account(
         ({"display_name": "  "}, "display name"),
     ],
 )
-def test_tc172_an_invalid_form_creates_nothing_and_says_what_to_fix(
+def test_tc176_an_invalid_form_creates_nothing_and_says_what_to_fix(
     reg_client: TestClient, engine: Engine, change: dict, text_in: str
 ) -> None:
-    email = "reg-tc172@example.test"
+    email = "reg-tc176@example.test"
     r = reg_client.post("/api/v1/auth/register", json={**FORM, "email": email, **change})
     if "email" in change:
         email = change["email"]
@@ -113,17 +121,63 @@ def test_tc172_an_invalid_form_creates_nothing_and_says_what_to_fix(
     assert FORM["password"] not in r.text
 
 
-def test_tc172_the_form_rejects_unknown_fields_and_logs_in_is_not_possible_yet(
-    reg_client: TestClient,
-) -> None:
+def test_tc176_the_form_rejects_unknown_fields(reg_client: TestClient) -> None:
     extra = reg_client.post("/api/v1/auth/register", json={**FORM, "platform_role": "ADMIN"})
     assert extra.status_code == 422  # a guest cannot ask for a role
-    email = "reg-tc172b@example.test"
+
+
+def test_tc178_while_otp_is_not_built_a_pending_account_can_sign_in(
+    reg_client: TestClient, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Documented interim (config registration_a1.otp_built false): registered accounts may sign
+    in. When OTP exists the switch is set to true and a pending account is refused again."""
+    email = "reg-tc178@example.test"
     reg_client.post("/api/v1/auth/register", json={**FORM, "email": email})
-    denied = reg_client.post(
-        "/api/v1/auth/login", json={"email": email, "password": FORM["password"]}
+    creds = {"email": email, "password": FORM["password"]}
+    assert reg_client.post("/api/v1/auth/login", json=creds).status_code == 200
+    real = api_routes.load_engine_config
+
+    class Switch:
+        def section(self, name: str) -> dict:
+            section = dict(real().section(name))
+            if name == "registration_a1":
+                section["otp_built"] = True
+            return section
+
+    monkeypatch.setattr(api_routes, "load_engine_config", lambda: Switch())
+    assert reg_client.post("/api/v1/auth/login", json=creds).status_code == 401
+
+
+def test_tc179_a_registered_member_joins_and_approval_activates_the_account(
+    reg_client: TestClient, engine: Engine, world: World
+) -> None:
+    email = "reg-tc179@example.test"
+    reg_client.post("/api/v1/auth/register", json={**FORM, "email": email})
+    member = login_as(reg_client, email, FORM["password"])
+    joined = reg_client.post(
+        f"/api/v1/communities/{world.community}/join",
+        json={"permission_refused": True},
+        headers=member,
     )
-    assert denied.status_code == 401  # OTP (UC-A9) is iteration 3: the account stays pending
+    assert joined.status_code == 201, joined.text
+    assert rows(engine, email)[0]["status"] == "PENDING_VERIFICATION"  # waiting for a moderator
+    with engine.begin() as c:
+        c.execute(
+            text("UPDATE app_user SET password_hash = :h WHERE id = :i"),
+            {"h": hash_password(TEST_PASSWORD), "i": world.moderator},
+        )
+        mod_email = c.execute(
+            text("SELECT email FROM app_user WHERE id = :i"), {"i": world.moderator}
+        ).scalar_one()
+    mod = login_as(reg_client, mod_email, TEST_PASSWORD)
+    decided = reg_client.post(
+        f"/api/v1/moderation/memberships/{joined.json()['membership_id']}/decision",
+        json={"kind": "APPROVED", "reason": "Synthetic: known neighbour."},
+        headers=mod,
+    )
+    assert decided.status_code == 200, decided.text
+    row = rows(engine, email)[0]
+    assert (row["status"], row["level"]) == ("ACTIVE", "COMMUNITY_VERIFIED")
 
 
 # ----------------------------------------------------------------------------- B-02 and B-06 proofs
@@ -157,7 +211,7 @@ def borrower_email(engine: Engine, world: World) -> str:
         )
 
 
-def test_tc173_a_restricted_item_is_refused_neutrally_and_nothing_is_created(
+def test_tc177_a_restricted_item_is_refused_neutrally_and_nothing_is_created(
     api_client: TestClient,
     engine: Engine,
     world: World,

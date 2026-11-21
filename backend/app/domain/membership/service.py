@@ -118,6 +118,8 @@ class MembershipStore(Protocol):
 
     def raise_verification(self, user_id: UUID, level: str) -> None: ...
 
+    def activate_account(self, user_id: UUID) -> None: ...  # interim, registration_a1
+
     def insert_decision(
         self,
         membership_id: UUID,
@@ -175,9 +177,12 @@ class MembershipService:
         *,
         now: datetime,
         notifier: INotify | None = None,
+        otp_built: bool = True,
     ) -> None:
         self.store = store
         self.cfg = cfg
+        # False only while UC-A9 (OTP) is not built (config registration_a1): see request_join
+        self.otp_built = otp_built
         self.now = now
         self.notifier: INotify = notifier or NullNotifier()
 
@@ -219,8 +224,10 @@ class MembershipService:
     def request_join(self, user_id: UUID, community_id: UUID, join: JoinInput) -> JoinOutcome:
         community = self._active_community(community_id)
         account = self.store.account(user_id)
-        if account["status"] != "ACTIVE" or _level(account["verification_level"]) < _level(
-            "CONTACT_VERIFIED"
+        pending_ok = not self.otp_built and account["status"] == "PENDING_VERIFICATION"
+        if not pending_ok and (
+            account["status"] != "ACTIVE"
+            or _level(account["verification_level"]) < _level("CONTACT_VERIFIED")
         ):
             raise NotAuthorised("verify your contact details before joining a community (M01)")
         live = self.store.live_membership(user_id, community_id)
@@ -402,6 +409,8 @@ class MembershipService:
             )
         # basic_community = COMMUNITY_VERIFIED (Assurance_Data_Dictionary.md); never lowered here
         self.store.raise_verification(user_id, "COMMUNITY_VERIFIED")
+        if not self.otp_built:  # interim: approval in a community activates a registered account
+            self.store.activate_account(user_id)
 
     def _active_community(self, community_id: UUID) -> dict[str, Any]:
         community = self.store.community(community_id)

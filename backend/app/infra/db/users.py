@@ -6,8 +6,10 @@ from app.domain.accounts.auth import InvalidCredentials, verify_password
 from app.domain.lifecycle.service import Actor
 
 
-def authenticate(conn: Connection, email: str, password: str) -> Actor:
-    """Return the Actor for valid credentials of an ACTIVE account, else InvalidCredentials."""
+def authenticate(conn: Connection, email: str, password: str, allow_pending: bool = False) -> Actor:
+    """Return the Actor for valid credentials of an ACTIVE account, else InvalidCredentials.
+
+    `allow_pending` admits PENDING_VERIFICATION accounts while OTP is not built (registration_a1)."""
     row = (
         conn.execute(
             text(
@@ -21,7 +23,8 @@ def authenticate(conn: Connection, email: str, password: str) -> Actor:
     )
     # verify even when the user is unknown, so response time does not reveal which emails exist
     ok = verify_password(row["password_hash"] if row else None, password)
-    if not row or not ok or row["status"] != "ACTIVE":
+    allowed = ("ACTIVE", "PENDING_VERIFICATION") if allow_pending else ("ACTIVE",)
+    if not row or not ok or row["status"] not in allowed:
         raise InvalidCredentials("invalid email or password")
     return Actor(row["id"], row["platform_role"])
 

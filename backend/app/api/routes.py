@@ -15,6 +15,7 @@ from app.api.cases import case_extras
 from app.api.deps import Commands, current_actor, get_commands, get_engine
 from app.api.evidence import assessment_out, intermediaries
 from app.api.listings import listing_out
+from app.config.engine_config import load_engine_config
 from app.config.settings import get_settings
 from app.domain.accounts.auth import InvalidCredentials, create_token, hash_password
 from app.domain.accounts.registration import (
@@ -50,7 +51,8 @@ def login(body: schemas.LoginIn, engine: Engine = Depends(get_engine)) -> schema
         raise HTTPException(status_code=503, detail="login is not configured")
     try:
         with engine.connect() as conn:
-            actor = authenticate(conn, body.email, body.password)
+            interim = not load_engine_config().section("registration_a1")["otp_built"]
+            actor = authenticate(conn, body.email, body.password, allow_pending=interim)
     except InvalidCredentials as exc:
         raise HTTPException(status_code=401, detail="invalid email or password") from exc
     return schemas.TokenOut(
