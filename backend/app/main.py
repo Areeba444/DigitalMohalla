@@ -24,6 +24,7 @@ from app.api.routes import router
 from app.config.settings import get_settings
 from app.domain.lifecycle.errors import (
     DatesTaken,
+    DuplicateRequest,
     InvalidTransition,
     NotAuthorised,
     StaleCommand,
@@ -82,7 +83,7 @@ def create_app(engine: Engine | None = None, assess: IAssess | None = None) -> F
     app.add_exception_handler(StorageUnavailable, _refusal(503))
     app.add_exception_handler(InvalidMembershipInput, _refusal(422))
     app.add_exception_handler(StreamNotFound, _refusal(404))
-    for conflict in (InvalidTransition, StaleCommand, DatesTaken):
+    for conflict in (InvalidTransition, StaleCommand, DatesTaken, DuplicateRequest):
         app.add_exception_handler(conflict, _refusal(409))
 
     app.include_router(router)

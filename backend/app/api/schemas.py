@@ -37,6 +37,20 @@ class StrictIn(BaseModel):
         return data
 
 
+class RegisterIn(StrictIn):
+    """UC-A1 step 2: the form. The e-mail format and the password rules are checked by the
+    registration rules, so the reply can say what to fix without echoing the password."""
+
+    display_name: str = Field(max_length=200)
+    email: str = Field(max_length=320)
+    password: str = Field(max_length=256)
+    accepted_terms: bool
+
+
+class RegisterOut(BaseModel):
+    message: str
+
+
 class LoginIn(StrictIn):
     email: str
     password: str

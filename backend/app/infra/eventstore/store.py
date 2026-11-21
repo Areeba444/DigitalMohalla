@@ -19,6 +19,7 @@ from sqlalchemy.exc import DBAPIError
 
 from app.domain.lifecycle.errors import (
     DatesTaken,
+    DuplicateRequest,
     EventStoreError,
     InvalidTransition,
     NotAuthorised,
@@ -37,6 +38,11 @@ _SQLSTATE_TO_ERROR: dict[str, type[EventStoreError]] = {
 
 
 def _translate(exc: DBAPIError) -> EventStoreError | None:
+    message = str(exc.orig).splitlines()[0]
+    if getattr(exc.orig, "sqlstate", None) == "23505" and "identical pending request" in message:
+        return DuplicateRequest(
+            message
+        )  # guard G1 (UC-B5 3b); other unique errors stay as they are
     cls = _SQLSTATE_TO_ERROR.get(getattr(exc.orig, "sqlstate", None) or "")
     if cls is None:
         return None
