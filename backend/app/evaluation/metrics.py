@@ -64,7 +64,7 @@ def bootstrap_ci(
     stat: Callable[[list[int]], float], n: int, resamples: int = 1000, seed: int = 20261001
 ) -> tuple[float, float]:
     """95% interval of `stat` (a function of the chosen loan indices) over resampled test loans."""
-    rng = random.Random(seed)
+    rng = random.Random(seed)  # nosec B311 - seeded resampling for statistics, not security
     vals = sorted(stat([rng.randrange(n) for _ in range(n)]) for _ in range(resamples))
     return vals[int(0.025 * resamples)], vals[int(0.975 * resamples) - 1]
 

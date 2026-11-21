@@ -198,7 +198,8 @@ class SearchService:
 
     def _rank(self, results: list[dict[str, Any]], filters: SearchFilters) -> None:
         """Algorithm 5: add `rank_score` to each result and the feature values to `score_parts`."""
-        assert self.weights is not None and self.lender_value is not None
+        if self.weights is None or self.lender_value is None:
+            return
         w = self.weights
         values = self.lender_value(sorted({r["owner_id"] for r in results}, key=str))
         now = datetime.now(UTC)

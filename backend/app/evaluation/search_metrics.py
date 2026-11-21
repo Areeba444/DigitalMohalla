@@ -48,7 +48,7 @@ def bootstrap_mean_ci(
     values: Sequence[float], resamples: int = 1000, seed: int = 20261001
 ) -> tuple[float, float]:
     """95% interval of the mean over queries (resampling queries with replacement)."""
-    rng = random.Random(seed)
+    rng = random.Random(seed)  # nosec B311 - seeded resampling for statistics, not security
     n = len(values)
     means = sorted(sum(values[rng.randrange(n)] for _ in range(n)) / n for _ in range(resamples))
     return means[int(0.025 * resamples)], means[int(0.975 * resamples) - 1]
