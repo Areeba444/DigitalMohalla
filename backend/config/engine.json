@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "config_metadata": {
     "config_name": "digital_mohalla_assurance_engine_config",
-    "config_version": "1.3.6-iteration2-draft",
+    "config_version": "1.3.7-iteration2-draft",
     "status": "initial_hypothesis_unvalidated",
     "created_at": "2026-10-11T15:20:00Z",
     "module": "Module 5: Trust, Safety and Assurance Engine",
@@ -19,11 +19,31 @@
       "1.3.3-iteration2-draft (2026-11-15, Student 2, Slice 2: A3, A4, A9): copied unchanged from design config 1.4.0 (DA-15, DA-22): trust_estimation_alg1.pair_repeat_discount; manipulation_detection_alg3 with S2, S3 and S5 active (iteration_2_active), new_account_recent_window_days and s5_linkage (invitation tree only); ranking_alg5 for search retrieval and ranking. New section reviews_d1 with the review window (14 days) and edit window (24 hours) of FR/NFR v1.4 and the rating dimensions of the synthetic data. roles_and_metrics and population_baseline wait for A5 (Slice 3).",
       "1.3.4-iteration2-draft (2026-11-15, Student 3, build M3): new section moderation_i4 with the appeal window (7 days) of the FR/NFR v1.4 timer table and one appeal per case (DA-07 C08). No trust, detection or policy value changed.",
       "1.3.5-iteration2-draft (2026-11-21, Student 3, build M5): new section audit_i6 with the concentration highlight of UC-I6 ext 3b (a moderator with at least 3 decisions about one member that make up at least 60% of their decisions in the last 90 days) and the page size of the audit view. No trust, detection or policy value changed.",
-      "1.3.6-iteration2-draft (2026-11-21, Student 1, build F7, team decision): new section registration_a1 with otp_built false. UC-A9 (OTP) is iteration 3, so until it is built a registered account (PENDING_VERIFICATION) may sign in and request to join a community, and being approved in a community activates it. This is a documented interim, to be replaced when OTP exists. No trust, detection or policy value changed."
+      "1.3.6-iteration2-draft (2026-11-21, Student 1, build F7, team decision): new section registration_a1 with otp_built false. UC-A9 (OTP) is iteration 3, so until it is built a registered account (PENDING_VERIFICATION) may sign in and request to join a community, and being approved in a community activates it. This is a documented interim, to be replaced when OTP exists. No trust, detection or policy value changed.",
+      "1.3.7-iteration2-draft (2026-11-22, Student 2, build A5, A7, A10): trust_estimation_alg1.roles_and_metrics and indirect_trust_alg2.baseline.population_baseline copied unchanged from design config 1.4.0 (DA-15): evidence is kept per role and metric, the lender role uses CONDITION_AGREED and DISPUTE_FREE, and the population baseline replaces the fixed 0.5 once 30 weighted outcomes exist. ranking_alg5 weights are now used to rank search results. No existing value changed; assessments of borrowers are the same as under 1.3.6."
     ]
   },
   "trust_estimation_alg1": {
     "status": "initial_hypothesis_unvalidated",
+    "roles_and_metrics": {
+      "status": "initial_hypothesis_unvalidated",
+      "borrower_metrics": [
+        "ON_TIME_RETURN",
+        "CONDITION_AGREED",
+        "DISPUTE_FREE"
+      ],
+      "lender_metrics": [
+        "CONDITION_AGREED",
+        "DISPUTE_FREE"
+      ],
+      "decision_metric": {
+        "BORROWER": "ON_TIME_RETURN",
+        "LENDER": "CONDITION_AGREED"
+      },
+      "secondary_metrics_shown_as_factors": true,
+      "source": "Overview §5.2 (per role and metric, never mixed); outcome mapping decision D11; FR-T-02",
+      "rationale": "The borrower's request is decided on the metric that protects the lender (on-time return); the lender's evidence for search and item details (FR-S-04) uses condition as described. Other metrics are shown as separate factors, never averaged into one number."
+    },
     "prior": {
       "alpha_0": 1.0,
       "beta_0": 1.0,
@@ -126,6 +146,15 @@
     },
     "baseline": {
       "default_population_baseline": 0.5,
+      "population_baseline": {
+        "status": "initial_hypothesis_unvalidated",
+        "method": "recency-weighted mean of VALID outcomes per (role, metric) over the community's history",
+        "min_weighted_outcomes": 30.0,
+        "fallback": 0.5,
+        "refresh": "nightly scheduler job population_baseline (ADR-0012)",
+        "source": "Overview §5.5 baseline b; DA-15",
+        "rationale": "Replaces the fixed 0.5 once enough evidence exists; below 30 weighted outcomes the fixed fallback is kept so a small community is not pulled to a noisy mean."
+      },
       "source": "Overview Â§5.5",
       "rationale": "Fallback prior mean when target user has zero verified direct events."
     }
