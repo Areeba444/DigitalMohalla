@@ -405,10 +405,48 @@ class MyListingOut(BaseModel):
     updated_at: datetime
 
 
+# ----------------------------------------------------------------------------- evidence factors (D2, B4)
+class FactorOut(BaseModel):
+    """One factor: never a score. Detail is absent when there are too few loans (FR-T-08)."""
+
+    metric: str
+    label: str
+    verified_loans: int
+    enough: bool
+    estimate: float | None = (
+        None  # on-time rate, condition rate or dispute-free rate; only when enough
+    )
+    interval_low: float | None = None
+    interval_high: float | None = None
+    confidence: str
+    note: str
+
+
+class RoleEvidenceOut(BaseModel):
+    role: Literal["BORROWER", "LENDER"]
+    factors: list[FactorOut]
+
+
+class MyEvidenceOut(BaseModel):
+    """D2: the member's own evidence, per role, factor by factor (FR-T-08, NFR-U-01)."""
+
+    roles: list[RoleEvidenceOut]
+    note: str
+
+
+class LenderEvidenceOut(BaseModel):
+    """B4: the lender's evidence on the item screen and in search (FR-S-04)."""
+
+    has_history: bool
+    summary: str
+    factors: list[FactorOut]
+
+
 class ItemOut(ListingOut):
     """GET /items/{id}: the listing plus the dates already booked (B4, B5 step 1)."""
 
     booked_periods: list[str]
+    lender_evidence: LenderEvidenceOut | None = None  # None for the lender's own listing
 
 
 # ----------------------------------------------------------------------------- notifications (G3)
@@ -635,6 +673,7 @@ class SearchResultOut(BaseModel):
     same_community: bool
     available: bool | None  # true when dates were given (booked items are filtered out)
     reason: str
+    lender_evidence: LenderEvidenceOut | None = None
 
 
 class SearchOut(BaseModel):

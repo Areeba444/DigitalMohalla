@@ -14,6 +14,7 @@ from app.api import schemas
 from app.api.cases import case_extras
 from app.api.deps import Commands, current_actor, get_commands, get_engine
 from app.api.evidence import assessment_out, intermediaries
+from app.api.factors import lender_evidence
 from app.api.listings import listing_out
 from app.config.engine_config import load_engine_config
 from app.config.settings import get_settings
@@ -67,7 +68,8 @@ def register_account(
     """UC-A1 / FR-A-01: create the account (PENDING_VERIFICATION) and record the terms. The same
     202 reply comes back whether or not the e-mail was already registered. The password is hashed
     before the e-mail is looked at, so the response time does not give it away either. The OTP step
-    (UC-A9) is iteration 3; until then the account cannot sign in or join a community."""
+    (UC-A9) is iteration 3; until it exists (config registration_a1.otp_built=false) the account may
+    sign in and request to join, and approval in a community activates it. Documented interim."""
     try:
         form = validate(body.display_name, body.email, body.password, body.accepted_terms)
     except InvalidRegistration as exc:
@@ -90,7 +92,15 @@ def get_item(
         listings = ListingService(PostgresListingStore(conn), now=datetime.now(UTC))
         item = listings.get(actor.user_id, item_id)
         booked = PostgresLifecycleStore(conn).booked_periods(item_id)
-    return schemas.ItemOut(**listing_out(item, actor.user_id), booked_periods=booked)
+    evidence = None
+    if (
+        item["owner_id"] != actor.user_id
+    ):  # the lender's own listing shows no evidence about themselves
+        with engine.connect() as conn:
+            evidence = lender_evidence(conn, [item["owner_id"]])[item["owner_id"]]
+    return schemas.ItemOut(
+        **listing_out(item, actor.user_id), booked_periods=booked, lender_evidence=evidence
+    )
 
 
 @router.post("/requests", response_model=schemas.CommandOut, status_code=201)

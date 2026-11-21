@@ -871,6 +871,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/me/evidence": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** My Evidence */
+        get: operations["my_evidence_api_v1_me_evidence_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -1373,6 +1390,30 @@ export interface components {
             reason?: string | null;
         };
         /**
+         * FactorOut
+         * @description One factor: never a score. Detail is absent when there are too few loans (FR-T-08).
+         */
+        FactorOut: {
+            /** Metric */
+            metric: string;
+            /** Label */
+            label: string;
+            /** Verified Loans */
+            verified_loans: number;
+            /** Enough */
+            enough: boolean;
+            /** Estimate */
+            estimate?: number | null;
+            /** Interval Low */
+            interval_low?: number | null;
+            /** Interval High */
+            interval_high?: number | null;
+            /** Confidence */
+            confidence: string;
+            /** Note */
+            note: string;
+        };
+        /**
          * FixIn
          * @description One-time device fix. Evaluated in memory by the LocalityVerifier and then dropped: it is
          *     never stored, logged or returned (NFR-PR-01, sequence (d)).
@@ -1499,6 +1540,7 @@ export interface components {
             is_yours: boolean;
             /** Booked Periods */
             booked_periods: string[];
+            lender_evidence?: components["schemas"]["LenderEvidenceOut"] | null;
         };
         /**
          * ItemPhotoForm
@@ -1562,6 +1604,18 @@ export interface components {
             /** Status */
             status: string;
             locality: components["schemas"]["LocalityOut"];
+        };
+        /**
+         * LenderEvidenceOut
+         * @description B4: the lender's evidence on the item screen and in search (FR-S-04).
+         */
+        LenderEvidenceOut: {
+            /** Has History */
+            has_history: boolean;
+            /** Summary */
+            summary: string;
+            /** Factors */
+            factors: components["schemas"]["FactorOut"][];
         };
         /** LenderRequestOut */
         LenderRequestOut: {
@@ -1825,6 +1879,16 @@ export interface components {
              */
             statements: components["schemas"]["StatementOut"][];
         };
+        /**
+         * MyEvidenceOut
+         * @description D2: the member's own evidence, per role, factor by factor (FR-T-08, NFR-U-01).
+         */
+        MyEvidenceOut: {
+            /** Roles */
+            roles: components["schemas"]["RoleEvidenceOut"][];
+            /** Note */
+            note: string;
+        };
         /** MyListingOut */
         MyListingOut: {
             /**
@@ -2051,6 +2115,16 @@ export interface components {
              */
             editable_until: string;
         };
+        /** RoleEvidenceOut */
+        RoleEvidenceOut: {
+            /**
+             * Role
+             * @enum {string}
+             */
+            role: "BORROWER" | "LENDER";
+            /** Factors */
+            factors: components["schemas"]["FactorOut"][];
+        };
         /** SearchOut */
         SearchOut: {
             /** Query Id */
@@ -2096,6 +2170,7 @@ export interface components {
             available: boolean | null;
             /** Reason */
             reason: string;
+            lender_evidence?: components["schemas"]["LenderEvidenceOut"] | null;
         };
         /** StatementCreatedOut */
         StatementCreatedOut: {
@@ -3880,6 +3955,26 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    my_evidence_api_v1_me_evidence_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MyEvidenceOut"];
                 };
             };
         };

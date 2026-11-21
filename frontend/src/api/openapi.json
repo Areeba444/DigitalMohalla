@@ -2852,6 +2852,29 @@
           }
         }
       }
+    },
+    "/api/v1/me/evidence": {
+      "get": {
+        "summary": "My Evidence",
+        "operationId": "my_evidence_api_v1_me_evidence_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MyEvidenceOut"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
     }
   },
   "components": {
@@ -4150,6 +4173,78 @@
         "title": "ExtensionIn",
         "description": "The borrower asks to return later: the new last day, exclusive like `end_date` of a request."
       },
+      "FactorOut": {
+        "properties": {
+          "metric": {
+            "type": "string",
+            "title": "Metric"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "verified_loans": {
+            "type": "integer",
+            "title": "Verified Loans"
+          },
+          "enough": {
+            "type": "boolean",
+            "title": "Enough"
+          },
+          "estimate": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Estimate"
+          },
+          "interval_low": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Interval Low"
+          },
+          "interval_high": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Interval High"
+          },
+          "confidence": {
+            "type": "string",
+            "title": "Confidence"
+          },
+          "note": {
+            "type": "string",
+            "title": "Note"
+          }
+        },
+        "type": "object",
+        "required": [
+          "metric",
+          "label",
+          "verified_loans",
+          "enough",
+          "confidence",
+          "note"
+        ],
+        "title": "FactorOut",
+        "description": "One factor: never a score. Detail is absent when there are too few loans (FR-T-08)."
+      },
       "FixIn": {
         "properties": {
           "lat": {
@@ -4435,6 +4530,16 @@
             },
             "type": "array",
             "title": "Booked Periods"
+          },
+          "lender_evidence": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/LenderEvidenceOut"
+              },
+              {
+                "type": "null"
+              }
+            ]
           }
         },
         "type": "object",
@@ -4616,6 +4721,33 @@
           "locality"
         ],
         "title": "JoinOut"
+      },
+      "LenderEvidenceOut": {
+        "properties": {
+          "has_history": {
+            "type": "boolean",
+            "title": "Has History"
+          },
+          "summary": {
+            "type": "string",
+            "title": "Summary"
+          },
+          "factors": {
+            "items": {
+              "$ref": "#/components/schemas/FactorOut"
+            },
+            "type": "array",
+            "title": "Factors"
+          }
+        },
+        "type": "object",
+        "required": [
+          "has_history",
+          "summary",
+          "factors"
+        ],
+        "title": "LenderEvidenceOut",
+        "description": "B4: the lender's evidence on the item screen and in search (FR-S-04)."
       },
       "LenderRequestOut": {
         "properties": {
@@ -5478,6 +5610,28 @@
         "title": "ModeratorCaseOut",
         "description": "UC-D6 evidence trail for the moderator (W7)."
       },
+      "MyEvidenceOut": {
+        "properties": {
+          "roles": {
+            "items": {
+              "$ref": "#/components/schemas/RoleEvidenceOut"
+            },
+            "type": "array",
+            "title": "Roles"
+          },
+          "note": {
+            "type": "string",
+            "title": "Note"
+          }
+        },
+        "type": "object",
+        "required": [
+          "roles",
+          "note"
+        ],
+        "title": "MyEvidenceOut",
+        "description": "D2: the member's own evidence, per role, factor by factor (FR-T-08, NFR-U-01)."
+      },
       "MyListingOut": {
         "properties": {
           "id": {
@@ -6006,6 +6160,31 @@
         "title": "ReviewOut",
         "description": "The review was stored. Flags are not returned to the reviewer (sequence (f))."
       },
+      "RoleEvidenceOut": {
+        "properties": {
+          "role": {
+            "type": "string",
+            "enum": [
+              "BORROWER",
+              "LENDER"
+            ],
+            "title": "Role"
+          },
+          "factors": {
+            "items": {
+              "$ref": "#/components/schemas/FactorOut"
+            },
+            "type": "array",
+            "title": "Factors"
+          }
+        },
+        "type": "object",
+        "required": [
+          "role",
+          "factors"
+        ],
+        "title": "RoleEvidenceOut"
+      },
       "SearchOut": {
         "properties": {
           "query_id": {
@@ -6109,6 +6288,16 @@
           "reason": {
             "type": "string",
             "title": "Reason"
+          },
+          "lender_evidence": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/LenderEvidenceOut"
+              },
+              {
+                "type": "null"
+              }
+            ]
           }
         },
         "type": "object",
