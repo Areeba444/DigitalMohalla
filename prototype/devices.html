@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Device Preview</title>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400..800&display=swap" rel="stylesheet">
+<style>
+  :root { color-scheme: dark; }
+  body { margin: 0; background: #0A0B0A; color: #EDEFEC; font-family: Geist, system-ui, sans-serif; background-image: radial-gradient(800px 400px at 10% -10%, rgba(52,211,153,.12), transparent 60%); }
+  header { padding: 28px 32px 6px; display: flex; flex-wrap: wrap; gap: 14px; align-items: flex-end; justify-content: space-between; }
+  h1 { margin: 0; font-size: 26px; letter-spacing: -0.03em; }
+  header p { margin: 6px 0 0; color: #A5AAA5; }
+  .pick { display: flex; gap: 8px; flex-wrap: wrap; }
+  .pick button { height: 36px; padding: 0 14px; border-radius: 999px; border: 1px solid #323733; background: #121413; color: #EDEFEC; font: 600 14px Geist, sans-serif; cursor: pointer; }
+  .pick button[aria-pressed="true"] { background: #EDEFEC; color: #0A0B0A; border-color: #EDEFEC; }
+  .row { display: flex; gap: 30px; overflow-x: auto; padding: 24px 32px 48px; }
+  figure { margin: 0; flex: none; }
+  .phone { width: 390px; height: 820px; border-radius: 52px; padding: 11px; background: #000; box-shadow: 0 0 0 2px #232724, 0 40px 80px -30px rgba(0,0,0,.9); position: relative; }
+  .clip { width: 368px; height: 798px; border-radius: 42px; overflow: hidden; }
+  iframe { width: 390px; height: calc(798px * 390 / 368); border: 0; transform: scale(calc(368 / 390)); transform-origin: 0 0; }
+  figcaption { text-align: center; margin-top: 14px; font-weight: 650; }
+  figcaption small { display: block; color: #8A8F8A; font-weight: 400; font-family: ui-monospace, monospace; font-size: 12px; margin-top: 2px; }
+</style>
+</head>
+<body>
+<header><div><h1>Digital Mohalla · phones</h1><p>Live, interactive screens at 390 px. Switch groups or themes.</p></div>
+  <div class="pick" id="pick"></div></header>
+<div class="row" id="row"></div>
+<script>
+const SETS = {
+  "Resident": [["#/home", "Home"], ["#/borrow", "Borrow (W23)"], ["#/item/deg", "Item (W24)"], ["#/activity", "Activity board"], ["#/notifications", "Notifications (W12)"]],
+  "Lending": [["#/requests/r2", "Evidence (W1)"], ["#/lend", "List an item (W22)"], ["#/handover/b6/lender", "Handover (W3a)"], ["#/inspect/b3", "Return (W4)"], ["#/extend-respond/b10", "Extension (W13)"]],
+  "Onboarding": [["#/welcome", "Website"], ["#/register", "Register (W8)"], ["#/join", "Communities (W9)"], ["#/join/c1/verify", "Verify (W10)"], ["#/home/new", "New member"]],
+  "Community": [["#/community", "Hub"], ["#/forum/p1", "Forum post"], ["#/assistant", "Assistant"], ["#/event/e1", "Event"], ["#/vendor/v1", "Vendor"]],
+  "Console": [["#/mod", "Queue (W6)"], ["#/mod/case/D-014", "Dispute (W7)"], ["#/mod/case/A-003", "Appeal (W20)"], ["#/mod/members/M-87", "Join request (W11)"], ["#/admin", "Analytics"]]
+};
+let theme = "dark";
+const pick = document.getElementById("pick"), row = document.getElementById("row");
+function show(name) {
+  [...pick.querySelectorAll("button[data-set]")].forEach(b => b.setAttribute("aria-pressed", b.dataset.set === name));
+  row.innerHTML = SETS[name].map(([h, l]) => `<figure><div class="phone"><div class="clip"><iframe src="index.html${h}" title="${l}"></iframe></div></div><figcaption>${l}<small>${h}</small></figcaption></figure>`).join("");
+  row.querySelectorAll("iframe").forEach(f => f.addEventListener("load", () => { const d = f.contentDocument; d.documentElement.dataset.theme = theme; const s = d.createElement("style"); s.textContent = "html{scrollbar-width:none}html::-webkit-scrollbar{display:none}.proto{display:none!important}"; d.head.appendChild(s); }));
+}
+pick.innerHTML = Object.keys(SETS).map(k => `<button type="button" data-set="${k}">${k}</button>`).join("") + `<button type="button" id="th">Light / dark</button>`;
+pick.onclick = e => { const b = e.target.closest("button"); if (!b) return; if (b.id === "th") { theme = theme === "dark" ? "light" : "dark"; row.querySelectorAll("iframe").forEach(f => { f.contentDocument.documentElement.dataset.theme = theme; f.contentWindow.applyTheme && f.contentWindow.applyTheme(theme); }); } else show(b.dataset.set); };
+show("Resident");
+</script>
+</body>
+</html>

@@ -1,0 +1,86 @@
+/* =====================================================================
+   Digital Mohalla v3 — design tokens
+   Concept "Bazaar daylight": neutral, airy surfaces; mehndi-emerald
+   primary; saffron, coral, sky and violet as functional accents.
+   Light and dark are designed as a pair (dark = tonal, not inverted).
+   Every token maps to a React Native theme key (see README).
+   ===================================================================== */
+
+:root, [data-theme="light"] {
+  color-scheme: light;
+  --bg: #F6F6F3;
+  --bg-glow-1: rgba(15, 123, 83, .10);
+  --bg-glow-2: rgba(242, 163, 42, .10);
+  --surface: #FFFFFF;
+  --surface-2: #F1F1EE;
+  --surface-3: #E7E7E3;
+  --overlay: rgba(255, 255, 255, .72);
+  --text: #0D0F0E;
+  --text-2: #575B57;
+  --text-3: #6E726D;
+  --border: #E6E6E2;
+  --border-2: #D4D4CF;
+
+  --primary: #0F7B53;
+  --primary-hover: #0B6544;
+  --on-primary: #FFFFFF;
+  --primary-soft: #E3F4EA;
+  --primary-ink: #0B6544;
+
+  --saffron: #F2A32A;   --saffron-soft: #FDF0D8; --saffron-ink: #8A5300;
+  --coral: #EC6A52;     --coral-soft: #FCE6E1;   --coral-ink: #A33A27;
+  --sky: #2F7BEA;       --sky-soft: #E2EDFD;     --sky-ink: #1D5BB8;
+  --violet: #7B61F0;    --violet-soft: #ECE8FE;  --violet-ink: #5B43C8;
+
+  --shadow-sm: 0 1px 2px rgba(13, 15, 14, .05);
+  --shadow: 0 1px 2px rgba(13, 15, 14, .04), 0 8px 24px -10px rgba(13, 15, 14, .12);
+  --shadow-lg: 0 2px 4px rgba(13, 15, 14, .04), 0 24px 60px -20px rgba(13, 15, 14, .28);
+  --ring: 0 0 0 3px rgba(15, 123, 83, .28);
+  --spot: rgba(15, 123, 83, .09);
+  --grid-line: rgba(13, 15, 14, .045);
+}
+
+[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #0A0B0A;
+  --bg-glow-1: rgba(52, 211, 153, .10);
+  --bg-glow-2: rgba(245, 181, 68, .07);
+  --surface: #121413;
+  --surface-2: #191C1A;
+  --surface-3: #232724;
+  --overlay: rgba(18, 20, 19, .72);
+  --text: #EDEFEC;
+  --text-2: #A5AAA5;
+  --text-3: #8A8F8A;
+  --border: #232724;
+  --border-2: #323733;
+
+  --primary: #34D399;
+  --primary-hover: #5EE0AA;
+  --on-primary: #04140C;
+  --primary-soft: rgba(52, 211, 153, .13);
+  --primary-ink: #6EE7B7;
+
+  --saffron: #F5B544;   --saffron-soft: rgba(245, 181, 68, .14); --saffron-ink: #F8C76B;
+  --coral: #F27B65;     --coral-soft: rgba(242, 123, 101, .14);  --coral-ink: #F79B89;
+  --sky: #5B9BF5;       --sky-soft: rgba(91, 155, 245, .14);     --sky-ink: #8DB8F8;
+  --violet: #9B87F5;    --violet-soft: rgba(155, 135, 245, .15); --violet-ink: #B6A7F8;
+
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, .4);
+  --shadow: 0 1px 2px rgba(0, 0, 0, .4), 0 10px 30px -12px rgba(0, 0, 0, .6);
+  --shadow-lg: 0 2px 6px rgba(0, 0, 0, .4), 0 30px 70px -24px rgba(0, 0, 0, .8);
+  --ring: 0 0 0 3px rgba(52, 211, 153, .35);
+  --spot: rgba(52, 211, 153, .08);
+  --grid-line: rgba(237, 239, 236, .04);
+}
+
+:root {
+  --font: "Geist", ui-sans-serif, system-ui, "Segoe UI", sans-serif;
+  --mono: "Geist Mono", ui-monospace, "Cascadia Mono", Consolas, monospace;
+  --r-xs: 8px; --r-sm: 12px; --r-md: 16px; --r-lg: 20px; --r-xl: 28px; --r-pill: 999px;
+  --tap: 44px;
+  --nav-h: 64px;
+  --ease: cubic-bezier(.22, 1, .36, 1);
+  --spring: cubic-bezier(.34, 1.4, .64, 1);
+  --t-fast: 140ms; --t: 240ms; --t-slow: 420ms;
+}
