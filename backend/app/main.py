@@ -8,6 +8,7 @@ from sqlalchemy import Engine
 
 from app.api import (
     appeals,
+    audit,
     cases,
     counter_offer,
     extensions,
@@ -98,6 +99,7 @@ def create_app(engine: Engine | None = None, assess: IAssess | None = None) -> F
     app.include_router(appeals.router)
     app.include_router(uploads.router)
     app.include_router(search.router)
+    app.include_router(audit.router)
     return app
 
 

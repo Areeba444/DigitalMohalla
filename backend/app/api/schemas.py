@@ -650,3 +650,42 @@ class ClickIn(StrictIn):
 
 class ClickOut(BaseModel):
     id: UUID
+
+
+# ----------------------------------------------------------------------------- audit log (I6)
+class AuditEntryOut(BaseModel):
+    source: str
+    id: int
+    occurred_at: str
+    action: str
+    category: str
+    actor: str | None
+    authorisation: str
+    target_type: str
+    target_id: str
+    outcome: str
+    summary: str
+    previous_value: Any = None
+    new_value: Any = None
+    reason: str | None = None
+    hash_valid: bool
+    masked: bool
+
+
+class AuditConcentrationOut(BaseModel):
+    moderator: str
+    member: str
+    decisions: int
+    share: float
+
+
+class AuditPageOut(BaseModel):
+    entries: list[AuditEntryOut]
+    tampered: int  # entries on this page whose hash check failed (UC-I6 ext 3c)
+    concentration: list[AuditConcentrationOut]
+    limit: int
+    offset: int
+
+
+class AuditUnmaskIn(StrictIn):
+    purpose: str = Field(min_length=10, max_length=500)
