@@ -217,6 +217,9 @@ def test_tc177_a_restricted_item_is_refused_neutrally_and_nothing_is_created(
     world: World,
 ) -> None:
     item = world.items[17]
+    count = "SELECT count(*) FROM borrowing_transaction WHERE item_id = :i"
+    with engine.connect() as c:  # other tests share this item, so compare before and after
+        before = c.execute(text(count), {"i": item}).scalar_one()
     set_item_level(engine, item, "COMMUNITY_VERIFIED")
     set_borrower_level(engine, world.borrower, "CONTACT_VERIFIED")
     headers = login(api_client, borrower_email(engine, world))
@@ -227,10 +230,7 @@ def test_tc177_a_restricted_item_is_refused_neutrally_and_nothing_is_created(
     detail = r.json()["detail"].lower()
     assert "g1" not in detail and not any(w in detail for w in ("suspicious", "risk", "fraud"))
     with engine.connect() as c:
-        n = c.execute(
-            text("SELECT count(*) FROM borrowing_transaction WHERE item_id = :i"), {"i": item}
-        ).scalar_one()
-    assert n == 0
+        assert c.execute(text(count), {"i": item}).scalar_one() == before  # nothing created
     # the same item is open to a borrower at the required level
     set_borrower_level(engine, world.borrower, "COMMUNITY_VERIFIED")
     ok = api_client.post(
@@ -246,16 +246,14 @@ def test_tc70_an_identical_pending_request_is_refused_as_a_duplicate(
 ) -> None:
     set_borrower_level(engine, world.borrower, "COMMUNITY_VERIFIED")
     headers = login(api_client, borrower_email(engine, world))
+    count = "SELECT count(*) FROM borrowing_transaction WHERE item_id = :i AND borrower_id = :b"
+    args = {"i": world.items[16], "b": world.borrower}
+    with engine.connect() as c:  # the test database keeps rows from earlier runs: count the change
+        before = c.execute(text(count), args).scalar_one()
     body = {"item_id": str(world.items[16]), **dates(9, 2)}
     first = api_client.post("/api/v1/requests", json=body, headers=headers)
     assert first.status_code == 201, first.text
     second = api_client.post("/api/v1/requests", json=body, headers=headers)
     assert second.status_code == 409 and "identical pending request" in second.json()["detail"]
     with engine.connect() as c:
-        n = c.execute(
-            text(
-                "SELECT count(*) FROM borrowing_transaction WHERE item_id = :i AND borrower_id = :b"
-            ),
-            {"i": world.items[16], "b": world.borrower},
-        ).scalar_one()
-    assert n == 1
+        assert c.execute(text(count), args).scalar_one() == before + 1
