@@ -52,7 +52,8 @@ export interface paths {
          * @description UC-A1 / FR-A-01: create the account (PENDING_VERIFICATION) and record the terms. The same
          *     202 reply comes back whether or not the e-mail was already registered. The password is hashed
          *     before the e-mail is looked at, so the response time does not give it away either. The OTP step
-         *     (UC-A9) is iteration 3; until then the account cannot sign in or join a community.
+         *     (UC-A9) is iteration 3; until it exists (config registration_a1.otp_built=false) the account may
+         *     sign in and request to join, and approval in a community activates it. Documented interim.
          */
         post: operations["register_account_api_v1_auth_register_post"];
         delete?: never;

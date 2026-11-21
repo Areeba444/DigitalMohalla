@@ -68,7 +68,7 @@
     "/api/v1/auth/register": {
       "post": {
         "summary": "Register Account",
-        "description": "UC-A1 / FR-A-01: create the account (PENDING_VERIFICATION) and record the terms. The same\n202 reply comes back whether or not the e-mail was already registered. The password is hashed\nbefore the e-mail is looked at, so the response time does not give it away either. The OTP step\n(UC-A9) is iteration 3; until then the account cannot sign in or join a community.",
+        "description": "UC-A1 / FR-A-01: create the account (PENDING_VERIFICATION) and record the terms. The same\n202 reply comes back whether or not the e-mail was already registered. The password is hashed\nbefore the e-mail is looked at, so the response time does not give it away either. The OTP step\n(UC-A9) is iteration 3; until it exists (config registration_a1.otp_built=false) the account may\nsign in and request to join, and approval in a community activates it. Documented interim.",
         "operationId": "register_account_api_v1_auth_register_post",
         "requestBody": {
           "content": {

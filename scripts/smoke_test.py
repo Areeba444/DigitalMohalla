@@ -64,7 +64,9 @@ def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawTextHelpFormatter)
     ap.add_argument("base_url")
     ap.add_argument("--email", required=True, help="a seeded synthetic member who may borrow")
-    ap.add_argument("--start-in-days", type=int, default=200, help="date offset for the test request")
+    ap.add_argument(
+        "--start-in-days", type=int, default=200, help="date offset for the test request"
+    )
     a = ap.parse_args()
     base = a.base_url.rstrip("/")
     password = os.environ.get("SMOKE_PASSWORD") or getpass.getpass("Password (not shown): ")
@@ -73,19 +75,33 @@ def main() -> int:
     status, body = call(base, "GET", "/health")  # a sleeping free service can take about a minute
     if not check("1 /health answers", status == 200, f"{time.perf_counter() - t0:.1f} s"):
         return 1
-    status, body = call(base, "POST", "/api/v1/auth/login", {"email": a.email, "password": password})
-    if not check("2 sign in", status == 200 and bool(body and body.get("access_token")), f"HTTP {status}"):
+    status, body = call(
+        base, "POST", "/api/v1/auth/login", {"email": a.email, "password": password}
+    )
+    if not check(
+        "2 sign in", status == 200 and bool(body and body.get("access_token")), f"HTTP {status}"
+    ):
         return 1
     token = body["access_token"]
     api = "/api/v1"
 
     status, items = call(base, "GET", f"{api}/items", token=token)
-    check("3 browse items lists items", status == 200 and bool(items), f"HTTP {status}, {len(items or [])} items")
+    check(
+        "3 browse items lists items",
+        status == 200 and bool(items),
+        f"HTTP {status}, {len(items or [])} items",
+    )
 
     status, found = call(base, "GET", f"{api}/search?q=drill", token=token)
     ok = status == 200 and found.get("mode") in ("HYBRID", "KEYWORD_ONLY")
-    no_score = not any(k in r for r in found.get("results", []) for k in ("score", "relevance", "rank_score"))
-    check("4 search answers with its mode and no score", ok and no_score, f"mode {found.get('mode') if ok else '?'}")
+    no_score = not any(
+        k in r for r in found.get("results", []) for k in ("score", "relevance", "rank_score")
+    )
+    check(
+        "4 search answers with its mode and no score",
+        ok and no_score,
+        f"mode {found.get('mode') if ok else '?'}",
+    )
 
     status, ev = call(base, "GET", f"{api}/me/evidence", token=token)
     roles = {r["role"] for r in (ev or {}).get("roles", [])} if status == 200 else set()
@@ -102,11 +118,19 @@ def main() -> int:
     status, made = call(base, "POST", f"{api}/requests", request, token)
     state = (made or {}).get("state")
     if status == 201 and state == "HELD_FOR_REVIEW":
-        print(f"WARN  6 request held for review ({made.get('hold_reason')}): a rule may hold it; try another item")
+        print(
+            f"WARN  6 request held for review ({made.get('hold_reason')}): a rule may hold it; try another item"
+        )
     else:
-        check("6 one scripted request reaches ASSESSED", status == 201 and state == "ASSESSED", f"HTTP {status}, state {state}")
+        check(
+            "6 one scripted request reaches ASSESSED",
+            status == 201 and state == "ASSESSED",
+            f"HTTP {status}, state {state}",
+        )
     if status == 201:
-        c_status, _ = call(base, "POST", f"{api}/requests/{made['transaction_id']}/cancel", {}, token)
+        c_status, _ = call(
+            base, "POST", f"{api}/requests/{made['transaction_id']}/cancel", {}, token
+        )
         check("6b the test request is cancelled again", c_status == 200, f"HTTP {c_status}")
     print("RESULT:", "all checks passed" if failures == 0 else f"{failures} check(s) failed")
     return 1 if failures else 0

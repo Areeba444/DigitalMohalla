@@ -780,7 +780,9 @@ def check_trigger_rules(r: Report, d: dict[str, list[dict[str, str]]]) -> None:
     for c in d["condition_report"]:
         reports[c["transaction_id"]].append(c)
     loc_by_member: dict[str, dict[str, str]] = {}
-    for x in d["locality_verification"]:  # the first row is the moderator approval; later ones are re-checks
+    for x in d[
+        "locality_verification"
+    ]:  # the first row is the moderator approval; later ones are re-checks
         loc_by_member.setdefault(x["membership_id"], x)
     members = {(m["user_id"], m["community_id"]): m for m in d["membership"]}
 
