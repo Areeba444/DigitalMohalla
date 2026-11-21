@@ -6,8 +6,10 @@ engine result is NOT computed here. Where a hand-checked fixture exists
 it is the team's starting position from data/REQUIREMENTS.md, marked unconfirmed. The inputs in the
 fixtures are separate, hand-made numbers: they do not depend on this dataset.
 
-ES-09 and ES-10 (location mismatch and refusal) are not built: the locality data would depend on the
-locality method, which is still open in the context document.
+ES-09 and ES-10 (location mismatch and refusal) use the stored locality result that iteration 2
+builds (build item F3): the borrower's membership carries a CONFLICTING or a refused INCONCLUSIVE
+`locality_verification` row (user tags `locality_conflicting`, `locality_refused`; see build.py). The
+request is held for review before the engine runs.
 """
 
 from __future__ import annotations
@@ -475,6 +477,40 @@ def build_scenarios(w: World, c1: str, c2: str) -> None:
         expected={"state": "REVIEW_RECOMMENDED"},
         notes="A damage finding against the borrower was reversed on appeal; its outcomes are flagged and must be excluded. "
         "The REVERSAL decision kind is an iteration-2 value in the schema.",
+    )
+
+    # ES-09: location mismatch (stored locality CONFLICTING), then the evidence once the hold is cleared
+    cast_user(w, "es09.borrower", c1, 160, archetype="cast_reliable", p_on_time=0.95, p_cond=0.9)
+    w.users["es09.borrower"].tags.append("locality_conflicting")
+    for ago, key in ((130, "a"), (90, "b"), (50, "c"), (10, "d")):
+        hist_loan(w, "es09.borrower", L1, ago, item=f"{L1}.i1", duration=2, key=key)
+    t = request_under_test(w, "es09.borrower", L2, f"{L2}.i2")
+    add_manifest(
+        w,
+        "ES-09",
+        "ES-09",
+        t,
+        requirements="D-07; UC-A3 4d",
+        source=REQ,
+        expected={"lifecycle_state": "HELD_FOR_REVIEW"},
+        notes="Stored locality is CONFLICTING (signal OUTSIDE the community boundary). The request is held "
+        "as locality_conflict and no assessment exists until a moderator clears it (then R9).",
+    )
+
+    # ES-10: location permission refused, no history (stored locality INCONCLUSIVE)
+    cast_user(w, "es10.borrower", c1, 30, archetype="cast_thin", p_on_time=0.9, p_cond=0.9)
+    w.users["es10.borrower"].tags.append("locality_refused")
+    t = request_under_test(w, "es10.borrower", L2, f"{L2}.i2")
+    add_manifest(
+        w,
+        "ES-10",
+        "ES-10",
+        t,
+        requirements="D-07; UC-A3 3a",
+        source=REQ,
+        expected={"lifecycle_state": "HELD_FOR_REVIEW"},
+        notes="The member refused the location permission: stored locality is INCONCLUSIVE. The request is "
+        "held as locality_inconclusive; once cleared, no history gives INSUFFICIENT_EVIDENCE (R3).",
     )
 
     # ES-12: sparse and old history

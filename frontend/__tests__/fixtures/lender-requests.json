@@ -107,8 +107,8 @@
       "state": "ASSESSED",
       "hold_reason": null,
       "your_role": "LENDER",
-      "borrower_name": "Hina Butt",
-      "lender_name": "Shazia Butt",
+      "borrower_name": "Iqra Qureshi",
+      "lender_name": "Kashif Hashmi",
       "requested_period": "[\"2026-10-23 00:00:00+00\",\"2026-10-26 00:00:00+00\")",
       "message": "Synthetic request for the evidence screen test.",
       "deposit_required": true,
@@ -117,7 +117,7 @@
         "policy_decision": "PROCEED_WITH_SAFEGUARDS",
         "rule_fired": "R9",
         "config_version": "1.3.7-iteration2-draft",
-        "explanation": "Review recommended before lending. Direct evidence: 2 verified loan(s), weighted for recency and similarity to 0.9 effective outcomes; estimated on-time return 0.65 with a 90% interval of 0.20 to 0.97. Community paths from the lender: via Kashif Hashmi (path strength 0.36); via Afshan Lodhi (path strength 0.36); indirect reliability 0.39 (at most 0.60). Without these paths the request would be INSUFFICIENT_EVIDENCE. Manipulation checks: no notable signals (level 1 of 4). Decision support, not a guarantee.",
+        "explanation": "Review recommended before lending. Direct evidence: 2 verified loan(s), weighted for recency and similarity to 0.9 effective outcomes; estimated on-time return 0.65 with a 90% interval of 0.20 to 0.97. Community paths from the lender: via Razia Malik (path strength 0.36); via Hina Butt (path strength 0.36); indirect reliability 0.39 (at most 0.60). Without these paths the request would be INSUFFICIENT_EVIDENCE. Manipulation checks: no notable signals (level 1 of 4). Decision support, not a guarantee.",
         "safeguards": [
           {
             "code": "MEDIUM_VALUE_DEPOSIT_RECORD",
@@ -128,25 +128,25 @@
             "label": "Take item photos at handover"
           }
         ],
-        "posterior_mean": 0.6524,
-        "ci90_low": 0.2027,
+        "posterior_mean": 0.6522,
+        "ci90_low": 0.2024,
         "ci90_high": 0.973,
-        "effective_evidence": 0.877,
+        "effective_evidence": 0.875,
         "verified_loans": 2,
         "community": {
-          "reliability": 0.3939,
+          "reliability": 0.3936,
           "paths": [
             {
               "via": [
-                "Kashif Hashmi"
+                "Razia Malik"
               ],
               "strength": 0.3584
             },
             {
               "via": [
-                "Afshan Lodhi"
+                "Hina Butt"
               ],
-              "strength": 0.3622
+              "strength": 0.3617
             }
           ]
         },

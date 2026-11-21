@@ -59,10 +59,7 @@ FORBIDDEN_COLUMNS = re.compile(
 HALF_LIFE = 180.0
 PERIOD = re.compile(r"^\[(.+?),(.+?)\)$")
 ES_IDS = [f"ES-{i:02d}" for i in range(1, 14)]
-NOT_BUILT = {
-    "ES-09": "location mismatch: locality method still open",
-    "ES-10": "location refusal: locality method still open",
-}
+NOT_BUILT: dict[str, str] = {}
 
 
 class Report:
@@ -782,7 +779,9 @@ def check_trigger_rules(r: Report, d: dict[str, list[dict[str, str]]]) -> None:
     reports: dict[str, list[dict[str, str]]] = defaultdict(list)
     for c in d["condition_report"]:
         reports[c["transaction_id"]].append(c)
-    loc_by_member = {x["membership_id"]: x for x in d["locality_verification"]}
+    loc_by_member: dict[str, dict[str, str]] = {}
+    for x in d["locality_verification"]:  # the first row is the moderator approval; later ones are re-checks
+        loc_by_member.setdefault(x["membership_id"], x)
     members = {(m["user_id"], m["community_id"]): m for m in d["membership"]}
 
     def state_at(evs: list[dict[str, str]], t: datetime) -> str | None:
