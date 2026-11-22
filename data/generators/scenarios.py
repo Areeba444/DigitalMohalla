@@ -6,8 +6,11 @@ engine result is NOT computed here. Where a hand-checked fixture exists
 it is the team's starting position from data/REQUIREMENTS.md, marked unconfirmed. The inputs in the
 fixtures are separate, hand-made numbers: they do not depend on this dataset.
 
-ES-09 and ES-10 (location mismatch and refusal) are not built: the locality data would depend on the
-locality method, which is still open in the context document.
+ES-09 and ES-10 (location mismatch and refusal) are built as of iteration 2. The locality method
+is geofence + invitation + moderator fallback (Locality_Design_A11.md). Both scenarios use the
+two-step hold-then-clearance model: the request is HELD_FOR_REVIEW with a locality hold reason
+and no assessment. After the moderator clears the hold, the engine runs and evidence decides.
+The expected states below are the *after-clearance* assurance states (TC-113, TC-114).
 """
 
 from __future__ import annotations
@@ -314,8 +317,8 @@ def build_scenarios(w: World, c1: str, c2: str) -> None:
         expected=fx["ES-05"],
         source=FIX,
         notes="The lender posts a 1-star review of a confirmed on-time, condition-agreed loan three days after the borrower's "
-        "upheld complaint. The requirements table lists REVIEW_RECOMMENDED; the fixture expects SUFFICIENT_EVIDENCE "
-        "(R8) because the review is down-weighted. Team to confirm which.",
+        "upheld complaint. Team decision D13 (13 October): SUFFICIENT_EVIDENCE (R8). The retaliatory review is detected "
+        "and down-weighted. Confirmed by fixture, TC-44, and REQUIREMENTS.md line 70.",
         group="ES-05",
     )
 
@@ -641,4 +644,75 @@ def build_scenarios(w: World, c1: str, c2: str) -> None:
         source="data/REQUIREMENTS.md claim C5",
         notes="Account 55 days old with four on-time loans. Replaying the history in time order shows how quickly evidence builds; "
         "no restriction without human review. No expected state is fixed: SUFFICIENT_EVIDENCE thresholds are still open.",
+    )
+
+    # ES-09: location mismatch — locality_outcome = CONFLICTING, geofence_signal = OUTSIDE
+    # Two-step model (TC-113): the request is HELD_FOR_REVIEW with hold_reason locality_conflict
+    # and no assessment. After the moderator clears the hold, the engine runs and evidence decides.
+    # The borrower has a reliable history (90 days, 8 clean loans), so the after-clearance expected
+    # state is REVIEW_RECOMMENDED through rule R9 (community-only evidence).
+    rng = rng_for(w.seed, "cast:ES-09")
+    cast_user(w, "es09.borrower", c1, 90, archetype="cast_reliable", p_on_time=0.90, p_cond=0.90)
+    _clean_history(w, rng, "es09.borrower", 8, 12, 80, [L1, L2, L3], "es09")
+    # Set locality override: GPS outside the boundary → CONFLICTING
+    w.locality_overrides["es09.borrower"] = {
+        "method": "GEOFENCE",
+        "outcome": "CONFLICTING",
+        "geofence_signal": "OUTSIDE",
+        "permission_refused": False,
+        "mock_provider_detected": False,
+    }
+    t = request_under_test(w, "es09.borrower", L3, f"{L3}.i1")
+    add_manifest(
+        w,
+        "ES-09",
+        "ES-09",
+        t,
+        requirements="D-02 locality; Locality_Design_A11.md",
+        expected={
+            "state": "REVIEW_RECOMMENDED",
+            "rule_fired": "R9",
+            "lifecycle_state": "HELD_FOR_REVIEW",
+        },
+        source="TC-113; locality_outcome=CONFLICTING, geofence_signal=OUTSIDE; after hold clearance",
+        notes="Reliable borrower with 8 on-time loans over 3 months. locality_verification row has "
+        "outcome=CONFLICTING and geofence_signal=OUTSIDE (GPS outside boundary). The request is "
+        "initially HELD_FOR_REVIEW with hold_reason=locality_conflict. After the moderator clears "
+        "the hold, the engine returns REVIEW_RECOMMENDED through R9. This is NOT ACTIVE_DISPUTE "
+        "(which means a dispute is open).",
+    )
+
+    # ES-10: location-permission refusal — locality_outcome = INCONCLUSIVE, geofence_signal = UNAVAILABLE
+    # Two-step model (TC-114): same hold-then-clearance as ES-09.
+    # The borrower has NO history (newcomer), so the after-clearance expected state is
+    # INSUFFICIENT_EVIDENCE through rule R3 (too little evidence). The explanation notes it is
+    # not a negative finding.
+    rng = rng_for(w.seed, "cast:ES-10")
+    cast_user(w, "es10.borrower", c1, 14, archetype="newcomer_cast", p_on_time=0.88, p_cond=0.90)
+    # Set locality override: permission refused → INCONCLUSIVE
+    w.locality_overrides["es10.borrower"] = {
+        "method": "GEOFENCE",
+        "outcome": "INCONCLUSIVE",
+        "geofence_signal": "UNAVAILABLE",
+        "permission_refused": True,
+        "mock_provider_detected": False,
+    }
+    t = request_under_test(w, "es10.borrower", L1, f"{L1}.i1", key="es10")
+    add_manifest(
+        w,
+        "ES-10",
+        "ES-10",
+        t,
+        requirements="D-10 cold start; Locality_Design_A11.md",
+        expected={
+            "state": "INSUFFICIENT_EVIDENCE",
+            "rule_fired": "R3",
+            "lifecycle_state": "HELD_FOR_REVIEW",
+        },
+        source="TC-114; locality_outcome=INCONCLUSIVE, geofence_signal=UNAVAILABLE; after hold clearance",
+        notes="Newcomer (14 days old) who refused location permission. locality_verification row has "
+        "outcome=INCONCLUSIVE and geofence_signal=UNAVAILABLE. The request is initially HELD_FOR_REVIEW "
+        "with hold_reason=locality_inconclusive. After the moderator clears the hold, the engine "
+        "returns INSUFFICIENT_EVIDENCE through R3 (no history). The explanation says this is not "
+        "a negative finding.",
     )

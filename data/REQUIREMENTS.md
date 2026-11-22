@@ -71,8 +71,8 @@ From the Overview's evaluation scenarios (expected states are the team's startin
 | ES-06 | High-value request with weak evidence | REVIEW_RECOMMENDED |
 | ES-07 | Conflicting condition reports | ACTIVE_DISPUTE |
 | ES-08 | Failure to return | ACTIVE_DISPUTE |
-| ES-09 | Location mismatch | REVIEW_RECOMMENDED |
-| ES-10 | Location-permission refusal | INSUFFICIENT_EVIDENCE |
+| ES-09 | Location mismatch | HELD_FOR_REVIEW (locality_conflict); after moderator clearance → REVIEW_RECOMMENDED (R9). TC-113 |
+| ES-10 | Location-permission refusal | HELD_FOR_REVIEW (locality_inconclusive); after moderator clearance → INSUFFICIENT_EVIDENCE (R3). TC-114 |
 | ES-11 | Moderator reversal | REVIEW_RECOMMENDED |
 | ES-12 | Sparse or old history | INSUFFICIENT_EVIDENCE |
 | ES-13 | History with others, none with this lender, reachable by community paths | REVIEW_RECOMMENDED (rule R9) |
@@ -181,7 +181,7 @@ Checked 2026-10-12 against the files in `raw/`. "Yes" means the data can supply 
 | ES-05 retaliatory review | No |
 | ES-06 high-value request | No (F3) |
 | ES-07, ES-08 conflicting reports, failure to return | No (no open disputes) |
-| ES-09, ES-10 location mismatch and refusal | No (locality is not in these datasets) |
+| ES-09, ES-10 location mismatch and refusal | Yes (locality geofence + invitation, Locality_Design_A11.md; TC-113, TC-114) |
 | ES-11 moderator reversal | No |
 | ES-13 community paths | Yes |
 
@@ -216,7 +216,7 @@ checks (section 5a of that README). Items marked "engine" are expectations that 
 | C3 false positives on dense clusters | Yes | Family of five: 16 loans, 31 mutual reviews in 80 days, varied text. One case only |
 | C5 newcomers not excluded | Partly | 4 non-attack accounts under 30 days old plus a 58-day-old reliable newcomer; `scale` has many more |
 | ES-01 to ES-08, ES-11, ES-12, ES-13 | Yes | One request per case in `labels/scenario_manifest.csv`, plus ES-03b, ES-06b, ES-13b counter-cases |
-| ES-09, ES-10 location | **No** | Locality method is open |
+| ES-09, ES-10 location | **Yes** | Built in iteration 2 (locality geofence + invitation, Locality_Design_A11.md). Two-step hold-then-clearance model |
 
 Of the earlier "what to build next" list (section 9): item 1 is done (second generator version), item 2 is done in a different form (vouching
 dropped; retaliation, high-value and false-claim cases added as separate scenarios rather than injected into the community set), items 3 and 5

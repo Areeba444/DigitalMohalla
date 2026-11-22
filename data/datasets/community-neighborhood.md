@@ -1,3 +1,5 @@
+> ⚠️ **Superseded.** Known quality problems F3–F13 in `data/README.md`. Use `neighborhood-sim` for all testing. This card is kept as an audit trail only.
+
 # Dataset card: community-neighborhood
 
 | Field | Value |
