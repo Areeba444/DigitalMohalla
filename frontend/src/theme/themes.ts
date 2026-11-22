@@ -213,52 +213,51 @@ export const creamGreen: Theme = {
 };
 
 // ─── Theme 3: Stony Blue ─────────────────────────────────────────────────────
-// Exact palette from option3.jpeg:
-//   #EFE9E7 warm cream  ·  #BCCC83 lime-sage  ·  #608FA3 steel-blue
-//   #895377 dusty plum  ·  #55565B charcoal
+// Exact palette from option3.jpeg, used per the design spec:
 //
-// Design rationale:
-//   Primary  → #608FA3 steel-blue   — calm, trustworthy, great WCAG contrast on cream
-//   Accent   → #895377 dusty plum   — warm complement to blue, used for highlights
-//   BG       → #EFE9E7 warm cream   — the lightest chip, airy and clean
-//   #BCCC83 (lime-sage) → reserved for success / positive states only
-//   #55565B  → body text
+//   Role           Hex       Usage   Applied to
+//   ────────────── ────────  ──────  ──────────────────────────────────────
+//   Background     #EFE9E7   60%    bg, surface, glass
+//   Text / Dark UI #55565B   20%    text (body), headings, icons
+//   Primary brand  #608FA3   10%    primary buttons, active tabs, links
+//   Secondary      #BCCC83    5%    success tones, tags, badges, toggles
+//   Accent / CTA   #895377    5%    accent highlights, notifications, CTAs
 // ─────────────────────────────────────────────────────────────────────────────
 export const stonyBlue: Theme = {
   name: 'stony-blue',
   label: 'Stony Blue',
   tagline: 'Still waters, sure footing',
   colors: {
-    // ── Backgrounds ──────────────────────────────────────────────────────────
-    bg:       '#EFE9E7',              // exact palette chip 1 — warm cream
-    surface:  '#FDFAF9',             // lightest card white with warm cast
-    surface2: '#E4DDD9',             // slightly deeper cream for inputs/chips
+    // ── Backgrounds (60 % of screen real-estate) ──────────────────────────
+    bg:       '#EFE9E7',              // exact spec — warm alabaster
+    surface:  '#FDFAF9',             // card/sheet — just off-white with warm cast
+    surface2: '#E4DDD9',             // inputs, chips, subtle containers
     glass:    'rgba(253,250,249,0.82)',
-    // ── Text ─────────────────────────────────────────────────────────────────
-    text:          '#2A2B2F',        // deeper than #55565B — crisp on cream bg
-    textSecondary: '#55565B',        // exact palette chip 5
-    textMuted:     '#8E9094',        // lightened charcoal for placeholders
-    // ── Borders ──────────────────────────────────────────────────────────────
+    // ── Text / Dark UI (20 %) ─────────────────────────────────────────────
+    text:          '#55565B',        // ← EXACT spec — charcoal slate, headings + body
+    textSecondary: '#757679',        // mid-step — captions, metadata
+    textMuted:     '#9E9FA3',        // placeholders, disabled
+    // ── Borders ──────────────────────────────────────────────────────────
     border:   '#D5CEC9',
-    hairline: 'rgba(42,43,47,0.08)',
-    // ── Primary — steel blue ─────────────────────────────────────────────────
-    primary:     '#608FA3',          // exact palette chip 3
-    primaryDeep: '#477284',          // 15 % darker — pressed state
-    primarySoft: '#DFF0F6',          // very light blue tint — avatar bg, chips
+    hairline: 'rgba(85,86,91,0.10)',
+    // ── Primary brand (10 %) — Dusty Cerulean ────────────────────────────
+    primary:     '#608FA3',          // exact spec — CTA buttons, active tabs, links
+    primaryDeep: '#477284',          // pressed / hover — 15 % darker
+    primarySoft: '#DFF0F6',          // faint tint — avatar bg, selected chips
     onPrimary:   '#FFFFFF',
-    // ── Accent — dusty plum ──────────────────────────────────────────────────
-    accent:     '#895377',           // exact palette chip 4
-    accentSoft: '#F3E8F0',           // faint plum tint
-    // ── Semantic tones ───────────────────────────────────────────────────────
-    // success reuses lime-sage (#BCCC83) — the only right spot for it
-    success: tone('#5C7A30', '#EDF3DC', '#BCCC83'),
+    // ── Accent / CTA (5 %) — Muted Plum ─────────────────────────────────
+    accent:     '#895377',           // exact spec — notifications, alerts, active indicators
+    accentSoft: '#F2E8EF',           // faint plum tint — badge bgs, alert strips
+    // ── Semantic tones ────────────────────────────────────────────────────
+    // success = Sage Moss #BCCC83 — secondary colour per spec (tags, badges, toggles)
+    success: tone('#5A7828', '#EEF4DC', '#BCCC83'),  // fg darkened for text contrast
     warning: tone('#8A6010', '#FBF3E0', '#EAD39C'),
     danger:  tone('#A0302A', '#FCEDEC', '#F2B8B5'),
-    info:    tone('#608FA3', '#DFF0F6', '#AED2E0'),
-    neutral: tone('#55565B', '#E4DDD9', '#CFC6C0'),
+    info:    tone('#608FA3', '#DFF0F6', '#AED2E0'),  // info re-uses primary family
+    neutral: tone('#55565B', '#E4DDD9', '#BCCC83'),  // neutral border = sage so tags pick it up
   },
   state: {
-    SUFFICIENT_EVIDENCE:   tone('#5C7A30', '#EDF3DC', '#BCCC83'),
+    SUFFICIENT_EVIDENCE:   tone('#5A7828', '#EEF4DC', '#BCCC83'),
     REVIEW_RECOMMENDED:    tone('#8A6010', '#FBF3E0', '#EAD39C'),
     INSUFFICIENT_EVIDENCE: tone('#608FA3', '#DFF0F6', '#AED2E0'),
     ACTIVE_DISPUTE:        tone('#A0302A', '#FCEDEC', '#F2B8B5'),
@@ -288,71 +287,72 @@ export const stonyBlue: Theme = {
 };
 
 // ─── Theme 4: Ridgeline ───────────────────────────────────────────────────────
-// Exact palette from option4.jpeg:
-//   #536299 indigo-slate  ·  #6D6F61 army-olive  ·  #7C3539 deep rust
-//   #73708D muted lavender  ·  #C5C4D4 soft lavender
+// Exact palette from option4.jpeg, used per the design spec:
 //
-// Design rationale:
-//   Primary  → #536299 indigo-slate  — rich, modern, high contrast against lavender bg
-//   Accent   → #7C3539 deep rust     — warm-cool split-complementary pair, used for
-//                                       accents, icons, links — creates instant visual drama
-//   BG       → lightened from #C5C4D4 — airy lavender without feeling heavy
-//   #73708D  → textMuted / subtle ui (muted lavender)
-//   #6D6F61  → textSecondary (earthy olive — grounds the palette)
+//   Role           Hex       Usage   Applied to
+//   ────────────── ────────  ──────  ──────────────────────────────────────────
+//   Background     #C5C4D4   60%    bg (the actual spec colour), surface, glass
+//   Text / Dark UI #6D6F61   20%    text, borders, inactive icons, dividers
+//   Primary brand  #536299   10%    primary buttons, active tabs, headers, links
+//   Secondary      #73708D    5%    info tones → tags, disabled states, sidebars
+//   Accent/Merlot  #7C3539    5%    accent → alerts, destructive badges, highlights
 // ─────────────────────────────────────────────────────────────────────────────
 export const ridgeline: Theme = {
   name: 'ridgeline',
   label: 'Ridgeline',
   tagline: 'Bold heights, quiet confidence',
   colors: {
-    // ── Backgrounds ──────────────────────────────────────────────────────────
-    bg:       '#ECEBF2',              // lightened #C5C4D4 — soft lavender
-    surface:  '#F6F5FA',             // near-white with cool-lavender cast
-    surface2: '#DFDEEb',             // muted blue-grey for inputs/chips
-    glass:    'rgba(246,245,250,0.84)',
-    // ── Text ─────────────────────────────────────────────────────────────────
-    text:          '#1C1D2A',        // deep blue-black — maximum contrast
-    textSecondary: '#4E5050',        // close to #6D6F61 — earthy olive-grey
-    textMuted:     '#73708D',        // exact palette chip 4 — muted lavender
+    // ── Backgrounds (60%) — Soft Lavender Mist ───────────────────────────────
+    bg:       '#C5C4D4',              // exact spec — the page canvas
+    surface:  '#D9D8E6',             // slightly lighter — cards / sheets float above bg
+    surface2: '#B8B7C9',             // slightly deeper — inputs, chips, subtle containers
+    glass:    'rgba(197,196,212,0.86)',
+    // ── Text / Dark UI (20%) — Olive Charcoal ────────────────────────────────
+    text:          '#6D6F61',        // exact spec — primary body text, headings
+    textSecondary: '#888A80',        // mid-step — captions, metadata
+    textMuted:     '#A6A8B0',        // placeholders, disabled labels
     // ── Borders ──────────────────────────────────────────────────────────────
-    border:   '#C8C7D4',
-    hairline: 'rgba(28,29,42,0.09)',
-    // ── Primary — indigo slate ───────────────────────────────────────────────
-    primary:     '#536299',          // exact palette chip 1
-    primaryDeep: '#3D4A7A',          // 15 % darker — pressed state
-    primarySoft: '#DDE0F0',          // very light indigo tint
+    border:   '#AFAEBF',             // between bg and surface
+    hairline: 'rgba(109,111,97,0.14)',
+    // ── Primary (10%) — Twilight Indigo ──────────────────────────────────────
+    primary:     '#536299',          // exact spec — buttons, active tabs, links
+    primaryDeep: '#3D4A7A',          // pressed / hover — 15 % darker
+    primarySoft: '#CFD3E8',          // indigo tint that reads on the lavender bg
     onPrimary:   '#FFFFFF',
-    // ── Accent — deep rust ───────────────────────────────────────────────────
-    accent:     '#7C3539',           // exact palette chip 3 — the warm spark
-    accentSoft: '#F4E0E1',           // faint rust tint — badge bgs, soft pills
+    // ── Accent (5%) — Deep Merlot ────────────────────────────────────────────
+    accent:     '#7C3539',           // exact spec — alerts, badges, active highlights
+    accentSoft: '#E8CCCF',           // faint merlot tint — badge bgs, alert strips
     // ── Semantic tones ───────────────────────────────────────────────────────
-    success: tone('#3E7044', '#E2F0E4', '#B4D6B8'),
-    warning: tone('#7A5C10', '#F7EED8', '#DFC988'),
-    danger:  tone('#7C3539', '#F4E0E1', '#E8AAAC'),
-    info:    tone('#536299', '#DDE0F0', '#AAAEC8'),
-    neutral: tone('#4E5050', '#DFDEEb', '#C4C3CE'),
+    success: tone('#3A6E40', '#CEEAD2', '#99C9A0'),
+    warning: tone('#7A5C10', '#EEE0C0', '#D4B870'),
+    // danger uses merlot family — spec says #7C3539 = destructive actions
+    danger:  tone('#7C3539', '#E8CCCF', '#CE9598'),
+    // info uses Muted Iris #73708D — spec says = secondary buttons, tags, disabled
+    info:    tone('#73708D', '#D4D3E2', '#AAA8BC'),
+    neutral: tone('#6D6F61', '#B8B7C9', '#9E9DAE'),
   },
   state: {
-    SUFFICIENT_EVIDENCE:   tone('#3E7044', '#E2F0E4', '#B4D6B8'),
-    REVIEW_RECOMMENDED:    tone('#7A5C10', '#F7EED8', '#DFC988'),
-    INSUFFICIENT_EVIDENCE: tone('#536299', '#DDE0F0', '#AAAEC8'),
-    ACTIVE_DISPUTE:        tone('#7C3539', '#F4E0E1', '#E8AAAC'),
+    SUFFICIENT_EVIDENCE:   tone('#3A6E40', '#CEEAD2', '#99C9A0'),
+    REVIEW_RECOMMENDED:    tone('#7A5C10', '#EEE0C0', '#D4B870'),
+    // Muted Iris as the neutral/insufficient state — per secondary colour role
+    INSUFFICIENT_EVIDENCE: tone('#73708D', '#D4D3E2', '#AAA8BC'),
+    ACTIVE_DISPUTE:        tone('#7C3539', '#E8CCCF', '#CE9598'),
   },
   hero: {
     image: require('../../assets/images/themes/option4.jpeg'),
-    // Deep indigo scrim — matches the primary family, looks stunning on the mountain photo
+    // Deep indigo scrim — matches primary, dramatic on the mountain photo
     scrim:
       'linear-gradient(180deg, rgba(28,30,52,0.06) 0%, rgba(28,30,52,0.22) 40%, rgba(28,30,52,0.92) 100%)',
-    text:     '#F2F2F8',
-    textSoft: 'rgba(224,224,238,0.88)',
-    // Button gradient across the full indigo range
+    text:     '#F0F0F6',
+    textSoft: 'rgba(220,220,236,0.88)',
+    // Indigo gradient button — primary family
     button:   'linear-gradient(135deg, #6475AD 0%, #536299 50%, #3D4A7A 100%)',
     statusBar: 'light',
     position:  'center',
   },
   shadow: {
-    card:  '0px 6px 20px rgba(83,98,153,0.12)',
-    float: '0px 14px 36px rgba(83,98,153,0.26)',
+    card:  '0px 6px 20px rgba(83,98,153,0.14)',
+    float: '0px 14px 36px rgba(83,98,153,0.28)',
   },
   radius: { sm: 12, md: 18, lg: 26, xl: 32, pill: 9999 },
   fonts: {
