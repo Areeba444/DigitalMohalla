@@ -2,16 +2,16 @@
  "about": "SYNTHETIC data for testing Digital Mohalla. No real person, address or identifier. Not real fraud data.",
  "files": {
   "app_user.csv": {
-   "rows": 63,
-   "sha256": "2df7fdcfa23cb35064a6a0ab7afd918f050d464abcb2055ea043510c28ffde7a"
+   "rows": 65,
+   "sha256": "6e1d54e98f119b4ebf430becc4392f616803dfbf0dfa69b8b93df129f0e27cd8"
   },
   "booking.csv": {
-   "rows": 173,
-   "sha256": "fa73e808b7abafb731270e93916e1a61b85dc92aef2c49b945b3dbea08920e01"
+   "rows": 181,
+   "sha256": "6f5150543f8ea99e7c607f9e210e473fcde0c25305e81b83c159687d0979be62"
   },
   "borrowing_transaction.csv": {
-   "rows": 193,
-   "sha256": "ee3afc30cc25bfb4f7e80bb5be13a9340799502e1b8af6081dc439fefb62ec03"
+   "rows": 203,
+   "sha256": "1cadc3180c8a985c579a0df88a09a5433dcd71795b3d43a872dda27c0592fe1a"
   },
   "category.csv": {
    "rows": 7,
@@ -22,12 +22,12 @@
    "sha256": "039836c07bece1df2a0e1326dfa14c4379352a70cc152e5d2ef26e58a24e3e36"
   },
   "condition_report.csv": {
-   "rows": 664,
-   "sha256": "a7623dd141cb23236a6f6c11a31d51ccb2082306246e18ee69f21ae32c80e7b2"
+   "rows": 704,
+   "sha256": "b53925e92da18ae468edc50485bb218f44454a01e160b74909031d5e9bea3853"
   },
   "escalation_case.csv": {
    "rows": 9,
-   "sha256": "eeb45fe579705d1c8ae8c32d35e32263109e4b0f9e33520ff59f5ac1de784481"
+   "sha256": "1870f83552d0dee9b929badab8987fcf5e29902dbcd4cfc706a1a8d26556fd53"
   },
   "item.csv": {
    "rows": 63,
@@ -38,48 +38,48 @@
    "sha256": "295a4e53209d2bd5b386fe1aedb5adb7ad7c2ea24a090449ba661915f5db759b"
   },
   "labels/review_truth.csv": {
-   "rows": 227,
-   "sha256": "ef1ef7c8724707d686cd59195abe5cd39a6d60bd79ff8fdc557a9ced6b9e1e67"
+   "rows": 247,
+   "sha256": "87e771db67dbb0fa1bbe164ab759086f2bb845bd504e4f3e4518de88ebc3e4e6"
   },
   "labels/scenario_manifest.csv": {
-   "rows": 20,
-   "sha256": "f6a847898adea85356968c1423f162e63257e2ccf94ff0212a785497487a90eb"
+   "rows": 22,
+   "sha256": "9a9b7b8e80194bc613a1fd8a8862e8c4911e3de7f8e1eb8bc4cd6c6e03f68f69"
   },
   "labels/transaction_truth.csv": {
-   "rows": 193,
-   "sha256": "6fef29a27eace27cc2ff506587b43c369623e31b1e3a3a3a451fdfa6a7aac8bf"
+   "rows": 203,
+   "sha256": "fb1189565791ae0ffbaf0bb8f5a514cd5bbfae665760318bfb9f9263e1be8604"
   },
   "labels/user_truth.csv": {
-   "rows": 63,
-   "sha256": "57e24d672c7e4d31bf0b38d80bec222ee2a786530c49901720c527054ba41ce1"
+   "rows": 65,
+   "sha256": "3c5fc6fac861ce12e2077543164d951c3c99bb01768da39265685f8a0f6ca52c"
   },
   "lifecycle_event.csv": {
-   "rows": 1392,
-   "sha256": "d5367eb3de9ad4a425e7ddb4589d8b726e2d809706796bfe0ddc1224061052e6"
+   "rows": 1468,
+   "sha256": "6a66de4479eb8c55543198c241ddfc1594b6da722bf3fc57d14f4829e32b2216"
   },
   "locality_verification.csv": {
-   "rows": 62,
-   "sha256": "1fc1006e41807d43c9933958de67161401ff4187840224ef7a561d5ce154ad58"
+   "rows": 64,
+   "sha256": "8094b8a7c20a166e6da30ea922dda1e88efeccce39ad44b64c3296a5ccf91ed7"
   },
   "membership.csv": {
-   "rows": 62,
-   "sha256": "401ec781756f36597f4849b04d7746dc8875426eff09e1587a9a2985d3ae639f"
+   "rows": 64,
+   "sha256": "8c4dc919e998700e233eca31073e16b9cb0a0128eef046bef969b7bad0d3f5a1"
   },
   "moderator_decision.csv": {
    "rows": 7,
-   "sha256": "31b29dc3ae55c7d17eb3293c555a6dd3045e931c1a7660c5697a647e5b944776"
+   "sha256": "ef5558e2831de19dfbc7beb46e6332600835c3213e1e58aefb3521e858b9ae1a"
   },
   "outcome.csv": {
-   "rows": 813,
-   "sha256": "686f2439dad861f14d14e7d1ab65b85eb10d95a8a7c538ca48b711f3518099cf"
+   "rows": 863,
+   "sha256": "6cb138fe5d4b2c4603de91df53a36a95d2136e8986ac20f6bd335adc046ab88f"
   },
   "review.csv": {
-   "rows": 227,
-   "sha256": "7b76a909e661e0cf6484583261ab31d74bb0bf81e2778ec1014bed2c803ec550"
+   "rows": 247,
+   "sha256": "38921199d6e8f7824b7e25baff2ac00886dbe2caba2eaa3dd1284179adc16873"
   },
   "trust_edge.csv": {
-   "rows": 450,
-   "sha256": "dce2ccb46a10b5c6c5ca17e27894c57b18af3d49cb02680176e2d9ca6c7a9ac3"
+   "rows": 475,
+   "sha256": "4b5c0e2c5e366e8465c0ea8a35a1a634c1f7ccc6b511b1fe08703167554d33e1"
   }
  },
  "generator_version": "1.0.0",

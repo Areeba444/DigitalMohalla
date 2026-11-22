@@ -45,12 +45,14 @@ from world import CATEGORIES, TERMINAL, World, set_good_star_weights  # noqa: E4
 TIERS: dict[str, dict[str, Any]] = {
     "mini": dict(communities=["g7", "f10"], bg_users=0, bg_loans=0, cast=True),
     "standard": dict(communities=["g7", "f10", "e7"], bg_users=26, bg_loans=100, cast=True),
+    "extended": dict(communities=["g7", "f10", "e7", "i8"], bg_users=300, bg_loans=2000, cast=True),
     "scale": dict(communities=None, bg_users=2000, bg_loans=12000, cast=False),
 }
 COMMUNITY_NAMES = {
     "g7": "Sector G-7 (synthetic)",
     "f10": "Sector F-10 (synthetic)",
     "e7": "Sector E-7 (synthetic)",
+    "i8": "Sector I-8 (synthetic)",
 }
 ATTACK_KINDS = {
     "rating_ring",
@@ -103,6 +105,14 @@ def build_world(
 
 
 # ----------------------------------------------------------------------------- tables
+
+
+def _alias_for_uid(w: World, user_id: str) -> str:
+    """Reverse lookup: user UUID → alias. Used for locality overrides."""
+    for u in w.users.values():
+        if u.id == user_id:
+            return u.alias
+    return ""
 
 
 def _evidence_level(w: World, alias: str) -> tuple[str, int]:
@@ -395,14 +405,29 @@ def write_tables(w: World, out: Path) -> dict[str, int]:
             {
                 "id": uid("locality", m["id"]),
                 "membership_id": m["id"],
-                "method": "MODERATOR_APPROVAL",
-                "outcome": "VERIFIED",
-                "geofence_signal": None,
+                "method": w.locality_overrides.get(_alias_for_uid(w, m["user_id"]), {}).get(
+                    "method", "MODERATOR_APPROVAL"
+                ),
+                "outcome": w.locality_overrides.get(_alias_for_uid(w, m["user_id"]), {}).get(
+                    "outcome", "VERIFIED"
+                ),
+                "geofence_signal": w.locality_overrides.get(
+                    _alias_for_uid(w, m["user_id"]), {}
+                ).get("geofence_signal", None),
                 "invitation_id": None,
-                "permission_refused": False,
-                "mock_provider_detected": False,
+                "permission_refused": w.locality_overrides.get(
+                    _alias_for_uid(w, m["user_id"]), {}
+                ).get("permission_refused", False),
+                "mock_provider_detected": w.locality_overrides.get(
+                    _alias_for_uid(w, m["user_id"]), {}
+                ).get("mock_provider_detected", False),
                 "duplicate_suspected": False,
-                "approved_by": admin.id,
+                "approved_by": admin.id
+                if w.locality_overrides.get(_alias_for_uid(w, m["user_id"]), {}).get(
+                    "outcome", "VERIFIED"
+                )
+                == "VERIFIED"
+                else None,
                 "checked_at": m["decided_at"],
                 # still valid at the reference date, so a fresh request is not held as locality_inconclusive
                 "valid_until": max(

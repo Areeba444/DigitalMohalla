@@ -71,8 +71,8 @@ From the Overview's evaluation scenarios (expected states are the team's startin
 | ES-06 | High-value request with weak evidence | REVIEW_RECOMMENDED |
 | ES-07 | Conflicting condition reports | ACTIVE_DISPUTE |
 | ES-08 | Failure to return | ACTIVE_DISPUTE |
-| ES-09 | Location mismatch | REVIEW_RECOMMENDED |
-| ES-10 | Location-permission refusal | INSUFFICIENT_EVIDENCE |
+| ES-09 | Location mismatch | HELD_FOR_REVIEW (locality_conflict); after moderator clearance → REVIEW_RECOMMENDED (R9). TC-113 |
+| ES-10 | Location-permission refusal | HELD_FOR_REVIEW (locality_inconclusive); after moderator clearance → INSUFFICIENT_EVIDENCE (R3). TC-114 |
 | ES-11 | Moderator reversal | REVIEW_RECOMMENDED |
 | ES-12 | Sparse or old history | INSUFFICIENT_EVIDENCE |
 | ES-13 | History with others, none with this lender, reachable by community paths | REVIEW_RECOMMENDED (rule R9) |
@@ -122,7 +122,7 @@ Public data cannot be used directly because it is about other things (ratings, p
 - **Graph shape:** degree distribution, clustering, reciprocity and community structure of a real trust network, to shape the simulated community graph.
 - **Rating behaviour:** how ratings are distributed, how often people rate back, how long reviews take to arrive.
 - **Timing:** gaps between interactions and burst patterns, to make the simulated timeline and the "new-account burst" attack more realistic.
-- **Review text similarity:** how similar legitimate reviews naturally are, to set the threshold for the "highly similar reviews" check.
+- **Review text similarity:** how similar legitimate reviews naturally are, to set the threshold for the "highly similar reviews" check. *Calibrated on 2026-11-22 against YelpChi: p99 legit cosine = 0.29; only 1 pair out of 1.1M exceeded 0.70. Threshold confirmed safe.*
 - **Scale:** testing the k-hop search and latency on a graph far larger than 100 users.
 
 What not to do: relabel public data as neighbourhood borrowing data, or report a result from a public dataset as if it described our users.
@@ -131,7 +131,7 @@ What not to do: relabel public data as neighbourhood borrowing data, or report a
 
 | # | Question | Who decides |
 | :--- | :--- | :--- |
-| Q1 | Do we use Epinions, Bitcoin OTC and Alpha, or all three as trust benchmarks? And do we obtain YelpChi for review-spam robustness? | Team, with supervisor (iteration 2) |
+| Q1 | Do we use Epinions, Bitcoin OTC and Alpha, or all three as trust benchmarks? And do we obtain YelpChi for review-spam robustness? | Team, with supervisor (iteration 2). **YelpChi obtained 2026-11-22; calibration complete.** |
 | Q2 | Size and time span of the first simulated dataset we actually use. The current community set has 60 users, 250 transactions and about one year; the plan says 50 to 100 users and 200 to 300 transactions. **Note 2026-10-13:** `neighborhood-sim/standard` has 90 users, 296 loans, 19 months; `mini` 63 users, 190 loans; `scale` 2,026 users on demand. Student 3 agreed to the three tiers | S3 with S2 |
 | Q3 | What ground-truth labels are stored? The community set has a hidden `_trustworthiness` per user and the fraud set has an `is_fraud` row flag; per-account attack labels are missing. **Note 2026-10-13:** `neighborhood-sim/labels/` stores true reliability and attack group per user, attack and fault per loan, attack kind per review, and the expected engine result per scenario case | S2 and S3 |
 | Q4 | Output format of the simulator: the database table shapes in section 2, CSV, or JSON? (Proposal: the table shapes.) The current files are CSV in their own shapes and need a mapping. **Answered 2026-10-13 by Student 3:** CSV in the shapes of `schema.sql`, labels in separate files | S3 |
@@ -160,7 +160,7 @@ Checked 2026-10-12 against the files in `raw/`. "Yes" means the data can supply 
 | D-09 Long enough time spread | `community-neighborhood` | Yes | About one year (but see F12 and F13) |
 | D-10 Mix of evidence levels | `community-neighborhood` | Yes | 24% of borrows have no earlier borrowing by that person, 64% have two or fewer |
 | P-01 to P-03 Public trust graph | `epinions` (`user_rating.txt`), `bitcoin-otc`, `bitcoin-alpha` | Yes | Licences unchecked |
-| P-04 Review text with spam labels | none | No | YelpChi would be needed |
+| P-04 Review text with spam labels | `yelpchi` (Kaggle re-upload) | Yes | 12,412 labelled Yelp reviews (genuine/spam). Calibration confirms 0.70 cosine threshold is safe (0 false positives in 1.1M legit pairs). See `datasets/yelpchi.md` |
 
 ### Claims
 
@@ -181,7 +181,7 @@ Checked 2026-10-12 against the files in `raw/`. "Yes" means the data can supply 
 | ES-05 retaliatory review | No |
 | ES-06 high-value request | No (F3) |
 | ES-07, ES-08 conflicting reports, failure to return | No (no open disputes) |
-| ES-09, ES-10 location mismatch and refusal | No (locality is not in these datasets) |
+| ES-09, ES-10 location mismatch and refusal | Yes (locality geofence + invitation, Locality_Design_A11.md; TC-113, TC-114) |
 | ES-11 moderator reversal | No |
 | ES-13 community paths | Yes |
 
@@ -216,7 +216,7 @@ checks (section 5a of that README). Items marked "engine" are expectations that 
 | C3 false positives on dense clusters | Yes | Family of five: 16 loans, 31 mutual reviews in 80 days, varied text. One case only |
 | C5 newcomers not excluded | Partly | 4 non-attack accounts under 30 days old plus a 58-day-old reliable newcomer; `scale` has many more |
 | ES-01 to ES-08, ES-11, ES-12, ES-13 | Yes | One request per case in `labels/scenario_manifest.csv`, plus ES-03b, ES-06b, ES-13b counter-cases |
-| ES-09, ES-10 location | **No** | Locality method is open |
+| ES-09, ES-10 location | **Yes** | Built in iteration 2 (locality geofence + invitation, Locality_Design_A11.md). Two-step hold-then-clearance model |
 
 Of the earlier "what to build next" list (section 9): item 1 is done (second generator version), item 2 is done in a different form (vouching
 dropped; retaliation, high-value and false-claim cases added as separate scenarios rather than injected into the community set), items 3 and 5

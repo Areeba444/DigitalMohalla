@@ -1,3 +1,5 @@
+> ⚠️ **Superseded.** Manipulation patterns rebuilt as the development attack set in `neighborhood-sim` (ring, burst, farm, padding, false-claim). This card is kept as an audit trail only.
+
 # Dataset card: fraud-scenarios
 
 | Field | Value |

@@ -2,12 +2,12 @@
 
 | Field | Value |
 | :--- | :--- |
-| Short name | `neighborhood-sim` (tiers `mini`, `standard`, `scale`) |
+| Short name | `neighborhood-sim` (tiers `mini`, `standard`, `extended`, `scale`) |
 | Full name | Synthetic Digital Mohalla neighbourhood, version 2: schema-shaped test data with ground truth |
 | Source type | own generated (simulation), **SYNTHETIC**. Shape statistics measured from public trust networks |
-| Status | derived. `mini` and `standard` committed in `derived/`; `scale` built on demand into `interim/` |
+| Status | derived. `mini`, `standard` and `extended` committed in `derived/`; `scale` built on demand into `interim/` |
 | Added by | Claude Code for Student 3, 2026-10-13; reviewed by Fatima Khursheed, Areeba Javed |
-| Last updated | 2026-10-13 |
+| Last updated | 2026-11-22 |
 
 ## 1. Where it comes from
 
@@ -37,7 +37,7 @@
 | Field | Value |
 | :--- | :--- |
 | Format | CSV in the shapes of `schema.sql`, plus `labels/` (ground truth) and `MANIFEST.json` |
-| Size (measured) | `mini`: 63 users, 190 loans, 1,378 events, 813 outcomes. `standard`: 90 users, 286 loans, 2,076 events, 1,192 outcomes, 361 reviews, 28 disputes. `scale`: about 2,000 users and 12,000 loans |
+| Size (measured) | `mini`: 65 users, 203 loans, 1,468 events, 863 outcomes. `standard`: 92 users, 299 loans, 2,166 events, 1,242 outcomes, 356 reviews, 38 disputes. `extended`: 367 users, 2,227 loans, 16,051 events, 8,923 outcomes, 2,424 reviews, 335 disputes. `scale`: about 2,000 users and 12,000 loans |
 | Time span | 2025-05 to 2026-10-01 (18 months) |
 | What one row represents | Per table as in the schema: a user, an item, a loan, one lifecycle event, one verified outcome, and so on |
 
@@ -45,12 +45,10 @@ Files, record shapes, what is left out, and the assumptions: `../generators/READ
 
 ## 3a. Known quality problems
 
-- Background life is small in `standard` (26 sampled users); calibration needs `scale`.
+- Background life is small in `standard` (26 sampled users); calibration needs `extended` or `scale`.
 - Activity is concentrated in recent months; the heavy tail of the public graphs is lighter here (99th-percentile out-degree 4.9 times the mean against 15.6 and 11.4).
 - Review text is composed from phrase banks; the similarity check in `validate.py` is a proxy for the engine's signal.
 - Assumptions A1 to A9 (outcome mapping, payload contents, trust-edge formula, and others) need owner confirmation.
-- ES-05: the fixture and the requirements table disagree on the expected state (R8 against REVIEW_RECOMMENDED).
-- ES-09 and ES-10 are not built (locality method open). Shared-device linkage and location spoofing cannot be expressed in the schema.
 
 ## 4. How it maps to what we need
 
@@ -58,7 +56,7 @@ Compare with `../REQUIREMENTS.md`; the counted evidence is in each tier's `COVER
 
 | We need | Supplied? | How, or what is missing |
 | :--- | :--- | :--- |
-| D-01, D-02 communities and paths | Yes | 3 communities (2 in `mini`), 3 members in two communities, 1,078 two-hop paths with no direct edge |
+| D-01, D-02 communities and paths | Yes | 4 communities in `extended` (2 in `mini`, 3 in `standard`), 22 members in two communities (`extended`), 17,774 two-hop paths with no direct edge |
 | D-03 items and bands | Yes | LOW 77, MEDIUM 23, HIGH 8 (the HIGH items close finding F3) |
 | D-04 lifecycle event streams | Yes | 17 of the 21 event types; every path checked against the transition table and loaded into the real schema |
 | D-05 outcomes | Yes, under A1 | 3 metrics, both roles, 5 flagged for re-evaluation |
@@ -70,7 +68,7 @@ Compare with `../REQUIREMENTS.md`; the counted evidence is in each tier's `COVER
 | C1 | Partly | `standard` has only 26 sampled users, 15 with two or fewer outcome loans; use `scale` |
 | C3 | Yes | Family cluster of five accounts, 16 loans and 31 mutual reviews in 80 days |
 | C5 | Partly | `standard` has 4 non-attack accounts under 30 days old (all reliable) plus the 58-day-old `c5.newcomer`; `scale` has many more |
-| ES-01 to ES-08, ES-11 to ES-13 | Yes | One request waiting for the engine per case, in `labels/scenario_manifest.csv` |
+| ES-01 to ES-13 | Yes | One request waiting for the engine per scenario, in `labels/scenario_manifest.csv`. ES-09/10 added 2026-11-22 (locality conflict / permission refusal, two-step hold-then-clearance model) |
 | P-01 to P-04 | No | Public data only (separate cards) |
 
 ## 5. How we use it
@@ -90,7 +88,7 @@ Compare with `../REQUIREMENTS.md`; the counted evidence is in each tier's `COVER
 
 ## 7. Results and notes
 
-- Checks run on 2026-10-13: `mini` 31,928 passed and `standard` 47,988 passed, 0 failed. Two real defects were found by an earlier full-size run and fixed (cross-community membership timing; item double booking).
+- Checks run on 2026-11-22: `mini` 33,901 passed, `standard` 49,771 passed, `extended` 359,699 passed, 0 failed. Two real defects were found by an earlier full-size run and fixed (cross-community membership timing; item double booking).
 - Two identical builds are byte-identical; the committed files equal a fresh build (`test_dataset_generator.py`).
 - **Loaded into PostgreSQL 16** (the project's real schema): reading the schema's triggers showed the first version broke several of its rules (missing event payloads, wrong order of return checklists, borrower verification level, missing booking and locality rows); all fixed. Now `mini` and `standard` load with foreign keys and CHECK constraints on and every verification passes (`replay_state()`, hash chains, the backend's own replay), and a request made through the real lifecycle service on top of the loaded data completes (`test_dataset_load.py`).
 - The engine has not been run on this data yet.

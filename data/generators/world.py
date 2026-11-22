@@ -204,6 +204,7 @@ class World:
         self.bookings: list[dict[str, Any]] = []
         self._review_keys: set[tuple[str, str]] = set()
         self._rv_grams: dict[str, list[Counter[str]]] = {}
+        self.locality_overrides: dict[str, dict[str, Any]] = {}  # alias -> override fields
 
     # ------------------------------------------------------------------ people and things
 
@@ -677,12 +678,21 @@ class _Timeline:
             "borrower",
             {"item_id": self.it.id, "requested_period": range_literal(start, end)},
         )
+        # For pending requests of users with locality overrides (ES-09/10),
+        # the locality check reflects the current (overridden) outcome.
+        # For historical completed loans, locality was VERIFIED at the time.
+        loc_override = self.w.locality_overrides.get(p.borrower, {})
+        effective_outcome = (
+            loc_override.get("outcome", "VERIFIED")
+            if p.path == "pending" and loc_override
+            else "VERIFIED"
+        )
         self.add(
             "locality_checked",
             "LOCALITY_CHECKED",
             t0 + timedelta(seconds=2),
             "system",
-            {"locality_outcome": "VERIFIED"},
+            {"locality_outcome": effective_outcome},
         )
         if p.path == "pending":  # a request waiting for the engine: used for the scenario cases
             return self._finish()

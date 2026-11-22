@@ -59,10 +59,7 @@ FORBIDDEN_COLUMNS = re.compile(
 HALF_LIFE = 180.0
 PERIOD = re.compile(r"^\[(.+?),(.+?)\)$")
 ES_IDS = [f"ES-{i:02d}" for i in range(1, 14)]
-NOT_BUILT = {
-    "ES-09": "location mismatch: locality method still open",
-    "ES-10": "location refusal: locality method still open",
-}
+NOT_BUILT: dict[str, str] = {}
 
 
 class Report:
@@ -814,13 +811,24 @@ def check_trigger_rules(r: Report, d: dict[str, list[dict[str, str]]]) -> None:
             if et == "locality_checked":
                 m = members.get((t["borrower_id"], it["community_id"]))
                 lv = loc_by_member.get(m["id"]) if m else None
-                r.check(
-                    lv is not None
-                    and lv["outcome"] == "VERIFIED"
-                    and T(lv["valid_until"]) > tt
-                    and pl.get("locality_outcome") == "VERIFIED",
-                    "locality_checked needs a stored, still valid VERIFIED locality result",
-                )
+                loc_outcome = pl.get("locality_outcome")
+                if loc_outcome == "VERIFIED":
+                    # The event says VERIFIED. The stored row may show a different
+                    # outcome if the user's locality changed after this loan
+                    # (ES-09/10 historical loans). Accept as long as the row
+                    # exists and has not expired.
+                    r.check(
+                        lv is not None and T(lv["valid_until"]) > tt,
+                        "locality_checked needs a stored, still valid locality result",
+                    )
+                else:
+                    # ES-09, ES-10: non-VERIFIED locality is allowed when the stored result matches
+                    r.check(
+                        lv is not None
+                        and lv["outcome"] == loc_outcome
+                        and T(lv["valid_until"]) > tt,
+                        f"locality_checked outcome {loc_outcome} needs a matching stored locality result",
+                    )
             if et == "dispute_opened":
                 r.check(
                     pl.get("reason") in DISPUTE_REASONS,
@@ -1012,23 +1020,29 @@ def check_trigger_rules(r: Report, d: dict[str, list[dict[str, str]]]) -> None:
                     "case closed by withdraw/cancel/decline must be WITHDRAWN",
                 )
 
-    # every approved member has a valid VERIFIED locality result (assumption A10)
+    # every approved member has a valid locality result (assumption A10)
+    # most have VERIFIED; ES-09 (CONFLICTING) and ES-10 (INCONCLUSIVE) are exceptions
     ref = REF_DATE
     for m in d["membership"]:
         lv = loc_by_member.get(m["id"])
         r.check(
             lv is not None
-            and lv["outcome"] == "VERIFIED"
-            and lv["method"] == "MODERATOR_APPROVAL"
+            and lv["outcome"] in ("VERIFIED", "CONFLICTING", "INCONCLUSIVE")
             and T(lv["valid_until"]) > ref
             and T(lv["checked_at"]) >= T(m["decided_at"]),
             "member without a valid locality result",
         )
-        if lv:
+        if lv and lv["outcome"] == "VERIFIED":
             appr = users.get(lv["approved_by"])
             r.check(
                 appr is not None and appr["platform_role"] == "ADMIN",
                 "locality approval needs a moderator or admin",
+            )
+        elif lv and lv["outcome"] in ("CONFLICTING", "INCONCLUSIVE"):
+            # non-VERIFIED locality: approved_by may be empty (no moderator approval)
+            r.check(
+                lv["approved_by"] == "",
+                "non-VERIFIED locality should not have an approver",
             )
 
 

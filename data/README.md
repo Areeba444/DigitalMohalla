@@ -65,6 +65,15 @@ This is the honest state after reading the files. Details and evidence are on ea
 - F18: **the schema cannot accept history through its normal rules.** Its triggers stamp each event with the current time, reject requests with past dates, and demand locality and assessment rows. History is therefore loaded by `scripts/load_dataset.py` with the schema's user triggers off, then verified (`verify_event_chain()`, `replay_state()`, the backend's Python replay). This also means anyone who wants realistic history in a demo database must use the loader.
 - F17: `neighborhood-sim` rests on assumptions A1 to A10 (`generators/README.md` section 6), notably the outcome mapping (Student 2) and the trust-edge formula of ADR-0006 (still unsigned).
 
+**Update 2026-11-22.**
+
+- F1: team decision E-1: the truncated file (13.6M rows, 2001–2002) is accepted as sufficient for star-rating distribution statistics. Bitcoin OTC (complete) is used as the primary k-hop benchmark. A third download attempt is not planned.
+- F15: resolved. ES-05 is SUFFICIENT_EVIDENCE (R8) per team decision D13 (13 October). `REQUIREMENTS.md` line 70 matches the fixture and TC-44. No conflict.
+- ES-09 and ES-10 scenarios built in `neighborhood-sim`: locality method decided as geofence + invitation + moderator fallback (Locality_Design_A11.md). Two-step hold-then-clearance model (TC-113, TC-114).
+- Extended tier (300 users, 2,000 loans) added to the generator for white-box and black-box testing.
+- `community-neighborhood` and `fraud-scenarios` marked as superseded in CATALOG.md.
+- YelpChi obtained (Kaggle re-upload, 12,412 reviews). Similarity calibration confirms 0.70 cosine threshold: p99 legit = 0.29, only 1 pair in 1.1M exceeded 0.70. See `datasets/yelpchi.md`.
+
 What looks good: the community dataset has real structure for sparse-evidence testing (replaying it in time order, 24% of borrows happen with no earlier borrowing by that person and 64% with two or fewer), about a year of timestamps (2025-10-17 to 2026-10-11) so recency weighting matters, and a hidden ground-truth column for evaluation. The Bitcoin graphs and Epinions trust file are complete and large enough for k-hop and latency tests.
 
 ## 4. How the Deep Dive document relates to the design
