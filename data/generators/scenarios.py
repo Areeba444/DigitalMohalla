@@ -656,7 +656,7 @@ def build_scenarios(w: World, c1: str, c2: str) -> None:
     _clean_history(w, rng, "es09.borrower", 8, 12, 80, [L1, L2, L3], "es09")
     # Set locality override: GPS outside the boundary → CONFLICTING
     w.locality_overrides["es09.borrower"] = {
-        "method": "GEOFENCE",
+        "method": "GEOFENCE_INVITATION",
         "outcome": "CONFLICTING",
         "geofence_signal": "OUTSIDE",
         "permission_refused": False,
@@ -691,7 +691,7 @@ def build_scenarios(w: World, c1: str, c2: str) -> None:
     cast_user(w, "es10.borrower", c1, 14, archetype="newcomer_cast", p_on_time=0.88, p_cond=0.90)
     # Set locality override: permission refused → INCONCLUSIVE
     w.locality_overrides["es10.borrower"] = {
-        "method": "GEOFENCE",
+        "method": "GEOFENCE_INVITATION",
         "outcome": "INCONCLUSIVE",
         "geofence_signal": "UNAVAILABLE",
         "permission_refused": True,
