@@ -100,6 +100,8 @@ def test_scenario_manifest_covers_the_scenarios(built: dict[str, Path]) -> None:
         "ES-06",
         "ES-07",
         "ES-08",
+        "ES-09",
+        "ES-10",
         "ES-11",
         "ES-12",
         "ES-13",
@@ -107,9 +109,6 @@ def test_scenario_manifest_covers_the_scenarios(built: dict[str, Path]) -> None:
         "C5",
     ):
         assert f"\n{sid}," in "\n" + rows, sid
-    assert (
-        "ES-09" not in rows and "ES-10" not in rows
-    )  # locality method is still open: not built on purpose
 
 
 def test_small_scale_build_validates(tmp_path: Path) -> None:
