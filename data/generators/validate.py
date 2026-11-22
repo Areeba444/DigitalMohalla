@@ -818,8 +818,7 @@ def check_trigger_rules(r: Report, d: dict[str, list[dict[str, str]]]) -> None:
                     # (ES-09/10 historical loans). Accept as long as the row
                     # exists and has not expired.
                     r.check(
-                        lv is not None
-                        and T(lv["valid_until"]) > tt,
+                        lv is not None and T(lv["valid_until"]) > tt,
                         "locality_checked needs a stored, still valid locality result",
                     )
                 else:

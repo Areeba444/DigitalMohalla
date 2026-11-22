@@ -405,12 +405,12 @@ def write_tables(w: World, out: Path) -> dict[str, int]:
             {
                 "id": uid("locality", m["id"]),
                 "membership_id": m["id"],
-                "method": w.locality_overrides.get(
-                    _alias_for_uid(w, m["user_id"]), {}
-                ).get("method", "MODERATOR_APPROVAL"),
-                "outcome": w.locality_overrides.get(
-                    _alias_for_uid(w, m["user_id"]), {}
-                ).get("outcome", "VERIFIED"),
+                "method": w.locality_overrides.get(_alias_for_uid(w, m["user_id"]), {}).get(
+                    "method", "MODERATOR_APPROVAL"
+                ),
+                "outcome": w.locality_overrides.get(_alias_for_uid(w, m["user_id"]), {}).get(
+                    "outcome", "VERIFIED"
+                ),
                 "geofence_signal": w.locality_overrides.get(
                     _alias_for_uid(w, m["user_id"]), {}
                 ).get("geofence_signal", None),
@@ -423,9 +423,10 @@ def write_tables(w: World, out: Path) -> dict[str, int]:
                 ).get("mock_provider_detected", False),
                 "duplicate_suspected": False,
                 "approved_by": admin.id
-                if w.locality_overrides.get(
-                    _alias_for_uid(w, m["user_id"]), {}
-                ).get("outcome", "VERIFIED") == "VERIFIED"
+                if w.locality_overrides.get(_alias_for_uid(w, m["user_id"]), {}).get(
+                    "outcome", "VERIFIED"
+                )
+                == "VERIFIED"
                 else None,
                 "checked_at": m["decided_at"],
                 # still valid at the reference date, so a fresh request is not held as locality_inconclusive
