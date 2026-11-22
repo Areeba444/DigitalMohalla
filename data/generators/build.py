@@ -61,6 +61,55 @@ ATTACK_KINDS = {
 }
 
 
+def locality_rows(m: dict[str, Any], w: Any, admin: Any) -> list[dict[str, Any]]:
+    """The stored coarse locality results of one membership (no coordinates, NFR-PR-01).
+
+    Everyone has a VERIFIED moderator approval. The two scenario casts have a later re-check on the
+    reference date: ES-09 (tag `locality_conflicting`: signal OUTSIDE the community boundary) and
+    ES-10 (tag `locality_refused`: permission refused, signal UNAVAILABLE). The latest valid row
+    decides (locality_outcome_for), and both follow the schema's locality_rule_ck.
+    """
+    tags = next(u.tags for u in w.users.values() if u.id == m["user_id"])
+    base: dict[str, Any] = {
+        "id": uid("locality", m["id"]),
+        "membership_id": m["id"],
+        "method": "MODERATOR_APPROVAL",
+        "outcome": "VERIFIED",
+        "geofence_signal": None,
+        "invitation_id": None,
+        "permission_refused": False,
+        "mock_provider_detected": False,
+        "duplicate_suspected": False,
+        "approved_by": admin.id,
+        "checked_at": m["decided_at"],
+        # still valid at the reference date, so a fresh request is not held as locality_inconclusive
+        "valid_until": max(m["decided_at"] + timedelta(days=365), REF_DATE + timedelta(days=120)),
+    }
+    rows = [base]
+    recheck: dict[str, Any] = {}
+    if "locality_conflicting" in tags:
+        recheck = {"outcome": "CONFLICTING", "geofence_signal": "OUTSIDE"}
+    elif "locality_refused" in tags:
+        recheck = {
+            "outcome": "INCONCLUSIVE",
+            "geofence_signal": "UNAVAILABLE",
+            "permission_refused": True,
+        }
+    if recheck:
+        rows.append(
+            {
+                **base,
+                "id": uid("locality-recheck", m["id"]),
+                "method": "GEOFENCE_INVITATION",
+                "approved_by": None,
+                "checked_at": REF_DATE,
+                "valid_until": REF_DATE + timedelta(days=120),
+                **recheck,
+            }
+        )
+    return rows
+
+
 def build_world(
     tier: str, seed: int = BASE_SEED, users: int | None = None, loans: int | None = None
 ) -> World:
@@ -391,26 +440,7 @@ def write_tables(w: World, out: Path) -> dict[str, int]:
             "checked_at",
             "valid_until",
         ],
-        (
-            {
-                "id": uid("locality", m["id"]),
-                "membership_id": m["id"],
-                "method": "MODERATOR_APPROVAL",
-                "outcome": "VERIFIED",
-                "geofence_signal": None,
-                "invitation_id": None,
-                "permission_refused": False,
-                "mock_provider_detected": False,
-                "duplicate_suspected": False,
-                "approved_by": admin.id,
-                "checked_at": m["decided_at"],
-                # still valid at the reference date, so a fresh request is not held as locality_inconclusive
-                "valid_until": max(
-                    m["decided_at"] + timedelta(days=365), REF_DATE + timedelta(days=120)
-                ),
-            }
-            for m in mem
-        ),
+        (row for m in mem for row in locality_rows(m, w, admin)),
     )
 
     # ---- evidence

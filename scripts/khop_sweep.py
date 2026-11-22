@@ -49,6 +49,22 @@ def read_pairs(folder: Path) -> list[tuple[str, str]]:
         return sorted({(r["lender_id"], r["borrower_id"]) for r in csv.DictReader(f)})
 
 
+def hide_own_edges(
+    graph: dict[str, dict[str, float]], u: str, v: str
+) -> list[tuple[str, str, float]]:
+    """DM06: the pair's own evidence must not count as a path to itself. Removes u -> v and v -> u."""
+    out = []
+    for a, b in ((u, v), (v, u)):
+        if b in graph.get(a, {}):
+            out.append((a, b, graph[a].pop(b)))
+    return out
+
+
+def restore(graph: dict[str, dict[str, float]], hidden: list[tuple[str, str, float]]) -> None:
+    for a, b, w in hidden:
+        graph[a][b] = w
+
+
 def pct(xs: list[float], p: float) -> float:
     s = sorted(xs)
     return s[min(len(s) - 1, int(p * len(s)))]
@@ -61,6 +77,11 @@ def main() -> int:
     ap.add_argument("folder", type=Path)
     ap.add_argument("--sample", type=int, default=0, help="random pairs to time (0 = all)")
     ap.add_argument("--seed", type=int, default=20261001)
+    ap.add_argument(
+        "--corrected",
+        action="store_true",
+        help="hide the pair's own edges (lender to borrower and back) during its search (DM06)",
+    )
     a = ap.parse_args()
     cfg = load_engine_config()
     section = cfg.section("indirect_trust_alg2")
@@ -79,9 +100,11 @@ def main() -> int:
             indirect_trust(graph, u, v, params, None)
         times, with_path, supported, found = [], 0, 0, []
         for u, v in pairs:
+            hidden = hide_own_edges(graph, u, v) if a.corrected else []
             t0 = time.perf_counter()
             r = indirect_trust(graph, u, v, params, None)
             times.append((time.perf_counter() - t0) * 1000)
+            restore(graph, hidden)
             found.append(r.paths_found)
             with_path += bool(r.paths)
             supported += r.reliability >= rho_sup
@@ -117,12 +140,13 @@ def main() -> int:
         "seed": manifest.get("seed"),
         "generator_version": manifest.get("generator_version"),
         "synthetic": True,
+        "pair_own_edges_hidden": a.corrected,
         "nodes_with_out_edges": len(graph),
         "edges": sum(len(n) for n in graph.values()),
         "machine": f"{platform.system()} {platform.machine()}, Python {platform.python_version()}",
     }
     OUT.mkdir(parents=True, exist_ok=True)
-    stem = f"khop_sweep_{meta['tier']}_{cfg.config_version}"
+    stem = f"khop_sweep_{meta['tier']}_{cfg.config_version}" + ("_corrected" if a.corrected else "")
     (OUT / f"{stem}.json").write_text(
         json.dumps({"meta": meta, "rows": rows}, indent=1) + "\n", encoding="utf-8"
     )
@@ -143,8 +167,13 @@ def main() -> int:
             for r in rows
         ],
         "",
-        "Pairs are the (lender, borrower) pairs of the tier's loans, so many already have a direct edge (a 1-hop path); "
-        "coverage at k = 1 is that share. Latency is one in-memory search per pair on this machine; the graph is read once.",
+        "Pairs are the (lender, borrower) pairs of the tier's loans. "
+        + (
+            "Corrected run (DM06): each pair's own edges are hidden, so coverage counts only paths through other members."
+            if a.corrected
+            else "Many pairs already have a direct edge (a 1-hop path); coverage at k = 1 is that share, so this run overstates indirect coverage (DM06)."
+        )
+        + "  Latency is one in-memory search per pair on this machine; the graph is read once.",
     ]
     (OUT / f"{stem}.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
     print("\n".join(lines))

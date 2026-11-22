@@ -96,6 +96,8 @@ def send_request(
 
 
 CASES = [c for c in manifest().values() if c["case_id"] in FACTS]
+HOLDS = {"ES-09": "locality_conflict", "ES-10": "locality_inconclusive"}  # TC-113, TC-114
+LOCALITY_CASES = [c for c in manifest().values() if c["case_id"] in HOLDS]
 
 
 @pytest.mark.parametrize("case", CASES, ids=[c["case_id"] for c in CASES])
@@ -137,6 +139,35 @@ def test_tc38_dense_family_group_is_level_3_and_not_held(mini_db: Engine) -> Non
     assert_no_verdict(assessment["explanation"])
 
 
-def test_every_target_scenario_is_in_the_dataset() -> None:  # NFR-Q-01: 7 of 7 at Mid-1
-    ids = {c["case_id"] for c in CASES}
+def test_every_target_scenario_is_in_the_dataset() -> None:  # NFR-Q-01
+    ids = {c["case_id"] for c in CASES} | {c["case_id"] for c in LOCALITY_CASES}
     assert {"ES-01", "ES-02", "ES-03", "ES-05", "ES-06", "ES-13", "ES-13b"} <= ids
+    assert {"ES-07", "ES-08", "ES-09", "ES-10", "ES-11", "ES-12"} <= ids  # 13 of 13 with ES-04
+
+
+@pytest.mark.parametrize("case", LOCALITY_CASES, ids=[c["case_id"] for c in LOCALITY_CASES])
+def test_locality_hold_stops_the_request_before_the_engine(
+    mini_db: Engine, case: dict[str, str]
+) -> None:
+    """ES-09 (stored locality CONFLICTING) and ES-10 (permission refused, INCONCLUSIVE): the
+    request is held for review with the matching reason, no assessment is stored, a moderator case
+    is opened, and no coordinate is read (TC-113, TC-114; NFR-PR-01). Rolled back."""
+    as_of = datetime.fromisoformat(case["as_of"])
+    engine = AssuranceEngine(PostgresEvidenceSource(lambda: mini_db), CFG, clock=lambda: as_of)
+    with mini_db.connect() as conn:
+        outer = conn.begin()
+        try:
+            start = datetime.now(UTC).replace(microsecond=0) + timedelta(days=90)
+            period = f"[{start.isoformat()},{(start + timedelta(days=2)).isoformat()})"
+            store = PostgresLifecycleStore(conn)
+            service = BorrowingService(
+                store, engine, PostgresAuditLog(mini_db), config_version=CFG.config_version
+            )
+            result = service.create_request(
+                Actor(UUID(case["borrower_id"])), UUID(case["item_id"]), period, "synthetic"
+            )
+            assert str(result.state) == "HELD_FOR_REVIEW" == case["expected_lifecycle"]
+            assert result.hold_reason == HOLDS[case["case_id"]]
+            assert store.latest_assessment(result.transaction_id) is None  # the engine did not run
+        finally:
+            outer.rollback()

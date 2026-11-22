@@ -18,6 +18,7 @@ from sqlalchemy.exc import SQLAlchemyError
 
 from app.api import schemas
 from app.api.deps import current_actor, get_engine
+from app.api.factors import lender_evidence, lender_ranking_values
 from app.config.engine_config import load_engine_config
 from app.domain.lifecycle.service import Actor
 from app.domain.search.embedding import ModelUnavailable, to_pgvector
@@ -37,13 +38,17 @@ def _day(d: date | None) -> datetime | None:
 
 
 def search_service(conn: Connection) -> SearchService:
-    retrieval = load_engine_config().section("ranking_alg5")["retrieval"]
+    ranking = load_engine_config().section("ranking_alg5")
+    retrieval = ranking["retrieval"]
     return SearchService(
         PostgresSearchStore(conn),
         min_relevance=float(retrieval["min_relevance"]),
         candidate_pool=int(retrieval["candidate_pool"]),
         semantic_weight=float(retrieval["relevance_mix"]["semantic"]),
         keyword_weight=float(retrieval["relevance_mix"]["keyword"]),
+        weights={k: float(v) for k, v in ranking["weights"].items() if k != "source"},
+        freshness_half_life_days=float(ranking["freshness"]["half_life_days"]),
+        lender_value=lambda owners: lender_ranking_values(conn, owners),
     )
 
 
@@ -132,14 +137,21 @@ def search(
         )
     latency_ms = int((time.perf_counter() - started) * 1000)
     query_id = _log(engine, actor, q, filters, sort, found, latency_ms, page)
+    with engine.connect() as conn:
+        evidence = lender_evidence(conn, sorted({r["owner_id"] for r in found.results}, key=str))
     return schemas.SearchOut(
         query_id=query_id,
         mode=found.mode,
         total=found.total,
         results=[
             schemas.SearchResultOut(
-                **{k: r[k] for k in schemas.SearchResultOut.model_fields if k in r},
+                **{
+                    k: r[k]
+                    for k in schemas.SearchResultOut.model_fields
+                    if k in r and k != "lender_evidence"
+                },
                 item_id=r["id"],
+                lender_evidence=evidence[r["owner_id"]],
             )
             for r in found.results
         ],

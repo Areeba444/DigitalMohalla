@@ -38,6 +38,30 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/auth/register": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Register Account
+         * @description UC-A1 / FR-A-01: create the account (PENDING_VERIFICATION) and record the terms. The same
+         *     202 reply comes back whether or not the e-mail was already registered. The password is hashed
+         *     before the e-mail is looked at, so the response time does not give it away either. The OTP step
+         *     (UC-A9) is iteration 3; until it exists (config registration_a1.otp_built=false) the account may
+         *     sign in and request to join, and approval in a community activates it. Documented interim.
+         */
+        post: operations["register_account_api_v1_auth_register_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/items/{item_id}": {
         parameters: {
             query?: never;
@@ -814,6 +838,57 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/admin/audit": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Audit Log */
+        get: operations["audit_log_api_v1_admin_audit_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/audit/{source}/{entry_id}/unmask": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Unmask Entry */
+        post: operations["unmask_entry_api_v1_admin_audit__source___entry_id__unmask_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/me/evidence": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** My Evidence */
+        get: operations["my_evidence_api_v1_me_evidence_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -917,6 +992,70 @@ export interface components {
             url: string;
             /** Expires At */
             expires_at: number;
+        };
+        /** AuditConcentrationOut */
+        AuditConcentrationOut: {
+            /** Moderator */
+            moderator: string;
+            /** Member */
+            member: string;
+            /** Decisions */
+            decisions: number;
+            /** Share */
+            share: number;
+        };
+        /** AuditEntryOut */
+        AuditEntryOut: {
+            /** Source */
+            source: string;
+            /** Id */
+            id: number;
+            /** Occurred At */
+            occurred_at: string;
+            /** Action */
+            action: string;
+            /** Category */
+            category: string;
+            /** Actor */
+            actor: string | null;
+            /** Authorisation */
+            authorisation: string;
+            /** Target Type */
+            target_type: string;
+            /** Target Id */
+            target_id: string;
+            /** Outcome */
+            outcome: string;
+            /** Summary */
+            summary: string;
+            /** Previous Value */
+            previous_value?: unknown;
+            /** New Value */
+            new_value?: unknown;
+            /** Reason */
+            reason?: string | null;
+            /** Hash Valid */
+            hash_valid: boolean;
+            /** Masked */
+            masked: boolean;
+        };
+        /** AuditPageOut */
+        AuditPageOut: {
+            /** Entries */
+            entries: components["schemas"]["AuditEntryOut"][];
+            /** Tampered */
+            tampered: number;
+            /** Concentration */
+            concentration: components["schemas"]["AuditConcentrationOut"][];
+            /** Limit */
+            limit: number;
+            /** Offset */
+            offset: number;
+        };
+        /** AuditUnmaskIn */
+        AuditUnmaskIn: {
+            /** Purpose */
+            purpose: string;
         };
         /** BrowseItemOut */
         BrowseItemOut: {
@@ -1252,6 +1391,30 @@ export interface components {
             reason?: string | null;
         };
         /**
+         * FactorOut
+         * @description One factor: never a score. Detail is absent when there are too few loans (FR-T-08).
+         */
+        FactorOut: {
+            /** Metric */
+            metric: string;
+            /** Label */
+            label: string;
+            /** Verified Loans */
+            verified_loans: number;
+            /** Enough */
+            enough: boolean;
+            /** Estimate */
+            estimate?: number | null;
+            /** Interval Low */
+            interval_low?: number | null;
+            /** Interval High */
+            interval_high?: number | null;
+            /** Confidence */
+            confidence: string;
+            /** Note */
+            note: string;
+        };
+        /**
          * FixIn
          * @description One-time device fix. Evaluated in memory by the LocalityVerifier and then dropped: it is
          *     never stored, logged or returned (NFR-PR-01, sequence (d)).
@@ -1378,6 +1541,7 @@ export interface components {
             is_yours: boolean;
             /** Booked Periods */
             booked_periods: string[];
+            lender_evidence?: components["schemas"]["LenderEvidenceOut"] | null;
         };
         /**
          * ItemPhotoForm
@@ -1441,6 +1605,18 @@ export interface components {
             /** Status */
             status: string;
             locality: components["schemas"]["LocalityOut"];
+        };
+        /**
+         * LenderEvidenceOut
+         * @description B4: the lender's evidence on the item screen and in search (FR-S-04).
+         */
+        LenderEvidenceOut: {
+            /** Has History */
+            has_history: boolean;
+            /** Summary */
+            summary: string;
+            /** Factors */
+            factors: components["schemas"]["FactorOut"][];
         };
         /** LenderRequestOut */
         LenderRequestOut: {
@@ -1704,6 +1880,16 @@ export interface components {
              */
             statements: components["schemas"]["StatementOut"][];
         };
+        /**
+         * MyEvidenceOut
+         * @description D2: the member's own evidence, per role, factor by factor (FR-T-08, NFR-U-01).
+         */
+        MyEvidenceOut: {
+            /** Roles */
+            roles: components["schemas"]["RoleEvidenceOut"][];
+            /** Note */
+            note: string;
+        };
         /** MyListingOut */
         MyListingOut: {
             /**
@@ -1787,6 +1973,26 @@ export interface components {
             via: string[];
             /** Strength */
             strength: number;
+        };
+        /**
+         * RegisterIn
+         * @description UC-A1 step 2: the form. The e-mail format and the password rules are checked by the
+         *     registration rules, so the reply can say what to fix without echoing the password.
+         */
+        RegisterIn: {
+            /** Display Name */
+            display_name: string;
+            /** Email */
+            email: string;
+            /** Password */
+            password: string;
+            /** Accepted Terms */
+            accepted_terms: boolean;
+        };
+        /** RegisterOut */
+        RegisterOut: {
+            /** Message */
+            message: string;
         };
         /** ReportOut */
         ReportOut: {
@@ -1910,6 +2116,16 @@ export interface components {
              */
             editable_until: string;
         };
+        /** RoleEvidenceOut */
+        RoleEvidenceOut: {
+            /**
+             * Role
+             * @enum {string}
+             */
+            role: "BORROWER" | "LENDER";
+            /** Factors */
+            factors: components["schemas"]["FactorOut"][];
+        };
         /** SearchOut */
         SearchOut: {
             /** Query Id */
@@ -1955,6 +2171,7 @@ export interface components {
             available: boolean | null;
             /** Reason */
             reason: string;
+            lender_evidence?: components["schemas"]["LenderEvidenceOut"] | null;
         };
         /** StatementCreatedOut */
         StatementCreatedOut: {
@@ -2067,6 +2284,39 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["TokenOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    register_account_api_v1_auth_register_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RegisterIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RegisterOut"];
                 };
             };
             /** @description Validation Error */
@@ -3632,6 +3882,100 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    audit_log_api_v1_admin_audit_get: {
+        parameters: {
+            query?: {
+                actor?: string | null;
+                target?: string | null;
+                action?: string | null;
+                result?: ("SUCCESS" | "REJECTED") | null;
+                from?: string | null;
+                to?: string | null;
+                limit?: number;
+                offset?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuditPageOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    unmask_entry_api_v1_admin_audit__source___entry_id__unmask_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                source: "event" | "audit";
+                entry_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AuditUnmaskIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuditEntryOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    my_evidence_api_v1_me_evidence_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MyEvidenceOut"];
                 };
             };
         };

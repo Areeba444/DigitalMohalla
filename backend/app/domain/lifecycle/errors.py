@@ -24,3 +24,8 @@ class DatesTaken(EventStoreError):
 
 class StreamNotFound(EventStoreError):
     """No transaction with this id."""
+
+
+class DuplicateRequest(EventStoreError):
+    """An identical request from the same borrower for the same item and dates is already pending
+    (guard G1, UC-B5 ext 3b, FR-B-06)."""

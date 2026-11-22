@@ -37,6 +37,20 @@ class StrictIn(BaseModel):
         return data
 
 
+class RegisterIn(StrictIn):
+    """UC-A1 step 2: the form. The e-mail format and the password rules are checked by the
+    registration rules, so the reply can say what to fix without echoing the password."""
+
+    display_name: str = Field(max_length=200)
+    email: str = Field(max_length=320)
+    password: str = Field(max_length=256)
+    accepted_terms: bool
+
+
+class RegisterOut(BaseModel):
+    message: str
+
+
 class LoginIn(StrictIn):
     email: str
     password: str
@@ -391,10 +405,48 @@ class MyListingOut(BaseModel):
     updated_at: datetime
 
 
+# ----------------------------------------------------------------------------- evidence factors (D2, B4)
+class FactorOut(BaseModel):
+    """One factor: never a score. Detail is absent when there are too few loans (FR-T-08)."""
+
+    metric: str
+    label: str
+    verified_loans: int
+    enough: bool
+    estimate: float | None = (
+        None  # on-time rate, condition rate or dispute-free rate; only when enough
+    )
+    interval_low: float | None = None
+    interval_high: float | None = None
+    confidence: str
+    note: str
+
+
+class RoleEvidenceOut(BaseModel):
+    role: Literal["BORROWER", "LENDER"]
+    factors: list[FactorOut]
+
+
+class MyEvidenceOut(BaseModel):
+    """D2: the member's own evidence, per role, factor by factor (FR-T-08, NFR-U-01)."""
+
+    roles: list[RoleEvidenceOut]
+    note: str
+
+
+class LenderEvidenceOut(BaseModel):
+    """B4: the lender's evidence on the item screen and in search (FR-S-04)."""
+
+    has_history: bool
+    summary: str
+    factors: list[FactorOut]
+
+
 class ItemOut(ListingOut):
     """GET /items/{id}: the listing plus the dates already booked (B4, B5 step 1)."""
 
     booked_periods: list[str]
+    lender_evidence: LenderEvidenceOut | None = None  # None for the lender's own listing
 
 
 # ----------------------------------------------------------------------------- notifications (G3)
@@ -621,6 +673,7 @@ class SearchResultOut(BaseModel):
     same_community: bool
     available: bool | None  # true when dates were given (booked items are filtered out)
     reason: str
+    lender_evidence: LenderEvidenceOut | None = None
 
 
 class SearchOut(BaseModel):
@@ -636,3 +689,42 @@ class ClickIn(StrictIn):
 
 class ClickOut(BaseModel):
     id: UUID
+
+
+# ----------------------------------------------------------------------------- audit log (I6)
+class AuditEntryOut(BaseModel):
+    source: str
+    id: int
+    occurred_at: str
+    action: str
+    category: str
+    actor: str | None
+    authorisation: str
+    target_type: str
+    target_id: str
+    outcome: str
+    summary: str
+    previous_value: Any = None
+    new_value: Any = None
+    reason: str | None = None
+    hash_valid: bool
+    masked: bool
+
+
+class AuditConcentrationOut(BaseModel):
+    moderator: str
+    member: str
+    decisions: int
+    share: float
+
+
+class AuditPageOut(BaseModel):
+    entries: list[AuditEntryOut]
+    tampered: int  # entries on this page whose hash check failed (UC-I6 ext 3c)
+    concentration: list[AuditConcentrationOut]
+    limit: int
+    offset: int
+
+
+class AuditUnmaskIn(StrictIn):
+    purpose: str = Field(min_length=10, max_length=500)

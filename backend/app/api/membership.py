@@ -39,6 +39,7 @@ def _service(conn: Connection, engine: Engine) -> MembershipService:
         cfg,
         now=datetime.now(UTC),
         notifier=PostgresNotifier(conn),
+        otp_built=bool(load_engine_config().section("registration_a1")["otp_built"]),
     )
 
 

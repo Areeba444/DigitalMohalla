@@ -50,6 +50,12 @@ _LOCALITY_HOLD = {"INCONCLUSIVE": "locality_inconclusive", "CONFLICTING": "local
 _engine_pool = ThreadPoolExecutor(max_workers=4, thread_name_prefix="assess")
 
 
+RESTRICTED_ITEM_MESSAGE = (
+    "This item needs a higher verification level than your account has. "
+    "Being approved as a member of the community raises it."
+)
+
+
 @dataclass(frozen=True)
 class Actor:
     user_id: UUID
@@ -97,13 +103,20 @@ class BorrowingService:
         stored coarse result. Lands in ASSESSED, or HELD_FOR_REVIEW with a recorded reason.
         """
         item = self.store.item(item_id)
-        txn_id = self.store.create_request(
-            item_id=item_id,
-            borrower_id=actor.user_id,
-            lender_id=item["owner_id"],
-            period=period,
-            message=message,
-        )
+        try:
+            txn_id = self.store.create_request(
+                item_id=item_id,
+                borrower_id=actor.user_id,
+                lender_id=item["owner_id"],
+                period=period,
+                message=message,
+            )
+        except InvalidTransition as exc:
+            if "not verified to the level this item requires" in str(exc):
+                # FR-B-02: a restricted item needs a higher verification level. The message says
+                # what is needed, never why the rule exists or anything about the member.
+                raise NotAuthorised(RESTRICTED_ITEM_MESSAGE) from exc
+            raise
         return self._locality_and_assessment(txn_id)
 
     def _locality_and_assessment(self, txn_id: UUID) -> CommandResult:

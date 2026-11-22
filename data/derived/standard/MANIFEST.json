@@ -2,16 +2,16 @@
  "about": "SYNTHETIC data for testing Digital Mohalla. No real person, address or identifier. Not real fraud data.",
  "files": {
   "app_user.csv": {
-   "rows": 90,
-   "sha256": "366397aae6b17d8b967bb9dc19a24af100d804bc76c4a9cfda69178bf3d0fa08"
+   "rows": 92,
+   "sha256": "151a335571f488d4a90b8a3f6925165df2f5f1f36dfd623434c09c51c34401b7"
   },
   "booking.csv": {
-   "rows": 251,
-   "sha256": "44fe39001f96e6f292bcc7a623368a2219472f4216cee2d9a3fa65affa815fca"
+   "rows": 261,
+   "sha256": "0ed3908273f047486b4f7383fab0452caeb6dcd526c05032175c79ed76ae9525"
   },
   "borrowing_transaction.csv": {
-   "rows": 289,
-   "sha256": "b495e5e68a5a4b8ef839d3aa26f2ef217ce2e340433a3e3d7c3dfc3e4b82f456"
+   "rows": 295,
+   "sha256": "6ad14a32c7b33c71c61754ec6459a53806cff8aa417a87213dbf1e41ba07db67"
   },
   "category.csv": {
    "rows": 7,
@@ -22,12 +22,12 @@
    "sha256": "957e05cb6fdb7f7ac6737d8e9ed18bfa0f44d2eb710aa4b54467790a19a151ff"
   },
   "condition_report.csv": {
-   "rows": 954,
-   "sha256": "406206a4cf768ece2b40b7704097e2f96a222b761c16023cd73b5696a0a7a90b"
+   "rows": 990,
+   "sha256": "f1c2ecc997bbf0c92cce1619e39315d10fce3f57b3517acedc48191c23515882"
   },
   "escalation_case.csv": {
-   "rows": 40,
-   "sha256": "36c51ccf57ee71876b7f120afe6c1a41e8ae13dac3917c00694d415c9df5674e"
+   "rows": 38,
+   "sha256": "2da1f2f24468c4bc1622c508ed848dcccf89d18275e8735b1adf1f4d7bacb692"
   },
   "item.csv": {
    "rows": 108,
@@ -38,48 +38,48 @@
    "sha256": "4e8a9b4aadca6919995f710f9a98574a6b828a1c42dd4bcf52ae7126c83bb515"
   },
   "labels/review_truth.csv": {
-   "rows": 332,
-   "sha256": "074a89f154008a6e67c847dc1057c106b03a1dd0d34608bee9646ff2f5676eab"
+   "rows": 352,
+   "sha256": "a43c48f40556bd4719a94c27b7cc7098b1b8d9bc0a2847a591ff3d77fded94c9"
   },
   "labels/scenario_manifest.csv": {
-   "rows": 20,
-   "sha256": "f6a847898adea85356968c1423f162e63257e2ccf94ff0212a785497487a90eb"
+   "rows": 22,
+   "sha256": "7aebf32185715bde9744c65c004b6dd7a8461b60969ec76c903cce00941b422b"
   },
   "labels/transaction_truth.csv": {
-   "rows": 289,
-   "sha256": "68cde2e0c34ee2378615fb997b37d354de413ee3eb8c9da82063c99ecb1a34c7"
+   "rows": 295,
+   "sha256": "7f64b6ce64a902d49df370247a73eea27f74a63852ca468900d83edaa2e75865"
   },
   "labels/user_truth.csv": {
-   "rows": 90,
-   "sha256": "de21b4e1e24854a66d9bf572aa2cd129374613eb0085741d1c0011013e9fc4dc"
+   "rows": 92,
+   "sha256": "c1d44c18674132b5e0afcdd076987ca33fd998ddf806c9f384f2495a817a12e0"
   },
   "lifecycle_event.csv": {
-   "rows": 2074,
-   "sha256": "8fdcbada39a7de3dc7f651b1f6f37c07a9630b000ec2d06538bae84f5d28cd15"
+   "rows": 2136,
+   "sha256": "97da559e4d9da0695b54313bb73eb069bcb44d32dabdf2908b35c0c4f32e77d9"
   },
   "locality_verification.csv": {
-   "rows": 92,
-   "sha256": "9252454da66da02d39a8610d208f6921a02fb2ce0fd10fb7bc420bcfe3dde208"
+   "rows": 96,
+   "sha256": "353cac752c588d89586ce01d9511722813452183129da7f91d77be5547f12309"
   },
   "membership.csv": {
-   "rows": 92,
-   "sha256": "8c4bf7f8a548e499cb176b11629a2afaf510c6a078d29c89c663e246d7847ee1"
+   "rows": 94,
+   "sha256": "c8f1726e7c2f35f335b4816fa032b978b5990649ea8e0b717632fe4669c8579d"
   },
   "moderator_decision.csv": {
-   "rows": 37,
-   "sha256": "3037c6f490e60387d28d1ea42e30380e0077248628769ab41f5428116d3381a6"
+   "rows": 35,
+   "sha256": "9a434738ac68e8bfd558f4731fa6a0b72b6f1ef3e69ad528d1078810f8b10106"
   },
   "outcome.csv": {
-   "rows": 1172,
-   "sha256": "83e37151923e4b5e870492a3ef2a53fea3180330874da77179e197f942bec0ec"
+   "rows": 1227,
+   "sha256": "2db685dafd2acf67df3bb26dabef61f9793fe4d50a2654b159cd0464f84f4e38"
   },
   "review.csv": {
-   "rows": 332,
-   "sha256": "f676c36a9c1f200cf60c1d416c102fdf220241723b84516b3fb0ccf353a02d48"
+   "rows": 352,
+   "sha256": "fd669ebc4e5b3567144dc618c4888649bd6d2176d729086e0727548782547fbf"
   },
   "trust_edge.csv": {
-   "rows": 670,
-   "sha256": "40359014ed13dd34613db0f9c42b8ef7bfec70158841e8db70a6969f3218b7a4"
+   "rows": 703,
+   "sha256": "4a17e55bea1683acb8dc80d6e7dbd12ef14e96d0db5deeac084ed9244fb392dc"
   }
  },
  "generator_version": "1.0.0",

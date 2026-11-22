@@ -65,6 +65,45 @@
         }
       }
     },
+    "/api/v1/auth/register": {
+      "post": {
+        "summary": "Register Account",
+        "description": "UC-A1 / FR-A-01: create the account (PENDING_VERIFICATION) and record the terms. The same\n202 reply comes back whether or not the e-mail was already registered. The password is hashed\nbefore the e-mail is looked at, so the response time does not give it away either. The OTP step\n(UC-A9) is iteration 3; until it exists (config registration_a1.otp_built=false) the account may\nsign in and request to join, and approval in a community activates it. Documented interim.",
+        "operationId": "register_account_api_v1_auth_register_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegisterIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "202": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RegisterOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/items/{item_id}": {
       "get": {
         "summary": "Get Item",
@@ -2583,6 +2622,259 @@
           }
         }
       }
+    },
+    "/api/v1/admin/audit": {
+      "get": {
+        "summary": "Audit Log",
+        "operationId": "audit_log_api_v1_admin_audit_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "actor",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Actor"
+            }
+          },
+          {
+            "name": "target",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "maxLength": 100
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Target"
+            }
+          },
+          {
+            "name": "action",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "maxLength": 100,
+                  "pattern": "^[a-z][a-z0-9_]*$"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Action"
+            }
+          },
+          {
+            "name": "result",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "enum": [
+                    "SUCCESS",
+                    "REJECTED"
+                  ],
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Result"
+            }
+          },
+          {
+            "name": "from",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "From"
+            }
+          },
+          {
+            "name": "to",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "To"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "default": 50,
+              "title": "Limit"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0,
+              "title": "Offset"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuditPageOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/audit/{source}/{entry_id}/unmask": {
+      "post": {
+        "summary": "Unmask Entry",
+        "operationId": "unmask_entry_api_v1_admin_audit__source___entry_id__unmask_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "source",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "enum": [
+                "event",
+                "audit"
+              ],
+              "type": "string",
+              "title": "Source"
+            }
+          },
+          {
+            "name": "entry_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Entry Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AuditUnmaskIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuditEntryOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/me/evidence": {
+      "get": {
+        "summary": "My Evidence",
+        "operationId": "my_evidence_api_v1_me_evidence_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MyEvidenceOut"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
     }
   },
   "components": {
@@ -2831,6 +3123,186 @@
           "expires_at"
         ],
         "title": "AttachmentUrlOut"
+      },
+      "AuditConcentrationOut": {
+        "properties": {
+          "moderator": {
+            "type": "string",
+            "title": "Moderator"
+          },
+          "member": {
+            "type": "string",
+            "title": "Member"
+          },
+          "decisions": {
+            "type": "integer",
+            "title": "Decisions"
+          },
+          "share": {
+            "type": "number",
+            "title": "Share"
+          }
+        },
+        "type": "object",
+        "required": [
+          "moderator",
+          "member",
+          "decisions",
+          "share"
+        ],
+        "title": "AuditConcentrationOut"
+      },
+      "AuditEntryOut": {
+        "properties": {
+          "source": {
+            "type": "string",
+            "title": "Source"
+          },
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "occurred_at": {
+            "type": "string",
+            "title": "Occurred At"
+          },
+          "action": {
+            "type": "string",
+            "title": "Action"
+          },
+          "category": {
+            "type": "string",
+            "title": "Category"
+          },
+          "actor": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Actor"
+          },
+          "authorisation": {
+            "type": "string",
+            "title": "Authorisation"
+          },
+          "target_type": {
+            "type": "string",
+            "title": "Target Type"
+          },
+          "target_id": {
+            "type": "string",
+            "title": "Target Id"
+          },
+          "outcome": {
+            "type": "string",
+            "title": "Outcome"
+          },
+          "summary": {
+            "type": "string",
+            "title": "Summary"
+          },
+          "previous_value": {
+            "title": "Previous Value"
+          },
+          "new_value": {
+            "title": "New Value"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason"
+          },
+          "hash_valid": {
+            "type": "boolean",
+            "title": "Hash Valid"
+          },
+          "masked": {
+            "type": "boolean",
+            "title": "Masked"
+          }
+        },
+        "type": "object",
+        "required": [
+          "source",
+          "id",
+          "occurred_at",
+          "action",
+          "category",
+          "actor",
+          "authorisation",
+          "target_type",
+          "target_id",
+          "outcome",
+          "summary",
+          "hash_valid",
+          "masked"
+        ],
+        "title": "AuditEntryOut"
+      },
+      "AuditPageOut": {
+        "properties": {
+          "entries": {
+            "items": {
+              "$ref": "#/components/schemas/AuditEntryOut"
+            },
+            "type": "array",
+            "title": "Entries"
+          },
+          "tampered": {
+            "type": "integer",
+            "title": "Tampered"
+          },
+          "concentration": {
+            "items": {
+              "$ref": "#/components/schemas/AuditConcentrationOut"
+            },
+            "type": "array",
+            "title": "Concentration"
+          },
+          "limit": {
+            "type": "integer",
+            "title": "Limit"
+          },
+          "offset": {
+            "type": "integer",
+            "title": "Offset"
+          }
+        },
+        "type": "object",
+        "required": [
+          "entries",
+          "tampered",
+          "concentration",
+          "limit",
+          "offset"
+        ],
+        "title": "AuditPageOut"
+      },
+      "AuditUnmaskIn": {
+        "properties": {
+          "purpose": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 10,
+            "title": "Purpose"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "purpose"
+        ],
+        "title": "AuditUnmaskIn"
       },
       "BrowseItemOut": {
         "properties": {
@@ -3701,6 +4173,78 @@
         "title": "ExtensionIn",
         "description": "The borrower asks to return later: the new last day, exclusive like `end_date` of a request."
       },
+      "FactorOut": {
+        "properties": {
+          "metric": {
+            "type": "string",
+            "title": "Metric"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "verified_loans": {
+            "type": "integer",
+            "title": "Verified Loans"
+          },
+          "enough": {
+            "type": "boolean",
+            "title": "Enough"
+          },
+          "estimate": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Estimate"
+          },
+          "interval_low": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Interval Low"
+          },
+          "interval_high": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Interval High"
+          },
+          "confidence": {
+            "type": "string",
+            "title": "Confidence"
+          },
+          "note": {
+            "type": "string",
+            "title": "Note"
+          }
+        },
+        "type": "object",
+        "required": [
+          "metric",
+          "label",
+          "verified_loans",
+          "enough",
+          "confidence",
+          "note"
+        ],
+        "title": "FactorOut",
+        "description": "One factor: never a score. Detail is absent when there are too few loans (FR-T-08)."
+      },
       "FixIn": {
         "properties": {
           "lat": {
@@ -3986,6 +4530,16 @@
             },
             "type": "array",
             "title": "Booked Periods"
+          },
+          "lender_evidence": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/LenderEvidenceOut"
+              },
+              {
+                "type": "null"
+              }
+            ]
           }
         },
         "type": "object",
@@ -4167,6 +4721,33 @@
           "locality"
         ],
         "title": "JoinOut"
+      },
+      "LenderEvidenceOut": {
+        "properties": {
+          "has_history": {
+            "type": "boolean",
+            "title": "Has History"
+          },
+          "summary": {
+            "type": "string",
+            "title": "Summary"
+          },
+          "factors": {
+            "items": {
+              "$ref": "#/components/schemas/FactorOut"
+            },
+            "type": "array",
+            "title": "Factors"
+          }
+        },
+        "type": "object",
+        "required": [
+          "has_history",
+          "summary",
+          "factors"
+        ],
+        "title": "LenderEvidenceOut",
+        "description": "B4: the lender's evidence on the item screen and in search (FR-S-04)."
       },
       "LenderRequestOut": {
         "properties": {
@@ -5029,6 +5610,28 @@
         "title": "ModeratorCaseOut",
         "description": "UC-D6 evidence trail for the moderator (W7)."
       },
+      "MyEvidenceOut": {
+        "properties": {
+          "roles": {
+            "items": {
+              "$ref": "#/components/schemas/RoleEvidenceOut"
+            },
+            "type": "array",
+            "title": "Roles"
+          },
+          "note": {
+            "type": "string",
+            "title": "Note"
+          }
+        },
+        "type": "object",
+        "required": [
+          "roles",
+          "note"
+        ],
+        "title": "MyEvidenceOut",
+        "description": "D2: the member's own evidence, per role, factor by factor (FR-T-08, NFR-U-01)."
+      },
       "MyListingOut": {
         "properties": {
           "id": {
@@ -5223,6 +5826,52 @@
         ],
         "title": "PathOut",
         "description": "One community path from the lender to the borrower, by display name only (no user ids)."
+      },
+      "RegisterIn": {
+        "properties": {
+          "display_name": {
+            "type": "string",
+            "maxLength": 200,
+            "title": "Display Name"
+          },
+          "email": {
+            "type": "string",
+            "maxLength": 320,
+            "title": "Email"
+          },
+          "password": {
+            "type": "string",
+            "maxLength": 256,
+            "title": "Password"
+          },
+          "accepted_terms": {
+            "type": "boolean",
+            "title": "Accepted Terms"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "display_name",
+          "email",
+          "password",
+          "accepted_terms"
+        ],
+        "title": "RegisterIn",
+        "description": "UC-A1 step 2: the form. The e-mail format and the password rules are checked by the\nregistration rules, so the reply can say what to fix without echoing the password."
+      },
+      "RegisterOut": {
+        "properties": {
+          "message": {
+            "type": "string",
+            "title": "Message"
+          }
+        },
+        "type": "object",
+        "required": [
+          "message"
+        ],
+        "title": "RegisterOut"
       },
       "ReportOut": {
         "properties": {
@@ -5511,6 +6160,31 @@
         "title": "ReviewOut",
         "description": "The review was stored. Flags are not returned to the reviewer (sequence (f))."
       },
+      "RoleEvidenceOut": {
+        "properties": {
+          "role": {
+            "type": "string",
+            "enum": [
+              "BORROWER",
+              "LENDER"
+            ],
+            "title": "Role"
+          },
+          "factors": {
+            "items": {
+              "$ref": "#/components/schemas/FactorOut"
+            },
+            "type": "array",
+            "title": "Factors"
+          }
+        },
+        "type": "object",
+        "required": [
+          "role",
+          "factors"
+        ],
+        "title": "RoleEvidenceOut"
+      },
       "SearchOut": {
         "properties": {
           "query_id": {
@@ -5614,6 +6288,16 @@
           "reason": {
             "type": "string",
             "title": "Reason"
+          },
+          "lender_evidence": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/LenderEvidenceOut"
+              },
+              {
+                "type": "null"
+              }
+            ]
           }
         },
         "type": "object",

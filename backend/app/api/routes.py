@@ -14,15 +14,22 @@ from app.api import schemas
 from app.api.cases import case_extras
 from app.api.deps import Commands, current_actor, get_commands, get_engine
 from app.api.evidence import assessment_out, intermediaries
+from app.api.factors import lender_evidence
 from app.api.listings import listing_out
+from app.config.engine_config import load_engine_config
 from app.config.settings import get_settings
-from app.domain.accounts.auth import InvalidCredentials, create_token
+from app.domain.accounts.auth import InvalidCredentials, create_token, hash_password
+from app.domain.accounts.registration import (
+    GENERIC_REPLY,
+    InvalidRegistration,
+    validate,
+)
 from app.domain.lifecycle.service import Actor, BorrowingService, CommandResult
 from app.domain.listings.service import ListingService
 from app.domain.moderation.decisions import Decision
 from app.infra.db.evidence import PostgresEvidenceSource
 from app.infra.db.listings import PostgresListingStore
-from app.infra.db.users import authenticate
+from app.infra.db.users import authenticate, register
 from app.infra.eventstore.postgres import PostgresLifecycleStore
 
 router = APIRouter(prefix="/api/v1")
@@ -45,12 +52,32 @@ def login(body: schemas.LoginIn, engine: Engine = Depends(get_engine)) -> schema
         raise HTTPException(status_code=503, detail="login is not configured")
     try:
         with engine.connect() as conn:
-            actor = authenticate(conn, body.email, body.password)
+            interim = not load_engine_config().section("registration_a1")["otp_built"]
+            actor = authenticate(conn, body.email, body.password, allow_pending=interim)
     except InvalidCredentials as exc:
         raise HTTPException(status_code=401, detail="invalid email or password") from exc
     return schemas.TokenOut(
         access_token=create_token(actor, settings.jwt_secret, settings.jwt_minutes)
     )
+
+
+@router.post("/auth/register", response_model=schemas.RegisterOut, status_code=202)
+def register_account(
+    body: schemas.RegisterIn, engine: Engine = Depends(get_engine)
+) -> schemas.RegisterOut:
+    """UC-A1 / FR-A-01: create the account (PENDING_VERIFICATION) and record the terms. The same
+    202 reply comes back whether or not the e-mail was already registered. The password is hashed
+    before the e-mail is looked at, so the response time does not give it away either. The OTP step
+    (UC-A9) is iteration 3; until it exists (config registration_a1.otp_built=false) the account may
+    sign in and request to join, and approval in a community activates it. Documented interim."""
+    try:
+        form = validate(body.display_name, body.email, body.password, body.accepted_terms)
+    except InvalidRegistration as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
+    password_hash = hash_password(form.password)
+    with engine.begin() as conn:
+        register(conn, form.display_name, form.email, password_hash)
+    return schemas.RegisterOut(message=GENERIC_REPLY)
 
 
 # ----------------------------------------------------------------------------- items, requests (B5)
@@ -65,7 +92,15 @@ def get_item(
         listings = ListingService(PostgresListingStore(conn), now=datetime.now(UTC))
         item = listings.get(actor.user_id, item_id)
         booked = PostgresLifecycleStore(conn).booked_periods(item_id)
-    return schemas.ItemOut(**listing_out(item, actor.user_id), booked_periods=booked)
+    evidence = None
+    if (
+        item["owner_id"] != actor.user_id
+    ):  # the lender's own listing shows no evidence about themselves
+        with engine.connect() as conn:
+            evidence = lender_evidence(conn, [item["owner_id"]])[item["owner_id"]]
+    return schemas.ItemOut(
+        **listing_out(item, actor.user_id), booked_periods=booked, lender_evidence=evidence
+    )
 
 
 @router.post("/requests", response_model=schemas.CommandOut, status_code=201)

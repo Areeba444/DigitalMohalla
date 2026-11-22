@@ -40,6 +40,7 @@ ALLOWED_IDS = {
     "case_id",
     "decision_id",
     "query_id",
+    "target_id",  # an audit entry's target: a loan, case or membership, never a person (M5)
 }
 EMAIL = re.compile(r"[\w.+-]+@[\w-]+\.[\w.]+")
 CNIC = re.compile(r"\b\d{5}-?\d{7}-?\d\b")

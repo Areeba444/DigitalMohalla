@@ -23,7 +23,7 @@ WITH q AS (SELECT CASE WHEN :tsq = '' THEN NULL ELSE to_tsquery('simple', :tsq) 
 home AS (SELECT community_id FROM membership WHERE user_id = :m AND status = 'APPROVED'),
 first_home AS (SELECT community_id FROM membership WHERE user_id = :m AND status = 'APPROVED'
                 ORDER BY decided_at NULLS LAST, requested_at, id LIMIT 1)  -- the member's home community
-SELECT i.id, i.title, i.condition::text AS condition, i.value_band::text AS value_band,
+SELECT i.id, i.owner_id, i.title, i.condition::text AS condition, i.value_band::text AS value_band,
        i.deposit_amount, i.created_at, c.name AS community_name, k.name AS category_name,
        u.display_name AS owner_name,
        coalesce(ts_rank_cd(i.search_tsv, q.tsq), 0) + 0.5 * similarity(i.title, :raw) AS keyword,
@@ -60,7 +60,7 @@ WITH q AS (SELECT CASE WHEN :tsq = '' THEN NULL ELSE to_tsquery('simple', :tsq) 
 home AS (SELECT community_id FROM membership WHERE user_id = :m AND status = 'APPROVED'),
 first_home AS (SELECT community_id FROM membership WHERE user_id = :m AND status = 'APPROVED'
                 ORDER BY decided_at NULLS LAST, requested_at, id LIMIT 1)  -- the member's home community
-SELECT i.id, i.title, i.condition::text AS condition, i.value_band::text AS value_band,
+SELECT i.id, i.owner_id, i.title, i.condition::text AS condition, i.value_band::text AS value_band,
        i.deposit_amount, i.created_at, c.name AS community_name, k.name AS category_name,
        u.display_name AS owner_name,
        coalesce(ts_rank_cd(i.search_tsv, q.tsq), 0) + 0.5 * similarity(i.title, :raw) AS keyword,

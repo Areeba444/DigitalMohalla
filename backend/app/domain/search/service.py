@@ -22,12 +22,17 @@ A9 adds the meaning-based half (HYBRID mode): the same eligibility and filters w
 similarity to the query vector; candidates are the top N by meaning, relevance is
 0.7 * meaning + 0.3 * keywords (config), and an item found by meaning alone gets the reason "Similar
 in meaning to your search". With no model, no pgvector or a failing model, search stays
-KEYWORD_ONLY (FR-S-02). A10 adds the re-ranking of Algorithm 5 on top.
+KEYWORD_ONLY (FR-S-02). A10 adds the re-ranking of Algorithm 5 on top: the default sort orders by
+0.40 relevance + 0.30 lender evidence + 0.15 availability + 0.10 same community + 0.05 freshness
+(config ranking_alg5.weights). Lender evidence is the lender's posterior mean when there is enough,
+otherwise the population baseline, so a new lender is never ranked down for having no history; the
+number is internal and never returned (FR-S-04, NFR-U-01).
 """
 
 import re
+from collections.abc import Callable, Mapping
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import UTC, datetime
 from typing import Any, Protocol
 from uuid import UUID
 
@@ -107,12 +112,18 @@ class SearchService:
         candidate_pool: int,
         semantic_weight: float = 0.7,
         keyword_weight: float = 0.3,
+        weights: Mapping[str, float] | None = None,
+        freshness_half_life_days: float = 30.0,
+        lender_value: Callable[[list[UUID]], Mapping[UUID, float]] | None = None,
     ) -> None:
         self.store = store
         self.min_relevance = min_relevance
         self.pool = candidate_pool
         self.w_sem = semantic_weight
         self.w_kw = keyword_weight
+        self.weights = dict(weights) if weights else None
+        self.fresh_half_life = freshness_half_life_days
+        self.lender_value = lender_value
 
     def search(
         self,
@@ -170,8 +181,13 @@ class SearchService:
                     "score_parts": parts,
                 }
             )
+        if self.weights and self.lender_value and results:
+            self._rank(results, filters)
         key = {
-            "relevance": lambda x: (-x["relevance"], -x["created_at"].timestamp()),
+            "relevance": lambda x: (
+                -x.get("rank_score", x["relevance"]),
+                -x["created_at"].timestamp(),
+            ),
             "evidence": lambda x: (-x["lender_loans"], -x["relevance"]),
             "newest": lambda x: (-x["created_at"].timestamp(),),
         }[sort]
@@ -179,3 +195,24 @@ class SearchService:
         start = (page - 1) * PAGE_SIZE
         mode = "HYBRID" if hybrid else "KEYWORD_ONLY"
         return SearchResult(mode, results[start : start + PAGE_SIZE], len(results))
+
+    def _rank(self, results: list[dict[str, Any]], filters: SearchFilters) -> None:
+        """Algorithm 5: add `rank_score` to each result and the feature values to `score_parts`."""
+        if self.weights is None or self.lender_value is None:
+            return
+        w = self.weights
+        values = self.lender_value(sorted({r["owner_id"] for r in results}, key=str))
+        now = datetime.now(UTC)
+        for r in results:
+            age = max(0.0, (now - r["created_at"]).total_seconds() / 86400.0)
+            feats = {
+                "relevance": r["relevance"],
+                "lender_evidence": values.get(r["owner_id"], 0.5),
+                "availability": 1.0
+                if filters.start
+                else 0.5,  # booked items are already filtered out
+                "same_community": 1.0 if r["same_community"] else 0.0,
+                "freshness": 2.0 ** (-age / self.fresh_half_life),
+            }
+            r["rank_score"] = sum(w[k] * v for k, v in feats.items())
+            r["score_parts"].update({k: round(v, 4) for k, v in feats.items() if k != "relevance"})
