@@ -72,6 +72,7 @@ This is the honest state after reading the files. Details and evidence are on ea
 - ES-09 and ES-10 scenarios built in `neighborhood-sim`: locality method decided as geofence + invitation + moderator fallback (Locality_Design_A11.md). Two-step hold-then-clearance model (TC-113, TC-114).
 - Extended tier (300 users, 2,000 loans) added to the generator for white-box and black-box testing.
 - `community-neighborhood` and `fraud-scenarios` marked as superseded in CATALOG.md.
+- YelpChi obtained (Kaggle re-upload, 12,412 reviews). Similarity calibration confirms 0.70 cosine threshold: p99 legit = 0.29, only 1 pair in 1.1M exceeded 0.70. See `datasets/yelpchi.md`.
 
 What looks good: the community dataset has real structure for sparse-evidence testing (replaying it in time order, 24% of borrows happen with no earlier borrowing by that person and 64% with two or fewer), about a year of timestamps (2025-10-17 to 2026-10-11) so recency weighting matters, and a hidden ground-truth column for evaluation. The Bitcoin graphs and Epinions trust file are complete and large enough for k-hop and latency tests.
 

@@ -15,12 +15,13 @@ One row per dataset. Details go on the dataset's own card in `datasets/`. Leave 
 | `fraud-scenarios` | Hand-made attack patterns (rating ring, device sharing, burst, identical text, vouching) plus a legitimate baseline | simulation (own generated) | **superseded** | ours; synthetic | 82 rows: 74 attack, 8 legitimate | [fraud-scenarios](datasets/fraud-scenarios.md) | Superseded by `neighborhood-sim` dev attack set; kept as audit trail |
 | `neighborhood-sim` | Synthetic neighbourhood v2: schema-shaped loans, events, outcomes, reviews, disputes with ground truth, 20 scenario cases, development attack set | derived (own generated, simulation) | derived | ours; synthetic | `mini` 65 users/203 loans; `standard` 92 users/299 loans; `extended` 367 users/2,227 loans; `scale` ~2,000 users/~12,000 loans (on demand) | [neighborhood-sim](datasets/neighborhood-sim.md) | CI tests, scenario suite, calibration, claims C3 and C5 |
 | `custom-dataset1` | Search and matching evaluation set: listings, requests, pooled results, relevance labels, owner trust histories | simulation, **origin to confirm** | obtained | unknown (ours?) | 184 listings, 25 requests, 63 labelled pairs, 60 owner histories | [custom-dataset1](datasets/custom-dataset1.md) | Module 4 search and matching evaluation (NFR-Q-05). Not trust-engine data |
+| `yelpchi` | Yelp Chicago restaurant reviews labelled genuine/spam (Kaggle re-upload of Rayana & Akoglu YelpChi) | other public | obtained | Kaggle terms; cite Rayana & Akoglu KDD 2015 | 12,412 reviews (9,929 train + 2,483 test), 7.2 MB | [yelpchi](datasets/yelpchi.md) | P-04: review-text similarity threshold calibration. Confirmed 0.70 threshold is safe |
 
 ## Datasets the project documents mention that we do not have yet
 
 | Name | Mentioned in | What the document says it is for | Open point |
 | :--- | :--- | :--- | :--- |
-| YelpChi | Context doc §15 | Robustness check for manipulation detection (review spam) | Decide in iteration 2; would help with F5 (no realistic review text in our data) |
+| ~~YelpChi~~ | ~~Context doc §15~~ | ~~Robustness check for manipulation detection (review spam)~~ | **Obtained 2026-11-22** — moved to main table |
 | A public classifieds or e-commerce dataset (OLX-style dump, RetailRocket click and purchase data) | Overview §5 (search and matching, Tier 2) | Only for the later learning-to-rank work in Module 4; not part of the trust engine | Out of scope for iteration 1 |
 | Real pilot data | Overview, Context doc §2 | Acceptance and usability only | Needs consent and privacy protection; not before the pilot |
 
