@@ -33,7 +33,8 @@
 | Checked with supervisor? | No |
 
 > [!IMPORTANT]
-> This is a **Kaggle re-upload**, not the original ODDS release. The text has been preprocessed (stop words removed, lowercased). Cosine values measured from this file will be slightly lower than from raw text. Relative ordering (legit << spam) is preserved.
+> This is a **Kaggle re-upload**, not the original ODDS release. The text has been preprocessed (stop words removed, lowercased). Cosine values measured from this file will be slightly lower than from raw text.
+> Mean cosine on this preprocessed sample: legit 0.137, spam 0.109 — **legit > spam** on this preprocessed sample; ordering may differ on raw text.
 
 ## 3. What is in it
 
@@ -82,7 +83,12 @@ Method: character 3-gram TF-IDF cosine, same as `validate.py`. Sample: 1,500 leg
 | ≥ 0.80 | 0 | 0.000% |
 
 > [!NOTE]
-> The 0.70 threshold used in `validate.py` for the "suspiciously similar legitimate review" check is **confirmed safe** by real Yelp data. Only 1 pair out of 1.1 million legitimate review pairs exceeded 0.70. The threshold could even be raised to 0.80 without increasing false positives.
+> The 0.70 threshold used in `validate.py` for the "suspiciously similar legitimate review" check is supported by this sample: only 1 pair out of 1.1 million legitimate review pairs (0.000%) exceeded 0.70. The threshold could even be raised to 0.80 without increasing false positives on this sample.
+>
+> **Important limits of this result:**
+> - This is a **validator proxy calibration**, not direct engine calibration. The calibration script uses log-TF weighting while the live engine (`manipulation.py`) uses raw TF — values are not directly comparable between the two.
+> - Domain mismatch: YelpChi contains Yelp restaurant reviews; DigitalMohalla reviews are peer borrowing feedback. Similarity distributions may differ.
+> - Do not report this as certifying the live detector — report it as a supporting proxy result with these stated limits.
 >
 > Our synthetic attack groups (ring, farm, burst) have mean cosine 0.82–0.94 (from COVERAGE.md), which is well above the 0.70 threshold and far above any natural baseline.
 

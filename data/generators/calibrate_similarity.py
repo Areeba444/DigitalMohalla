@@ -153,24 +153,42 @@ def run(csv_path: Path) -> str:
     lines.append(f"\n  mean: {sum(spam_sims) / len(spam_sims):.4f}")
 
     lines.append("\n--- Threshold recommendation ---")
-    # Find the highest threshold where < 1% of legit pairs exceed it
+    # DM20 fix: test the target threshold (0.70) directly instead of inferring safety
+    # from a higher threshold passing.  The old code kept overwriting safe_thr with
+    # higher values and then concluded 0.70 was safe if *any* higher threshold was —
+    # logically wrong (a pair with similarity 0.75 would have been missed).
+    TARGET_THR = 0.70
+    target_above_pct = (
+        sum(1 for s in legit_sims if s >= TARGET_THR) / len(legit_sims) * 100
+    )
+    lines.append(f"  Current validate.py legit lookalike threshold: {TARGET_THR:.2f}")
+    lines.append(
+        f"  Legit pairs >= {TARGET_THR:.2f}: {target_above_pct:.4f}%"
+        f"  ({sum(1 for s in legit_sims if s >= TARGET_THR):,} / {len(legit_sims):,} pairs)"
+    )
+    if target_above_pct < 1.0:
+        lines.append(
+            f"  VERDICT: {TARGET_THR:.2f} threshold is SAFE — only {target_above_pct:.4f}%"
+            " of legit pairs exceed it (< 1% false-positive rate)."
+        )
+    else:
+        lines.append(
+            f"  VERDICT: {TARGET_THR:.2f} threshold flags {target_above_pct:.3f}% of legit"
+            " pairs — consider raising it to reduce false positives."
+        )
+    # Also report the highest threshold still meeting the < 1% criterion (informational only)
     safe_thr = None
     for thr in LEGIT_THRESHOLDS:
         above_pct = sum(1 for s in legit_sims if s >= thr) / len(legit_sims) * 100
         if above_pct < 1.0:
             safe_thr = thr
     if safe_thr:
-        lines.append(f"  Highest threshold where < 1% of legit pairs are flagged: {safe_thr:.2f}")
-        lines.append("  Current validate.py legit lookalike threshold: 0.70")
-        if safe_thr >= 0.70:
-            lines.append("  VERDICT: 0.70 threshold is SAFE — confirmed by real data.")
-        else:
-            lines.append(
-                f"  VERDICT: Consider raising threshold to {safe_thr:.2f} to avoid false positives."
-            )
+        lines.append(
+            f"  (Informational) Highest threshold still below 1% false-positive rate: {safe_thr:.2f}"
+        )
     else:
         lines.append(
-            "  VERDICT: All thresholds have >= 1% legit false-positive rate. Review manually."
+            "  (Informational) All tested thresholds have >= 1% legit false-positive rate."
         )
 
     result = "\n".join(lines)
