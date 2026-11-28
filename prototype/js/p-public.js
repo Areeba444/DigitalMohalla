@@ -75,13 +75,13 @@ route("/register", () => ({
   bare: true, title: "Create account",
   html: authShell(`<div class="rv"><span class="eyebrow">Step 1 of 2</span><h1 class="mt-2">Create your account</h1><p class="muted mt-2">You'll join your mohalla right after.</p></div>
     <form id="reg" class="mt-8 rv" style="--d:1" novalidate>
-      <div class="field"><label class="label" for="nm">Full name</label><input class="input" id="nm" autocomplete="name" value="Sana Malik"></div>
+      <div class="field"><label class="label" for="nm">Full name</label><input class="input" id="nm" autocomplete="name" maxlength="200" value="Sana Malik"></div>
       <div class="field"><label class="label" for="em">Email</label><input class="input" id="em" type="email" autocomplete="email" placeholder="you@example.com"></div>
       <div class="field"><label class="label" for="pw">Password</label><div class="input-wrap"><input class="input" id="pw" type="password" autocomplete="new-password" style="padding-right:70px"><button class="btn btn-ghost btn-sm addon" type="button" id="show">Show</button></div>${stepper(0, 4)}<span class="help" id="pwh">At least 8 characters.</span></div>
       <label class="check mt-2"><input type="checkbox" id="tos"><span><span>I agree to the <a class="link" href="#/register">community terms</a> and <a class="link" href="#/register">privacy notice</a>. My exact address is never stored.</span></span></label>
       <div id="rerr" aria-live="polite"></div>
       <button class="btn btn-primary btn-lg btn-block mt-4" type="submit">Create account</button>
-      <p class="xs faint mt-4">${icon("smartphone", "i-sm")} We confirm your email now. Phone verification arrives in iteration 3.</p>
+      <p class="xs faint mt-4">${icon("smartphone", "i-sm")} Email and phone confirmation (one-time codes) arrive in iteration 3.</p>
       <p class="small muted mt-6 center">Already a member? <a class="link" href="#/login">Log in</a></p></form>`),
   after() {
     $("#show").onclick = e => { const p = $("#pw"); p.type = p.type === "password" ? "text" : "password"; e.target.textContent = p.type === "password" ? "Show" : "Hide"; };
@@ -99,10 +99,10 @@ route("/register", () => ({
 }));
 
 route("/verify-email", () => ({
-  bare: true, title: "Check your email",
-  html: authShell(`${done("Check your inbox", "We sent a link to s•••@gmail.com. It's valid for 24 hours. If that address already has an account, we'll email it instead and never say which addresses are registered.")}
-    <div class="stack mt-6"><a class="btn btn-primary btn-lg btn-block" href="#/join">I've opened the link</a><button class="btn btn-outline btn-block" type="button" id="re">Resend link</button></div>`),
-  after() { $("#re").onclick = e => { e.target.disabled = true; e.target.textContent = "Sent · resend again in 60s"; toast("Link sent again"); }; }
+  bare: true, title: "Account created",
+  html: authShell(`${done("Check your e-mail to finish creating your account.", "We give the same reply whether or not the address already has an account, so nobody can find out who is registered.")}
+    <div class="card card-2 row mt-6" style="align-items:flex-start">${tone("flask-conical", "sky", 34)}<p class="small">In this iteration you can sign in straight away. Confirming your e-mail with a one-time code arrives in iteration 3.</p></div>
+    <div class="stack mt-6"><a class="btn btn-primary btn-lg btn-block" href="#/login">Sign in</a></div>`)
 }));
 
 route("/login", () => ({
@@ -117,62 +117,73 @@ route("/login", () => ({
     <div class="btns mt-2"><a class="btn btn-outline btn-sm" href="#/home">${icon("house")}Resident</a><a class="btn btn-outline btn-sm" href="#/mod">${icon("shield-check")}Moderator</a><a class="btn btn-outline btn-sm" href="#/admin">${icon("layout-dashboard")}Admin</a></div>
     <div class="btns mt-2"><button class="btn btn-ghost btn-sm" type="button" id="bad">Wrong password state</button><button class="btn btn-ghost btn-sm" type="button" id="sus">Suspended account state</button></div>`, "The moderator asked both of us for photos and decided in a day. Fair, and nobody had to shout on WhatsApp.", "u6", "photo-1667650708785-2179a8eb2b70"),
   after() {
-    $("#lg").onsubmit = e => { e.preventDefault(); location.hash = "#/home"; };
-    $("#bad").onclick = () => { $("#lerr").innerHTML = `<p class="err">${icon("circle-alert")}That email and password don't match. After 5 tries, log-in pauses for 15 minutes.</p>`; $("#lp").setAttribute("aria-invalid", "true"); refreshIcons(); };
+    $("#lg").onsubmit = e => { e.preventDefault(); location.hash = "#/join"; };
+    $("#bad").onclick = () => { $("#lerr").innerHTML = `<p class="err">${icon("circle-alert")}That email and password don't match.</p>`; $("#lp").setAttribute("aria-invalid", "true"); refreshIcons(); };
     $("#sus").onclick = () => { $("#lerr").innerHTML = `<div class="card card-2 mt-4"><div class="row">${tone("shield-alert", "coral")}<div><b>This account is suspended</b><p class="small muted">Reason: repeated no-shows (3 in 30 days). Your active loans continue with a moderator's help.</p></div></div><a class="btn btn-outline btn-sm mt-4" href="#/login">Appeal this decision</a></div>`; refreshIcons(); };
   }
 }));
 
-/* ---- W9: find a community ---- */
-const commBadge = c => c.state === "member" ? `<span class="badge green">${icon("check")}Member</span>` : c.state === "pending" ? `<span class="badge saffron">${icon("hourglass")}Pending</span>` : c.state === "full" ? `<span class="badge">Full</span>` : c.open ? `<span class="badge sky">Open join</span>` : "";
+/* ---- W9: find a community (GET /communities: member_count, join_code, methods, has_boundary, your status) ---- */
+const commBadge = c => ({ APPROVED: `<span class="badge green">${icon("check")}Member</span>`, PENDING: `<span class="badge saffron">${icon("hourglass")}Pending</span>`, REJECTED: `<span class="badge">${icon("rotate-ccw")}Not approved</span>` })[c.mine] || "";
+const methodText = c => c.methods.includes("GEOFENCE_INVITATION") && c.has_boundary ? "Location check + invitation, or a moderator decides" : "A moderator approves every request";
 route("/join", () => ({
   title: "Join a community", nav: "community",
   html: `<div class="wrap wrap-md">${pageHead({ back: ["#/home", "Home"], eyebrow: `${icon("map-pin", "i-sm")}Step 1 of 3`, title: "Find your mohalla", sub: "Search by name, or the code a neighbour gave you." })}
     <div class="input-wrap rv">${icon("search")}<input class="input" id="cq" style="height:52px;border-radius:14px" placeholder="e.g. Gulberg or GUL-C" aria-label="Search communities"></div>
-    <div class="grid-2 mt-6" id="clist" data-stagger>${DB.communities.map(c => `<a class="card hover" href="#/join/${c.id}" data-n="${(c.name + " " + c.code).toLowerCase()}" style="padding:0;overflow:hidden">${photo(c.photo, { w: 700, ratio: "16/8", alt: "", tl: commBadge(c) })}<div style="padding:16px"><div class="between"><h3>${c.name}</h3>${icon("arrow-up-right", "i faint")}</div><p class="small muted mt-1">${c.city} · ${c.members} members · code ${c.code}</p><p class="xs faint mt-2">${icon("shield-check", "i-sm")} ${c.method}</p></div></a>`).join("")}</div>
+    <div class="grid-2 mt-6" id="clist" data-stagger>${DB.communities.map(c => `<a class="card hover" href="#/join/${c.id}" data-n="${(c.name + " " + c.join_code).toLowerCase()}" style="padding:0;overflow:hidden">${photo(c.photo, { w: 700, ratio: "16/8", alt: "", tl: commBadge(c) })}<div style="padding:16px"><div class="between"><h3>${c.name}</h3>${icon("arrow-up-right", "i faint")}</div><p class="small muted mt-1">${c.city} · ${c.member_count} members · code ${c.join_code}</p><p class="xs faint mt-2">${icon("shield-check", "i-sm")} ${methodText(c)}</p></div></a>`).join("")}</div>
     <div id="cempty" hidden>${empty("map-pin-off", "neutral", "No community by that name", "Check the spelling, or ask a neighbour for their community code. Codes look like GUL-C.")}</div></div>`,
   after() { $("#cq").oninput = e => { const q = e.target.value.toLowerCase().trim(); let n = 0; $$("#clist > a").forEach(a => { const h = !q || a.dataset.n.includes(q); a.hidden = !h; n += h; }); $("#cempty").hidden = n > 0; }; }
 }));
 
 route("/join/:id", ({ id }) => {
   const c = DB.communities.find(x => x.id === id) || DB.communities[0];
-  if (c.state === "pending") return { title: c.name, nav: "community", html: `<div class="wrap wrap-sm">${pageHead({ back: ["#/join", "Communities"], title: c.name })}${empty("hourglass", "saffron", "You've already asked to join", "Your request is with a moderator because your location result was unclear. Sending another wouldn't speed it up.")}<div class="card">${timeline([{ s: "done", t: "Request sent", d: "9 Oct" }, { s: "now", t: "Moderator review", d: "A person decides when the location result is unclear" }, { s: "todo", t: "Decision", d: "You'll get a notification" }])}</div></div>` };
+  if (c.mine === "PENDING") return { title: c.name, nav: "community", html: `<div class="wrap wrap-sm">${pageHead({ back: ["#/join", "Communities"], title: c.name })}${empty("hourglass", "saffron", "You've already asked to join", "Your request is with a moderator. Only one open request per community is allowed, so sending another wouldn't speed it up.")}<div class="card">${timeline([{ s: "done", t: "Request sent", d: "9 Oct" }, { s: "now", t: "Moderator review", d: "A person decides when the location result is unclear" }, { s: "todo", t: "Decision", d: "You'll get a notification" }])}</div></div>` };
   return {
     title: c.name, nav: "community",
-    html: `<div class="wrap wrap-md">${pageHead({ back: ["#/join", "Communities"], eyebrow: `${icon("map-pin", "i-sm")}Step 2 of 3`, title: c.name, sub: `${c.city} · ${c.members} members · moderated by Imran Q. and Rabia S.` })}
+    html: `<div class="wrap wrap-md">${pageHead({ back: ["#/join", "Communities"], eyebrow: `${icon("map-pin", "i-sm")}Step 2 of 3`, title: c.name, sub: `${c.city} · ${c.member_count} members · moderated by Imran Q. and Rabia S.` })}
+      ${c.mine === "REJECTED" ? `<div class="card card-2 row rv" style="align-items:flex-start;margin-bottom:16px">${tone("rotate-ccw", "neutral", 36)}<div><b class="small">Your last request wasn't approved</b><p class="small muted">The moderator's reason: “We couldn't confirm you live in Block K. Ask a neighbour there for an invitation.” You can apply again.</p></div></div>` : ""}
       <div class="rv">${photo(c.photo, { w: 1400, ratio: "21/8", alt: c.name, cls: "", eager: true })}</div>
       <div class="row mt-4 rv"><span class="avs">${["u2", "u5", "u6", "u3", "u7"].map(u => av(u, "sm")).join("")}</span><span class="small muted">Bilal, Kamran and 212 neighbours</span></div>
       <div class="grid-2 mt-8"><div><h2 class="sec-title">House rules</h2><div class="list" data-stagger>${DB.community.rules.map((r, i) => `<div class="li">${tone(["map-pinned", "handshake", "banknote", "message-circle-heart"][i], ["green", "sky", "saffron", "violet"][i], 36)}<span class="small">${r}</span></div>`).join("")}</div></div>
-        <div><h2 class="sec-title">How you'll prove you live here</h2><div class="stack" data-stagger><div class="card">${tone("locate-fixed", "green")}<h3 class="mt-3">One-time location check</h3><p class="small muted mt-1">We check you're inside the boundary, then discard the location.</p></div>
-          <div class="card">${tone("ticket", "saffron")}<h3 class="mt-3">Invitation code</h3><p class="small muted mt-1">From any verified member of Block C.</p></div>
-          <p class="small muted">${icon("shield-check", "i-sm")} If either result is unclear, a moderator decides. Nobody is rejected automatically.</p></div></div></div>
+        <div><h2 class="sec-title">How you'll prove you live here</h2><div class="stack" data-stagger>${c.has_boundary ? `<div class="card">${tone("locate-fixed", "green")}<h3 class="mt-3">One-time location check</h3><p class="small muted mt-1">Your phone's position is checked against the boundary once, then dropped. Only the result is kept.</p></div>` : `<div class="card">${tone("map-off", "neutral")}<h3 class="mt-3">No boundary set</h3><p class="small muted mt-1">This community hasn't drawn a boundary, so a moderator reviews every request.</p></div>`}
+          <div class="card">${tone("ticket", "saffron")}<h3 class="mt-3">Invitation code</h3><p class="small muted mt-1">Single-use, from an approved member of ${c.name}.</p></div>
+          <p class="small muted">${icon("shield-check", "i-sm")} Both together let you in. If either is missing or unclear, a moderator decides. Nobody is rejected automatically.</p></div></div></div>
       <div class="dock"><div class="card between"><label class="check" style="padding:0"><input type="checkbox" checked><span><span>I'll follow the house rules</span></span></label><a class="btn btn-primary" href="#/join/${c.id}/verify">Continue ${icon("arrow-right")}</a></div></div></div>`
   };
 });
 
-/* ---- W10: location + invitation ---- */
+/* ---- W10: location + invitation (POST /communities/{id}/join -> JoinOut { status, locality: LocalityOut }) ----
+   VERIFIED needs INSIDE + a valid invitation; a missing signal is INCONCLUSIVE; OUTSIDE, a mock
+   location app or a suspected duplicate is CONFLICTING. The fix is used once in memory, never stored. */
 route("/join/:id/verify", ({ id }) => ({
   title: "Prove you live here", nav: "community",
   html: `<div class="wrap wrap-sm">${pageHead({ back: ["#/join/" + id, "Rules"], eyebrow: `${icon("map-pin", "i-sm")}Step 3 of 3`, title: "Prove you live here", sub: "Two quick checks. We keep only the results." })}
-    <div class="card card-pad-lg center rv"><div class="radar" id="radar">${icon("locate-fixed")}</div><h2 class="mt-6" id="lh">One-time location check</h2><p class="muted small mt-2" id="lp" style="max-width:40ch;margin-inline:auto">Your phone shares an approximate position once. We keep inside, unclear or outside. Never the coordinates.</p>
-      <div class="btns mt-6" id="lb" style="justify-content:center"><button class="btn btn-primary" type="button" id="allow">${icon("locate-fixed")}Allow once</button><button class="btn btn-outline" type="button" id="skip">Skip</button></div></div>
-    <div class="card mt-4 rv"><div class="row">${tone("ticket", "saffron")}<div><h3>Invitation code</h3><p class="small muted">From a verified neighbour</p></div></div>
-      <div class="field mt-4"><input class="input mono" id="inv" value="GUL-C-7K2Q" style="font-size:17px;letter-spacing:.08em;height:52px" aria-label="Invitation code"><span class="help" id="ih">${icon("circle-check", "i-sm")} Valid · from Bilal R. · expires 30 Oct</span></div></div>
-    <div class="dock"><div class="card"><a class="btn btn-primary btn-block" id="go" href="#/join/${id}/result/verified" aria-disabled="true">Send join request</a></div></div></div>`,
+    <div class="card card-pad-lg center rv"><div class="radar" id="radar">${icon("locate-fixed")}</div><h2 class="mt-6" id="lh">One-time location check</h2><p class="muted small mt-2" id="lp" style="max-width:42ch;margin-inline:auto">Your phone shares its position once. It's compared with the boundary and dropped. We keep only inside, near the edge, outside or not shared.</p>
+      <div class="btns mt-6" id="lb" style="justify-content:center"><button class="btn btn-primary" type="button" id="allow">${icon("locate-fixed")}Allow once</button><button class="btn btn-outline" type="button" id="skip">Don't share</button></div>
+      <p class="xs faint mt-4">Prototype: <button class="link" type="button" id="out">simulate “outside the boundary”</button></p></div>
+    <div class="card mt-4 rv"><div class="row">${tone("ticket", "saffron")}<div><h3>Invitation code</h3><p class="small muted">From an approved member. Optional, but it helps.</p></div></div>
+      <div class="field mt-4"><input class="input mono" id="inv" value="GUL-C-7K2Q" maxlength="32" style="font-size:17px;letter-spacing:.08em;height:52px" aria-label="Invitation code"><span class="help" id="ih">Checked when you send the request.</span></div>
+      <p class="xs faint">Prototype: <button class="link" type="button" id="badinv">simulate an invalid code</button></p></div>
+    <div class="dock"><div class="card"><a class="btn btn-primary btn-block" id="go" href="#/join/${id}/result/VERIFIED" aria-disabled="true">Send join request</a></div></div></div>`,
   after() {
-    const go = $("#go");
+    const go = $("#go"); let sig = null;
+    const set = () => { const code = $("#inv").value.trim(); const r = sig === "OUTSIDE" ? "CONFLICTING" : sig === "INSIDE" && code ? "VERIFIED" : "INCONCLUSIVE"; go.href = `#/join/${id}/result/${r}`; go.removeAttribute("aria-disabled"); };
     $("#allow").onclick = () => { $("#radar").classList.add("on"); $("#lh").textContent = "Checking…"; $("#lb").hidden = true;
-      setTimeout(() => { $("#radar").className = "radar ok"; $("#radar").innerHTML = icon("map-pin-check"); refreshIcons(); $("#lh").textContent = "You're inside Block C"; $("#lp").textContent = "Done. The location itself has already been discarded."; go.removeAttribute("aria-disabled"); go.href = `#/join/${id}/result/verified`; }, 1800); };
-    $("#skip").onclick = () => { $("#lh").textContent = "Skipped, and that's fine"; $("#lp").textContent = "A moderator will look at your invitation instead. Skipping never counts against you."; $("#lb").hidden = true; go.removeAttribute("aria-disabled"); go.href = `#/join/${id}/result/inconclusive`; };
-    go.onclick = e => { if (go.getAttribute("aria-disabled")) { e.preventDefault(); toast("Allow the location check, or skip it first.", { ic: "info" }); } };
-    $("#inv").oninput = e => { const ok = /^GUL-C-\w{4}$/i.test(e.target.value.trim()); e.target.setAttribute("aria-invalid", !ok); $("#ih").outerHTML = ok ? `<span class="help" id="ih">${icon("circle-check", "i-sm")} Valid · from Bilal R.</span>` : `<p class="err" id="ih">${icon("circle-alert")}Codes look like GUL-C-7K2Q. Check with your neighbour.</p>`; refreshIcons(); };
+      setTimeout(() => { $("#radar").className = "radar ok"; $("#radar").innerHTML = icon("map-pin-check"); refreshIcons(); $("#lh").textContent = "Inside the boundary"; $("#lp").textContent = "Done. Your position was used once and dropped."; sig = "INSIDE"; set(); }, 1800); };
+    $("#skip").onclick = () => { $("#lh").textContent = "Not shared, and that's fine"; $("#lp").textContent = "A moderator will look at your request instead. Not sharing never counts against you."; $("#lb").hidden = true; sig = "UNAVAILABLE"; set(); };
+    $("#out").onclick = () => { $("#lh").textContent = "Outside the boundary"; $("#lp").textContent = "That can happen near the edge or with weak GPS. A moderator decides; nothing is rejected automatically."; $("#lb").hidden = true; $("#radar").className = "radar"; $("#radar").innerHTML = icon("map-pin-off"); refreshIcons(); sig = "OUTSIDE"; set(); };
+    go.onclick = e => { if (go.getAttribute("aria-disabled")) { e.preventDefault(); toast("Allow the location check, or choose not to share it, first.", { ic: "info" }); } };
+    $("#inv").oninput = () => { $("#inv").removeAttribute("aria-invalid"); $("#ih").outerHTML = `<span class="help" id="ih">Checked when you send the request.</span>`; if (sig) set(); };
+    $("#badinv").onclick = () => { $("#inv").setAttribute("aria-invalid", "true"); $("#ih").outerHTML = `<p class="err" id="ih">${icon("circle-alert")}This invitation code is not valid: retry or continue without.</p>`; refreshIcons(); };
   }
 }));
+const LOCALITY_WORDS = { VERIFIED: "Your location check and invitation agree.", INCONCLUSIVE: "We could not confirm your location yet. A moderator will look at your request. This is not a negative finding.", CONFLICTING: "Some signals did not match. A moderator will review your request; nothing has been rejected." };
 route("/join/:id/result/:r", ({ r }) => {
-  const R = { verified: ["Request sent to Block C", "Your location and invitation both check out. Moderators usually approve within a day.", [{ s: "done", t: "Inside the boundary" }, { s: "done", t: "Invitation from Bilal R." }, { s: "now", t: "Moderator approval", d: "Usually within a day" }]],
-    inconclusive: ["A moderator will take a look", "You skipped the location check, which is fine. Imran or Rabia will review your invitation and may ask one question. This isn't a rejection.", [{ s: "now", t: "Location not checked", d: "A person decides instead" }, { s: "done", t: "Invitation from Bilal R." }, { s: "todo", t: "Moderator decision" }]],
-    conflicting: ["A moderator will take a look", "The check placed you outside Block C. That happens near the edge or with weak GPS. A person decides, and nothing is rejected automatically.", [{ s: "now", t: "Location looked outside the boundary", d: "Sent to a person" }, { s: "done", t: "Invitation from Bilal R." }, { s: "todo", t: "Moderator decision" }]] }[r];
-  return { title: "Join request", nav: "community", html: `<div class="wrap wrap-sm">${r === "verified" ? done(R[0], R[1]) : empty("user-search", "saffron", R[0], R[1])}<div class="card mt-4">${timeline(R[2])}</div><div class="btns mt-6" style="justify-content:center"><a class="btn btn-primary" href="#/home/new">Look around while you wait</a></div></div>` };
+  r = (r || "").toUpperCase(); if (!LOCALITY_WORDS[r]) r = "INCONCLUSIVE";
+  const steps = { VERIFIED: [{ s: "done", t: "Inside the boundary" }, { s: "done", t: "Invitation accepted" }, { s: "now", t: "Moderator approval", d: "Status PENDING. Open communities approve this automatically" }],
+    INCONCLUSIVE: [{ s: "now", t: "Location not confirmed", d: "A person decides instead" }, { s: "done", t: "Request saved", d: "Status PENDING" }, { s: "todo", t: "Moderator decision", d: "They may ask you one question" }],
+    CONFLICTING: [{ s: "now", t: "Some signals didn't match", d: "Sent to a person" }, { s: "done", t: "Request saved", d: "Status PENDING" }, { s: "todo", t: "Moderator decision" }] }[r];
+  return { title: "Join request", nav: "community", html: `<div class="wrap wrap-sm">${r === "VERIFIED" ? done("Request sent to Block C", LOCALITY_WORDS[r]) : empty("user-search", "saffron", "A moderator will take a look", LOCALITY_WORDS[r])}<div class="card mt-4">${timeline(steps)}</div><p class="xs faint center mt-4">Outcome <span class="mono">${r}</span> · only this result is stored, never your position.</p><div class="btns mt-6" style="justify-content:center"><a class="btn btn-primary" href="#/home/new">Look around while you wait</a></div></div>` };
 });
 
-screens("Website and onboarding · Module 1", [["Landing website", "#/welcome"], ["Register (W8)", "#/register", "FR-A-01"], ["Check your email", "#/verify-email"], ["Log in + error + suspended", "#/login", "FR-A-04/05"], ["Find a community (W9)", "#/join", "FR-A-06"], ["Rules and methods (W9)", "#/join/c1"], ["Duplicate request blocked", "#/join/c2", "FR-A-09"], ["Location + invitation (W10)", "#/join/c1/verify", "FR-A-07"], ["Result: verified", "#/join/c1/result/verified", "FR-A-08"], ["Result: unclear", "#/join/c1/result/inconclusive", "ES-10"], ["Result: outside", "#/join/c1/result/conflicting", "ES-09"]]);
+screens("Website and onboarding · Module 1", [["Landing website", "#/welcome"], ["Register (W8)", "#/register", "POST /auth/register"], ["Account created (generic reply)", "#/verify-email", "202"], ["Log in + error + suspended", "#/login", "FR-A-04/05"], ["Find a community (W9)", "#/join", "GET /communities"], ["Rules and methods (W9)", "#/join/c1"], ["Duplicate request blocked", "#/join/c2", "FR-A-09"], ["Apply again after rejection", "#/join/c4", "REJECTED"], ["No boundary: moderator only", "#/join/c3", "has_boundary"], ["Location + invitation (W10)", "#/join/c1/verify", "POST /join"], ["Result: verified", "#/join/c1/result/VERIFIED", "LocalityOut"], ["Result: inconclusive", "#/join/c1/result/INCONCLUSIVE", "ES-10"], ["Result: conflicting", "#/join/c1/result/CONFLICTING", "ES-09"]]);

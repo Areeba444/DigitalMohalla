@@ -29,28 +29,42 @@ function inboxView(sel) {
 route("/inbox", () => inboxView(innerWidth >= 900 ? "b1" : null));
 route("/inbox/:id", ({ id }) => inboxView(id));
 
-/* ---------------- W12: notifications ---------------- */
-route("/notifications", () => ({
+/* ---------------- W12: notifications (GET /notifications, POST /notifications/read) ---------------- */
+route("/notifications", () => {
+  const ns = DB.notifications.map(nview), cnt = g => ns.filter(n => n.grp === g).length;
+  return {
   title: "Notifications", nav: "inbox",
   html: `<div class="wrap wrap-md">${pageHead({ title: "Notifications", actions: `<button class="btn btn-ghost" type="button" id="ra">${icon("check-check")}Mark all read</button><a class="btn btn-outline" href="#/settings">${icon("settings")}Preferences</a>` })}
-    <div data-tabs-scope>${tabs([["all", "All", DB.notifications.length], ["requests", "Requests"], ["loans", "Loans"], ["moderation", "Moderation"], ["community", "Community"]])}
-    <div class="mt-6" id="nl">${["Today", "Earlier"].map(g => `<h3 class="xs faint" data-g="${g}" style="margin:16px 0 8px;font-weight:600">${g}</h3><div class="list" data-g="${g}" data-stagger>${DB.notifications.filter(n => n.g === g).map(n => `<a class="li" href="${n.href}" data-type="${n.type}">${tone(n.icon, n.tone, 40)}<span class="grow"><span class="t">${n.t}</span><span class="d">${n.d}</span>${n.mins ? `<span class="mt-2" style="display:inline-block">${cd(n.mins)}</span>` : ""}</span><span class="end"><span class="xs faint">${n.time}</span>${n.unread ? '<span class="status coral u" style="font-size:0" aria-label="Unread"></span>' : ""}</span></a>`).join("")}</div>`).join("")}</div>
+    <div data-tabs-scope>${tabs([["all", "All", ns.length], ["requests", "Requests", cnt("requests")], ["loans", "Loans", cnt("loans")], ["moderation", "Moderation", cnt("moderation")], ["community", "Community", cnt("community")]])}
+    <div class="mt-6" id="nl">${["Today", "Earlier"].map(g => `<h3 class="xs faint" data-g="${g}" style="margin:16px 0 8px;font-weight:600">${g}</h3><div class="list" data-g="${g}" data-stagger>${ns.filter(n => n.g === g).map(n => `<a class="li" href="${n.href}" data-type="${n.grp}">${tone(n.icon, n.tone, 40)}<span class="grow"><span class="t">${n.t}</span><span class="d">${n.d}</span>${n.mins ? `<span class="mt-2" style="display:inline-block">${cd(n.mins)}</span>` : ""}</span><span class="end"><span class="xs faint">${n.time}</span>${n.unread ? '<span class="status coral u" style="font-size:0" aria-label="Unread"></span>' : ""}</span></a>`).join("")}</div>`).join("")}</div>
     <div id="ne" hidden>${empty("bell-off", "neutral", "Nothing here", "No notifications of this type yet.")}</div></div>
-    <p class="xs faint center mt-6">Safety and dispute alerts are always on, even in quiet hours.</p></div>`,
+    <p class="xs faint center mt-6">In-app only for now. Each piece of news reaches you once, however often a reminder job runs. Push alerts arrive in iteration 3.</p></div>`,
   after() {
     $("#ra").onclick = () => { $$(".u").forEach(x => x.remove()); toast("All marked as read"); };
     $(".tabs").addEventListener("click", e => { const b = e.target.closest("[data-tab]"); if (!b) return; const f = b.dataset.tab; let n = 0;
       $$("#nl .li").forEach(r => { const h = f === "all" || r.dataset.type === f; r.hidden = !h; n += h; r.classList.add("in"); });
       $$("#nl .list").forEach(l => { l.hidden = !$$(".li:not([hidden])", l).length; $(`h3[data-g="${l.dataset.g}"]`).hidden = l.hidden; }); $("#ne").hidden = n > 0; });
-  }
-}));
+  } };
+});
+
+/* ---------------- A11: invite a neighbour (POST /communities/{id}/invitations -> InvitationOut) ---------------- */
+route("/invite", () => {
+  const T = DB.timers, open = DB.invitations.filter(i => !i.used).length;
+  return { title: "Invite a neighbour", nav: "", html: `<div class="wrap wrap-sm">${pageHead({ back: ["#/home", "Home"], title: "Invite a neighbour", sub: `A code lets someone you know join ${DB.community.short} with your invitation as one of their signals. A moderator can still review it.` })}
+    <div class="card card-pad-lg rv" id="ic">${tone("ticket", "saffron")}<h3 class="mt-4">Make a new code</h3><p class="small muted mt-1">Single-use, for ${DB.community.short} only, and valid for ${T.inviteTtlD} days. You can have up to ${T.maxOpenInvites} unused codes at once. You have ${open}.</p><button class="btn btn-primary mt-6" type="button" id="mk">${icon("plus")}Create invitation</button></div>
+    <section class="section"><h2 class="sec-title">Your codes</h2><div class="list" id="il">${DB.invitations.map(i => `<div class="li">${tone(i.used ? "check" : "ticket", i.used ? "neutral" : "green", 36)}<span class="grow"><span class="t mono">${i.used ? "Used" : "••••-" + i.code.slice(-4)}</span><span class="d">${i.used ? "A neighbour joined with it" : "Expires " + i.expires}</span></span><span class="badge ${i.used ? "" : "green"}">${i.used ? "Used" : "Open"}</span></div>`).join("")}</div>
+      <p class="xs faint mt-3">${icon("lock", "i-sm")} Only a hash of each code is stored, so it can't be shown again after you close this page.</p></section></div>`,
+    after() { $("#mk").onclick = () => { if (open >= T.maxOpenInvites) return toast(`You already have ${T.maxOpenInvites} unused invitations.`, { ic: "info" });
+      $("#ic").innerHTML = `${tone("ticket-check", "green")}<h3 class="mt-4">Your code</h3><div class="kpi mono mt-3" style="font-size:clamp(1.6rem,6vw,2.2rem);letter-spacing:.06em">GUL-C-R8TW</div><p class="small muted mt-2">Expires in ${T.inviteTtlD} days. Shown only once: copy it or share it now.</p><div class="btns mt-6"><button class="btn btn-primary" type="button" onclick="toast('Copied')">${icon("copy")}Copy</button><button class="btn btn-outline" type="button" onclick="toast('Share sheet opened')">${icon("share-2")}Share</button></div>`; refreshIcons();
+      $("#il").insertAdjacentHTML("afterbegin", `<div class="li">${tone("ticket", "green", 36)}<span class="grow"><span class="t mono">••••-R8TW</span><span class="d">Expires in ${T.inviteTtlD} days</span></span><span class="badge green">Open</span></div>`); refreshIcons(); }; } };
+});
 
 /* ---------------- Profile + J2 impact ---------------- */
 route("/profile", () => ({
   title: "Profile", nav: "",
   html: `<div class="wrap">${pageHead({ title: "" }).replace("<h1></h1>", "")}
     <div class="card card-pad-lg spot rv" style="padding:clamp(20px,4vw,36px)"><div class="between" style="flex-wrap:wrap;gap:20px"><div class="row" style="gap:20px">${av("u0", "xl", "ring")}<div><h1 style="font-size:clamp(1.6rem,3vw,2.2rem);letter-spacing:-0.035em">Sana Malik</h1><p class="muted">Lane 3, Block C · member since Mar 2026 · household account</p>
-      <div class="row-wrap mt-3"><span class="badge green">${icon("mail-check")}Email verified</span><span class="badge green">${icon("map-pin-check")}Lives in Block C</span><span class="badge violet">${icon("heart-handshake")}Helpful contributor</span></div></div></div>
+      <div class="row-wrap mt-3"><span class="badge green">${icon("user-check")}Approved member</span><span class="badge green">${icon("map-pin-check")}Lives in Block C</span><span class="badge violet">${icon("heart-handshake")}Helpful contributor</span></div></div></div>
       <div class="btns"><a class="btn btn-outline" href="#/settings">${icon("pencil")}Edit profile</a><a class="btn btn-primary" href="#/evidence">${icon("shield-check")}My evidence</a></div></div>
       <p class="mt-6" style="max-width:62ch">Teacher, keen baker. Happy to lend kitchen things and kids' books.</p></div>
     <section class="section"><h2 class="sec-title">Your impact in Block C <span class="soon">${icon("sparkles")}J2 · Soon</span></h2>
@@ -59,17 +73,21 @@ route("/profile", () => ({
     <section class="section grid-2"><a class="card hover spot" href="#/apply-role">${tone("store", "coral")}<div class="mt-4">${soon()}</div><h3 class="mt-2">Become a vendor or moderator</h3><p class="small muted mt-1">Apply for a role. An admin reviews every application.</p></a><a class="card hover spot" href="#/hci">${tone("circle-help", "neutral")}<h3 class="mt-4">How Digital Mohalla decides</h3><p class="small muted mt-1">Evidence curves, safeguards and moderators, explained.</p></a></section></div>`
 }));
 
-/* ---------------- W16 / D2: my evidence ---------------- */
-route("/evidence", () => ({
+/* ---------------- W16 / D2: my evidence (GET /me/evidence -> per-role FactorOut lists) ---------------- */
+route("/evidence", () => {
+  const E = DB.myEvidence, [b, l] = E.roles;
+  return {
   title: "My evidence", nav: "",
-  html: `<div class="wrap wrap-md">${pageHead({ back: ["#/profile", "Profile"], title: "My evidence", sub: "What lenders and borrowers see when you interact. Only you see this full page, and there's never a single score." })}
-    <div data-tabs-scope>${tabs([["b", "As a borrower"], ["l", "As a lender"]])}
-      <div data-panel="b" class="mt-6">${evidence({ state: "sufficient", code: "SUFFICIENT_EVIDENCE", title: "Enough evidence", ab: [16, 2.2], conf: "High", lede: "7 completed loans in Block C, all on time. Most were kitchen and party items.", direct: ["7 completed · 7 on time", "Recent loans count more than old ones."], indirect: ["4 community paths", "Only used when direct evidence is thin."], risk: ["Nothing unusual", "Checked separately, never mixed with the above."], safeguards: [], tech: { "Interval (90%)": "0.72 – 0.96", "Config": "assurance-cfg v1.3" } }, { name: "you", interactive: false }).replace(/<div class="sg">[\s\S]*?<\/div>\s*<details/, "<details")}</div>
-      <div data-panel="l" hidden class="mt-6"><div class="ev"><div class="ev-h">${stateChip("review", "Small history")}<p class="lede">3 loans lent, all returned in the agreed condition.</p></div>
-        <div style="padding:18px 22px 22px"><div class="card card-2 row" style="align-items:flex-start">${tone("eye-off", "sky", 36)}<div><b class="small">Details hidden for now</b><p class="small muted">With fewer than 5 loans as a lender, a detailed breakdown could reveal who you lent to. It appears after 2 more loans.</p></div></div></div></div></div></div>
-    <section class="section"><h2 class="sec-title">What's counted</h2><div class="list" data-stagger>${[["tent", "From Bilal · on time, condition agreed", 1], ["chairs", "From Hira · dispute open", 0, "Not counted yet"], ["ladder", "From Kamran · borrowed now", 0, "Counts after return"], ["deg", "From Bilal · on time, condition agreed", 1]].map(([i, d, ok, n]) => `<div class="li">${photo(I(i).photo, { w: 140, alt: "" })}<span class="grow"><span class="t">${I(i).title}</span><span class="d">${d}</span></span>${ok ? `<span class="badge green">${icon("check")}Counted</span>` : `<span class="badge saffron">${icon("hourglass")}${n}</span>`}</div>`).join("")}</div>
-      <div class="card card-2 mt-4 row" style="align-items:flex-start">${tone("lightbulb", "green", 36)}<p class="small">Hand over with photos and return on time. Recent, similar loans count most. A disputed loan counts only after a moderator resolves it.</p></div></section></div>`
-}));
+  html: `<div class="wrap wrap-md">${pageHead({ back: ["#/profile", "Profile"], title: "My evidence", sub: "What the engine has learned from your verified loans, one factor at a time. There's never a single score." })}
+    <div class="card card-2 row rv" style="align-items:flex-start">${tone("info", "sky", 36)}<p class="small">${E.note}</p></div>
+    <div data-tabs-scope class="mt-6">${tabs([["b", "As a borrower"], ["l", "As a lender"]])}
+      <div data-panel="b" class="mt-6"><div class="card card-pad-lg"><div class="between"><h3>As a borrower</h3><span class="xs faint">${b.factors[0].verified_loans} verified loans</span></div><div class="mt-4">${factorList(b.factors)}</div><p class="xs faint mt-4">Ranges are 90% intervals from a recency-weighted Beta posterior. Decision support, not a guarantee.</p></div></div>
+      <div data-panel="l" hidden class="mt-6"><div class="card card-pad-lg"><div class="between"><h3>As a lender</h3><span class="xs faint">${l.factors[0].verified_loans} verified loans</span></div><div class="mt-4">${factorList(l.factors)}</div>
+        <div class="card card-2 row mt-4" style="align-items:flex-start">${tone("eye-off", "sky", 36)}<div><b class="small">Detail appears with more loans</b><p class="small muted">With only a few loans, a detailed breakdown could reveal who you lent to (FR-T-08).</p></div></div></div></div></div>
+    <section class="section"><h2 class="sec-title">What's counted</h2><div class="list" data-stagger>${[["tent", "From Bilal · on time, condition agreed", 1], ["chairs", "From Hira · dispute open", 0, "Not counted yet"], ["ladder", "From Kamran · return being confirmed", 0, "Counts when it completes"], ["deg", "From Bilal · on time, condition agreed", 1]].map(([i, d, ok, n]) => `<div class="li">${photo(I(i).photo, { w: 140, alt: "" })}<span class="grow"><span class="t">${I(i).title}</span><span class="d">${d}</span></span>${ok ? `<span class="badge green">${icon("check")}Counted</span>` : `<span class="badge saffron">${icon("hourglass")}${n}</span>`}</div>`).join("")}</div>
+      <div class="card card-2 mt-4 row" style="align-items:flex-start">${tone("lightbulb", "green", 36)}<p class="small">A loan counts once both of you confirm the return. If a moderator later overturns a decision, the affected outcomes are flagged and recalculated.</p></div></section></div>`
+  };
+});
 
 /* ---------------- Settings ---------------- */
 route("/settings", () => {
@@ -94,7 +112,7 @@ route("/settings", () => {
 /* ---------------- A8: role application (stretch) ---------------- */
 route("/apply-role", () => ({ title: "Apply for a role", nav: "", html: `<div class="wrap wrap-sm">${pageHead({ back: ["#/profile", "Profile"], title: "Apply for a role", sub: "Applying doesn't grant the role. An admin reviews it first." })}${previewBar("Role applications (A8)", "a later iteration")}
   <div class="opts mt-6">${[["store", "coral", "Vendor", "Offer a service or products to Block C"], ["shield-check", "green", "Moderator", "Review disputes and join requests for your community"], ["calendar-heart", "violet", "Event organizer", "Host events without per-event approval"]].map(([ic, t, n, d], i) => `<label class="opt"><input type="radio" name="r" ${i === 1 ? "checked" : ""}>${tone(ic, t, 38)}<span><strong>${n}</strong><p>${d}</p></span><span class="tick">${icon("check")}</span></label>`).join("")}</div>
-  <div class="card mt-4"><b class="small">You're eligible</b><div class="stack mt-3">${[["Verified email", 1], ["Member of Block C", 1], ["No open disputes", 0]].map(([t, ok]) => `<div class="row small">${tone(ok ? "check" : "x", ok ? "green" : "coral", 24)}${t}${ok ? "" : ' <span class="faint">(case D-014 must close first)</span>'}</div>`).join("")}</div></div>
+  <div class="card mt-4"><b class="small">You're eligible</b><div class="stack mt-3">${[["Approved member of Block C", 1], ["No open disputes", 0]].map(([t, ok]) => `<div class="row small">${tone(ok ? "check" : "x", ok ? "green" : "coral", 24)}${t}${ok ? "" : ' <span class="faint">(case D-014 must close first)</span>'}</div>`).join("")}</div></div>
   <button class="btn btn-primary mt-6" type="button" aria-disabled="true" onclick="toast('You can apply once case D-014 is closed.', {ic:'info'})">Submit application</button></div>` }));
 
 /* ---------------- HCI notes ---------------- */
@@ -117,4 +135,4 @@ route("/hci", () => {
       <div class="grid-2" data-stagger>${P.map(([ic, h, k, d, l]) => `<a class="card hover spot" href="${l}"><div class="between">${tone(ic, "neutral")}<span class="badge outline">${k}</span></div><h3 class="mt-4">${h}</h3><p class="small muted mt-2">${d}</p></a>`).join("")}</div></div>` };
 });
 
-screens("Account and communication", [["Inbox: item chats, event groups, moderators (G1, G2)", "#/inbox", "FR-C-01"], ["Notifications (W12, G3)", "#/notifications", "FR-C-02"], ["Profile + impact (J2)", "#/profile", "FR-N-02"], ["My evidence (W16, D2)", "#/evidence", "FR-T-08"], ["Settings: privacy, alerts, theme, block (A5, A7, G4)", "#/settings", "FR-A-12/14, FR-C-03"], ["Apply for a role (A8, soon)", "#/apply-role", "FR-A-15"], ["HCI principles", "#/hci"]]);
+screens("Account and communication", [["Inbox: item chats, event groups, moderators (G1, G2)", "#/inbox", "FR-C-01"], ["Notifications (W12, G3)", "#/notifications", "GET /notifications"], ["Profile + impact (J2)", "#/profile", "FR-N-02"], ["My evidence (W16, D2)", "#/evidence", "GET /me/evidence"], ["Settings: privacy, alerts, theme, block (A5, A7, G4)", "#/settings", "FR-A-12/14, FR-C-03"], ["Invite a neighbour (A11)", "#/invite", "POST /invitations"], ["Apply for a role (A8, soon)", "#/apply-role", "FR-A-15"], ["HCI principles", "#/hci"]]);

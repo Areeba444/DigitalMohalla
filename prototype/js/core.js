@@ -26,81 +26,144 @@ const soon = (t = "Coming soon") => `<span class="soon">${icon("sparkles")}${t}<
 const previewBar = (what, it = "iteration 3") => `<div class="preview-bar">${icon("flask-conical")}<span><strong>Preview.</strong> ${what} is planned for ${it}. Everything here is clickable so the team can agree on it before it's built.</span></div>`;
 const tone = (n, t = "green", size = "") => `<span class="tone t-${t}" ${size ? `style="width:${size}px;height:${size}px;border-radius:${size / 3.3}px"` : ""}>${icon(n)}</span>`;
 
+/* ---------------- API values in plain words (enums from schema.sql) ---------------- */
 const ST = {
   sufficient: ["shield-check", "Enough evidence"], review: ["eye", "Review recommended"], insufficient: ["sprout", "Not enough history yet"],
   dispute: ["scale", "Open dispute"], held: ["hourglass", "With a moderator"]
 };
-const stateChip = (s, label) => `<span class="state ${s}">${icon(ST[s][0])}${label || ST[s][1]}</span>`;
-const LC = { REQUEST_CREATED: "Sent", HELD_FOR_REVIEW: "With a moderator", ASSESSED: "Waiting for lender", ACCEPTED: "Accepted", ACTIVE: "Borrowed", RETURN_INITIATED: "Being returned", RETURNED: "Returned", COMPLETED: "Completed", EXPIRED: "Expired", NO_SHOW: "No-show", DISPUTED: "Disputed" };
+const AS = { SUFFICIENT_EVIDENCE: "sufficient", REVIEW_RECOMMENDED: "review", INSUFFICIENT_EVIDENCE: "insufficient", ACTIVE_DISPUTE: "dispute" };
+const stateChip = (s, label) => { const k = AS[s] || s; return `<span class="state ${k}">${icon(ST[k][0])}${label || ST[k][1]}</span>`; };
+const LC = { REQUEST_CREATED: "Sent", LOCALITY_CHECKED: "Being checked", HELD_FOR_REVIEW: "With a moderator", ASSESSED: "Waiting for the lender", ACCEPTED: "Accepted", ACTIVE: "Borrowed", RETURN_INITIATED: "Being returned", RETURNED: "Returned", COMPLETED: "Completed", DECLINED: "Declined", CANCELLED: "Cancelled", EXPIRED: "Expired", NO_SHOW: "No-show", DISPUTED: "Disputed" };
+const POLICY = { PROCEED: "Fine to lend", PROCEED_WITH_SAFEGUARDS: "Lend with the safeguards below", REQUEST_VERIFICATION: "Take a closer look before lending", RESTRICT_HIGH_VALUE: "High value: a moderator checks first", ESCALATE: "Sent to a moderator" };
+const HOLD = { locality_inconclusive: "Locality result unclear", locality_conflict: "Locality result conflicts with the community", manipulation_risk: "Unusual rating pattern, two signals", high_value_low_confidence: "High value, weak or dissimilar evidence", engine_failure: "The assessment didn't finish" };
+const RISK = { 1: "No notable signals", 2: "Something to monitor", 3: "Extra verification advised", 4: "Moderator review" };
+const CONDITION = { NEW: "New", GOOD: "Good", FAIR: "Fair", WORN: "Worn" };
+const BAND = { LOW: "Up to Rs 5,000", MEDIUM: "Rs 5,001 to 15,000", HIGH: "Over Rs 15,000" };
+const BAND_SHORT = { LOW: "Low value", MEDIUM: "Medium value", HIGH: "High value" };
+const DISPUTE_R = { DAMAGE: ["hammer", "Damage"], NON_RETURN: ["package-x", "Not returned"], CONDITION_MISMATCH: ["file-diff", "Condition doesn't match"], NO_SHOW: ["user-x", "No-show"], OTHER: ["circle-help", "Something else"] };
+const TRIGGER = { DISPUTE: ["scale", "coral", "Dispute"], MANIPULATION_FLAG: ["radar", "violet", "Unusual activity"], HIGH_VALUE_LOW_CONFIDENCE: ["gem", "violet", "High value"], LOCALITY_HOLD: ["map-pin-off", "violet", "Locality"], ENGINE_FAILURE: ["server-crash", "neutral", "Engine failure"] };
+/* GET /notifications -> NotificationOut { type, payload, read }. The app builds the sentence from type + payload. */
+const NOTE = {
+  request_received: [p => `New request for your ${p.item_title}`, () => "Read the evidence report and reply within 72 hours", "inbox", "saffron", "requests"],
+  counter_offered: [p => "New dates suggested", p => `${p.item_title}: ${p.proposed_period}. Take them, keep yours or cancel`, "calendar-range", "sky", "requests"],
+  request_accepted: [p => "Request accepted", p => `${p.item_title}. Plan the handover in chat`, "circle-check", "green", "requests"],
+  request_declined: [p => "Request declined", p => `${p.item_title}${p.reason ? ": " + p.reason : ""}`, "circle-x", "neutral", "requests"],
+  request_expired: [p => "Request expired", p => `${p.item_title}: no reply within 72 hours`, "timer-off", "neutral", "requests"],
+  handover_reminder: [p => "Handover today", p => `${p.item_title}. Confirm it when you collect`, "handshake", "saffron", "loans"],
+  return_reminder: [p => "Due back tomorrow", p => p.item_title, "alarm-clock", "sky", "loans"],
+  extension_requested: [p => "More days requested", p => `${p.item_title}, until ${p.new_due}`, "calendar-plus", "sky", "loans"],
+  review_received: [() => "You have a new review", () => "It's part of your profile now", "star", "green", "loans"],
+  information_requested: [p => "A moderator asked you a question", p => `Case ${p.case_id}. Reply by ${p.deadline}`, "message-square-text", "coral", "moderation"],
+  listing_expired: [p => "Listing expired", p => `${p.item_title}. Renew it from My listings`, "package-x", "neutral", "community"],
+  membership_decided: [p => p.status === "APPROVED" ? `Welcome to ${p.community}` : "Membership update", p => p.status === "APPROVED" ? "Your request to join was approved" : `Status: ${p.status.toLowerCase()}`, "user-check", "green", "community"]
+};
+const nview = n => { const [t, d, ic, tn, grp] = NOTE[n.type] || [() => n.type, () => "", "bell", "neutral", "community"]; return { ...n, t: t(n.payload), d: d(n.payload), icon: ic, tone: tn, grp, unread: !n.read, time: n.when }; };
+const CASE_ST = { OPEN: ["Open", "saffron"], AWAITING_INFORMATION: ["Waiting for a reply", "sky"], DECIDED: ["Decided", "green"], APPEALED: ["Appealed", "violet"], REVERSED: ["Reversed", "coral"], WITHDRAWN: ["Withdrawn", ""] };
+const cat = id => DB.categories.find(c => c.id === id) || DB.categories[1];
+const restricted = it => it.required_verification === "COMMUNITY_VERIFIED";
+const availText = it => it.booked.length ? `Booked ${it.booked[0]}–${it.booked[it.booked.length - 1]} Oct` : "Free now";
+const cap = s => s ? s[0].toUpperCase() + s.slice(1) : s;
+const userByName = n => Object.values(DB.users).find(u => u.name.startsWith(n.split(" ")[0])) || { initials: n.split(" ").map(x => x[0]).join(""), name: n };
 
 /* Live countdown: data-mins counts down each minute */
 const fmt = m => m <= 0 ? "Time's up" : m < 60 ? `${m}m left` : m < 1440 ? `${Math.floor(m / 60)}h ${m % 60}m left` : `${Math.floor(m / 1440)}d ${Math.floor(m % 1440 / 60)}h left`;
 const cd = (m, cls = "") => `<span class="cd ${m < 120 ? "urgent" : ""} ${cls}" data-mins="${m}" role="timer"><i></i><span>${fmt(m)}</span></span>`;
 setInterval(() => $$("[data-mins]").forEach(e => { const m = Math.max(0, +e.dataset.mins - 1); e.dataset.mins = m; e.lastElementChild.textContent = fmt(m); }), 60000);
 
-/* ---------------- Evidence: recency-weighted Beta posterior curve (signature) ---------------- */
+/* ---------------- Evidence: recency-weighted Beta posterior curve (signature) ----------------
+   AssessmentOut gives posterior_mean and the 90% interval (ci90_low, ci90_high). The curve is a Beta
+   shape fitted to those two numbers by the method of moments, and the shaded band is the engine's
+   own interval, so the picture never claims more than the API returns. No verified loans: flat. */
 function betaPdf(x, a, b) { return Math.pow(x, a - 1) * Math.pow(1 - x, b - 1); }
-function betaCurve(a, b, state) {
+function betaFit(mean, lo, hi) {
+  const sd = Math.max(.02, (hi - lo) / 3.29), k = Math.max(.5, mean * (1 - mean) / (sd * sd) - 1);
+  return [Math.max(1.05, mean * k), Math.max(1.05, (1 - mean) * k)];
+}
+function betaCurve(a, b, state, band = null) {
   const W = 560, H = 150, N = 140, pts = [];
   for (let i = 0; i <= N; i++) { const x = Math.min(.999, Math.max(.001, i / N)); pts.push([x, betaPdf(x, a, b)]); }
   const max = Math.max(...pts.map(p => p[1])) || 1;
-  /* numeric CDF for the 5% and 95% quantiles */
-  const tot = pts.reduce((s, p) => s + p[1], 0); let acc = 0, lo = 0, hi = 1;
-  for (const [x, y] of pts) { acc += y; if (acc / tot >= .05 && !lo) lo = x; if (acc / tot >= .95) { hi = x; break; } }
+  let lo, hi;
+  if (band) [lo, hi] = band;
+  else { const tot = pts.reduce((s, p) => s + p[1], 0); let acc = 0; lo = 0; hi = 1; for (const [x, y] of pts) { acc += y; if (acc / tot >= .05 && !lo) lo = x; if (acc / tot >= .95) { hi = x; break; } } }
   const X = x => 10 + x * (W - 20), Y = y => H - 14 - (y / max) * (H - 34);
   const flat = a === 1 && b === 1;
-  const line = pts.map(([x, y], i) => `${i ? "L" : "M"}${X(x).toFixed(1)} ${(flat ? H - 70 : Y(y)).toFixed(1)}`).join("");
-  const band = pts.filter(([x]) => x >= lo && x <= hi);
-  const bandPath = `M${X(lo).toFixed(1)} ${H - 14}` + band.map(([x, y]) => `L${X(x).toFixed(1)} ${(flat ? H - 70 : Y(y)).toFixed(1)}`).join("") + `L${X(hi).toFixed(1)} ${H - 14}Z`;
-  const col = { sufficient: "var(--primary)", review: "var(--saffron)", insufficient: "var(--sky)" }[state] || "var(--primary)";
-  const desc = flat ? "Flat: every outcome is equally possible, because there is no history yet." : hi - lo > .45 ? "Wide: some evidence, still uncertain." : "Narrow and high: lots of consistent evidence.";
-  return `<div class="curve"><svg viewBox="0 0 ${W} ${H + 8}" role="img" aria-label="Likely reliability for this loan. 90% of the evidence lies between ${Math.round(lo * 100)} and ${Math.round(hi * 100)} percent. ${desc}">
+  const yAt = y => (flat ? H - 70 : Y(y)).toFixed(1);
+  const line = pts.map(([x, y], i) => `${i ? "L" : "M"}${X(x).toFixed(1)} ${yAt(y)}`).join("");
+  const inBand = pts.filter(([x]) => x >= lo && x <= hi);
+  const bandPath = `M${X(lo).toFixed(1)} ${H - 14}` + inBand.map(([x, y]) => `L${X(x).toFixed(1)} ${yAt(y)}`).join("") + `L${X(hi).toFixed(1)} ${H - 14}Z`;
+  const col = { sufficient: "var(--primary)", review: "var(--saffron)", insufficient: "var(--sky)", dispute: "var(--coral)" }[state] || "var(--primary)";
+  const desc = flat ? "Flat: every outcome is equally possible, because there's no verified history yet." : hi - lo > .45 ? "Wide: some evidence, still uncertain." : "Narrow and high: plenty of consistent evidence.";
+  return `<div class="curve"><svg viewBox="0 0 ${W} ${H + 8}" role="img" aria-label="Likely reliability for this loan, as a range. ${desc}">
     <defs><linearGradient id="bg-${state}" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="${col}" stop-opacity=".45"/><stop offset="1" stop-color="${col}" stop-opacity=".05"/></linearGradient></defs>
     <line class="axis" x1="10" x2="${W - 10}" y1="${H - 14}" y2="${H - 14}"/>
     ${[0, .25, .5, .75, 1].map(t => `<line class="axis" x1="${X(t)}" x2="${X(t)}" y1="${H - 14}" y2="${H - 9}"/>`).join("")}
     <path class="band" d="${bandPath}" fill="url(#bg-${state})"/>
     <path class="line" d="${line}" stroke="${col}"/>
     <text class="lbl" x="10" y="${H + 6}">Less reliable</text><text class="lbl" x="${W - 10}" y="${H + 6}" text-anchor="end">More reliable</text>
-    <text class="lbl" x="${(X(lo) + X(hi)) / 2}" y="${H - 22}" text-anchor="middle" style="fill:${col}">90% of the evidence</text></svg>
+    <text class="lbl" x="${(X(lo) + X(hi)) / 2}" y="${H - 22}" text-anchor="middle" style="fill:${col}">90% interval</text></svg>
     <p class="cap">${icon("info")}<span>${desc} The shape of the evidence, not a score.</span></p></div>`;
 }
-function pathsGraph() {
-  const N = { you: [40, 70, "u0", "You"], b: [170, 24, "u2", "Bilal"], k: [125, 122, "u5", "Kamran"], h: [235, 122, "u4", "Hira"], n: [330, 70, "u6", "Nadia"] };
-  const E = [["you", "b"], ["b", "n"], ["you", "k"], ["k", "h"], ["h", "n"]];
-  return `<div class="graph"><svg viewBox="0 0 370 160" role="img" aria-label="Two community paths: You, Bilal, Nadia; and You, Kamran, Hira, Nadia.">
-    ${E.map(([a, b]) => `<path class="e" d="M${N[a][0]} ${N[a][1]}L${N[b][0]} ${N[b][1]}"/>`).join("")}
-    ${Object.entries(N).map(([k, [x, y, uid, nm]]) => { const u = U(uid); return `<clipPath id="g${k}"><circle cx="${x}" cy="${y}" r="16"/></clipPath><circle cx="${x}" cy="${y}" r="19" fill="${k === "n" ? "var(--sky)" : k === "you" ? "var(--primary)" : "var(--surface-3)"}"/>${u.photo ? `<image href="${img(u.photo, 64, 64)}" x="${x - 16}" y="${y - 16}" width="32" height="32" clip-path="url(#g${k})" preserveAspectRatio="xMidYMid slice"/>` : `<circle cx="${x}" cy="${y}" r="16" fill="var(--surface-2)"/><text x="${x}" y="${y + 4}" text-anchor="middle">${u.initials}</text>`}<text x="${x}" y="${y + 34}" text-anchor="middle">${nm}</text>`; }).join("")}</svg></div>`;
+/* CommunityOut.paths: each path runs from you (the lender) through `via` to the borrower.
+   Line thickness follows the path's strength; the numbers stay in the technical details. */
+function pathsGraph(paths, borrowerName) {
+  const W = 370, n = paths.length, H = Math.max(150, 70 + n * 70), mid = H / 2 - 10;
+  const node = (x, y, u, label, fill, k) => `<clipPath id="g${k}"><circle cx="${x}" cy="${y}" r="16"/></clipPath><circle cx="${x}" cy="${y}" r="19" fill="${fill}"/>${u.photo ? `<image href="${img(u.photo, 64, 64)}" x="${x - 16}" y="${y - 16}" width="32" height="32" clip-path="url(#g${k})" preserveAspectRatio="xMidYMid slice"/>` : `<circle cx="${x}" cy="${y}" r="16" fill="var(--surface-2)"/><text x="${x}" y="${y + 4}" text-anchor="middle">${u.initials}</text>`}<text x="${x}" y="${y + 34}" text-anchor="middle">${label}</text>`;
+  let edges = "", nodes = "";
+  paths.forEach((p, i) => {
+    const y = n === 1 ? mid - 40 : 24 + i * ((H - 70) / Math.max(1, n - 1));
+    const xs = p.via.map((_, j) => 40 + (j + 1) * (290 / (p.via.length + 1)));
+    const pts = [[40, mid], ...xs.map(x => [x, y]), [330, mid]];
+    edges += pts.slice(1).map((q, j) => `<path class="e" style="stroke-width:${(1 + p.strength * 3).toFixed(1)}" d="M${pts[j][0]} ${pts[j][1]}L${q[0]} ${q[1]}"/>`).join("");
+    nodes += p.via.map((nm, j) => node(xs[j], y, userByName(nm), nm.split(" ")[0], "var(--surface-3)", `${i}${j}`)).join("");
+  });
+  const b = userByName(borrowerName);
+  return `<div class="graph"><svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${n} community path${n > 1 ? "s" : ""} from you to ${borrowerName}: ${paths.map(p => "through " + p.via.join(" then ")).join("; ")}.">${edges}${nodes}${node(40, mid, DB.users.u0, "You", "var(--primary)", "you")}${node(330, mid, b, borrowerName.split(" ")[0], "var(--sky)", "brw")}</svg></div>`;
 }
-function evidence(a, { name = "the person", interactive = true, tech = true } = {}) {
+/* The lender's evidence report for one request: RequestOut + AssessmentOut */
+function evidence(r, { name = "the person", tech = true, moderator = false } = {}) {
+  const a = r.assessment, k = AS[a.assurance_state], flat = !a.verified_loans;
+  const [ba, bb] = flat ? [1, 1] : betaFit(a.posterior_mean, a.ci90_low, a.ci90_high);
+  const paths = a.community?.paths || [];
+  const direct = flat ? ["No verified loans yet", "Nothing to count yet. That isn't a negative finding."]
+    : [`${a.verified_loans} verified loan${a.verified_loans > 1 ? "s" : ""}`, a.effective_evidence < 3 ? "Weighted for recency and similarity: not enough on their own." : "Recent, similar loans weigh most."];
+  const indirect = paths.length ? [`${paths.length} community path${paths.length > 1 ? "s" : ""}`, "Capped below direct evidence, so it can't reach “enough evidence” on its own."]
+    : !flat && a.effective_evidence >= 3 ? ["Not needed", "Their own loans are enough."] : ["No community paths", `Nobody you've lent to has lent to ${name}.`];
+  const risk = [RISK[a.manipulation_level] + (moderator ? ` (level ${a.manipulation_level} of 4, score ${a.manipulation_risk})` : ""), a.manipulation_level === 1 ? "Checked separately: partners reviewing one another, similar review texts, retaliation." : "Checked separately from trust. A risk signal is not proof of wrongdoing."];
+  const sgs = [...a.safeguards.map(s => s.label), ...(r.moderator_safeguards || []).map(s => (s.label || s) + " (set by a moderator)")];
   return `<section class="ev" aria-label="Evidence report">
-    <div class="ev-h"><div class="between">${stateChip(a.state, a.title)}<span class="xs faint">Confidence: ${a.conf}</span></div><p class="lede">${a.lede}</p>
-      <p class="ev-note">${icon("info")}Describes the evidence for this loan, not ${name}.</p></div>
-    ${betaCurve(a.ab[0], a.ab[1], a.state)}
+    <div class="ev-h"><div class="between" style="flex-wrap:wrap">${stateChip(a.assurance_state)}<span class="badge outline">${icon("compass")}${POLICY[a.policy_decision]}</span></div><p class="lede">${r.lede || ""}</p>
+      <p class="ev-note">${icon("info")}Describes the evidence for this loan, not ${name}. Decision support, not a guarantee.</p></div>
+    ${betaCurve(ba, bb, k, flat ? null : [a.ci90_low, a.ci90_high])}
     <div class="factors">
-      <div class="fac"><div class="fl">${icon("history")}Their own loans</div><div class="fv">${a.direct[0]}</div><div class="fx">${a.direct[1]}</div></div>
-      <div class="fac"><div class="fl">${icon("waypoints")}Through people you know</div><div class="fv">${a.indirect[0]}</div><div class="fx">${a.indirect[1]}</div>${a.paths ? pathsGraph() : ""}</div>
-      <div class="fac"><div class="fl">${icon("radar")}Unusual activity check</div><div class="fv">${a.risk[0]}</div><div class="fx">${a.risk[1]}</div></div></div>
-    <div class="sg"><div class="between"><h3 style="font-size:15px">Suggested safeguards</h3><span class="xs faint">You can change these</span></div>
-      ${a.safeguards.map(([t, d, on], i) => interactive ? `<label class="check"><input type="checkbox" ${on ? "checked" : ""} name="sg${i}"><span><strong>${t}</strong><span>${d}</span></span></label>` : `<div class="row small mt-2">${icon("check", "i-sm")}${t}</div>`).join("")}</div>
-    ${tech ? `<details class="tech"><summary>${icon("chevron-right")}Technical details for reviewers</summary><dl class="kv"><dt>State</dt><dd>${a.code}</dd>${Object.entries(a.tech).map(([k, v]) => `<dt>${k}</dt><dd>${v}</dd>`).join("")}</dl></details>` : ""}
+      <div class="fac"><div class="fl">${icon("history")}Their own loans</div><div class="fv">${direct[0]}</div><div class="fx">${direct[1]}</div></div>
+      <div class="fac"><div class="fl">${icon("waypoints")}Through people you know</div><div class="fv">${indirect[0]}</div><div class="fx">${indirect[1]}</div>${paths.length ? pathsGraph(paths, r.borrower ? U(r.borrower).name : name) : ""}</div>
+      <div class="fac"><div class="fl">${icon("radar")}Unusual activity check</div><div class="fv">${risk[0]}</div><div class="fx">${risk[1]}</div></div></div>
+    ${sgs.length ? `<div class="sg"><h3 style="font-size:15px">Suggested safeguards</h3>${sgs.map(t => `<div class="row small mt-3">${tone("check", "green", 24)}${t}</div>`).join("")}</div>` : ""}
+    ${tech ? `<details class="tech"><summary>${icon("chevron-right")}Technical details for reviewers</summary><dl class="kv">
+      <dt>Assurance state</dt><dd>${a.assurance_state}</dd><dt>Policy decision</dt><dd>${a.policy_decision}</dd><dt>Rule fired</dt><dd>${a.rule_fired}</dd>
+      <dt>90% interval</dt><dd>${flat ? "0.05 – 0.95 (prior)" : `${a.ci90_low.toFixed(2)} – ${a.ci90_high.toFixed(2)}`}</dd><dt>Effective evidence</dt><dd>${a.effective_evidence}</dd><dt>Verified loans</dt><dd>${a.verified_loans}</dd>
+      <dt>Indirect reliability</dt><dd>${a.community?.reliability ?? 0} (cap 0.60)</dd>${paths.map((p, i) => `<dt>Path ${i + 1}</dt><dd>via ${p.via.join(" → ")} · strength ${p.strength}</dd>`).join("")}
+      <dt>Manipulation</dt><dd>level ${a.manipulation_level} of 4 · ${a.manipulation_risk}/100</dd><dt>Config</dt><dd>${a.config_version}</dd></dl>
+      <p class="small muted" style="padding:0 22px 20px"><b>Engine explanation:</b> ${a.explanation}</p></details>` : ""}
   </section>`;
 }
-const miniRange = (ab, state) => {
-  const [a, b] = ab, m = a / (a + b), sd = Math.sqrt(a * b / ((a + b) ** 2 * (a + b + 1)));
-  const lo = Math.max(2, (m - 1.65 * sd) * 100), hi = Math.min(98, (m + 1.65 * sd) * 100);
-  const col = { sufficient: "var(--primary)", review: "var(--saffron)", insufficient: "var(--sky)" }[state];
-  return `<div class="mini-range" role="img" aria-label="Range ${Math.round(lo)} to ${Math.round(hi)} percent"><i style="left:${a === 1 && b === 1 ? 4 : lo}%;width:${a === 1 && b === 1 ? 92 : hi - lo}%;background:${col}"></i></div><div class="between xs faint mt-1"><span>Less reliable</span><span>More reliable</span></div>`;
-};
+const miniRange = (lo, hi, col = "var(--primary)") => `<div class="mini-range" role="img" aria-label="Range from ${Math.round(lo * 100)} to ${Math.round(hi * 100)} percent"><i style="left:${lo * 100}%;width:${(hi - lo) * 100}%;background:${col}"></i></div><div class="between xs faint mt-1"><span>Less</span><span>More</span></div>`;
+/* FactorOut: one factor, never a score; detail only when there are enough loans (FR-T-08) */
+const factorRow = f => `<div style="padding:14px 0;border-top:1px solid var(--border)"><div class="between" style="align-items:flex-start;gap:12px"><b class="small">${f.label}</b><span class="xs faint nowrap">${f.verified_loans} verified loan${f.verified_loans === 1 ? "" : "s"}</span></div>
+  ${f.enough ? `${miniRange(f.interval_low, f.interval_high)}<p class="xs muted mt-1">${cap(f.confidence)}${f.note ? ". " + f.note : ""}</p>` : `<p class="xs muted mt-2">${icon("info", "i-sm")} ${f.note}</p>`}</div>`;
+const factorList = fs => `<div style="margin-top:-14px">${fs.map(factorRow).join("")}</div>`;
+const evLevel = uid => { const e = DB.lenderEv[uid]; if (!e) return null; if (!e.has_history) return ["sky", "sprout", "New lender"]; return e.factors.every(f => f.enough) ? ["green", "shield-check", "Established lender"] : ["saffron", "eye", "Small history"]; };
+const evTag = uid => { const l = evLevel(uid); return l ? `<span class="badge ${l[0]}">${icon(l[1])}${l[2]}</span>` : ""; };
 
 /* ---------------- Composite components ---------------- */
 const itemCard = (it, o = {}) => {
-  const ev = DB.lenderEv[it.lender];
+  const l = evLevel(it.lender);
   return `<a class="item press" href="#/item/${it.id}" data-vt>
-    ${photo(it.photo, { w: 520, alt: it.title, tl: it.restricted ? `<span class="badge glass">${icon("badge-check")}Verified only</span>` : it.trend && o.trend ? `<span class="badge glass">${icon("flame")}${it.trend}</span>` : "", tr: saveBtn("Save " + it.title) })}
-    <div class="meta"><h3>${it.title}</h3><p class="sub">${icon("map-pin")}${it.lane} · ${it.avail}</p>
-      <div class="foot"><span class="row" style="gap:6px">${av(it.lender, "xs")}<span class="muted">${U(it.lender).short}</span>${ev ? `<span class="status ${ev.state === "sufficient" ? "green" : ev.state === "review" ? "saffron" : "sky"}" title="${ev.tag}"></span>` : ""}</span><span class="price">${it.deposit ? rs(it.deposit) : "No deposit"}</span></div></div></a>`;
+    ${photo(it.photo, { w: 520, alt: it.title, tl: restricted(it) ? `<span class="badge glass">${icon("badge-check")}Verified only</span>` : it.trend && o.trend ? `<span class="badge glass">${icon("flame")}${it.trend}</span>` : "", tr: saveBtn("Save " + it.title) })}
+    <div class="meta"><h3>${it.title}</h3><p class="sub">${icon("map-pin")}${it.lane} · ${availText(it)}</p>
+      <div class="foot"><span class="row" style="gap:6px">${av(it.lender, "xs")}<span class="muted">${U(it.lender).short}</span>${l ? `<span class="status ${l[0]}" title="${l[2]}"></span>` : ""}</span><span class="price">${it.deposit ? rs(it.deposit) : "No deposit"}</span></div></div></a>`;
 };
-const evTag = uid => { const e = DB.lenderEv[uid]; return `<span class="badge ${e.state === "sufficient" ? "green" : e.state === "review" ? "saffron" : "sky"}">${icon(ST[e.state][0])}${e.tag}</span>`; };
 function timeline(steps) { return `<ol class="tl">${steps.map(s => `<li class="${s.s}"><span class="nd">${s.s === "done" ? icon("check") : s.s === "alert" ? icon("x") : ""}</span><div class="tt">${s.t}</div>${s.d ? `<div class="td">${s.d}</div>` : ""}</li>`).join("")}</ol>`; }
 const LIFE = ["Requested", "Accepted", "Handover", "Borrowed", "Returned", "Done"];
 const stepsH = (cur, alert) => `<div class="steps-h" aria-label="Step ${cur + 1} of 6">${LIFE.map((l, i) => `<div class="s ${i < cur ? "on" : i === cur ? (alert ? "alert" : "cur") : ""}"><i></i><span class="desk">${l}</span></div>`).join("")}</div>`;
@@ -190,7 +253,7 @@ function siteNav(active, role) {
   if (role === "public") return `<div class="wrap"><a class="brand" href="#/welcome">${logo()}Digital Mohalla</a>
     <nav class="navlinks desk" aria-label="Sections"><a href="#/welcome">Product</a><a href="#/welcome" data-scroll="how">How it works</a><a href="#/welcome" data-scroll="modules">Modules</a><a href="#/hci">Design notes</a></nav>
     <div class="nav-right"><button class="icon-btn" type="button" data-act="theme" aria-label="Toggle dark mode"><span data-theme-icon></span></button><a class="btn btn-ghost btn-sm desk" href="#/login">Log in</a><a class="btn btn-primary btn-sm" href="#/register">Get started</a></div></div>`;
-  const unread = DB.notifications.filter(n => n.unread).length;
+  const unread = DB.notifications.filter(n => !n.read).length;
   const u = U(role === "moderator" ? "mod" : role === "admin" ? "admin" : "u0");
   return `<div class="wrap" style="max-width:${role === "member" ? "1200px" : "100%"}"><a class="brand" href="${role === "member" ? "#/home" : role === "moderator" ? "#/mod" : "#/admin"}">${logo()}<span>Digital Mohalla</span>${role !== "member" ? `<small class="desk">${role === "moderator" ? "Moderator console" : "Admin"}</small>` : ""}</a>
     ${role === "member" ? `<nav class="navlinks" aria-label="Main">${NAV.map(([h, k, l]) => `<a href="${h}" ${k === active ? 'aria-current="page"' : ""}>${l}${k === "community" ? '<span class="soon-dot" title="Some features coming soon"></span>' : ""}</a>`).join("")}</nav>` : ""}
@@ -210,7 +273,7 @@ function tabbar(active) {
 }
 const CONSOLE = {
   moderator: [["Review", [["#/mod", "queue", "Case queue", "list-checks", 6], ["#/mod/members", "members", "Join requests", "user-check", 3], ["#/mod/reports", "reports", "Reports & flags", "flag", 3]]], ["Community", [["#/mod/events", "events", "Event approvals", "calendar-check", "soon"], ["#/mod/audit", "audit", "Audit log", "scroll-text"]]]],
-  admin: [["Overview", [["#/admin", "dash", "Analytics", "chart-no-axes-combined"], ["#/admin/cases", "queue", "Escalations", "siren", 1]]], ["Manage", [["#/admin/users", "users", "Users & roles", "users", "soon"], ["#/admin/communities", "communities", "Communities", "map", "soon"], ["#/admin/vendors", "vendors", "Vendor verification", "store", "soon"], ["#/admin/knowledge", "kb", "Assistant knowledge", "book-open-check", "soon"]]], ["Integrity", [["#/admin/audit", "audit", "Audit log", "scroll-text"]]]]
+  admin: [["Overview", [["#/admin", "dash", "Analytics", "chart-no-axes-combined"], ["#/admin/cases", "queue", "Escalations", "siren", 1]]], ["Manage", [["#/admin/users", "users", "Users & roles", "users", "soon"], ["#/admin/communities", "communities", "Communities", "map", "soon"], ["#/admin/vendors", "vendors", "Vendor verification", "store", "soon"], ["#/admin/knowledge", "kb", "Assistant knowledge", "book-open-check", "soon"]]], ["Integrity", [["#/admin/audit", "audit", "Audit log", "scroll-text"], ["#/admin/jobs", "jobs", "Scheduled jobs", "timer-reset"]]]]
 };
 function consoleShell(role, active, inner) {
   const groups = CONSOLE[role];
@@ -296,7 +359,8 @@ function paint() {
 function render() {
   if (!document.startViewTransition || matchMedia("(prefers-reduced-motion: reduce)").matches) return paint();
   const vt = document.startViewTransition(paint);
-  vt.finished.finally(() => { $$("[style*='view-transition-name']").forEach(e => { if (!e.closest("#view")) e.style.viewTransitionName = ""; }); });
+  vt.ready.catch(() => {}); vt.updateCallbackDone.catch(() => {});
+  vt.finished.catch(() => {}).finally(() => { $$("[style*='view-transition-name']").forEach(e => { if (!e.closest("#view")) e.style.viewTransitionName = ""; }); });
 }
 window.addEventListener("hashchange", render);
 
@@ -325,7 +389,7 @@ document.addEventListener("click", e => {
   if (a === "theme") toggleTheme(e);
   if (a === "cmdk") openCmdk();
   if (a === "create") { e.stopPropagation(); if (innerWidth < 900) dialog(`<h2>Create</h2><div class="pop" style="position:static;box-shadow:none;border:0;padding:0;margin-top:12px;animation:none">${CREATE_MENU}</div>`, "Create"); else popover(t, CREATE_MENU); }
-  if (a === "bell") { e.stopPropagation(); if (innerWidth < 900) { location.hash = "#/notifications"; return; } popover(t, `<div class="between" style="padding:8px 10px"><b>Notifications</b><a class="link xs" href="#/notifications" style="padding:0;display:inline">See all</a></div>${DB.notifications.slice(0, 5).map(n => `<a href="${n.href}">${tone(n.icon, n.tone, 32)}<span class="grow"><b style="font-weight:600;font-size:14px">${n.t}</b><br><span class="xs faint">${n.d}</span></span>${n.unread ? '<span class="status coral" style="font-size:0"></span>' : ""}</a>`).join("")}`); $("#pop").style.width = "380px"; }
+  if (a === "bell") { e.stopPropagation(); if (innerWidth < 900) { location.hash = "#/notifications"; return; } popover(t, `<div class="between" style="padding:8px 10px"><b>Notifications</b><a class="link xs" href="#/notifications" style="padding:0;display:inline">See all</a></div>${DB.notifications.slice(0, 5).map(nview).map(n => `<a href="${n.href}">${tone(n.icon, n.tone, 32)}<span class="grow"><b style="font-weight:600;font-size:14px">${n.t}</b><br><span class="xs faint">${n.d}</span></span>${n.unread ? '<span class="status coral" style="font-size:0"></span>' : ""}</a>`).join("")}`); $("#pop").style.width = "380px"; }
   if (a === "me") { e.stopPropagation(); popover(t, `<div class="row" style="padding:10px 12px">${av("u0", "")}<div><b>Sana Malik</b><div class="xs faint">Block C · resident</div></div></div><hr>
     <a href="#/profile">${icon("user")}Profile</a><a href="#/evidence">${icon("shield-check")}My evidence</a><a href="#/inbox">${icon("message-circle")}Inbox</a><a href="#/listings">${icon("package")}My listings</a><a href="#/settings">${icon("settings")}Settings</a><hr>
     <a href="#/mod">${icon("shield")}Moderator console</a><a href="#/admin">${icon("layout-dashboard")}Admin</a><hr><a href="#/welcome">${icon("log-out")}Sign out</a>`); }

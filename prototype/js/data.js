@@ -1,21 +1,50 @@
-/* Mock data shaped like the Digital Mohalla backend.
-   Lifecycle states, assurance output (with recency-weighted Beta posterior parameters),
-   hold reasons and event types follow the FR/NFR and use-case baselines.
-   Photos are Unsplash (free licence), loaded by id. */
+/* Mock data for the prototype, shaped like the Digital Mohalla REST API on branch
+   iteration2/slice3 (backend/app/api/schemas.py). Field names, enums and status lists follow the
+   API and docs/design/06_data_model/schema.sql; timers follow backend/config/engine.json
+   (config 1.3.7-iteration2-draft). ALL PEOPLE, ITEMS AND NUMBERS ARE SYNTHETIC.
+   Fields a screen only needs for looks (photo, lane, icon) are marked "UI". */
 
 const IMG = (id, w = 800, h) => `https://images.unsplash.com/${id}?auto=format&fit=crop&w=${w}${h ? "&h=" + h : ""}&q=72`;
+
+/* decision_policy_alg4 safeguard codes and their labels (domain/assurance/policy/decision.py) */
+const SAFEGUARDS = {
+  STANDARD_RETURN_REMINDER: "Send the standard return reminder",
+  CONDITION_PHOTOS_CHECKLIST: "Photograph the item and complete the condition checklist",
+  DEPOSIT_RECORD: "Record the deposit before handover",
+  EXPLICIT_RETURN_REMINDER: "Agree the return date explicitly and send a reminder",
+  MEDIUM_VALUE_DEPOSIT_RECORD: "Record a deposit suited to a medium-value item",
+  HIGH_VALUE_DEPOSIT_RECORD: "Record a deposit suited to a high-value item",
+  HANDOVER_PHOTOS: "Take item photos at handover",
+  HANDOVER_CHECKLIST: "Complete the handover checklist together",
+  FIXED_RETURN_DATE: "Agree a fixed return date"
+};
+const sg = (...codes) => codes.map(code => ({ code, label: SAFEGUARDS[code] }));
 
 window.DB = {
   img: IMG,
   me: "u0",
-  community: { id: "c1", name: "Block C, Gulberg III", short: "Block C", city: "Lahore", members: 214, mods: ["mod", "mod2"],
+  configVersion: "1.3.7-iteration2-draft",
+  safeguards: SAFEGUARDS,
+  /* scheduler_b13, reviews_d1, moderation_i4, locality_a11, decision_policy_alg4.value_bands_pkr */
+  timers: { responseWindowH: 72, handoverGraceH: 24, returnReminderH: 24, overdueLimitH: 72, minReminders: 2, confirmationReminderH: 24, disputeWindowD: 7, partyResponseH: 72, listingExpiryD: 60, reviewWindowD: 14, reviewEditH: 24, appealWindowD: 7, inviteTtlD: 7, maxOpenInvites: 3, lowMax: 5000, mediumMax: 15000, photoMaxMB: 5, photoLinkMin: 10 },
+  /* reviews_d1.dimensions: what you rate, by the other party's role */
+  reviewDims: {
+    LENDER: [["condition_accuracy", "Item was as described"], ["fair_terms", "Terms were fair"], ["responsiveness", "Replied and turned up on time"], ["dispute_fairness", "Fair if anything went wrong"]],
+    BORROWER: [["punctuality", "On time for handover and return"], ["care_for_item", "Took care of the item"], ["communication", "Easy to talk to"], ["follow_terms", "Followed the terms"]]
+  },
+
+  /* CommunityListOut (+ photo: UI). methods: verification_method enum */
+  community: { id: "c1", name: "Block C, Gulberg III", short: "Block C", city: "Lahore", members: 214, join_code: "GUL-C",
     rules: ["Lend and borrow only inside Block C and the two lanes next to it.", "Hand over in a public spot: the park gate or the masjid parking.", "Record deposits in the app. Money never moves through Digital Mohalla.", "In reviews and posts, describe what happened, not the person."] },
   communities: [
-    { id: "c1", name: "Block C, Gulberg III", city: "Lahore", members: 214, code: "GUL-C", photo: "photo-1684323041566-1958d8056e8a", method: "Location check + invitation", state: "member" },
-    { id: "c2", name: "Main Market Lanes", city: "Lahore", members: 132, code: "MML", photo: "photo-1667650708785-2179a8eb2b70", method: "Location check + invitation", state: "pending" },
-    { id: "c3", name: "Liberty Residency", city: "Lahore", members: 88, code: "LRT", photo: "photo-1655449767937-754b25282108", method: "Open to verified residents", state: "open", open: true },
-    { id: "c4", name: "Model Town Block K", city: "Lahore", members: 301, code: "MTK", photo: "photo-1601969700719-d31890dd6b30", method: "Location check + invitation", state: "full" }
+    { id: "c1", name: "Block C, Gulberg III", city: "Lahore", member_count: 214, join_code: "GUL-C", methods: ["GEOFENCE_INVITATION", "MODERATOR_APPROVAL"], has_boundary: true, photo: "photo-1684323041566-1958d8056e8a", mine: "APPROVED" },
+    { id: "c2", name: "Main Market Lanes", city: "Lahore", member_count: 132, join_code: "MML", methods: ["GEOFENCE_INVITATION", "MODERATOR_APPROVAL"], has_boundary: true, photo: "photo-1667650708785-2179a8eb2b70", mine: "PENDING" },
+    { id: "c3", name: "Liberty Residency", city: "Lahore", member_count: 88, join_code: "LRT", methods: ["MODERATOR_APPROVAL"], has_boundary: false, photo: "photo-1655449767937-754b25282108", mine: null },
+    { id: "c4", name: "Model Town Block K", city: "Lahore", member_count: 301, join_code: "MTK", methods: ["GEOFENCE_INVITATION", "MODERATOR_APPROVAL"], has_boundary: true, photo: "photo-1601969700719-d31890dd6b30", mine: "REJECTED" }
   ],
+  /* POST /communities/{id}/invitations: code shown once, invite_ttl_days 7, max_open_invites 3 */
+  invitations: [{ code: "GUL-C-7K2Q", expires: "30 Oct", used: false }, { code: "GUL-C-M4XB", expires: "24 Oct", used: true }],
+
   users: {
     u0: { name: "Sana Malik", short: "Sana", initials: "SM", photo: "photo-1550546094-9835463f9f71", since: "Mar 2026", lane: "Lane 3" },
     u1: { name: "Ayesha Khan", short: "Ayesha", initials: "AK", photo: "photo-1536766768598-e09213fdcf22", since: "Oct 2026", lane: "Lane 4" },
@@ -25,83 +54,157 @@ window.DB = {
     u5: { name: "Kamran Javed", short: "Kamran", initials: "KJ", photo: "photo-1618306842557-a2515acf2112", since: "Nov 2025", lane: "Lane 5", badge: "Top answerer" },
     u6: { name: "Nadia Pervez", short: "Nadia", initials: "NP", photo: "photo-1516239482977-b550ba7253f2", since: "Aug 2026", lane: "Lane 3" },
     u7: { name: "Farah Siddiqui", short: "Farah", initials: "FS", photo: "photo-1552113125-81af17f36b57", since: "Apr 2026", lane: "Lane 6", badge: "Verified expert" },
+    u8: { name: "Faisal Nawaz", short: "Faisal", initials: "FN", since: "Oct 2026", lane: "Lane 8" },
+    u9: { name: "Zain Mirza", short: "Zain", initials: "ZM", since: "Sep 2026", lane: "Lane 2" },
+    u10: { name: "Mariam Shah", short: "Mariam", initials: "MS", since: "Jul 2026", lane: "Lane 4" },
     mod: { name: "Imran Qureshi", short: "Imran", initials: "IQ", photo: "photo-1617817638453-4480d05e0b83", role: "Moderator" },
     mod2: { name: "Rabia Saeed", short: "Rabia", initials: "RS", role: "Moderator" },
     admin: { name: "Saad Ahmed", short: "Saad", initials: "SA", role: "Admin" }
   },
+
+  /* CategoryOut (+ icon: UI). Restricted categories need COMMUNITY_VERIFIED (FR-B-02). */
   categories: [
-    { id: "all", label: "All", icon: "layout-grid" }, { id: "tools", label: "Tools & DIY", icon: "hammer" }, { id: "party", label: "Party & events", icon: "party-popper" },
-    { id: "kitchen", label: "Kitchen", icon: "cooking-pot" }, { id: "kids", label: "Baby & kids", icon: "baby" }, { id: "outdoor", label: "Outdoor & sports", icon: "tent" },
-    { id: "electronics", label: "Electronics", icon: "projector" }, { id: "books", label: "Books", icon: "book-open" }, { id: "medical", label: "Medical", icon: "accessibility" }
+    { id: "all", label: "All", icon: "layout-grid" },
+    { id: 1, label: "Tools & DIY", icon: "hammer", is_restricted: false, min_verification: "UNVERIFIED" },
+    { id: 2, label: "Party & events", icon: "party-popper", is_restricted: false, min_verification: "UNVERIFIED" },
+    { id: 3, label: "Kitchen", icon: "cooking-pot", is_restricted: false, min_verification: "UNVERIFIED" },
+    { id: 4, label: "Baby & kids", icon: "baby", is_restricted: false, min_verification: "UNVERIFIED" },
+    { id: 5, label: "Outdoor & sports", icon: "tent", is_restricted: false, min_verification: "UNVERIFIED" },
+    { id: 6, label: "Electronics", icon: "projector", is_restricted: true, min_verification: "COMMUNITY_VERIFIED" },
+    { id: 7, label: "Books", icon: "book-open", is_restricted: false, min_verification: "UNVERIFIED" },
+    { id: 8, label: "Medical", icon: "accessibility", is_restricted: true, min_verification: "COMMUNITY_VERIFIED" }
   ],
+
+  /* ListingOut / ItemOut. condition NEW|GOOD|FAIR|WORN; value_band LOW|MEDIUM|HIGH;
+     status DRAFT|PENDING_REVIEW|PUBLISHED|PAUSED|EXPIRED|REMOVED; booked = days of booked_periods.
+     reason = SearchResultOut.reason. photo, lane, noun, trend: UI. */
   items: [
-    { id: "makita", title: "Cordless drill, 2 batteries", noun: "drill", cat: "tools", photo: "photo-1572981779307-38b8cabb2407", lender: "u5", deposit: 3000, cond: "Very good", lane: "Lane 5", avail: "Free from 14 Oct", max: "4 days", handover: "From the lender's gate", desc: "18V cordless drill-driver with two batteries, a charger and a case of wood and metal bits.", terms: ["Rs 3,000 deposit, recorded in the app", "Charge the batteries before returning"], why: "Matches “drill” · 11 completed tool loans · free on your dates", score: 0.91 },
-    { id: "deg", title: "Large deg for 40 guests", noun: "deg", cat: "kitchen", photo: "photo-1790008882050-76a602990485", lender: "u2", deposit: 1500, cond: "Very good", lane: "Lane 2", avail: "Free this weekend", max: "2 days", handover: "Masjid parking", desc: "Aluminium deg with lid and a long kafgeer. Enough biryani or haleem for about 40 people.", terms: ["Rs 1,500 deposit", "Return scrubbed, no burnt base"], why: "Popular for weddings · Bilal has lent it 9 times", trend: "Booked 9× this season" },
-    { id: "chairs", title: "Plastic chairs, set of 20", noun: "chairs", cat: "party", photo: "photo-1778230501599-90003014460d", lender: "u4", deposit: 3000, cond: "Good · 2 scratched", lane: "Lane 1", avail: "Booked 18–19 Oct", max: "3 days", handover: "Park gate", desc: "Stackable plastic chairs in two bundles of ten. You'll need a car or a rickshaw.", terms: ["Rs 3,000 deposit", "Count all 20 at handover and return"], why: "Some dates already booked", trend: "Wedding season favourite" },
-    { id: "ladder", title: "Aluminium ladder, 8 ft", noun: "ladder", cat: "tools", photo: "photo-1617515457325-728e2a50cd87", lender: "u5", deposit: 0, cond: "Good", lane: "Lane 5", avail: "Available now", max: "2 days", handover: "From the lender's gate", desc: "Folding A-frame ladder that holds up to 120 kg. New rubber feet this year.", terms: ["No deposit", "Not for wet floors"], why: "Close by and free today" },
-    { id: "tent", title: "4-person camping tent", noun: "tent", cat: "outdoor", photo: "photo-1504280390367-361c6d9f38f4", lender: "u2", deposit: 2500, cond: "Very good", lane: "Lane 2", avail: "Available now", max: "5 days", handover: "From the lender's gate", desc: "Dome tent with rain fly, pegs and carry bag. Used twice in Naran.", terms: ["Rs 2,500 deposit", "Dry it before returning"], why: "14 completed loans", trend: "Northern trips" },
-    { id: "projector", title: "Projector + 100-inch screen", noun: "projector", cat: "electronics", photo: "photo-1535016120720-40c646be5580", lender: "u3", deposit: 8000, cond: "Good", lane: "Lane 7", avail: "Free from 20 Oct", max: "2 days", handover: "Park gate", restricted: true, desc: "1080p projector, pull-up screen and HDMI cable. Match nights and mehndi slideshows.", terms: ["Rs 8,000 deposit", "Verified accounts only (high value)"], why: "High value · lender reviews every request", trend: "Match nights" },
-    { id: "wheelchair", title: "Folding wheelchair", noun: "wheelchair", cat: "medical", photo: "photo-1619618691037-751d1e6c9ad1", lender: "u6", deposit: 5000, cond: "Very good", lane: "Lane 3", avail: "Available now", max: "14 days", handover: "From the lender's gate", restricted: true, desc: "Lightweight folding wheelchair with footrests. For neighbours after surgery or elderly visitors.", terms: ["Rs 5,000 deposit", "Verified accounts only (medical)"], why: "Medical items need a verified account" },
-    { id: "stroller", title: "Reclining baby stroller", noun: "stroller", cat: "kids", photo: "photo-1559135141-2bea6465fccf", lender: "u1", deposit: 1000, cond: "Good", lane: "Lane 4", avail: "Available now", max: "7 days", handover: "From the lender's gate", desc: "Reclining stroller with rain cover; folds one-handed.", terms: ["Rs 1,000 deposit"], why: "New lender, no loans yet" },
-    { id: "books", title: "O-level Physics books", noun: "books", cat: "books", photo: "photo-1497633762265-9d179a990aa6", lender: "u5", deposit: 0, cond: "Some highlighting", lane: "Lane 5", avail: "Available now", max: "4 months", handover: "From the lender's gate", desc: "Textbook plus two years of solved past papers.", terms: ["No deposit", "Up to one term"], why: "Matches “books”" },
-    { id: "drill", title: "Bosch impact drill + bits", noun: "drill", cat: "tools", photo: "photo-1622044939413-0b829c342434", lender: "u0", deposit: 2000, cond: "Good", lane: "Lane 3", avail: "Free from 14 Oct", max: "3 days", handover: "From your gate", desc: "650W impact drill with a 13-piece bit set and a spare chuck key.", terms: ["Rs 2,000 deposit", "Masonry bits only for brick and concrete"], why: "" }
+    { id: "makita", title: "Cordless drill, 2 batteries", noun: "drill", category_id: 1, photo: "photo-1572981779307-38b8cabb2407", lender: "u5", deposit: 3000, condition: "GOOD", value_band: "MEDIUM", lane: "Lane 5", booked: [], status: "PUBLISHED", required_verification: "UNVERIFIED",
+      desc: "18V cordless drill-driver with two batteries, a charger and a case of wood and metal bits.", usage_terms: "Charge the batteries before returning. Wood and metal bits only.", handover_method: "Pick up from the lender's gate", search_terms: "drill, drill machine, screwdriver, barma",
+      reason: "Matches “drill” · items as described in 10 of 11 loans · free on your dates" },
+    { id: "deg", title: "Large deg for 40 guests", noun: "deg", category_id: 3, photo: "photo-1790008882050-76a602990485", lender: "u2", deposit: 1500, condition: "GOOD", value_band: "MEDIUM", lane: "Lane 2", booked: [18, 19], status: "PUBLISHED", required_verification: "UNVERIFIED", trend: "Booked 9× this season",
+      desc: "Aluminium deg with lid and a long kafgeer. Enough biryani or haleem for about 40 people.", usage_terms: "Return scrubbed, with no burnt base.", handover_method: "Masjid parking", search_terms: "deg, degchi, biryani pot, cooking pot",
+      reason: "Matches “cooking pot” · Bilal has lent it 9 times" },
+    { id: "chairs", title: "Plastic chairs, set of 20", noun: "chairs", category_id: 2, photo: "photo-1778230501599-90003014460d", lender: "u4", deposit: 3000, condition: "FAIR", value_band: "MEDIUM", lane: "Lane 1", booked: [18, 19], status: "PUBLISHED", required_verification: "UNVERIFIED", trend: "Wedding season favourite",
+      desc: "Stackable plastic chairs in two bundles of ten; 2 have scratches. You'll need a car or a rickshaw.", usage_terms: "Count all 20 at handover and at return.", handover_method: "Park gate", search_terms: "chairs, kursiyan, shaadi chairs",
+      reason: "Some dates already booked" },
+    { id: "ladder", title: "Aluminium ladder, 8 ft", noun: "ladder", category_id: 1, photo: "photo-1617515457325-728e2a50cd87", lender: "u5", deposit: 0, condition: "GOOD", value_band: "LOW", lane: "Lane 5", booked: [], status: "PUBLISHED", required_verification: "UNVERIFIED",
+      desc: "Folding A-frame ladder that holds up to 120 kg. New rubber feet this year.", usage_terms: "Not for use on wet floors.", handover_method: "Pick up from the lender's gate", search_terms: "seedhi, ladder, step ladder",
+      reason: "In your community and free on your dates" },
+    { id: "tent", title: "4-person camping tent", noun: "tent", category_id: 5, photo: "photo-1504280390367-361c6d9f38f4", lender: "u2", deposit: 2500, condition: "GOOD", value_band: "MEDIUM", lane: "Lane 2", booked: [24, 25, 26, 27], status: "PUBLISHED", required_verification: "UNVERIFIED", trend: "Northern trips",
+      desc: "Dome tent with rain fly, pegs and carry bag. Used twice in Naran.", usage_terms: "Dry it before returning.", handover_method: "Pick up from the lender's gate", search_terms: "tent, camping, khaima",
+      reason: "Bilal has 14 completed loans as a lender" },
+    { id: "projector", title: "Projector + 100-inch screen", noun: "projector", category_id: 6, photo: "photo-1535016120720-40c646be5580", lender: "u3", deposit: 8000, condition: "GOOD", value_band: "HIGH", lane: "Lane 7", booked: [], status: "PUBLISHED", required_verification: "COMMUNITY_VERIFIED", trend: "Match nights",
+      desc: "1080p projector, pull-up screen and HDMI cable. Match nights and mehndi slideshows.", usage_terms: "Keep it indoors. Pack the screen in its tube.", handover_method: "Park gate", search_terms: "projector, screen, movie night",
+      reason: "High-value item · verified members only" },
+    { id: "wheelchair", title: "Folding wheelchair", noun: "wheelchair", category_id: 8, photo: "photo-1619618691037-751d1e6c9ad1", lender: "u6", deposit: 5000, condition: "GOOD", value_band: "MEDIUM", lane: "Lane 3", booked: [], status: "PUBLISHED", required_verification: "COMMUNITY_VERIFIED",
+      desc: "Lightweight folding wheelchair with footrests. For neighbours after surgery or elderly visitors.", usage_terms: "Up to two weeks. Wipe the seat before returning.", handover_method: "Pick up from the lender's gate", search_terms: "wheelchair, wheel chair",
+      reason: "Medical items need a verified member" },
+    { id: "stroller", title: "Reclining baby stroller", noun: "stroller", category_id: 4, photo: "photo-1559135141-2bea6465fccf", lender: "u1", deposit: 1000, condition: "GOOD", value_band: "LOW", lane: "Lane 4", booked: [], status: "PUBLISHED", required_verification: "UNVERIFIED",
+      desc: "Reclining stroller with rain cover; folds one-handed.", usage_terms: "Fold it gently; the hinge is stiff.", handover_method: "Pick up from the lender's gate", search_terms: "stroller, pram, baby gaari",
+      reason: "New lender: shown at the community baseline" },
+    { id: "books", title: "O-level Physics books", noun: "books", category_id: 7, photo: "photo-1497633762265-9d179a990aa6", lender: "u5", deposit: 0, condition: "WORN", value_band: "LOW", lane: "Lane 5", booked: [], status: "PUBLISHED", required_verification: "UNVERIFIED",
+      desc: "Textbook plus two years of solved past papers. Some highlighting.", usage_terms: "Up to one term.", handover_method: "Pick up from the lender's gate", search_terms: "physics, o level, past papers, kitaab",
+      reason: "Matches “books”" },
+    { id: "drill", title: "Bosch impact drill + bits", noun: "drill", category_id: 1, photo: "photo-1622044939413-0b829c342434", lender: "u0", deposit: 2000, condition: "GOOD", value_band: "MEDIUM", lane: "Lane 3", booked: [14, 15, 16], status: "PUBLISHED", required_verification: "UNVERIFIED",
+      desc: "650W impact drill with a 13-piece bit set and a spare chuck key.", usage_terms: "Masonry bits only for brick and concrete. Return wiped clean of dust.", handover_method: "From my gate", search_terms: "drill, barma, impact drill", reason: "" }
   ],
-  /* Lender history summaries for item pages (FR-S-04): words + range, never a number */
+
+  /* LenderEvidenceOut per lender (GET /items/{id}, search). FactorOut: never a score;
+     estimate and interval only when `enough`. Lender metrics: CONDITION_AGREED, DISPUTE_FREE. */
   lenderEv: {
-    u0: { state: "review", tag: "Small history", line: "3 loans as a lender, all returned as agreed.", ab: [4, 2] },
-    u1: { state: "insufficient", tag: "New lender", line: "New to Block C. No loans as a lender yet.", ab: [1, 1] },
-    u2: { state: "sufficient", tag: "Established lender", line: "14 loans as a lender, all completed. No condition disputes.", ab: [15, 1.6] },
-    u3: { state: "review", tag: "Small history", line: "5 loans as a lender. One condition dispute in July, resolved.", ab: [5, 2] },
-    u4: { state: "sufficient", tag: "Established lender", line: "9 loans. One dispute open now, not counted until resolved.", ab: [9, 1.8] },
-    u5: { state: "sufficient", tag: "Established lender", line: "11 loans, 10 handed over on time. Mostly tools.", ab: [11, 2] },
-    u6: { state: "review", tag: "Small history", line: "3 loans as a lender, all completed.", ab: [4, 1.6] }
+    u1: { has_history: false, summary: "No verified loans as a lender yet. That is not a negative finding.", factors: [
+      { metric: "CONDITION_AGREED", label: "Items are as described", verified_loans: 0, enough: false, confidence: "", note: "Not enough verified history yet. That is not a negative finding." },
+      { metric: "DISPUTE_FREE", label: "Loans without a dispute", verified_loans: 0, enough: false, confidence: "", note: "Not enough verified history yet. That is not a negative finding." }] },
+    u2: { has_history: true, summary: "14 verified loans as a lender.", factors: [
+      { metric: "CONDITION_AGREED", label: "Items are as described", verified_loans: 14, enough: true, estimate: 0.93, interval_low: 0.81, interval_high: 0.98, confidence: "high confidence", note: "" },
+      { metric: "DISPUTE_FREE", label: "Loans without a dispute", verified_loans: 14, enough: true, estimate: 0.95, interval_low: 0.84, interval_high: 0.99, confidence: "high confidence", note: "" }] },
+    u3: { has_history: true, summary: "5 verified loans as a lender.", factors: [
+      { metric: "CONDITION_AGREED", label: "Items are as described", verified_loans: 5, enough: true, estimate: 0.78, interval_low: 0.5, interval_high: 0.94, confidence: "moderate confidence", note: "" },
+      { metric: "DISPUTE_FREE", label: "Loans without a dispute", verified_loans: 5, enough: true, estimate: 0.74, interval_low: 0.45, interval_high: 0.92, confidence: "moderate confidence", note: "" }] },
+    u4: { has_history: true, summary: "9 verified loans as a lender. One open dispute is not counted until it's resolved.", factors: [
+      { metric: "CONDITION_AGREED", label: "Items are as described", verified_loans: 9, enough: true, estimate: 0.88, interval_low: 0.7, interval_high: 0.97, confidence: "moderate confidence", note: "" },
+      { metric: "DISPUTE_FREE", label: "Loans without a dispute", verified_loans: 9, enough: true, estimate: 0.9, interval_low: 0.72, interval_high: 0.98, confidence: "moderate confidence", note: "" }] },
+    u5: { has_history: true, summary: "11 verified loans as a lender.", factors: [
+      { metric: "CONDITION_AGREED", label: "Items are as described", verified_loans: 11, enough: true, estimate: 0.91, interval_low: 0.77, interval_high: 0.98, confidence: "high confidence", note: "" },
+      { metric: "DISPUTE_FREE", label: "Loans without a dispute", verified_loans: 11, enough: true, estimate: 0.93, interval_low: 0.79, interval_high: 0.99, confidence: "high confidence", note: "" }] },
+    u6: { has_history: true, summary: "2 verified loans as a lender.", factors: [
+      { metric: "CONDITION_AGREED", label: "Items are as described", verified_loans: 2, enough: false, confidence: "", note: "Too few loans to show detail." },
+      { metric: "DISPUTE_FREE", label: "Loans without a dispute", verified_loans: 2, enough: false, confidence: "", note: "Too few loans to show detail." }] }
   },
-  /* Incoming borrow requests for the lender (W1, W2). ab = recency-weighted Beta posterior (alpha, beta). */
+
+  /* MyEvidenceOut (GET /me/evidence): per role, factor by factor */
+  myEvidence: { note: "Each factor is shown on its own, never combined into one number. Recent, similar loans count most, and a disputed loan counts only after a moderator resolves it.", roles: [
+    { role: "BORROWER", factors: [
+      { metric: "ON_TIME_RETURN", label: "Returns on time", verified_loans: 7, enough: true, estimate: 0.9, interval_low: 0.72, interval_high: 0.98, confidence: "high confidence", note: "" },
+      { metric: "CONDITION_AGREED", label: "Item as described and returned in agreed condition", verified_loans: 7, enough: true, estimate: 0.92, interval_low: 0.75, interval_high: 0.98, confidence: "high confidence", note: "" },
+      { metric: "DISPUTE_FREE", label: "Loans without a dispute", verified_loans: 6, enough: true, estimate: 0.86, interval_low: 0.64, interval_high: 0.96, confidence: "moderate confidence", note: "One open dispute is not counted until a moderator resolves it." }] },
+    { role: "LENDER", factors: [
+      { metric: "CONDITION_AGREED", label: "Items are as described", verified_loans: 2, enough: false, confidence: "", note: "Too few loans to show detail." },
+      { metric: "DISPUTE_FREE", label: "Loans without a dispute", verified_loans: 2, enough: false, confidence: "", note: "Too few loans to show detail." }] }] },
+
+  /* RequestOut for the lender (GET /requests/{id}); assessment = AssessmentOut.
+     dates = [start, end) with an exclusive end; expires = minutes left of the 72 h window (UI);
+     lede = the plain-language line the app writes (UI). */
   requests: {
-    r1: { id: "r1", item: "drill", borrower: "u1", dates: [14, 16], msg: "Need it to put up shelves in my daughter's room. I'll pick it up after Asr.", expires: 40, overlap: { who: "Hamza A.", dates: "15–17 Oct" },
-      a: { state: "insufficient", code: "INSUFFICIENT_EVIDENCE", title: "Not enough history yet", ab: [1, 1], conf: "Low",
-        lede: "Ayesha joined Block C in October and hasn't completed a loan yet, as a borrower or a lender.",
-        direct: ["No completed loans yet", "Nothing to count yet. That isn't a negative result."], indirect: ["No community paths", "Nobody you've lent to has lent to Ayesha."], risk: ["Nothing unusual", "Checked separately: reciprocal ratings, review text, retaliation."],
-        safeguards: [["Record the Rs 2,000 deposit", "Logged at handover. No money moves in the app.", 1], ["Take handover photos", "The drill and the bit case.", 1], ["Fix the return date", "16 Oct, 8 pm. Extensions need your OK.", 1]],
-        tech: { "Interval (90%)": "0.05 – 0.95 · Beta(1,1) prior", "k-hop paths": "k ≤ 3 · none found", "Manipulation risk": "8 / 100 · level 0", "Policy rule": "R2 · no history", "Config": "assurance-cfg v1.3" } } },
-    r2: { id: "r2", item: "deg", borrower: "u6", dates: [20, 21], msg: "Mehndi at our house on Saturday, cooking for 35.", expires: 300,
-      a: { state: "review", code: "REVIEW_RECOMMENDED", title: "Review recommended", ab: [4.2, 2.1], conf: "Low–medium",
-        lede: "Nadia has no loans of her own yet, but two neighbours in your circle have lent to her without any problems.",
-        direct: ["No completed loans yet", "Joined Block C in August."], indirect: ["2 community paths", "Capped below direct evidence, so it can't reach “enough evidence” on its own."], paths: true, risk: ["Nothing unusual", "Checked separately from trust."],
-        safeguards: [["Record the Rs 1,500 deposit", "Logged at handover.", 1], ["Take handover photos", "The base and the lid.", 1], ["Fix the return date", "21 Oct, 9 pm.", 0]],
-        tech: { "Interval (90%)": "0.34 – 0.88", "k-hop paths": "2 paths · ρ = 0.41 ≥ ρ_sup 0.30", "Manipulation risk": "4 / 100 · level 0", "Policy rule": "R6 · paths lift sparse evidence (ADR-0008)", "Config": "assurance-cfg v1.3" } } },
-    r3: { id: "r3", item: "tent", borrower: "u5", dates: [24, 27], msg: "Family trip to Murree. We'll dry it properly before returning.", expires: 900,
-      a: { state: "sufficient", code: "SUFFICIENT_EVIDENCE", title: "Enough evidence", ab: [16, 1.8], conf: "High",
-        lede: "Kamran has borrowed 11 times in Block C, 10 on time, all returned as agreed. Most were outdoor and tool items like this one.",
-        direct: ["11 completed loans · 10 on time", "Recent, similar loans weigh most."], indirect: ["Not needed", "Direct evidence is strong."], risk: ["Nothing unusual", "Checked separately from trust."],
-        safeguards: [["Record the Rs 2,500 deposit", "Standard for this item.", 1]],
-        tech: { "Interval (90%)": "0.78 – 0.97", "k-hop paths": "not used", "Manipulation risk": "3 / 100 · level 0", "Policy rule": "R8 · strong similar evidence", "Config": "assurance-cfg v1.3" } } }
+    r1: { id: "r1", item: "drill", borrower: "u1", state: "ASSESSED", hold_reason: null, your_role: "LENDER", dates: [14, 17], message: "Need it to put up shelves in my daughter's room. I'll pick it up after Asr.", deposit_required: true, expires: 40,
+      overlap: { who: "Hamza A.", dates: "15–17 Oct" }, available_actions: ["accept", "decline"], moderator_safeguards: [],
+      lede: "Ayesha joined Block C in October and hasn't completed a loan yet, as a borrower or a lender.",
+      assessment: { assurance_state: "INSUFFICIENT_EVIDENCE", policy_decision: "REQUEST_VERIFICATION", rule_fired: "R3", config_version: "1.3.7-iteration2-draft",
+        posterior_mean: 0.5, ci90_low: 0.05, ci90_high: 0.95, effective_evidence: 0, verified_loans: 0, community: { reliability: 0, paths: [] }, manipulation_risk: 8, manipulation_level: 1,
+        safeguards: sg("DEPOSIT_RECORD", "HANDOVER_PHOTOS", "FIXED_RETURN_DATE"),
+        explanation: "Insufficient verified history; lender review required. This is not a negative finding about the borrower. Direct evidence: no verified loans yet. Community paths from the lender: none found. Manipulation checks: no notable signals (level 1 of 4). Decision support, not a guarantee." } },
+    r2: { id: "r2", item: "deg", borrower: "u6", state: "ASSESSED", hold_reason: null, your_role: "LENDER", dates: [20, 22], message: "Mehndi at our house on Saturday, cooking for 35.", deposit_required: true, expires: 300,
+      available_actions: ["accept", "decline"], moderator_safeguards: [],
+      lede: "Nadia has 2 verified loans in Block C, not enough on their own. Two neighbours in your circle have lent to her without problems.",
+      assessment: { assurance_state: "REVIEW_RECOMMENDED", policy_decision: "PROCEED_WITH_SAFEGUARDS", rule_fired: "R9", config_version: "1.3.7-iteration2-draft",
+        posterior_mean: 0.71, ci90_low: 0.31, ci90_high: 0.96, effective_evidence: 1.6, verified_loans: 2, manipulation_risk: 4, manipulation_level: 1,
+        community: { reliability: 0.41, paths: [{ via: ["Bilal R."], strength: 0.62 }, { via: ["Kamran J.", "Hira A."], strength: 0.35 }] },
+        safeguards: sg("MEDIUM_VALUE_DEPOSIT_RECORD", "HANDOVER_PHOTOS"),
+        explanation: "Review recommended before lending. Direct evidence: 2 verified loan(s), weighted for recency and similarity to 1.6 effective outcomes; estimated on-time return 0.71 with a 90% interval of 0.31 to 0.96. Community paths from the lender: via Bilal R. (path strength 0.62); via Kamran J. then Hira A. (path strength 0.35); indirect reliability 0.41 (at most 0.60). Without these paths the request would be INSUFFICIENT_EVIDENCE. Manipulation checks: no notable signals (level 1 of 4). Decision support, not a guarantee." } },
+    r3: { id: "r3", item: "tent", borrower: "u5", state: "ASSESSED", hold_reason: null, your_role: "LENDER", dates: [24, 28], message: "Family trip to Murree. We'll dry it properly before returning.", deposit_required: true, expires: 900,
+      available_actions: ["accept", "decline"], moderator_safeguards: [],
+      lede: "Kamran has 10 verified loans in Block C, returned on time and in the agreed condition. Most were outdoor and tool items like this one.",
+      assessment: { assurance_state: "SUFFICIENT_EVIDENCE", policy_decision: "PROCEED_WITH_SAFEGUARDS", rule_fired: "R8", config_version: "1.3.7-iteration2-draft",
+        posterior_mean: 0.91, ci90_low: 0.752, ci90_high: 0.995, effective_evidence: 9.5, verified_loans: 10, community: { reliability: 0, paths: [] }, manipulation_risk: 3, manipulation_level: 1,
+        safeguards: sg("MEDIUM_VALUE_DEPOSIT_RECORD", "HANDOVER_PHOTOS"),
+        explanation: "Sufficient verified evidence for this request. Direct evidence: 10 verified loan(s), weighted for recency and similarity to 9.5 effective outcomes; estimated on-time return 0.91 with a 90% interval of 0.75 to 0.99. Community paths from the lender: none found. Manipulation checks: no notable signals (level 1 of 4). Decision support, not a guarantee." } }
   },
-  /* Sana's loans; col = activity board column */
+
+  /* Sana's loans (GET /requests -> MyRequestOut, plus the request's available_actions).
+     col = activity board column (UI); href = the screen for the next action (UI). */
   loans: [
-    { id: "b6", item: "drill", role: "lender", other: "u1", state: "ASSESSED", col: "action", label: "Decide on request", tone: "saffron", next: "Accept, decline or suggest dates", mins: 40, href: "#/requests/r1", step: 0, dates: "14–16 Oct" },
-    { id: "b1", item: "deg", role: "borrower", other: "u2", state: "ACCEPTED", col: "action", label: "Handover today", tone: "saffron", next: "Confirm at 5 pm, masjid parking", mins: 135, href: "#/handover/b1/borrower", step: 2, dates: "18–19 Oct", due: "19 Oct, 9 pm" },
-    { id: "b5", item: "chairs", role: "borrower", other: "u4", state: "DISPUTED", col: "action", label: "Moderator asked you", tone: "coral", next: "Reply to Imran by 6 pm", mins: 290, href: "#/case/b5", step: 4, dates: "1–3 Oct" },
-    { id: "b3", item: "drill", role: "lender", other: "u3", state: "RETURN_INITIATED", col: "action", label: "Inspect the return", tone: "sky", next: "Compare with handover photos", href: "#/inspect/b3", step: 4, dates: "9–11 Oct" },
-    { id: "b9", item: "projector", role: "borrower", other: "u3", state: "ASSESSED", col: "waiting", label: "New dates suggested", tone: "sky", next: "Usman suggests 21–22 Oct", mins: 600, href: "#/counter/b9", step: 0, dates: "20–21 Oct" },
-    { id: "b2", item: "ladder", role: "borrower", other: "u5", state: "ACTIVE", col: "active", label: "Due tomorrow", tone: "green", next: "Return by 15 Oct, 8 pm", mins: 1560, href: "#/loan/b2", step: 3, dates: "13–15 Oct", due: "15 Oct, 8 pm" },
-    { id: "b7", item: "books", role: "borrower", other: "u5", state: "ACTIVE", col: "active", label: "Overdue 1 day", tone: "coral", next: "Auto-dispute 14 Oct, 8 pm", mins: 1320, href: "#/loan/b7", step: 3, dates: "1–12 Oct", due: "12 Oct, 8 pm", overdue: true },
-    { id: "b10", item: "tent", role: "lender", other: "u5", state: "ACTIVE", col: "action", label: "Wants 2 more days", tone: "sky", next: "Approve or keep 27 Oct", href: "#/extend-respond/b10", step: 3, dates: "24–27 Oct" },
-    { id: "b4", item: "tent", role: "borrower", other: "u2", state: "COMPLETED", col: "done", label: "Leave a review", tone: "green", next: "Reviews close in 5 days", href: "#/review/b4", step: 5, dates: "28 Sep–2 Oct" },
-    { id: "b11", item: "chairs", role: "borrower", other: "u4", state: "COMPLETED", col: "done", label: "Decision made", tone: "violet", next: "You can appeal for 5 days", href: "#/decision/b11", step: 5, dates: "5–6 Sep" },
-    { id: "b8", item: "stroller", role: "borrower", other: "u1", state: "EXPIRED", col: "done", label: "Expired", tone: "neutral", next: "Ayesha didn't reply in 48 h", href: "#/item/stroller", step: -1, dates: "7–9 Oct" },
-    { id: "b12", item: "makita", role: "borrower", other: "u5", state: "NO_SHOW", col: "done", label: "No-show", tone: "neutral", next: "Handover missed · dates released", href: "#/loan/b12", step: -1, dates: "2–3 Oct" }
+    { id: "b6", item: "drill", your_role: "LENDER", other: "u1", state: "ASSESSED", actions: ["accept", "decline"], col: "action", label: "Decide on the request", tone: "saffron", next: "Accept, decline or suggest dates", mins: 40, href: "#/requests/r1", step: 0, dates: "14–16 Oct" },
+    { id: "b1", item: "deg", your_role: "BORROWER", other: "u2", state: "ACCEPTED", actions: ["handover_confirm", "raise_dispute"], col: "action", label: "Confirm the handover", tone: "saffron", next: "Bilal recorded the condition at 5:04 pm", mins: 135, href: "#/handover/b1/borrower", step: 2, dates: "18–19 Oct", due: "Mon 20 Oct" },
+    { id: "b5", item: "chairs", your_role: "BORROWER", other: "u4", state: "DISPUTED", actions: [], col: "action", label: "Moderator asked you", tone: "coral", next: "Reply before the deadline", mins: 290, href: "#/case/b5", step: 4, dates: "1–3 Oct" },
+    { id: "b3", item: "drill", your_role: "LENDER", other: "u3", state: "RETURN_INITIATED", actions: ["return_checklist", "raise_dispute"], col: "action", label: "Inspect the return", tone: "sky", next: "Record the return checklist", href: "#/inspect/b3", step: 4, dates: "9–11 Oct" },
+    { id: "b13", item: "ladder", your_role: "BORROWER", other: "u5", state: "RETURN_INITIATED", actions: ["return_confirm", "raise_dispute"], col: "action", label: "Confirm the return report", tone: "sky", next: "Kamran recorded the item's condition", mins: 1380, href: "#/return-confirm/b13", step: 4, dates: "6–8 Oct" },
+    { id: "b10", item: "tent", your_role: "LENDER", other: "u5", state: "ACTIVE", actions: ["raise_dispute"], col: "action", label: "Extension requested", tone: "sky", next: "Approve or keep the due date", href: "#/extend-respond/b10", step: 3, dates: "24–27 Oct", extension: { new_due: "Thu 30 Oct", reason: "Rain in Murree, we're back two days later." } },
+    { id: "b9", item: "projector", your_role: "BORROWER", other: "u3", state: "ASSESSED", actions: ["cancel"], col: "waiting", label: "New dates suggested", tone: "sky", next: "Usman offers 21–22 Oct", mins: 600, href: "#/counter/b9", step: 0, dates: "20–21 Oct", counter: { start: 21, end: 23, message: "The 20th we're out of town. Can you take it on the 21st?" } },
+    { id: "b14", item: "wheelchair", your_role: "BORROWER", other: "u6", state: "HELD_FOR_REVIEW", hold_reason: "high_value_low_confidence", actions: ["cancel"], col: "waiting", label: "With a moderator", tone: "violet", next: "Checked before Nadia sees it", href: "#/loan/b14", step: 0, dates: "25 Oct–1 Nov" },
+    { id: "b2", item: "ladder", your_role: "BORROWER", other: "u5", state: "ACTIVE", actions: ["initiate_return", "raise_dispute"], col: "active", label: "Due tomorrow", tone: "green", next: "Return by Wed 15 Oct", mins: 1560, href: "#/loan/b2", step: 3, dates: "13–14 Oct", due: "Wed 15 Oct" },
+    { id: "b7", item: "books", your_role: "BORROWER", other: "u5", state: "ACTIVE", actions: ["initiate_return", "raise_dispute"], col: "active", label: "Overdue 1 day", tone: "coral", next: "2 reminders sent", mins: 1320, href: "#/loan/b7", step: 3, dates: "1–11 Oct", due: "Sun 12 Oct", overdue: true },
+    { id: "b4", item: "tent", your_role: "BORROWER", other: "u2", state: "COMPLETED", actions: ["review"], col: "done", label: "Leave a review", tone: "green", next: "Reviews close 14 days after completion", href: "#/review/b4", step: 5, dates: "28 Sep–1 Oct" },
+    { id: "b11", item: "chairs", your_role: "BORROWER", other: "u4", state: "COMPLETED", actions: [], col: "done", label: "Decision made", tone: "violet", next: "You can appeal within 7 days", href: "#/decision/b11", step: 5, dates: "5–6 Sep" },
+    { id: "b8", item: "stroller", your_role: "BORROWER", other: "u1", state: "EXPIRED", actions: [], col: "done", label: "Expired", tone: "neutral", next: "No reply within 72 hours", href: "#/item/stroller", step: -1, dates: "7–9 Oct" },
+    { id: "b15", item: "deg", your_role: "BORROWER", other: "u2", state: "DECLINED", actions: [], col: "done", label: "Declined: dates taken", tone: "neutral", next: "Another request for these dates was accepted first", href: "#/item/deg", step: -1, dates: "11–12 Oct" },
+    { id: "b12", item: "makita", your_role: "BORROWER", other: "u5", state: "NO_SHOW", actions: [], col: "done", label: "No-show", tone: "neutral", next: "Handover missed · dates released", href: "#/loan/b12", step: -1, dates: "2–3 Oct" }
   ],
+
+  /* NotificationOut (GET /notifications). The app writes the sentence from type + payload.
+     Types are the ones the backend sends (lifecycle, jobs, cases, appeals, membership, reviews). */
   notifications: [
-    { g: "Today", type: "requests", icon: "inbox", tone: "sky", t: "Ayesha wants to borrow your drill", d: "14–16 Oct · Not enough history yet", time: "10m", href: "#/requests/r1", unread: 1, mins: 40 },
-    { g: "Today", type: "loans", icon: "package-check", tone: "green", t: "Handover today at 5:00 pm", d: "Large deg from Bilal · masjid parking", time: "1h", href: "#/handover/b1/borrower", unread: 1 },
-    { g: "Today", type: "loans", icon: "calendar-range", tone: "sky", t: "Usman suggested new dates", d: "Projector · 21–22 Oct instead of 20–21", time: "2h", href: "#/counter/b9", unread: 1 },
-    { g: "Today", type: "moderation", icon: "message-square-text", tone: "saffron", t: "A moderator needs your reply", d: "Case D-014 · plastic chairs", time: "3h", href: "#/case/b5", unread: 1, mins: 290 },
-    { g: "Today", type: "community", icon: "message-circle-reply", tone: "violet", t: "Farah answered your question", d: "“Best tailor for school uniforms?”", time: "4h", href: "#/forum/p2", unread: 0 },
-    { g: "Today", type: "loans", icon: "alarm-clock", tone: "coral", t: "Physics books are 1 day overdue", d: "Return today or a dispute opens on 14 Oct", time: "8am", href: "#/loan/b7", unread: 0 },
-    { g: "Earlier", type: "community", icon: "calendar-check", tone: "violet", t: "You're off the waitlist", d: "Sunday park cleanup · 19 Oct", time: "1d", href: "#/event/e2", unread: 0 },
-    { g: "Earlier", type: "moderation", icon: "scale", tone: "neutral", t: "Decision on case D-011", d: "Rabia decided for the lender · you can appeal", time: "2d", href: "#/decision/b11", unread: 0 },
-    { g: "Earlier", type: "loans", icon: "star", tone: "green", t: "Review your loan from Bilal", d: "Reviews close in 5 days", time: "3d", href: "#/review/b4", unread: 0 }
+    { id: "n1", type: "request_received", payload: { transaction_id: "r1", item_title: "Bosch impact drill + bits" }, when: "10m", g: "Today", read: false, href: "#/requests/r1" },
+    { id: "n2", type: "handover_reminder", payload: { transaction_id: "b1", item_title: "Large deg for 40 guests" }, when: "1h", g: "Today", read: false, href: "#/handover/b1/borrower" },
+    { id: "n3", type: "counter_offered", payload: { transaction_id: "b9", item_title: "Projector + 100-inch screen", proposed_period: "21–22 Oct" }, when: "2h", g: "Today", read: false, href: "#/counter/b9" },
+    { id: "n4", type: "information_requested", payload: { case_id: "D-014", deadline: "Thu 16 Oct, 6:00 pm" }, when: "3h", g: "Today", read: false, href: "#/case/b5", mins: 290 },
+    { id: "n5", type: "extension_requested", payload: { transaction_id: "b10", item_title: "4-person camping tent", new_due: "Thu 30 Oct" }, when: "4h", g: "Today", read: false, href: "#/extend-respond/b10" },
+    { id: "n6", type: "return_reminder", payload: { transaction_id: "b2", item_title: "Aluminium ladder, 8 ft" }, when: "8am", g: "Today", read: true, href: "#/loan/b2" },
+    { id: "n7", type: "review_received", payload: { transaction_id: "b4" }, when: "1d", g: "Earlier", read: true, href: "#/evidence" },
+    { id: "n8", type: "request_declined", payload: { transaction_id: "b15", item_title: "Large deg for 40 guests", reason: "dates taken" }, when: "2d", g: "Earlier", read: true, href: "#/item/deg" },
+    { id: "n9", type: "request_expired", payload: { transaction_id: "b8", item_title: "Reclining baby stroller" }, when: "5d", g: "Earlier", read: true, href: "#/item/stroller" },
+    { id: "n10", type: "listing_expired", payload: { item_id: "tins", item_title: "Cake tins, set of 3" }, when: "6d", g: "Earlier", read: true, href: "#/listings" },
+    { id: "n11", type: "membership_decided", payload: { status: "APPROVED", community: "Block C, Gulberg III" }, when: "Mar", g: "Earlier", read: true, href: "#/home" }
   ],
   conversations: [
     { id: "b1", with: "u2", kind: "Item chat", about: "deg", last: "Bring a cloth bag, the lid is heavy.", time: "5:21 pm", unread: 1 },
@@ -153,33 +256,75 @@ window.DB = {
     ["u2", "lent a", "deg", "to Nadia"], ["u5", "returned a", "ladder", "on time"], ["u7", "answered", "a water tanker question", ""], ["u4", "is hosting", "a mehndi rehearsal", "Sat"],
     ["u3", "listed a", "projector", "in Electronics"], ["u6", "joined", "Block C", "welcome!"], ["u1", "borrowed", "books", "for exams"], ["u5", "earned", "Top answerer", "badge"]
   ],
+  /* CaseQueueOut + ModeratorCaseOut. trigger_type: DISPUTE | MANIPULATION_FLAG |
+     HIGH_VALUE_LOW_CONFIDENCE | LOCALITY_HOLD | ENGINE_FAILURE. status: OPEN | AWAITING_INFORMATION |
+     DECIDED | APPEALED | REVERSED | WITHDRAWN. priority: 1 most urgent. The queue row carries no
+     names; the case screen shows borrower and lender names (ModeratorCaseOut). */
   cases: [
-    { id: "D-014", kind: "dispute", prio: "high", title: "Condition dispute · plastic chairs", sub: "Hira (lender) vs Sana (borrower)", age: "2h", state: "DISPUTED", item: "chairs" },
-    { id: "H-221", kind: "hold", prio: "high", title: "Held · projector request", sub: "Faisal N. · high value, weak evidence", age: "35m", state: "HELD_FOR_REVIEW", trigger: "high_value_low_confidence", item: "projector" },
-    { id: "A-003", kind: "appeal", prio: "med", title: "Appeal · decision on D-011", sub: "Sana appeals Rabia's decision", age: "1h", state: "APPEALED", item: "chairs" },
-    { id: "H-219", kind: "hold", prio: "med", title: "Held · unusual rating pattern", sub: "Zain M. · 2 signals corroborated", age: "4h", state: "HELD_FOR_REVIEW", trigger: "manipulation_risk", item: "tent" },
-    { id: "D-016", kind: "dispute", prio: "med", title: "Overdue · books not returned", sub: "Opened by the scheduler after 2 reminders", age: "5h", state: "DISPUTED", trigger: "overdue", item: "books" },
-    { id: "H-217", kind: "hold", prio: "low", title: "Held · assessment didn't finish", sub: "Mariam S. · engine timeout", age: "6h", state: "HELD_FOR_REVIEW", trigger: "engine_failure", item: "deg" }
+    { id: "D-014", trigger_type: "DISPUTE", dispute_reason: "DAMAGE", hold_reason: null, raised_by_role: "LENDER", status: "AWAITING_INFORMATION", priority: 1, opened: "2h", item: "chairs", state: "DISPUTED",
+      reason: "Return inspection reported 2 cracked chair legs", borrower: "u0", lender: "u4", period: "1–3 Oct", dispute_stage: "RETURN_INITIATED",
+      information_request: { to: "BORROWER", question: "Do you have photos from when you collected the chairs? Please also say where they were stored.", deadline: "Thu 16 Oct, 6:00 pm", mins: 290 },
+      statements: [{ author_role: "LENDER", author_name: "Hira Aslam", statement: "Two chairs came back with cracked legs. They were fine at handover; the checklist says so.", at: "15 Oct, 6:30 pm" }] },
+    { id: "H-221", trigger_type: "HIGH_VALUE_LOW_CONFIDENCE", hold_reason: "high_value_low_confidence", status: "OPEN", priority: 1, opened: "35m", item: "projector", state: "HELD_FOR_REVIEW",
+      reason: "High-value request on weak or dissimilar evidence (rule R4)", borrower: "u8", lender: "u3", period: "20–21 Oct" },
+    { id: "L-230", trigger_type: "LOCALITY_HOLD", hold_reason: "locality_conflict", status: "OPEN", priority: 2, opened: "3h", item: "deg", state: "HELD_FOR_REVIEW",
+      reason: "The borrower's stored locality result conflicts with the community", borrower: "u10", lender: "u2", period: "25–26 Oct" },
+    { id: "A-003", trigger_type: "DISPUTE", dispute_reason: "DAMAGE", raised_by_role: "LENDER", status: "APPEALED", priority: 2, opened: "1h", item: "chairs", state: "COMPLETED",
+      reason: "Appeal of the decision on this dispute", borrower: "u0", lender: "u4", period: "5–6 Sep",
+      appeal: { reason: "The leg was already split at pickup. It's in my pickup photo, which wasn't attached to the case.", filed: "1h ago", by_role: "BORROWER" },
+      decisions: [{ decider: "Rabia S.", decider_role: "MODERATOR", kind: "DISPUTE_RESOLVED", at_fault: "borrower", possession: "RETURNED", reason: "The return photo shows a split leg that isn't in the handover photo. Deposit deduction of Rs 600 agreed in person.", decided: "12 Oct, 4:10 pm" }] },
+    { id: "H-219", trigger_type: "MANIPULATION_FLAG", hold_reason: "manipulation_risk", status: "OPEN", priority: 2, opened: "4h", item: "tent", state: "HELD_FOR_REVIEW",
+      reason: "Corroborated manipulation risk: 2 signals at 0.5 or above (level 4)", borrower: "u9", lender: "u2", period: "2–5 Nov",
+      risk: { level: 4, score: 72, signals: [["Partners reviewing one another (S1)", 0.72], ["Similar review texts (S4)", 0.64]] } },
+    { id: "D-016", trigger_type: "DISPUTE", dispute_reason: "NON_RETURN", raised_by_role: null, status: "OPEN", priority: 2, opened: "5h", item: "books", state: "DISPUTED",
+      reason: "Not returned 72 hours after the due date, after 2 reminders (scheduler)", borrower: "u10", lender: "u5", period: "1–9 Oct", dispute_stage: "ACTIVE",
+      statements: [{ author_role: "BORROWER", author_name: "Mariam Shah", statement: "My son took them to his hostel by mistake. They'll be back on Friday.", at: "1h ago" }] },
+    { id: "H-217", trigger_type: "ENGINE_FAILURE", hold_reason: "engine_failure", status: "OPEN", priority: 3, opened: "6h", item: "ladder", state: "HELD_FOR_REVIEW",
+      reason: "The assessment timed out (2,000 ms) and no state was assigned", borrower: "u1", lender: "u5", period: "18–19 Oct" }
   ],
+
+  /* MembershipQueueOut (GET /moderation/memberships). Only coarse results are stored:
+     locality_outcome VERIFIED | INCONCLUSIVE | CONFLICTING; boundary_signal INSIDE | NEAR_BOUNDARY |
+     OUTSIDE | UNAVAILABLE. Never a position, distance or address. */
   joinRequests: [
-    { id: "M-88", name: "Omar Farooq", initials: "OF", result: "inconclusive", detail: "Location skipped · invited by Bilal", age: "1h", flags: [] },
-    { id: "M-87", name: "Zara Ali", initials: "ZA", result: "conflicting", detail: "Outside the boundary · invited by Usman", age: "5h", flags: ["Same device as an existing account"] },
-    { id: "M-86", name: "Tariq Mehmood", initials: "TM", result: "verified", detail: "Inside the boundary · invited by Kamran", age: "1d", flags: [], taken: "Rabia" }
+    { id: "M-88", applicant_name: "Omar Farooq", initials: "OF", status: "PENDING", requested: "1h", locality_outcome: "INCONCLUSIVE", boundary_signal: "UNAVAILABLE", invitation_used: true, permission_refused: true, mock_provider_detected: false, duplicate_suspected: false },
+    { id: "M-87", applicant_name: "Zara Ali", initials: "ZA", status: "PENDING", requested: "5h", locality_outcome: "CONFLICTING", boundary_signal: "OUTSIDE", invitation_used: true, permission_refused: false, mock_provider_detected: false, duplicate_suspected: true },
+    { id: "M-89", applicant_name: "Faraz Butt", initials: "FB", status: "PENDING", requested: "6h", locality_outcome: "CONFLICTING", boundary_signal: "INSIDE", invitation_used: false, permission_refused: false, mock_provider_detected: true, duplicate_suspected: false },
+    { id: "M-90", applicant_name: "Hamza Ali", initials: "HA", status: "AWAITING_INFORMATION", requested: "1d", locality_outcome: "INCONCLUSIVE", boundary_signal: "NEAR_BOUNDARY", invitation_used: false, permission_refused: false, mock_provider_detected: false, duplicate_suspected: false },
+    { id: "M-86", applicant_name: "Tariq Mehmood", initials: "TM", status: "APPROVED", requested: "1d", locality_outcome: "VERIFIED", boundary_signal: "INSIDE", invitation_used: true, permission_refused: false, mock_provider_detected: false, duplicate_suspected: false, decided_by: "Rabia" }
+  ],
+
+  /* AuditEntryOut (GET /admin/audit). category DISPUTE | MEMBERSHIP | ASSURANCE | OTHER;
+     outcome SUCCESS | REJECTED; masked members are shown as initials until unmasked with a purpose. */
+  audit: [
+    { id: 1284, source: "audit_log", at: "16 Oct 10:42:18", action: "info_requested", category: "DISPUTE", actor: "Imran Q.", authorisation: "role:moderator@c1", target: "case D-014", outcome: "SUCCESS", summary: "Asked the borrower a question, 72 h deadline", prev: "OPEN", next: "AWAITING_INFORMATION", reason: null, hash_valid: true, masked: false },
+    { id: 1283, source: "event", at: "16 Oct 09:15:02", action: "held_for_review", category: "ASSURANCE", actor: "system", authorisation: "svc:assurance", target: "transaction T-5531", outcome: "SUCCESS", summary: "Held: high_value_low_confidence (R4)", prev: "LOCALITY_CHECKED", next: "HELD_FOR_REVIEW", reason: null, hash_valid: true, masked: false },
+    { id: 1282, source: "event", at: "16 Oct 08:00:04", action: "dispute_opened", category: "DISPUTE", actor: "system", authorisation: "svc:scheduler", target: "transaction T-5470", outcome: "SUCCESS", summary: "Overdue escalation after 2 reminders (job overdue_escalation)", prev: "ACTIVE", next: "DISPUTED", reason: null, hash_valid: true, masked: false },
+    { id: 1281, source: "audit_log", at: "15 Oct 21:03:44", action: "membership_decided", category: "MEMBERSHIP", actor: "Rabia S.", authorisation: "role:moderator@c1", target: "membership T•••q M.", outcome: "SUCCESS", summary: "Approved", prev: "PENDING", next: "APPROVED", reason: "Inside the boundary and the invitation is valid", hash_valid: true, masked: true },
+    { id: 1280, source: "event", at: "15 Oct 18:27:10", action: "dispute_opened", category: "DISPUTE", actor: "H•••a A.", authorisation: "party:lender", target: "transaction T-5490", outcome: "SUCCESS", summary: "Dispute: DAMAGE", prev: "RETURN_INITIATED", next: "DISPUTED", reason: null, hash_valid: true, masked: true },
+    { id: 1279, source: "audit_log", at: "15 Oct 14:02:51", action: "reject_decide_case", category: "DISPUTE", actor: "U•••n T.", authorisation: "member", target: "case D-012", outcome: "REJECTED", summary: "Refused: a party cannot decide its own case", prev: null, next: null, reason: null, hash_valid: true, masked: true },
+    { id: 1278, source: "event", at: "15 Oct 12:55:31", action: "request_declined", category: "OTHER", actor: "system", authorisation: "svc:lifecycle", target: "transaction T-5513", outcome: "SUCCESS", summary: "Declined: dates taken (overlap constraint)", prev: "ASSESSED", next: "DECLINED", reason: null, hash_valid: true, masked: false },
+    { id: 1277, source: "event", at: "14 Oct 20:00:00", action: "no_show", category: "OTHER", actor: "system", authorisation: "svc:scheduler", target: "transaction T-5466", outcome: "SUCCESS", summary: "No handover within the 24 h grace period", prev: "ACCEPTED", next: "NO_SHOW", reason: null, hash_valid: true, masked: false },
+    { id: 1276, source: "audit_log", at: "13 Oct 16:20:09", action: "audit_viewed", category: "OTHER", actor: "Saad A.", authorisation: "role:admin", target: "audit log", outcome: "SUCCESS", summary: "Viewed with filter: category DISPUTE", prev: null, next: null, reason: null, hash_valid: true, masked: false }
+  ],
+  /* AuditConcentrationOut: at least 3 decisions and 60% of a moderator's decisions in 90 days */
+  concentration: [{ moderator: "Imran Q.", member: "H•••a A.", decisions: 3, share: 0.75 }],
+
+  /* POST /internal/jobs/run -> JobReportOut (scheduler_b13; idempotent, locked, retried) */
+  jobs: [
+    ["no_show", "No-show", "Accepted, no handover within 24 h of the start", 1, 14, 0],
+    ["request_expiry", "Request expiry", "No reply within 72 h, or 72 h after a counter-offer", 2, 9, 0],
+    ["handover_reminder", "Handover reminder", "Before an accepted handover", 3, 6, 0],
+    ["return_reminder", "Return reminder", "24 h before the due date, and on the day to the lender", 4, 11, 0],
+    ["overdue_escalation", "Overdue escalation", "Opens a dispute 72 h after the due date, after 2 reminders", 1, 5, 0],
+    ["confirmation_reminder", "Confirmation reminder", "The other party hasn't confirmed within 24 h", 2, 7, 0],
+    ["information_deadline", "Information deadline", "A party didn't reply to a moderator in 72 h", 0, 3, 0],
+    ["listing_expiry", "Listing expiry", "Listings expire after 60 days", 1, 41, 0],
+    ["embedding_backfill", "Search index backfill", "Meaning-based search for new or edited listings", 3, 0, 1]
   ],
   reports: [
     { id: "R-41", what: "Forum post", t: "“Selling cheap gold, DM me”", why: "Spam · suspicious link", by: "Automatic flag + 3 members", prio: "high" },
     { id: "R-40", what: "Comment", t: "Mixed Urdu/English reply in DIY thread", why: "Uncertain language, sent to a person", by: "Automatic flag", prio: "low" },
     { id: "R-39", what: "User", t: "Repeated no-shows by one account", why: "Reported by 2 lenders", by: "Members", prio: "med" }
   ],
-  audit: [
-    [1284, "16 Oct 10:42:18", "Imran Q.", "Moderator", "info_requested", "Case D-014", "DISPUTED", "DISPUTED", "Asked borrower for pickup photos", "mod:c1", "9f2c…e81a"],
-    [1283, "16 Oct 09:15:02", "System", "Engine", "held_for_review", "Txn T-5531", "LOCALITY_CHECKED", "HELD_FOR_REVIEW", "high_value_low_confidence (R4)", "svc:assurance", "41ab…07cd"],
-    [1282, "16 Oct 08:00:04", "System", "Scheduler", "dispute_opened", "Txn T-5470", "ACTIVE", "DISPUTED", "Overdue after 2 reminders (run 3f1e)", "svc:scheduler", "b902…44c1"],
-    [1281, "15 Oct 21:03:44", "Rabia S.", "Moderator", "membership_approved", "T•••q M.", "PENDING", "APPROVED", "Inside boundary, invitation valid", "mod:c1", "c7d0…9b12"],
-    [1280, "15 Oct 18:27:10", "Hira A.", "Member", "dispute_opened", "Txn T-5490", "RETURN_INITIATED", "DISPUTED", "Damage: 2 chairs cracked", "party:lender", "5e19…a4f0"],
-    [1279, "15 Oct 12:55:31", "Bilal R.", "Member", "request_accepted", "Txn T-5512", "ASSESSED", "ACCEPTED", "", "party:lender", "aa30…11e7"],
-    [1278, "15 Oct 12:55:31", "System", "Lifecycle", "request_declined", "Txn T-5513", "ASSESSED", "DECLINED", "dates taken (overlap constraint)", "svc:lifecycle", "0b77…d3c9"],
-    [1277, "14 Oct 20:00:00", "System", "Scheduler", "no_show", "Txn T-5466", "ACCEPTED", "NO_SHOW", "Grace period passed (run 2c9a)", "svc:scheduler", "e4c2…5f68"],
-    [1276, "13 Oct 16:20:09", "Saad A.", "Admin", "audit_viewed", "Filter: disputes", "", "", "Weekly review", "admin", "7713…ab02"]
-  ]
 };
