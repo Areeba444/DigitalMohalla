@@ -98,7 +98,7 @@ Status key: **Met**, **Partial** (what exists), **It. 2** (built in iteration 2,
 | FR-A-06 list communities | CORE | A3 | UC-A3; SSD-A3 | — | Part E criterion | S1 | It. 2 (1) |
 | FR-A-07 locality method | CORE | A3 | LOC A11; DATA `locality_verification`, `invitation`; SSD-A3; DFD 11.0 | stub: stored result read by `locality_outcome_for` | TC-119, TC-124 | S1 | It. 2 (1) |
 | FR-A-08 three-valued outcome | CORE | A3 | LOC decision table; ACT membership decision | stub | TC-125, TC-126 | S1 | It. 2 (1) |
-| FR-A-09 membership request | CORE | A3 | SM membership M01 to M08; DATA `membership_one_live_uq` | seeded only | TC-127 | S1 | It. 2 (1) |
+| FR-A-09 membership request | CORE | A3 | SM membership M01 to M09 (M09 open-join); DATA `membership_one_live_uq`, `community.join_policy` (v2.4) | seeded only | TC-127, TC-170, TC-171 | S1 | It. 2 (1) |
 | FR-A-10 moderator queue | CORE | A4 | SM membership; ACT membership decision; SSD-A4 | — | TC-128, TC-129 | S1 | It. 2 (1) |
 | FR-A-11 concurrent, reversed decisions | CORE | A4 | SM membership M07, M08 | — | TC-130 | S1 | It. 2 (1) |
 | FR-A-12 profile edit | ENAB | A5, A6 | — | — | — | S1 | It. 3 |
